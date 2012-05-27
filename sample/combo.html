@@ -1,0 +1,59 @@
+<head>
+<meta http-equiv='content-type' content='text/html; charset=UTF-8'>
+</head>
+<body>
+<div id='combo' style='color:red'></div><br>
+<div id='seq'></div><br>
+<div id='info'></div>
+
+<script src='../F.js'></script>
+<script src='../controller.js'></script>
+<script src='../combodec.js'></script>
+<script>
+var con_fg = {up:'h',down:'n',left:'b',right:'m',def:'v',jump:'f',att:'d'};
+var con = new F.controller(con_fg);
+
+var dec_config = 
+{
+	rp: {up:1,down:1,left:2,right:2,def:3,jump:1,att:5}, //the same key must repeat no more than X times
+	timeout:72, //in a 72 fps key control system, approx. 1s
+	comboout:36,//the max time interval(in frames) between keys to make a combo
+	callback: print,    //callback function when combo detected
+	no_repeat_key: true //eliminate repeated key strokes by browser
+}
+var combo = [
+	{ name:'氣功波', seq:['def','right','att']},
+	{ name:'氣功波', seq:['def','left','att']},
+	{ name:'橫格', seq:['def','right','jump']},
+	{ name:'橫格', seq:['def','left','jump']},
+	{ name:'上攻', seq:['def','up','att']},
+	{ name:'下攻', seq:['def','down','att']},
+	{ name:'上格', seq:['def','up','jump']},
+	{ name:'下格', seq:['def','down','jump']},
+	{ name:'大絕', seq:['up','down','left','right','def','jump','att']}
+];
+var dec = new F.combodec(con, dec_config, combo);
+
+//--
+
+var seq = document.getElementById('seq');
+var com = document.getElementById('combo');
+
+var TIMER = setInterval(onEnterFrame,1000/72); //72 fps
+function onEnterFrame()
+{
+	dec.frame();
+	seq.innerHTML=dec.seq.toString();
+}
+
+function print(combo)
+{
+	var str=combo.name+' '+combo.seq.toString()+'<br>';
+	com.innerHTML+=str;
+}
+
+var str=F.to_text(con_fg,'con_fg',' ','');
+str   +='<br>'+F.to_text(combo, 'combo', ' ','');
+document.getElementById('info').innerHTML=str;
+</script>
+</body>

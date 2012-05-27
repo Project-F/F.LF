@@ -1,0 +1,52 @@
+<body>
+<div id='states'></div>
+<div id='sp1' style='position:absolute; left:200px; top:300px; width:40px; height:40px; border:1px solid black;'></div>
+<div id='sp2' style='position:absolute; left:600px; top:300px; width:40px; height:40px; border:1px solid black;'></div>
+<script src='../F.js'></script>
+<script src='../controller.js'></script>
+<script>
+sp1 = document.getElementById('sp1');
+sp2 = document.getElementById('sp2');
+states = document.getElementById('states');
+SPD = 4;
+
+var con1_fg = {up:'h',down:'n',left:'b',right:'m'};
+var con2_fg = {up:'s',down:'x',left:'z',right:'c'};
+con1 = new F.controller(con1_fg);
+con2 = new F.controller(con2_fg);
+
+//--
+
+TIMER = setInterval(onEnterFrame,1000/72); //72 fps
+function onEnterFrame()
+{
+	list = [ {con:con1,sp:sp1}, {con:con2,sp:sp2} ];
+	for ( var I in list)
+	{
+		var con=list[I].con;
+		var sp =list[I].sp;
+		
+		if(con.state.up)
+			sp.style.top=parseInt(sp.style.top)-SPD;
+		if(con.state.down)
+			sp.style.top=parseInt(sp.style.top)+SPD;
+		if(con.state.left)
+			sp.style.left=parseInt(sp.style.left)-SPD;
+		if(con.state.right)
+			sp.style.left=parseInt(sp.style.left)+SPD;
+	}
+	states.innerHTML='controller1: up:'+con1.state.up+' down:'+con1.state.down+' left:'+con1.state.left+' right:'+
+	con1.state.right+'<br>controller2: up:'+con2.state.up+' down:'+con2.state.down+' left:'+con2.state.left+' right:'+
+	con2.state.right;
+}
+</script>
+<br>try pressing
+<pre>
+      _       _
+    _|s|_   _|h|_
+   |z|x|c| |b|n|m|</pre>
+This is a demo of the use of controller.js . multiple controller is supported for gaming.<br>
+The 'per frame update' eliminates some problems of repeating keystrokes, though not all in all browsers.<br>
+However the max. no. of simultaneous key press still holds.<br>
+Design your game wisely to avoid any key collision.
+</body>

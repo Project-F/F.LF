@@ -1,0 +1,39 @@
+<head>
+<meta http-equiv='content-type' content='text/html; charset=UTF-8'>
+<link href='../style.css' rel='stylesheet' type='text/css'>
+</head>
+<body>
+<div class='canvas' id='canvas'></div>
+<script src='../F.js'></script>
+<script src='../sprite.js'></script>
+<script>
+canvas = document.getElementById('canvas');
+var sp1_config=
+{
+	canvas: canvas,
+	wh: {x:100,y:100},
+	img:{
+		'1':'test_sprite.png',
+	}
+}
+sp1 = new F.sprite(sp1_config);
+sp1.set_xy({x:150, y:100});
+
+var sp1_an_config=
+{
+	x:0,y:0,     //top left margin of the frames
+	w:100, h:100,//width, height of a frame
+	gx:4,gy:4,   //define a gx*gy grid of frames
+	tar:sp1      //target F_sprite
+}
+sp1_an = new F.animator(sp1_an_config);
+sp1_an.set_frame(9); //frame count from 0, top left corner
+
+
+TIMER = setInterval(onEnterFrame,1000/4); //4 fps
+function onEnterFrame()
+{
+	sp1_an.next_frame();
+}
+</script>
+</body>

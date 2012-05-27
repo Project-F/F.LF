@@ -1,0 +1,173 @@
+<body>
+<pre id='text'></pre>
+
+<script src='../F.js'></script>
+<script src='../states.js'></script>
+<script>
+function default_event(state,event)
+{
+	text.innerHTML+= event+' of '+this.name;
+	if( arguments.length>2)
+	{
+		text.innerHTML+=' ( ';
+		for( var i=2; i<arguments.length; i++)
+			text.innerHTML+= arguments[i]+' ';
+		text.innerHTML+= ')';
+	}
+	text.innerHTML+= '\n';
+}
+
+var states_config=
+{
+	event:
+	{
+		entry:'A_1_1_1',
+	},
+	
+	A:
+	{
+		event:
+		{
+			'hi':  default_event,
+			entry: default_event,
+			exit:  default_event,
+		},
+		
+		A_1:
+		{
+			event:
+			{
+				'hi':  default_event,
+				entry: default_event,
+				exit:  default_event,
+			},
+			
+			A_1_1:
+			{
+				event:
+				{
+					'hi':  default_event,
+					entry: default_event,
+					exit:  default_event,
+				},
+				
+				A_1_1_1:
+				{
+					event:
+					{
+						'go' : 'A_2_1',
+						'hi':  default_event,
+						consultant: 'hello',
+						entry: default_event,
+						exit:  default_event,
+					},
+				},
+			},
+		},
+
+		A_2:
+		{
+			event:
+			{
+				'hi':  default_event,
+				'yo':  default_event,
+				'yoyo': function()
+				{
+					default_event.apply(this,arguments);
+					return 'yoyo is a pretty girl';
+				},
+				entry: default_event,
+				exit:  default_event,
+			},
+
+			A_2_1:
+			{
+				event:
+				{
+					'go' : 'A_2_2',
+					'hi':  default_event,
+					entry: default_event,
+					exit:  default_event,
+				},
+			},
+
+			A_2_2:
+			{
+				event:
+				{
+					'hi':  default_event,
+					'yoyo': function(state,event)
+					{
+						//do something
+						default_event.apply(this,arguments);
+						// 'inherit' superstate
+						return state.consult(event,this.superstate.name);
+					},
+					entry: default_event,
+					exit:  default_event,
+				},
+			},
+		},
+	},
+}
+text=document.getElementById('text');
+text.innerHTML+= 'init entry event:\n';
+state = new F.states(states_config);
+
+text.innerHTML+= '\n';
+text.innerHTML+= F.to_text(states_config,'state',null,null,function(p,P){
+		if( p=='superstate' || typeof(P)=='function')
+			return typeof P;
+	});
+
+text.innerHTML+= '\ncurrent state: '+state.cur_state.name+'\n';
+
+text.innerHTML+= '\n';
+text.innerHTML+= 'event: \n';
+state.event('hi',1,2);
+
+text.innerHTML+= '\n';
+text.innerHTML+= 'consult: \n';
+text.innerHTML+= state.consult('consultant')+'\n';
+
+text.innerHTML+= '\n';
+text.innerHTML+= 'transition event: \n';
+text.innerHTML+= 'state.cur = ' + state.cur.join('->') +'\n';
+text.innerHTML+= 'target = ' + state.search('A_2_1').join('->') +'\n';
+text.innerHTML+= '\n';
+state.event('go');
+
+text.innerHTML+= '\ncurrent state: '+state.cur_state.name+'\n';
+
+text.innerHTML+= '\n';
+text.innerHTML+= 'transition event: \n';
+text.innerHTML+= 'state.cur = ' + state.cur.join('->') +'\n';
+text.innerHTML+= 'target = ' + state.search('A_2_2').join('->') +'\n';
+text.innerHTML+= '\n';
+state.event('go');
+
+text.innerHTML+= '\ncurrent state: '+state.cur_state.name+'\n';
+
+text.innerHTML+= '\n';
+text.innerHTML+= 'a event/consult will be propagated to superstate until handled:\n';
+state.consult('yo');
+
+text.innerHTML+= '\n';
+text.innerHTML+= 'even if you handled the event, you can still propagate it to the superstate manually:\n';
+var res=state.consult('yoyo');
+text.innerHTML+= res+'\n';
+
+text.innerHTML+= '\n';
+text.innerHTML+= 'downward propagate message: \n';
+state.propagate_down(99,function(S){
+	state.execute_event('hi',S);
+});
+
+text.innerHTML+= '\n';
+text.innerHTML+= 'upward propagate message: \n';
+state.propagate_up(99,function(S){
+	state.execute_event('hi',S);
+});
+
+</script>
+</body>
