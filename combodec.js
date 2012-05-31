@@ -4,6 +4,8 @@
 /*	maintains a clean sequence of pressed keys
 	  and fire event when combo detected
  */
+/*	no requirment
+ */
 /*	sample config for F_combodec
 	{
 		rp:     //[optional] max repeat count of each key, unlimited if not stated

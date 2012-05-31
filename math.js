@@ -94,14 +94,6 @@ F.signed_area = function (p1,p2,p3)
 	var D = (p2.x-p1.x)*(p3.y-p1.y)-(p3.x-p1.x)*(p2.y-p1.y);
 	return D;
 }
-F.intersecting = function (A,B,C,D)
-{
-	//line-line intersect test
-	//	return true if AB intersects CD
-	var res = (F.signed_area(A,B,C)>0 != F.signed_area(A,B,D)>0) &&
-		  (F.signed_area(C,D,A)>0 != F.signed_area(C,D,B)>0);
-	return res;
-}
 F.intersect = function ( P1,P2, //line 1
 			P3,P4)  //line 2
 {

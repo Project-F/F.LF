@@ -11,6 +11,8 @@
 		},
 	}
  */
+/*	require: style.css
+ */
 
 if( typeof F=='undefined') F=new Object;
 if( typeof F.sprite=='undefined') //#ifndef
@@ -88,6 +90,10 @@ F.sprite.prototype.switch_img=function(name)
 	}
 	this.cur_img=name;
 }
+F.sprite.prototype.delete=function()
+{
+	this.el.parentNode.removeChild(this.el);
+}
 
 //sprite animator
 /*	animate sprites
@@ -135,6 +141,11 @@ F.animator.prototype.next_frame=function() //turn to the next frame, return the 
 	}
 	return this.I;
 }
+F.animator.prototype.set_frame=function(i)
+{
+	this.I=i;
+	this.show_frame(i);
+}
 F.animator.prototype.show_frame=function(i)
 {
 	var c=this.config;
@@ -142,10 +153,10 @@ F.animator.prototype.show_frame=function(i)
 	c.tar.img[c.tar.cur_img].style.left= -((i%c.gx)*c.w+c.x) +'px';
 	c.tar.img[c.tar.cur_img].style.top = -((Math.floor(i/c.gx))*c.h+c.y) +'px';
 }
-F.animator.prototype.set_frame=function(i)
+F.animator.prototype.cur_frame_pos=function()
 {
-	this.I=i;
-	this.show_frame(i);
+	var i=this.I;
+	return {x:-((i%c.gx)*c.w+c.x), y:-((Math.floor(i/c.gx))*c.h+c.y)};
 }
 
 //animator set

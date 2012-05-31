@@ -1,0 +1,126 @@
+<body>
+<div id='rect1' style='width:80px; height:80px; position:absolute; background:#7c547c;'></div>
+<div id='rect2' style='width:40px; height:40px; position:absolute; background:#7c547c;'></div>
+
+<div id='tri1' style='position:absolute'><img id='tri1i' width=100 src='triangle.png'/></div>
+<div id='tri2' style='position:absolute'><img width=50 src='triangle.png'/></div>
+
+<div id='cir1' style='position:absolute'><img id='cir1i' width=100 src='circle.png'/></div>
+<div id='cir2' style='position:absolute'><img width=50 src='circle.png'/></div>
+
+<div id='line1' style='position:absolute'><img id='line1i' width=100 src='line1.png'/></div>
+<div id='line2' style='position:absolute'><img width=50 src='line2.png'/></div>
+
+<script src='../math.js'></script>
+<script src='../collision.js'></script>
+<script>
+var timer = setInterval(frame,1000/12);
+
+//rect
+R1 = get('rect1');
+R2 = get('rect2');
+R1.x=0; R1.y=0;
+R2.x=100; R2.y=20;
+pos(R1);
+pos(R2);
+
+//tri
+T1 = get('tri1');
+T1i = get('tri1i');
+T2 = get('tri2');
+T1.x=0; T1.y=100;
+T2.x=100; T2.y=130;
+pos(T1);
+pos(T2);
+
+//circle
+C1 = get('cir1');
+C1i = get('cir1i');
+C2 = get('cir2');
+C1.x=0; C1.y=200;
+C2.x=100; C2.y=230;
+pos(C1);
+pos(C2);
+
+//line
+L1 = get('line1');
+L1i = get('line1i');
+L2 = get('line2');
+L1.x=0; L1.y=320;
+L2.x=100; L2.y=350;
+pos(L1);
+pos(L2);
+
+function frame()
+{
+	test_rectangle();
+	test_triangle();
+	test_circle();
+	test_line();
+}
+
+function test_rectangle()
+{
+	move(R1);
+	if( F.collision.rect(
+	{left:R1.x, top:R1.y, right:R1.x+80, bottom:R1.y+80},
+	{left:R2.x, top:R2.y, right:R2.x+40, bottom:R2.y+40}
+	))
+		R1.style.background='#ffcf00';
+	else
+		R1.style.background='#7c547c';
+}
+
+function test_triangle()
+{
+	move(T1);
+	if( F.collision.tri(
+	[{x:T1.x, y:T1.y+70},{x:T1.x+70, y:T1.y},{x:T1.x+100, y:T1.y+100}],
+	[{x:T2.x, y:T2.y+35},{x:T2.x+35, y:T2.y},{x:T2.x+50, y:T2.y+50}]
+	))
+		T1i.src='triangle1.png';
+	else
+		T1i.src='triangle.png';
+}
+
+function test_circle()
+{
+	move(C1);
+	if( F.collision.circle(
+	{center:{x:C1.x+50, y:C1.y+50}, radius:50},
+	{center:{x:C2.x+25, y:C2.y+25}, radius:25}
+	))
+		C1i.src='circle1.png';
+	else
+		C1i.src='circle.png';
+}
+
+function test_line()
+{
+	move(L1);
+	if( F.collision.line(
+	{x:L1.x,y:L1.y+100}, {x:L1.x+100,y:L1.y},
+	{x:L2.x,y:L2.y}, {x:L2.x+50,y:L2.y+50}
+	))
+		L1i.src='line11.png';
+	else
+		L1i.src='line1.png';
+}
+
+function pos(O)
+{
+	O.style.left=O.x+'px';
+	O.style.top =O.y+'px';
+}
+function move(T)
+{
+	T.x+=5;
+	if(T.x>200) T.x=0;
+	pos(T);
+}
+function get(x)
+{
+	return document.getElementById(x);
+}
+</script>
+</body>

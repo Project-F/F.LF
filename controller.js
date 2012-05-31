@@ -1,24 +1,26 @@
 //keyboard controller system
 /*	maintains a table of key states
  */
+/*	require: F.js
+ */
 
 if( typeof F=='undefined') F=new Object;
 if( typeof F.master_controller=='undefined') //#ifndef
 {
 
+F.keydown = function(e)
+{
+	return F.master_controller.key(e,1);
+}
+F.keyup = function(e)
+{
+	return F.master_controller.key(e,0);
+}
+
 F.master_controller = (function()
 {
-	function keydown(e)
-	{
-		return F.master_controller.key(e,1);
-	}
-	function keyup(e)
-	{
-		return F.master_controller.key(e,0);
-	}
-	
-	window.onkeydown = F.double_delegate(window.onkeydown, keydown);
-	window.onkeyup   = F.double_delegate(window.onkeydown, keyup);
+	window.onkeydown = F.double_delegate(window.onkeydown, F.keydown);
+	window.onkeyup   = F.double_delegate(window.onkeydown, F.keyup);
 	
 	var mas = new Object;
 	mas.child = new Array();
@@ -59,7 +61,7 @@ F.controller = function (config)
 		var caught=0;
 		for(var I in this.config)
 		{
-			if ( F_keyname_to_keycode(this.config[I])==e.keyCode)
+			if ( F.keyname_to_keycode(this.config[I])==e.keyCode)
 			{
 				if( this.child)
 					for(var J in this.child)
@@ -78,32 +80,32 @@ F.controller = function (config)
 			this.state[I]=0;
 	}
 	
-	function F_keyname_to_keycode(A)
-	{
-		if( A.length==1)
-		{
-			//a-z only
-			var a=A.charCodeAt(0);
-			if ( (a>='a'.charCodeAt(0) && a<='z'.charCodeAt(0)) || (a>='A'.charCodeAt(0) && a<='Z'.charCodeAt(0)) )
-			{
-				A=A.toLowerCase();
-				return code = A.charCodeAt(0) - 'a'.charCodeAt(0) + 65;
-			}
-			
-			if (a>='0'.charCodeAt(0) && a<='9'.charCodeAt(0))
-			{
-				return code = A.charCodeAt(0) - '0'.charCodeAt(0) + 48;
-			}
-		}
-		
-		//TODO: other keys not supported
-		//	for a good list, see controller1.html
-	}
-	
 	//[--constructor
 	F.master_controller.child.push(this);
 	this.clear_states();
 	//--]
+}
+
+F.keyname_to_keycode=function(A)
+{
+	if( A.length==1)
+	{
+		//a-z only
+		var a=A.charCodeAt(0);
+		if ( (a>='a'.charCodeAt(0) && a<='z'.charCodeAt(0)) || (a>='A'.charCodeAt(0) && a<='Z'.charCodeAt(0)) )
+		{
+			A=A.toLowerCase();
+			return code = A.charCodeAt(0) - 'a'.charCodeAt(0) + 65;
+		}
+		
+		if (a>='0'.charCodeAt(0) && a<='9'.charCodeAt(0))
+		{
+			return code = A.charCodeAt(0) - '0'.charCodeAt(0) + 48;
+		}
+	}
+	
+	//TODO: other keys not supported
+	//	for a good list, see controller1.html
 }
 
 // http://www.quirksmode.org/js/keys.html

@@ -1,6 +1,8 @@
 //states: nested state transition system, a Hierarchical State Machine ( HSM )
 /*	controls state transitions
  */
+/*	require: F.js
+ */
 /*	sample state_config =
  	{
 		event:
@@ -70,6 +72,10 @@
    -an event/consult is propagated to the superstate of current state until handled.
    -in a state transition, a machine must entry a state's superstate before entering that state.
    -in a state transition, a machine must exit the current state before exiting the current state's superstate.
+ */
+/*
+ restrictions:
+	-each state must have a unique name
  */
 if( typeof F=='undefined') F=new Object;
 if( typeof F.states=='undefined') //#ifndef
@@ -261,16 +267,16 @@ F.states.prototype.event_delay=function(event,delay,frame/*,arguments,,,*/) //fi
 }
 
 F.states.prototype.consult=function(consultant,
-			state_name //[optional]
+			state //[optional] state name
 			/*,arguments,,,*/) //[optional]
 {
 	if( !this.valid_event(consultant))
 		return null;
 	var chain;
-	if( !state_name)
+	if( !state)
 		chain=this.cur.slice(0);
 	else
-		chain=this.search(state_name);
+		chain=this.search(state);
 	chain.reverse();
 	var result = this.chain_event.apply(this, [false,chain,1,consultant].concat(Array.prototype.slice.call(arguments,2)));
 	return result.result;
@@ -342,11 +348,13 @@ F.states.prototype.valid_event=function(E)
 
 F.states.prototype.to=function(target_name)
 {
-	var prev=this.cur[this.cur.length-1];
+	var prev=this.cur_state;
 	var A=this.cur.slice();
 	var B=this.search(target_name);
+	var target=B.slice();
 	if(!B)
 		return;
+
 	for( var ai=0,bi=0; ai<A.length && bi<B.length;)
 	{
 		if( A[ai]==B[bi])
@@ -360,7 +368,9 @@ F.states.prototype.to=function(target_name)
 	}
 	A.reverse();
 	
-	this.chain_event(false,A,999,'exit',target_name);
+	var target_state=this.state_at(target);
+	
+	this.chain_event(false,A,999,'exit',target_state);
 		if( this.log_enable)
 		{	//logging
 			var L = {type:'t', from:A, to:B};
@@ -372,9 +382,9 @@ F.states.prototype.to=function(target_name)
 		}
 	this.chain_event(false,B,999,'entry',prev);
 	
-	this.cur=this.search(target_name);
+	this.cur=target;
 	this.cur_name=target_name;
-	this.cur_state=this.state_at(this.cur);
+	this.cur_state=target_state;
 }
 
 F.states.prototype.show_log=function(
