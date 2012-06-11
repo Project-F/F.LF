@@ -11,7 +11,10 @@ function default_event(state,event)
 	{
 		text.innerHTML+=' ( ';
 		for( var i=2; i<arguments.length; i++)
-			text.innerHTML+= arguments[i]+' ';
+			if( arguments[i].name)
+				text.innerHTML+= arguments[i].name+' ';
+			else
+				text.innerHTML+= arguments[i]+' ';
 		text.innerHTML+= ')';
 	}
 	text.innerHTML+= '\n';
@@ -132,8 +135,8 @@ text.innerHTML+= state.consult('consultant')+'\n';
 
 text.innerHTML+= '\n';
 text.innerHTML+= 'transition event: \n';
-text.innerHTML+= 'state.cur = ' + state.cur.join('->') +'\n';
-text.innerHTML+= 'target = ' + state.search('A_2_1').join('->') +'\n';
+text.innerHTML+= 'state.cur = ' + state.cur.join(' / ') +'\n';
+text.innerHTML+= 'target = ' + state.search('A_2_1').join(' / ') +'\n';
 text.innerHTML+= '\n';
 state.event('go');
 
@@ -141,8 +144,8 @@ text.innerHTML+= '\ncurrent state: '+state.cur_state.name+'\n';
 
 text.innerHTML+= '\n';
 text.innerHTML+= 'transition event: \n';
-text.innerHTML+= 'state.cur = ' + state.cur.join('->') +'\n';
-text.innerHTML+= 'target = ' + state.search('A_2_2').join('->') +'\n';
+text.innerHTML+= 'state.cur = ' + state.cur.join(' / ') +'\n';
+text.innerHTML+= 'target = ' + state.search('A_2_2').join(' / ') +'\n';
 text.innerHTML+= '\n';
 state.event('go');
 

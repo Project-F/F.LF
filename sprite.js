@@ -21,7 +21,7 @@ if( typeof F.sprite=='undefined') //#ifndef
 F.sp_count=0; //sprite count
 F.sprite = function (config)
 {
-	//[--constructor
+	//constructor
 	//	no private member
 	//	config is one time only and should be dumped after constructor returns
 	this.ID=F.sp_count;
@@ -40,17 +40,16 @@ F.sprite = function (config)
 	{
 		this.add_img(config.img[I], I);
 	}
-	//--]
 }
 F.sprite.prototype.set_wh=function(P)
-{	//performance: does setting the style every frame affect?
-	this.el.style.width=P.x;
-	this.el.style.height=P.y;
+{
+	this.el.style.width=P.x+'px';
+	this.el.style.height=P.y+'px';
 }
 F.sprite.prototype.set_xy=function(P)
 {
-	this.el.style.left=P.x;
-	this.el.style.top=P.y;
+	this.el.style.left=P.x+'px';
+	this.el.style.top=P.y+'px';
 }
 F.sprite.prototype.add_img=function(imgpath,name)
 {
@@ -104,19 +103,22 @@ F.sprite.prototype.delete=function()
 	w:100, h:100,//width, height of a frame
 	gx:4,gy:4,   //define a gx*gy grid of frames
 	tar:         //target F_sprite
-	ani:         //animation sequence.
-	   null      //if undefined or null, loop through top left to lower right, row by row
-	   [0,1,2,1,0]//custom frame sequence
+	ani:         //animation sequence:
+	   null,     //if undefined or null, loop through top left to lower right, row by row
+	   [0,1,2,1,0],//use custom frame sequence
+	graph:       //graph:
+	   [[0,1],   //	a 2d array gx*gy sized
+	    [2,3]]   //		to store custom data for each frame
 	}
  */
-F.animator = function (config)
+F.animator=function (config)
 {
-	//[--constructor
+	//constructor
 	//	no private member
-	//	this.config can be altered dynamically
+	//	multiple animator reference to the same config, except tar
 	this.config=config;
+	this.target=config.tar;
 	this.I=0;//current frame
-	//--]
 }
 F.animator.prototype.next_frame=function() //turn to the next frame, return the index of the frame just shown
 {
@@ -149,14 +151,15 @@ F.animator.prototype.set_frame=function(i)
 F.animator.prototype.show_frame=function(i)
 {
 	var c=this.config;
-	c.tar.set_wh({x:c.w, y:c.h});
-	c.tar.img[c.tar.cur_img].style.left= -((i%c.gx)*c.w+c.x) +'px';
-	c.tar.img[c.tar.cur_img].style.top = -((Math.floor(i/c.gx))*c.h+c.y) +'px';
+	this.target.set_wh({x:c.w, y:c.h});
+	this.target.img[this.target.cur_img].style.left= -((i%c.gx)*c.w+c.x) +'px';
+	this.target.img[this.target.cur_img].style.top = -((Math.floor(i/c.gx))*c.h+c.y) +'px';
 }
-F.animator.prototype.cur_frame_pos=function()
-{
-	var i=this.I;
-	return {x:-((i%c.gx)*c.w+c.x), y:-((Math.floor(i/c.gx))*c.h+c.y)};
+F.animator.prototype.get_at=function(i) //get the content of the graph at frame i
+{	//by default at the current frame
+	if( !i) i=this.I;
+	var c=this.config;
+	return c.graph[(i%c.gx)][(Math.floor(i/c.gx))];
 }
 
 //animator set

@@ -1,6 +1,6 @@
 //to maintain a graph
 /*	a graph is a mapping/hashing of objects in finite 2d world into a 2d array
-	is used in collision detection and sprite annotator
+	is used in collision detection to boost performance
  */
 /*	config=
 	{

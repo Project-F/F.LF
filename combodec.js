@@ -29,12 +29,16 @@ if( typeof F.combodec=='undefined') //#ifndef
 
 F.combodec = function (controller, config, combo)
 {
+	//constructor
+	//	no private member
+	//	be careful since multiple animator reference to the same config, except callback
 	var framec=1;
 	var outframe=0;
 	var outcombo=0;
 	this.con=controller;
 	this.seq=new Array();
 	this.config=config;
+	this.callback=config.callback;
 	this.combo=combo;
 	
 	this.con.child.push(this);
@@ -82,7 +86,7 @@ F.combodec = function (controller, config, combo)
 				}
 				if( detected)
 				{
-					this.config.callback(C[i]);
+					this.callback(C[i]);
 					if( C[i].interrupt)
 						this.seq.push('_');
 				}
