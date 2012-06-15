@@ -10,6 +10,17 @@ F.LF.character = function(con)
 	var dat = bandit;
 	this.name=dat.bmp.name;
 	
+	//---hack-------------------------------------------------------
+	//some hacking over the original data to make compatible bahavior
+	dat['frame'][102].dvx*= 0.5;
+	dat['frame'][103].dvx*= 0.5;
+	dat['frame'][104].dvx*= 0.5;
+	dat['frame'][105].dvx*= 0.3;
+	dat['frame'][102].wait+= 1;
+	dat['frame'][103].wait+= 1;
+	dat['frame'][104].wait+= 1;
+	dat['frame'][105].wait+= 1;
+	
 	//---status-----------------------------------------------------
 	this.hp=100;
 	this.mp=100;
@@ -18,7 +29,7 @@ F.LF.character = function(con)
 	
 	//the state variable
 	var state=0;
-	var wait=1; //when wait decreases to zero, an event happens
+	var wait=1; //when wait decreases to zero, a frame transition happens
 	var next=999; //next frame
 	
 	//frame
@@ -142,11 +153,11 @@ F.LF.character = function(con)
 		ani.set_frame(frame.pic);
 		
 		//velocity
-		if( frame.dvx) sp.vx= dirh() * frame.dvx;
-		if( frame.dvz) sp.vz= dirv() * frame.dvz;
-		if( frame.dvy) sp.vy= frame.dvy;
+		sp.vx+= dirh() * frame.dvx;
+		sp.vz+= dirv() * frame.dvz;
+		sp.vy+= frame.dvy;
 		
-		//wait for an event
+		//wait for next frame
 		wait=frame.wait;
 		next=frame.next;
 		
@@ -163,10 +174,11 @@ F.LF.character = function(con)
 	{
 		logg('|su:'+frame.name.slice(0,3)+'| ');
 		
+		//special update
 		var tar=su[frame.state];
 		if( tar) tar();
 		
-		if( sp.y===0)
+		if( sp.y===0) //only on the ground
 		{	//friction
 			if( sp.vx>0) { sp.vx-=1; if( sp.vx<0) sp.vx=0;}
 			if( sp.vx<0) { sp.vx+=1; if( sp.vx>0) sp.vx=0;}
@@ -193,7 +205,7 @@ F.LF.character = function(con)
 		}
 	}
 	
-	var su= //update done at every TU (30fps)
+	var su= //special state update
 	{
 		'0':function() //standing
 		{
@@ -221,14 +233,13 @@ F.LF.character = function(con)
 			if( !dx && !dz)
 				frame_trans(999); //go back to standing
 		},
-
+		
 		'2':function() //running
-		{
-			sp.x+= dirh()*dat.bmp.running_speed;
-			if(con.state.up)    sp.z-=dat.bmp.running_speedz;
-			if(con.state.down)  sp.z+=dat.bmp.running_speedz;
+		{	//to maintain the velocity against friction
+			sp.vx= dirh() * dat.bmp.running_speed;
+			sp.vz= dirv() * dat.bmp.running_speedz;
 		},
-
+		
 		'4':function() //jump
 		{
 			if( frameN===212) //is jumping
@@ -238,7 +249,11 @@ F.LF.character = function(con)
 					frame_trans(80);
 				}
 		},
-
+		
+		'6':function() //rowing
+		{
+		},
+		
 		'15':function() //stop_running, crouch2, dash_attack
 		{
 			if( next===999 && wait===0) //leaving the current frame
@@ -253,7 +268,7 @@ F.LF.character = function(con)
 		}
 	}
 	
-	var fu= //special update done at every frame
+	var fu= //special frame update
 	{
 		da:{}, //data area
 		'1':function() //walking
@@ -281,22 +296,6 @@ F.LF.character = function(con)
 				sp.vx= dx * dat.bmp.jump_distance;
 				sp.vz= dirv() * dat.bmp.jump_distancez;
 				sp.vy= dat.bmp.jump_height; //upward force
-			}
-		},
-		'6':function() //rowing
-		{
-			if( frameN>=102 && frameN<=104)
-			{
-				sp.vx *= 1.4;
-				wait+=1;
-			}
-		},
-		'15':function() //stop_running, crouch2, dash_attack
-		{
-			if( frameN===218) //is stop_running
-			{
-				sp.vx = dirh()*(5+frame.dvx);
-				wait = Math.floor(wait*1.5);
 			}
 		},
 		oscillate:function(a,b) //oscillate between frame a and b
@@ -364,8 +363,11 @@ F.LF.character = function(con)
 		{
 			if( K==='att')
 			{
-				switch_dir=false;
-				frame_trans(90);
+				if( dirh()==(sp.vx>0?1:-1)) //only if not turning back
+				{
+					switch_dir=false;
+					frame_trans(90);
+				}
 			}
 			if( K==='left' || K==='right')
 			{
@@ -423,26 +425,21 @@ F.LF.character = function(con)
 				switch_dir_fun(K);
 	}
 	
-	function event()
+	function frame_trans(F)
 	{
-		if( next===0)
+		if( F===0)
 		{
 			//do nothing
 		}
 		else
 		{
-			frame_trans(next);
+			if( F===999)
+				F=0;
+			framePN=frameN;
+			frameN=F;
+			frame=dat.frame[F];
+			frame_update();
 		}
-	}
-	
-	function frame_trans(F)
-	{
-		if( F===999)
-			F=0;
-		framePN=frameN;
-		frameN=F;
-		frame=dat.frame[F];
-		frame_update();
 	}
 	
 	function logg(X)
@@ -462,7 +459,7 @@ F.LF.character = function(con)
 		dec.frame();
 		
 		if( wait===0)
-			event();
+			frame_trans(next);
 		wait--;
 		
 		logg('\n');

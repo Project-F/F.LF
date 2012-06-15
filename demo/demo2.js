@@ -79,7 +79,7 @@ var control_play = new control_player(control_con);
 
 //set up a character------------
 control.child.push(con_rec);
-var character = new F.LF.character(control);
+var character = new F.LF.character(control); //choose from `control` and `control_play`
 
 //---run time-------------------
 var timer30 = setInterval(frame30,1000/32);
