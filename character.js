@@ -145,7 +145,7 @@ F.LF.character = function(con)
 	
 	//---internal functions-----------------------------------------
 	
-	function frame_update() //special update done at every frame
+	function frame_update() //generic update done at every frame
 	{
 		logg('|fu:'+frame.name.slice(0,3)+'| ');
 		
@@ -170,7 +170,7 @@ F.LF.character = function(con)
 		if( tar) tar();
 	}
 	
-	function state_update() //update done at every TU (30fps)
+	function state_update() //generic update done at every TU (30fps)
 	{
 		logg('|su:'+frame.name.slice(0,3)+'| ');
 		
