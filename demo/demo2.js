@@ -19,7 +19,12 @@ var control_con =
 {
 	up:'i',down:'k',left:'j',right:'l',def:'h',jump:'y',att:'t'
 }
+var control_con2 =
+{
+	up:'d',down:'c',left:'x',right:'v',def:'s',jump:'w',att:'q'
+}
 var control = new F.controller(control_con);
+var control2 = new F.controller(control_con2);
 
 //controller recorder and player
 var con_rec=
@@ -78,19 +83,23 @@ function control_player(control_con)
 var control_play = new control_player(control_con);
 
 //set up a character------------
-control.child.push(con_rec);
+//control.child.push(con_rec); //record control
 var character = new F.LF.character(control); //choose from `control` and `control_play`
+var character2 = new F.LF.character(control2);
+character.set_pos(100,0,100);
+character2.set_pos(500,0,100);
 
 //---run time-------------------
-var timer30 = setInterval(frame30,1000/32);
+var timer30 = setInterval(frame30,1000/31);
 function frame30()
 {
 	control_play.frame();
 	
 	character.frame();
+	character2.frame();
 	calculate_fps(1);
 	
-	con_rec.frame();
+	//con_rec.frame();
 }
 
 var fps=document.getElementById('fps');

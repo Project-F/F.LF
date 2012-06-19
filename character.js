@@ -12,14 +12,6 @@ F.LF.character = function(con)
 	
 	//---hack-------------------------------------------------------
 	//some hacking over the original data to make compatible bahavior
-	dat['frame'][102].dvx*= 0.5;
-	dat['frame'][103].dvx*= 0.5;
-	dat['frame'][104].dvx*= 0.5;
-	dat['frame'][105].dvx*= 0.3;
-	dat['frame'][102].wait+= 1;
-	dat['frame'][103].wait+= 1;
-	dat['frame'][104].wait+= 1;
-	dat['frame'][105].wait+= 1;
 	
 	//---status-----------------------------------------------------
 	this.hp=100;
@@ -52,7 +44,7 @@ F.LF.character = function(con)
 		img:
 		{
 			'l':'bandit_l.png',
-			'r':'bandit_r.png',
+			'r':'bandit_r.png'
 		}
 	}
 	
@@ -62,7 +54,7 @@ F.LF.character = function(con)
 		x:0,  y:0,   //top left margin of the frames
 		w:W, h:H,    //width, height of a frame
 		gx:10, gy:14,//define a gx*gy grid of frames
-		tar:null,    //target F.sprite, object not exist yet, specify later
+		tar:null     //target F.sprite, object not exist yet, specify later
 	};
 	
 	//combo list
@@ -125,9 +117,8 @@ F.LF.character = function(con)
 	//---set up-----------------------------------------------------
 	//sprite
 	var sp = new F.sprite(sp_con);
-	sp.x=100; sp.y=0; sp.z=100;
+	sp.x=0; sp.y=0; sp.z=0;
 	sp.vx=0; sp.vy=0; sp.vz=0;
-	sp.set_xy({x:sp.x, y:sp.y+sp.z});
 	
 	//animator
 	ani_con.tar=sp; //specify the target F.sprite
@@ -178,30 +169,46 @@ F.LF.character = function(con)
 		var tar=su[frame.state];
 		if( tar) tar();
 		
+		//position
+		sp.x += sp.vx;
+		sp.z += sp.vz;
+		sp.y += sp.vy;
+		if( sp.y>0) sp.y=0; //never below the ground
+		sp.set_xy({x:sp.x, y:sp.y+sp.z}); //projection onto screen
+		sp.set_z(sp.z); //z ordering
+		
 		if( sp.y===0) //only on the ground
-		{	//friction
-			if( sp.vx>0) { sp.vx-=1; if( sp.vx<0) sp.vx=0;}
-			if( sp.vx<0) { sp.vx+=1; if( sp.vx>0) sp.vx=0;}
-			if( sp.vz>0) { sp.vz-=1; if( sp.vz<0) sp.vz=0;}
-			if( sp.vz<0) { sp.vz+=1; if( sp.vz>0) sp.vz=0;}
+		{	//friction proportional to speed
+			sp.vx *= 0.73;
+			sp.vz *= 0.73;
+			if( sp.vx>-1 && sp.vx<1) sp.vx=0;
+			if( sp.vz>-1 && sp.vz<1) sp.vz=0;
 		}
 		
 		if( sp.y<0) //gravity
 			sp.vy+= 1.9;
 		
-		//position
-		sp.x += sp.vx;
-		sp.z += sp.vz;
-		sp.y += sp.vy;
-		if( sp.y>0) sp.y=0;
-		sp.set_xy({x:sp.x, y:sp.y+sp.z});
-		
 		if( sp.y===0 && sp.vy>0)
 		{//falling onto the ground
 			sp.vy=0;
-			sp.vx*=0.5; //half the speed
-			sp.vz*=0.5;
-			frame_trans(215);
+			switch (frameN)
+			{
+			case 212: //jumping
+				frame_trans(215); //crouch
+				break;
+			case 100: //rowing
+				frame_trans(94); //??
+				break;
+			case 201: //ice
+				if( sp.vy>10) //if speed is too great
+					frame_trans(202); //broken ice
+				else
+					wait--;
+				break;
+			default:
+				frame_trans(219); //crouch2
+			}
+			wait++; //to comply with original LF2
 		}
 	}
 	
@@ -217,7 +224,7 @@ F.LF.character = function(con)
 			if( dx || dz)
 				frame_trans(5);
 		},
-
+		
 		'1':function() //walking
 		{
 			if(con.state.up)    sp.z-=dat.bmp.walking_speedz;
@@ -240,29 +247,45 @@ F.LF.character = function(con)
 			sp.vz= dirv() * dat.bmp.running_speedz;
 		},
 		
+		'3':function() //punch, jump_attack, ...
+		{
+			if( wait===0) //leaving the current frame
+			{
+				if( next===999) //going back to standing
+				{
+					if( switch_dir===false)
+						switch_dir=true;
+				}
+				else if( next===212) //going back to jump
+				{
+					switch_dir=true;
+					if(con.state.left) switch_dir_fun('left');
+					if(con.state.right) switch_dir_fun('right');
+				}
+			}
+		},
+		
 		'4':function() //jump
 		{
 			if( frameN===212) //is jumping
+			{
 				if( con.state.att)
 				{
 					switch_dir=false;
 					frame_trans(80);
 				}
+			}
 		},
 		
-		'6':function() //rowing
-		{
-		},
-		
-		'15':function() //stop_running, crouch2, dash_attack
+		'15':function() //stop_running, crouch, crouch2, dash_attack
 		{
 			if( next===999 && wait===0) //leaving the current frame
 			{	//and going back to standing
 				if( switch_dir===false)
 				{
+					switch_dir=true; //re-enable switch dir
 					if(con.state.left) switch_dir_fun('left');
 					if(con.state.right) switch_dir_fun('right');
-					switch_dir=true; //re-enable switch dir
 				}
 			}
 		}
@@ -281,10 +304,12 @@ F.LF.character = function(con)
 			fu.oscillate(9,11);
 			wait=dat.bmp.running_frame_rate;
 		},
-		'3':function() //punch, jump_attack, ...
+		'3':function() //punch, jump_attack, run_attack, ...
 		{
 			if( frameN===81) //jump_attack
 				next=212; //back to jump
+			if( frameN===85) //run_attack
+				;
 		},
 		'4':function() //jump
 		{
@@ -298,6 +323,8 @@ F.LF.character = function(con)
 				sp.vy= dat.bmp.jump_height; //upward force
 			}
 		},
+		// '6':function() //rowing
+		//'15':function() //stop_running, crouch2, dash_attack
 		oscillate:function(a,b) //oscillate between frame a and b
 		{
 			if( typeof fu.da.i==='undefined' || fu.da.i<a || fu.da.i>b)
@@ -357,6 +384,9 @@ F.LF.character = function(con)
 				switch_dir=true;
 				ce.goto_dash();
 			break;
+			case 'att':
+				frame_trans(85);
+			break;
 			}
 		},
 		'5':function(K) //dash
@@ -388,7 +418,7 @@ F.LF.character = function(con)
 		},
 		'15':function(K) //stop_running, crouch2, dash attack
 		{
-			if( framePN===212) //previous is jump
+			if( frameN===215)
 			{
 				if( K==='def')
 					frame_trans(102);
@@ -397,7 +427,7 @@ F.LF.character = function(con)
 						ce.goto_dash();
 					else
 					{
-						wait+=5;
+						wait+=2;
 						next=210;
 					}
 			}
@@ -439,6 +469,7 @@ F.LF.character = function(con)
 			frameN=F;
 			frame=dat.frame[F];
 			frame_update();
+			wait--; //to comply with original LF2
 		}
 	}
 	
@@ -459,10 +490,18 @@ F.LF.character = function(con)
 		dec.frame();
 		
 		if( wait===0)
+		{
 			frame_trans(next);
-		wait--;
+			wait++; //to compensate the wait--
+		}
+		else
+			wait--;
 		
 		logg('\n');
+	}
+	this.set_pos=function(x,y,z)
+	{
+		sp.x=x, sp.y=y, sp.z=z;
 	}
 }
 
