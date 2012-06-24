@@ -3,34 +3,22 @@ bandit={
 		"name": "Bandit",
 		"head": "sprite\\sys\\bandit_f.bmp",
 		"small": "sprite\\sys\\bandit_s.bmp",
-		"file0": {
-			"file(0-69)": "sprite\\sys\\bandit_0.bmp",
-			"w": 79,
-			"h": 79,
-			"row": 10,
-			"col": 7
-		},
-		"file1": {
-			"file(70-139)": "sprite\\sys\\bandit_1.bmp",
-			"w": 79,
-			"h": 79,
-			"row": 10,
-			"col": 7
-		},
-		"file2": {
-			"file(140-209)": "sprite\\sys\\bandit_0b.bmp",
-			"w": 79,
-			"h": 79,
-			"row": 10,
-			"col": 7
-		},
-		"file3": {
-			"file(210-279)": "sprite\\sys\\bandit_1b.bmp",
-			"w": 79,
-			"h": 79,
-			"row": 10,
-			"col": 7
-		},
+		"file": [
+			{
+				"file(0-69)": "bandit_0.png",
+				"w": 79,
+				"h": 79,
+				"row": 10,
+				"col": 7
+			},
+			{
+				"file(70-139)": "bandit_1.png",
+				"w": 79,
+				"h": 79,
+				"row": 10,
+				"col": 7
+			}
+		],
 		"walking_frame_rate": 3,
 		"walking_speed": 4,
 		"walking_speedz": 2,
@@ -888,22 +876,20 @@ bandit={
 				"dvz": 0
 			},
 			"bdy": [
-				[
-					{
-						"kind": 0,
-						"x": 17,
-						"y": 21,
-						"w": 23,
-						"h": 59
-					},
-					{
-						"kind": 0,
-						"x": 4,
-						"y": 64,
-						"w": 14,
-						"h": 15
-					}
-				],
+				{
+					"kind": 0,
+					"x": 17,
+					"y": 21,
+					"w": 23,
+					"h": 59
+				},
+				{
+					"kind": 0,
+					"x": 4,
+					"y": 64,
+					"w": 14,
+					"h": 15
+				},
 				{
 					"kind": 0,
 					"x": 36,
@@ -4765,22 +4751,20 @@ bandit={
 				"dvz": 0
 			},
 			"bdy": [
-				[
-					{
-						"kind": 0,
-						"x": 46,
-						"y": 18,
-						"w": 22,
-						"h": 25
-					},
-					{
-						"kind": 0,
-						"x": 28,
-						"y": 29,
-						"w": 21,
-						"h": 33
-					}
-				],
+				{
+					"kind": 0,
+					"x": 46,
+					"y": 18,
+					"w": 22,
+					"h": 25
+				},
+				{
+					"kind": 0,
+					"x": 28,
+					"y": 29,
+					"w": 21,
+					"h": 33
+				},
 				{
 					"kind": 0,
 					"x": 13,

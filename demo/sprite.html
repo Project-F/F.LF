@@ -1,0 +1,27 @@
+<head>
+<meta http-equiv='content-type' content='text/html; charset=UTF-8'>
+<script src='../third_party/head.load.min.js'></script>
+</head>
+
+<body>
+<div style='position:relative'>
+<div id='canvas' class='canvas'></div>
+<script>
+head.js('../sprite.js',
+	'../../F.core/F.js',
+	'../../F.core/math.js',
+	'../../F.core/sprite.js',
+	'bandit.js',
+	sprite_test
+);
+function sprite_test()
+{
+	F.css('../../F.core/style.css');
+	//
+	var sp = new F.LF.sprite(bandit.bmp);
+	sp.show_pic(71);
+	sp.switch_lr('left');
+}
+</script>
+</div>
+</body>

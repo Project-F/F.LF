@@ -1905,13 +1905,14 @@ function convert()
 		add(O.bmp,bmp[1],': '); //head
 		add(O.bmp,bmp[2],': '); //small
 		
+		O.bmp.file=[];
 		for( var i=0; i<99; i++)
 		{
 			var T={};
 			addl(T,bmp[3+i]);
 			if( T.w)
 			{
-				O.bmp['file'+i] = T;
+				O.bmp.file.push(T);
 			}
 			else
 			{
