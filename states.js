@@ -26,7 +26,7 @@
 				{
 					alert(this.name); //gives 'state1'
 					alert(this.data.data_of_state1); //give 'hello'
-					return 'state2'; //the returned state name will cause a transition to that state, nothing will happen if returned null
+					return 'state2'; //the returned state name will cause a transition to that state, nothing will happen if returned null/undefined
 				} ,,,
 				
 				entry: function(state,event,prev_state) //called on enter state, passing in previous state
@@ -36,9 +36,9 @@
 				
 				exit: function, //called on leave state, passing in next state
 				
-				'consultant': function(p1,p2) //if you consult a particular event of a state, you get its return value without causing any state transition
+				'guard': function(state,event,p1,p2) //if you consult a particular event of a state, you get its return value without causing any state transition
 				{
-					return allow_entry(p1,p2);
+					return allow_transition(p1,p2);
 				},
 			},
 

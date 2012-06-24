@@ -1,5 +1,5 @@
 <body>
-<pre id='text'></pre>
+<pre id='text'><h1>Functional testing of states.js</h1></pre>
 
 <script src='../F.js'></script>
 <script src='../states.js'></script>
@@ -18,6 +18,17 @@ function default_event(state,event)
 		text.innerHTML+= ')';
 	}
 	text.innerHTML+= '\n';
+}
+
+function test(actual_result, expected_result)
+{
+	if( actual_result===expected_result)
+		text.innerHTML+= actual_result;
+	else
+	{
+		text.innerHTML+= "<span style='color:#F22'>error: </span>"+actual_result+
+			", <span style='color:#F22'>expected: </span>"+expected_result;
+	}
 }
 
 var states_config=

@@ -5,7 +5,7 @@
 	{
 		canvas: canvas,   //canvas *object*
 		wh: {x:100,y:100},// width and height
-		img:              //image list
+		img:              //[optional] image list, can call `add_img()` later
 		{
 			'tag name':'image path',,,  //the first image is visible
 		},
@@ -36,6 +36,7 @@ F.sprite = function (config)
 	this.cur_img=null;
 	
 	this.set_wh(config.wh);
+	if( config.img)
 	for ( var I in config.img)
 	{
 		this.add_img(config.img[I], I);
@@ -50,6 +51,10 @@ F.sprite.prototype.set_xy=function(P)
 {
 	this.el.style.left=P.x+'px';
 	this.el.style.top=P.y+'px';
+}
+F.sprite.prototype.set_z=function(z)
+{
+	this.el.style.zIndex=z;
 }
 F.sprite.prototype.add_img=function(imgpath,name)
 {

@@ -25,6 +25,20 @@ F.collision.rect=function(rect1,rect2) //rect1,rect2: object in form {left,top,r
 
 	return true;
 }
+F.collision.normalize_rect=function(rect)
+{
+	if( rect.left > rect.right && rect.top > rect.bottom)
+		return {left:rect.right, right:rect.left,
+			top:rect.bottom, bottom:rect.top}
+	else if( rect.left > rect.right)
+		return {left:rect.right, right:rect.left,
+			top:rect.top, bottom:rect.bottom}
+	else if( rect.top > rect.bottom)
+		return {left:rect.left, right:rect.right,
+			top:rect.bottom, bottom:rect.top}
+	else
+		return rect;
+}
 
 //triangle-triangle intersect test
 //	return true if triangle A touchs B,
