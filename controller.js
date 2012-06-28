@@ -95,17 +95,32 @@ F.keyname_to_keycode=function(A)
 		if ( (a>='a'.charCodeAt(0) && a<='z'.charCodeAt(0)) || (a>='A'.charCodeAt(0) && a<='Z'.charCodeAt(0)) )
 		{
 			A=A.toLowerCase();
-			return code = A.charCodeAt(0) - 'a'.charCodeAt(0) + 65;
+			code = A.charCodeAt(0) - 'a'.charCodeAt(0) + 65;
 		}
-		
-		if (a>='0'.charCodeAt(0) && a<='9'.charCodeAt(0))
+		else if (a>='0'.charCodeAt(0) && a<='9'.charCodeAt(0))
 		{
-			return code = A.charCodeAt(0) - '0'.charCodeAt(0) + 48;
+			code = A.charCodeAt(0) - '0'.charCodeAt(0) + 48;
+		}
+		else
+		{
+			switch(A)
+			{
+				case '`': code=192; break;
+				case '-': code=189; break;
+				case '=': code=187; break;
+				case '[': code=219; break;
+				case ']': code=221; break;
+				case '\\': code=220; break;
+				case ';': code=186; break;
+				case "'": code=222; break;
+				case ',': code=188; break;
+				case '.': code=190; break;
+				case '/': code=191; break;
+				case ' ': code=32; break;
+			}
 		}
 	}
-	
-	//TODO: other keys not supported
-	//	for a good list, see controller1.html
+	return code;
 }
 
 // http://www.quirksmode.org/js/keys.html
