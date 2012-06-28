@@ -29,7 +29,7 @@ var control_con =
 }
 var control_con2 =
 {
-	up:'d',down:'c',left:'x',right:'v',def:'s',jump:'w',att:'q'
+	up:'w',down:'x',left:'a',right:'d',def:'`',jump:'q',att:'s'
 }
 var control = new F.controller(control_con);
 var control2 = new F.controller(control_con2);
@@ -47,8 +47,8 @@ var scene = new F.LF.scene();
 //set up a character------------
 var character = new F.LF.character( {controller: control, scene:scene} ); //choose from `control` and `control_play`
 var character2 = new F.LF.character( {controller: control2, scene:scene} );
-scene.add( character); character.set_pos(200,0,100);
-scene.add( character2); character2.set_pos(100,0,100);
+scene.add( character); character.set_pos(500,0,100);
+scene.add( character2); character2.set_pos(400,0,100);
 
 //---run time-------------------
 var timer30 = setInterval(frame30,1000/31);

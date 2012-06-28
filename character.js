@@ -39,12 +39,25 @@ F.LF.character = function(config)
 	var frame=dat.frame[0]; //current frame object
 	
 	//itr
-	var hit_list=[]; //a history of what have been hit recently
+	var hit_list=[]; //a history of what have been hit by me recently
+	
+	//effect
+	var effect={enable:false, i:0};
+		//effect=
+		//{
+		//	dvx, dvy,
+		//	effect,
+		//	duration,
+		//	i
+		//}
 	
 	//---configurations---------------------------------------------
-	var log_enable=false;
-	if( log_enable)
-		var log=document.getElementById('log');
+	var log={enable: false};
+	if( log.enable)
+	{
+		log=document.getElementById('log');
+		log.enable=true;
+	}
 	
 	//combo list
 	var combo_con = [
@@ -116,7 +129,7 @@ F.LF.character = function(config)
 	
 	//controller
 	var con = config.controller;
-	if( log_enable)
+	if( log.enable)
 		var pri_con = new F.controller({log:'g'});
 	
 	//combodec
@@ -167,14 +180,14 @@ F.LF.character = function(config)
 		
 		if( ps.y===0) //only on the ground
 		{	//friction proportional to speed
-			ps.vx *= 0.73;
-			ps.vz *= 0.73;
-			if( ps.vx>-1 && ps.vx<1) ps.vx=0;
+			ps.vx *= 0.74; //magic number
+			ps.vz *= 0.74;
+			if( ps.vx>-1 && ps.vx<1) ps.vx=0; //magic number
 			if( ps.vz>-1 && ps.vz<1) ps.vz=0;
 		}
 		
 		if( ps.y<0) //gravity
-			ps.vy+= 1.7;
+			ps.vy+= 1.7; //magic number
 		
 		if( ps.y===0 && ps.vy>0)
 		{ //falling onto the ground
@@ -196,6 +209,8 @@ F.LF.character = function(config)
 			}
 			
 			ps.vy=0; //set to zero
+			ps.vx*=0.34; //magic number
+			ps.vz*=0.34;
 		}
 		
 		//recovery
@@ -324,7 +339,7 @@ F.LF.character = function(config)
 				if( itr.kind===0)
 				{
 					var vol=make_volume(itr);
-					if( vol.zwidth===0) vol.zwidth=12; //default
+					if( vol.zwidth===0) vol.zwidth=12; //magic number
 					var hit= scene.query(vol,This);
 					for( var t in hit)
 					{
@@ -415,13 +430,6 @@ F.LF.character = function(config)
 		{ switch (event) {
 			case 'TU':
 			{
-				if( ps.y===0 && ps.vy>0)
-				{
-					if( frameN>=186 && frameN<=191)
-						frame_trans(231);
-					if( frameN>=181 && frameN<=185)
-						frame_trans(230);
-				}
 			} break;
 			
 			case 'frame':
@@ -435,7 +443,7 @@ F.LF.character = function(config)
 						next=182;
 						break;
 					case 182:
-						next=185;
+						next=183;
 						break;
 					//
 					case 186:
@@ -460,6 +468,14 @@ F.LF.character = function(config)
 			
 			case 'combo':
 			{
+			} break;
+			
+			case 'frame_exit':
+			{
+				ps.vx += effect.dvx;
+				ps.vy += effect.dvy;
+				effect.dvx=0;
+				effect.dvy=0;
 			} break;
 		}},
 		
@@ -594,9 +610,25 @@ F.LF.character = function(config)
 		}
 	}
 	
+	function make_effect()
+	{
+		if( effect.effect===0)
+		{
+			if( effect.i>=-1 && effect.i<=1)
+			{
+				sp.set_xy({x:ps.x + 2.5*effect.i, y:ps.y+ps.z}); //magic number
+				effect.i++;
+				if( effect.i>1)
+					effect.i=-1;
+			}
+			else
+				effect.i=-1;
+		}
+	}
+	
 	function logg(X)
 	{
-		if( log_enable)
+		if( log.enable)
 		{
 			if( pri_con.state.log)
 			{
@@ -617,6 +649,10 @@ F.LF.character = function(config)
 			frame_trans(next);
 		else
 			wait--;
+		
+		if( effect.duration>=0)
+			make_effect();
+		effect.duration--;
 	}
 	this.set_pos=function(x,y,z)
 	{
@@ -663,8 +699,14 @@ F.LF.character = function(config)
 		//numerical updates
 		if( itr.injury)	this.health -= itr.injury;
 		if( itr.fall)	this.fall += itr.fall;
-			else	this.fall += 20; //default
+			else	this.fall += 20; //magic number
 		if( itr.bdefend)this.bdefend += itr.bdefend;
+		
+		//effect
+		effect.dvx = itr.dvx ? att.dirh()*itr.dvx:0;
+		effect.dvy = itr.dvy ? itr.dvy:0;
+		effect.effect = itr.effect? itr.effect:0; //magic number
+		effect.duration = 3;
 		
 		//fall
 		var fall=this.fall;
@@ -681,22 +723,10 @@ F.LF.character = function(config)
 			else
 				frame_trans(186); //attacked in back
 			
-			if( !itr.dvy) ps.vy -= 6; //default
+			if( !itr.dvy) effect.dvy = -6; //magic number
 		}
-		
-		//dvx, dvy
-		if( itr.dvx) ps.vx += att.dirh() * itr.dvx;
-		if( itr.dvy) ps.vy += itr.dvy;
-		
-		//effects
-		if( itr.effect)
-		switch (itr.effect)
-		{
-			case 0: //bleed-less injure
-			case 1: //bleeding injure
-				;
-			break;
-		}
+		//
+		wait++; //always wait+1
 	}
 }
 
