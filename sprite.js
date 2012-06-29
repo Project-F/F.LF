@@ -3,8 +3,8 @@
 //	support switching frames between multiple image files
 //require: F.core/sprite.js, F.core/animator.js
 
-if( typeof F=='undefined') F=new Object;
-if( typeof F.LF=='undefined') F.LF=new Object;
+if( typeof F=='undefined') F=new Object();
+if( typeof F.LF=='undefined') F.LF=new Object();
 if( typeof F.LF.sprite=='undefined') //#ifndef
 {
 

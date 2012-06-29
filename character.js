@@ -6,8 +6,8 @@
 	}
  */
 
-if( typeof F=='undefined') F=new Object;
-if( typeof F.LF=='undefined') F.LF=new Object;
+if( typeof F=='undefined') F=new Object();
+if( typeof F.LF=='undefined') F.LF=new Object();
 if( typeof F.LF.character=='undefined') //#ifndef
 {
 

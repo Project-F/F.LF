@@ -1,17 +1,28 @@
-head.js('../scene.js',
-	'../sprite.js',
-	'../character.js',
-	'../../F.core/F.js',
-	'../../F.core/math.js',
-	'../../F.core/states.js',
-	'../../F.core/sprite.js',
-	'../../F.core/combodec.js',
-	'../../F.core/collision.js',
-	'../../F.core/controller.js',
-	'../../F.core/controller-recorder.js',
-	'bandit.js',
-	demo2
-);
+(function ()
+{	//load required files
+	var f_core_path;
+	var str=window.location.href;
+	
+	if( str.indexOf('http://c9.io') !== -1)
+		f_core_path = '../../../f_core/workspace/'; //cloud9 relative path
+	else
+		f_core_path = '../../F.core/'; //local path
+	
+	head.js('../scene.js',
+		'../sprite.js',
+		'../character.js',
+		f_core_path+'F.js',
+		f_core_path+'math.js',
+		f_core_path+'states.js',
+		f_core_path+'sprite.js',
+		f_core_path+'combodec.js',
+		f_core_path+'collision.js',
+		f_core_path+'controller.js',
+		f_core_path+'controller-recorder.js',
+		'bandit.js',
+		demo2
+	);
+}());
 
 function demo2() {
 
@@ -26,11 +37,11 @@ var record=[
 var control_con =
 {
 	up:'i',down:'k',left:'j',right:'l',def:'h',jump:'y',att:'t'
-}
+};
 var control_con2 =
 {
 	up:'w',down:'x',left:'a',right:'d',def:'`',jump:'q',att:'s'
-}
+};
 var control = new F.controller(control_con);
 var control2 = new F.controller(control_con2);
 var control_play = new F.control_player(control_con, record);
@@ -38,7 +49,7 @@ var control_play = new F.control_player(control_con, record);
 /*var control_rec = new F.control_recorder(control_play);
 document.getElementById('export').onclick=function()
 {
-	document.getElementById('log').value += control_rec.export();
+	document.getElementById('log').value += control_rec.export_str();
 } */
 
 //set up scene------------------
@@ -71,4 +82,4 @@ function calculate_fps(mul)
 	fps.value = Math.round(1000/diff*mul)+'fps';
 }
 
-};
+}
