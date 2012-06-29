@@ -23,6 +23,7 @@ F.LF.scene = function(config)
 F.LF.scene.prototype.add = function(C)
 {
 	this.obj.push(C);
+	C.id = this.obj.length-1;
 }
 
 F.LF.scene.prototype.query = function(volume, This) //return the all the objects whose `bdy` intersect with `volume`

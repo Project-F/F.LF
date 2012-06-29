@@ -1,13 +1,16 @@
 (function ()
-{	//load required files
+{	
+	//to load required files
+	
+	//get base path
 	var f_core_path;
 	var str=window.location.href;
-	
 	if( str.indexOf('http://c9.io') !== -1)
 		f_core_path = '../../../f_core/workspace/'; //cloud9 relative path
 	else
 		f_core_path = '../../F.core/'; //local path
 	
+	//laod scripts
 	head.js('../scene.js',
 		'../sprite.js',
 		'../character.js',
@@ -20,14 +23,17 @@
 		f_core_path+'controller.js',
 		f_core_path+'controller-recorder.js',
 		'bandit.js',
-		demo2
+		callback
 	);
+	
+	function callback()
+	{
+		F.css(f_core_path+'style.css'); //load CSS
+		demo2();
+	}
 }());
 
 function demo2() {
-
-//load CSS
-F.css('../../F.core/style.css');
 
 //set up controller-------------
 var record=[

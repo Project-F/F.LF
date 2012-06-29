@@ -5,6 +5,13 @@
 		scene //F.LF.scene object
 	}
  */
+/*
+reference:
+-milestone
+http://home.i-cable.com/starskywong/en_progress1.html
+-interaction
+http://lf-empire.de/en/lf2-empire/data-changing/frame-elements/174-itr-interaction
+ */
 
 if( typeof F=='undefined') F=new Object();
 if( typeof F.LF=='undefined') F.LF=new Object();
@@ -39,7 +46,7 @@ F.LF.character = function(config)
 	var frame=dat.frame[0]; //current frame object
 	
 	//itr
-	var hit_list=[]; //a history of what have been hit by me recently
+	var arest=[]; //a history of what have been hit by me recently
 	
 	//effect
 	var effect={enable:false, i:0};
@@ -223,7 +230,6 @@ F.LF.character = function(config)
 		'0':function(event,K) //standing
 		{ switch (event) {
 			case 'TU':
-			{
 				var dx=0, dz=0; //to resolve key conflicts
 				if( con.state.up)   dz -=1;
 				if( con.state.down) dz +=1;
@@ -231,14 +237,12 @@ F.LF.character = function(config)
 				if( con.state.right)dx +=1;
 				if( dx || dz)
 					frame_trans(5);
-			} break;
+			break;
 			
 			case 'frame':
-			{
-			} break;
+			break;
 			
 			case 'combo':
-			{
 				switch(K)
 				{
 				case 'run':
@@ -255,13 +259,12 @@ F.LF.character = function(config)
 					ce.frame_trans(Math.random()<0.5? 60:65);
 				break;
 				}
-			} break;
+			break;
 		}},
 		
 		'1':function(event,K) //walking
 		{ switch (event) {
 			case 'TU':
-			{
 				if(con.state.up)    ps.z-=dat.bmp.walking_speedz;
 				if(con.state.down)  ps.z+=dat.bmp.walking_speedz;
 				if(con.state.left)  ps.x-=dat.bmp.walking_speed;
@@ -274,37 +277,33 @@ F.LF.character = function(config)
 				if( con.state.right)dx +=1;
 				if( !dx && !dz)
 					frame_trans(999); //go back to standing
-			} break;
+			break;
 			
 			case 'frame':
-			{
 				fu.oscillate(5,8);
 				wait=dat.bmp.walking_frame_rate;
-			} break;
+			break;
 			
 			case 'combo':
-			{
 				//walking same as standing
 				states['0'](event,K);
-			} break;
+			break;
 		}},
 		
 		'2':function(event,K) //running
 		{ switch (event) {
 			case 'TU':
-			{	//to maintain the velocity against friction
+				//to maintain the velocity against friction
 				ps.vx= dirh() * dat.bmp.running_speed;
 				ps.vz= dirv() * dat.bmp.running_speedz;
-			} break;
+			break;
 			
 			case 'frame':
-			{
 				fu.oscillate(9,11);
 				wait=dat.bmp.running_frame_rate;
-			} break;
+			break;
 			
 			case 'combo':
-			{
 				switch(K)
 				{
 				case 'left': case 'right':
@@ -324,13 +323,12 @@ F.LF.character = function(config)
 					ce.frame_trans(85);
 					break;
 				}
-			} break;
+			break;
 		}},
 		
 		'3':function(event,K) //punch, jump_attack, run_attack, ...
 		{ switch (event) {
 			case 'frame':
-			{
 				if( frameN===81) //jump_attack
 					next=212; //back to jump
 				
@@ -343,13 +341,21 @@ F.LF.character = function(config)
 					var hit= scene.query(vol,This);
 					for( var t in hit)
 					{
-						hit[t].hit(itr,This);
+						if( !arest[ hit[t].id ])
+							hit[t].hit(itr,This); //hit you!
+						
+						//rest: cannot attack you again for some time
+						if( itr.arest) var rest=itr.arest;
+						if( itr.vrest) var rest=itr.vrest;
+						arest[ hit[t].id ] = rest;
+						
+						//attack one enemy only
+						if( itr.arest) break; //TODO: attack the closest
 					}
 				}
-			} break;
+			break;
 			
 			case 'frame_exit':
-			{
 				if( frameN===0) //going back to standing
 				{
 					switch_dir=true;
@@ -360,13 +366,12 @@ F.LF.character = function(config)
 					if(con.state.left) switch_dir_fun('left');
 					if(con.state.right) switch_dir_fun('right');
 				}
-			} break;
+			break;
 		}},
 		
 		'4':function(event,K) //jump
 		{ switch (event) {
 			case 'TU':
-			{
 				if( frameN===212) //is jumping
 				{
 					if( con.state.att)
@@ -375,10 +380,9 @@ F.LF.character = function(config)
 						frame_trans(80);
 					}
 				}
-			} break;
+			break;
 			
 			case 'frame':
-			{
 				if( frameN===212 && framePN===211)
 				{	//start jumping
 					var dx = 0;
@@ -388,17 +392,15 @@ F.LF.character = function(config)
 					ps.vz= dirv() * dat.bmp.jump_distancez;
 					ps.vy= dat.bmp.jump_height; //upward force
 				}
-			} break;
+			break;
 			
 			case 'combo':
-			{
-			} break;
+			break;
 		}},
 		
 		'5':function(event,K) //dash
 		{ switch (event) {
 			case 'combo':
-			{
 				if( K==='att')
 				{
 					if( dirh()==(ps.vx>0?1:-1)) //only if not turning back
@@ -423,17 +425,15 @@ F.LF.character = function(config)
 						}
 					}
 				}
-			} break;
+			break;
 		}},
 		
 		'12':function(event,K) //falling
 		{ switch (event) {
 			case 'TU':
-			{
-			} break;
+			break;
 			
 			case 'frame':
-			{
 				switch (frameN)
 				{
 					case 180:
@@ -456,34 +456,30 @@ F.LF.character = function(config)
 						next=189;
 						break;
 				}
-			} break;
+			break;
 			
 			case 'fall_onto_ground':
-			{
 				if( frameN >= 180 && frameN <= 185)
 					return 230;
 				if( frameN >= 186 && frameN <= 191)
 					return 231;
-			} break;
+			break;
 			
 			case 'combo':
-			{
-			} break;
+			break;
 			
 			case 'frame_exit':
-			{
 				ps.vx += effect.dvx;
 				ps.vy += effect.dvy;
 				effect.dvx=0;
 				effect.dvy=0;
-			} break;
+			break;
 		}},
 		
 		'15':function(event,K) //stop_running, crouch, crouch2, dash_attack
 		{ switch (event) {
 
 			case 'combo':
-			{
 				if( frameN===215) //only after jumping
 				{
 					if( K==='def')
@@ -502,10 +498,9 @@ F.LF.character = function(config)
 						}
 					}
 				}
-			} break;
+			break;
 			
 			case 'frame_exit':
-			{
 				if( frameN===0) //going back to standing
 				{
 					if( switch_dir===false)
@@ -515,7 +510,7 @@ F.LF.character = function(config)
 						if(con.state.right) switch_dir_fun('right');
 					}
 				}
-			} break;
+			break;
 		}}
 	}
 	
@@ -645,14 +640,22 @@ F.LF.character = function(config)
 		state_update();
 		dec.frame();
 		
+		//wait
 		if( wait===0)
 			frame_trans(next);
 		else
 			wait--;
 		
+		//effect
 		if( effect.duration>=0)
 			make_effect();
 		effect.duration--;
+		
+		//arest (attack rest)
+		for( var I in arest)
+		{
+			arest[I]--;
+		}
 	}
 	this.set_pos=function(x,y,z)
 	{
@@ -711,17 +714,17 @@ F.LF.character = function(config)
 		//fall
 		var fall=this.fall;
 		if ( 0<fall && fall<=20)
-			frame_trans(220);
+			next=(220);
 		else if (20<fall && fall<=40)
-			frame_trans(Math.random()<0.5? 222:224);
+			next=(Math.random()<0.5? 222:224);
 		else if (40<fall && fall<=60)
-			frame_trans(226);
+			next=(226);
 		else if (60<fall)
 		{
 			if( (att.ps.x > ps.x)===(dir==='right')) //attacked in front
-				frame_trans(180);
+				next=(180);
 			else
-				frame_trans(186); //attacked in back
+				next=(186); //attacked in back
 			
 			if( !itr.dvy) effect.dvy = -6; //magic number
 		}
