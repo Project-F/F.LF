@@ -23,7 +23,7 @@
 	];
 */
 
-if( typeof F=='undefined') F=new Object;
+if( typeof F=='undefined') F=new Object();
 if( typeof F.combodec=='undefined') //#ifndef
 {
 

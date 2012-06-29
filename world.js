@@ -8,7 +8,7 @@
    World           View
 */
 
-if(typeof F=='undefined') F=new Object;
+if(typeof F=='undefined') F=new Object();
 if( typeof F.world=='undefined') //#ifndef
 {
 
@@ -38,7 +38,7 @@ F.world = function ()
 		costho=Math.cos(T.tho/180*Math.PI);
 		costhp=Math.cos(T.thp/180*Math.PI);
 		
-		for (i=0; i<T.P.length; i++)
+		for (var i=0; i<T.P.length; i++)
 		{
 			var x = T.P[i].x;
 			var y = T.P[i].y;
@@ -54,12 +54,12 @@ F.world = function ()
 			T.pp[i]={x:px, y:py};
 		}
 	}
-	
+
 	this.view=function(pp) //convert from projected 2d space to view space
 	{
 		//round off in effect to reduce number of decimals in SVG, not sure if it helps?
 		return {x:F.round_d2(pp.x*this.zoom+this.panx),
-		        y:F.round_d2(pp.y*-this.zoom+this.pany) }
+		        y:F.round_d2(pp.y*-this.zoom+this.pany) };
 	}
 }
 

@@ -1,6 +1,6 @@
 /*Project F
  */
-if( typeof F=='undefined') F=new Object;
+if( typeof F=='undefined') F=new Object();
 if( typeof F.css=='undefined') //#ifndef
 {
 
@@ -30,9 +30,9 @@ F.double_delegate = function (function1, function2)
 	// http://roberthahn.ca/articles/2007/02/02/how-to-use-window-onload-the-right-way/
 	return function() {
 	if (function1)
-	    function1.apply(this,Array.prototype.slice.call(arguments));
+		function1.apply(this,Array.prototype.slice.call(arguments));
 	if (function2)
-	    function2.apply(this,Array.prototype.slice.call(arguments));
+		function2.apply(this,Array.prototype.slice.call(arguments));
 	}
 }
 
@@ -101,7 +101,7 @@ F.to_text = function ( //convert a JSON object to into text
 	TTL		//[optional] time-to-live to prevent infinite looping
 )
 {
-	if( TTL==0) return '';
+	if( TTL===0) return '';
 	if( !TTL) TTL=30;
 	if( !sep) sep='\n';
 	if( !pretext) pretext='';

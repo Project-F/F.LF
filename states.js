@@ -74,7 +74,7 @@
    -in a state transition, a machine must entry a state's superstate before entering that state.
    -in a state transition, a machine must exit the current state before exiting the current state's superstate.
  */
-if( typeof F=='undefined') F=new Object;
+if( typeof F=='undefined') F=new Object();
 if( typeof F.states=='undefined') //#ifndef
 {
 
@@ -246,7 +246,7 @@ F.states.prototype.event=function(event/*,arguments,,,*/)
 		{
 			if( this.evlay[I].i > -1)
 				this.evlay[I].i--;
-			if( this.evlay[I].i == 0)
+			if( this.evlay[I].i===0)
 				this.event.apply(this, this.evlay[I].arg); //fire a delayed event
 		}
 	}
@@ -333,7 +333,7 @@ F.states.prototype.search=function(A, //search for the path of state A
 
 F.states.prototype.valid_substate=function(S)
 {
-	return !(	S==null    ||
+	return !(	S===null   ||
 			S=='event' ||
 			S=='name'  ||
 			S=='data'  ||
@@ -343,7 +343,7 @@ F.states.prototype.valid_substate=function(S)
 
 F.states.prototype.valid_event=function(E)
 {
-	return !(	E==null    ||
+	return !(	E===null   ||
 			E=='entry' ||
 			E=='exit'  ||
 		0);

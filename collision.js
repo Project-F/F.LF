@@ -9,11 +9,11 @@
 /*	require: math.js
  */
 
-if(typeof F=='undefined') F=new Object;
+if(typeof F=='undefined') F=new Object();
 if( typeof F.collision=='undefined') //#ifndef
 {
 
-F.collision = new Object;
+F.collision = new Object();
 
 //rectangle-rectangle intersect test
 F.collision.rect=function(rect1,rect2) //rect1,rect2: object in form {left,top,right,bottom}

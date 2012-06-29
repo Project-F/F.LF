@@ -14,7 +14,7 @@
 /*	require: style.css
  */
 
-if( typeof F=='undefined') F=new Object;
+if( typeof F=='undefined') var F=new Object();
 if( typeof F.sprite=='undefined') //#ifndef
 {
 
@@ -94,7 +94,7 @@ F.sprite.prototype.switch_img=function(name)
 	}
 	this.cur_img=name;
 }
-F.sprite.prototype.delete=function()
+F.sprite.prototype.remove=function()
 {
 	this.el.parentNode.removeChild(this.el);
 }
@@ -192,7 +192,7 @@ F.animator_set = function(set_config, base)
 {
 	if(!set_config)
 		return null;
-	var A=new Object;
+	var A=new Object();
 	
 	for( var I in set_config)
 	{

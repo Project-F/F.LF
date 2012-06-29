@@ -17,7 +17,7 @@
 /*	require: F.js
  */
 
-if(typeof F=='undefined') F=new Object;
+if(typeof F=='undefined') F=new Object();
 if( typeof F.graph=='undefined') //#ifndef
 {
 

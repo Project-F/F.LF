@@ -4,7 +4,7 @@
 /*	require: F.js
  */
 
-if( typeof F=='undefined') F=new Object;
+if( typeof F=='undefined') F=new Object();
 if( typeof F.control_recorder=='undefined') //#ifndef
 {
 
@@ -21,7 +21,7 @@ F.control_recorder = function(target_controller)
 	{
 		this.time+=1;
 	}
-	this.export= function()
+	this.export_str= function()
 	{	//export to JSON
 		var str="";
 		str+= '[\n';

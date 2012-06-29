@@ -1,5 +1,5 @@
 
-if( typeof F=='undefined') F=new Object;
+if( typeof F=='undefined') F=new Object();
 if( typeof F.add=='undefined') //#ifndef
 {
 
@@ -50,7 +50,7 @@ F.bezier2_step = function (A,C,B, i,steps)
 	
 	function getstep(x1, x2, stepcount, numofsteps)
 	{
-	      return ((numofsteps - stepcount) * x1 + stepcount * x2) / numofsteps;
+		return ((numofsteps - stepcount) * x1 + stepcount * x2) / numofsteps;
 	}
 }
 

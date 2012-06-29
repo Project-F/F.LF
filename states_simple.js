@@ -50,7 +50,7 @@
 	event_delay(event,delay,frame)	//fire a delayed event
 	consult(event,state)	//call a function without causing state transition
  */
-if(typeof F=='undefined') F=new Object;
+if(typeof F=='undefined') F=new Object();
 F.states = function (state_config)
 {
 	//[--constructor
@@ -134,7 +134,7 @@ F.states.prototype.event=function(E/*,arguments,,,*/) //supply events with param
 		{
 			if( this.evlay[I].i > -1)
 				this.evlay[I].i--;
-			if( this.evlay[I].i == 0)
+			if( this.evlay[I].i===0)
 				this.event.apply(this, this.evlay[I].arg); //fire a delayed event
 		}
 	}
@@ -184,6 +184,6 @@ F.states.prototype.valid_event=function(E)
 {
 	return !(	E=='entry' ||
 			E=='exit'  ||
-			E==null    ||
+			E===null   ||
 		0);
 }

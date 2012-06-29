@@ -4,7 +4,7 @@
 /*	require: F.js
  */
 
-if( typeof F=='undefined') F=new Object;
+if( typeof F=='undefined') F=new Object();
 if( typeof F.master_controller=='undefined') //#ifndef
 {
 
@@ -22,7 +22,7 @@ F.master_controller = (function()
 	window.onkeydown = F.double_delegate(window.onkeydown, F.keydown);
 	window.onkeyup   = F.double_delegate(window.onkeydown, F.keyup);
 	
-	var mas = new Object;
+	var mas = new Object();
 	mas.child = new Array();
 	mas.key = function(e,down)
 	{
@@ -88,6 +88,7 @@ F.controller = function (config)
 
 F.keyname_to_keycode=function(A)
 {
+	var code;
 	if( A.length==1)
 	{
 		//a-z only
