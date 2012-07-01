@@ -1,0 +1,6 @@
+* text=auto
+*.js eol=lf
+*.html eol=lf
+*.css eol=lf
+*.png binary
+*.jpg binary
