@@ -1,0 +1,162 @@
+<head>
+<meta http-equiv='content-type' content='text/html; charset=UTF-8'>
+<script src='../third_party/head.load.min.js'></script>
+<style type="text/css">
+table {
+	border:1px solid #000;
+}
+td {
+	border:1px solid #AAA;
+}
+</style>
+</head>
+
+<body>
+<script>
+function define()
+{
+	//the complete definition of frame transition sequences
+	
+	//bandit
+	bandit.bmp.file[0]["file(0-69)"] = "../demo/bandit_0.png";
+	bandit.bmp.file[1]["file(70-139)"] = "../demo/bandit_1.png";
+	
+	list=
+	[
+	{
+		data: bandit,
+		seq:[
+		{	name: 'stop_running',
+			frame: [10,218,218,218,218,218,0],
+			remark:[]
+		},
+		{	name: 'rowing',
+			frame: [10,102,102,103,103,103,104,104,104,105,105,105,219,219,219,0,0,0,0],
+			remark:[]
+		},
+		{	name: 'jump',
+			frame: [0,210,211,211,212,212,215,215,0],
+			remark:['','','','','still on the ground','20 TU in air']
+		},
+		{	name: 'dash',
+			frame: [10,213,216,219,219,0],
+			remark:['','8 TU in air','5 TU in air']
+		},
+		{	name: 'jump_attack',
+			frame: [0,210,211,211,212,212,80,80,81,81,81,81,81,81,81,212,212],
+			remark:['','','','','still on the ground','no response to att','no movement, <br>resulting 1 extra TU in air']
+		},
+		{	name: 'run_attack',
+			frame: [10,85,85,85,85,86,86,86,87,87,87,87,0],
+			remark:[]
+		}
+		,
+		{	name: '',
+			frame: [],
+			remark:[]
+		}
+		]
+	}
+	];
+}
+
+(function ()
+{
+	//to load required files
+	
+	//get base path
+	var f_core_path;
+	var f_LF_path='../';
+	var str=window.location.href;
+	if( str.indexOf('http://c9.io') !== -1)
+		f_core_path = '../../../f_core/workspace/'; //cloud9 relative path
+	else
+		f_core_path = '../../F.core/'; //local path
+	
+	//laod scripts
+	head.js(f_LF_path   +'sprite.js',
+		f_core_path +'F.js',
+		f_core_path +'sprite.js',
+		'../demo/bandit.js',
+		callback
+	);
+	
+	function callback()
+	{
+		define();
+		F.css(f_core_path+'style.css'); //load CSS
+		main(document.getElementsByTagName('body')[0]);
+	}
+}());
+
+function create_at(parent, tag, id)
+{
+	var E = document.createElement(tag);
+	parent.appendChild(E);
+	if( id)
+		E.id = id;
+	return E;
+}
+
+function add_cell(row, content)
+{
+	var td = create_at(row, 'td')
+	td.innerHTML= content;
+	return td;
+}
+
+function main(append_at)
+{
+	var view = create_at(append_at, 'div', 'view');
+	view.style.width='1500px';
+	
+	for( var j=0; j<list.length; j++)
+	{
+		var data = list[j].data;
+		var view_div = create_at(view, 'div', data.bmp.name);
+		create_at(view_div, 'span').innerHTML = data.bmp.name;
+		
+		var seq = list[j].seq;
+		for( var i=0; i<seq.length; i++)
+		{
+			var table = create_at(view_div, 'table');
+			var rname  = create_at(table, 'tr');
+			var rframe = create_at(table, 'tr');
+			var rpic   = create_at(table, 'tr');
+			var rstate = create_at(table, 'tr');
+			var rremark= create_at(table, 'tr');
+			
+			add_cell(rname, 'name:');
+			var cell_name = add_cell(rname, seq[i].name);
+			cell_name.colSpan='99';
+			add_cell(rframe, 'frame:');
+			add_cell(rpic, 'pic:');
+			add_cell(rstate, 'state:');
+			add_cell(rremark, 'remarks:');
+			
+			var frame = seq[i].frame;
+			for( var k=0; k<frame.length; k++)
+			{
+				add_cell(rframe, frame[k]);
+				var cur_frame = data.frame[frame[k]];
+				add_cell(rstate, cur_frame.state);
+				var pic = add_cell(rpic, '');
+				pic.style.position = 'relative';
+				pic.style.width = data.bmp.file[0].w+1;
+				pic.style.height = data.bmp.file[0].h+1;
+				
+				var sp = new F.LF.sprite(data.bmp, pic);
+				sp.show_pic(cur_frame.pic);
+				sp.set_xy({x:0, y:0});
+			}
+			
+			var remark = seq[i].remark;
+			for( var k=0; k<remark.length; k++)
+			{
+				add_cell(rremark, remark[k]?remark[k]:'');
+			}
+		}
+	}
+}
+</script>
+</body>

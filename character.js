@@ -126,7 +126,7 @@ F.LF.character = function(config)
 	//---set up-----------------------------------------------------
 	
 	//sprite
-	var sp = new F.LF.sprite(dat.bmp);
+	var sp = new F.LF.sprite(dat.bmp, document.getElementById('stage'));
 	
 	//position, velocity
 	var ps = this.ps = {x:0, y:0, z:0, vx:0, vy:0, vz:0};
@@ -341,7 +341,7 @@ F.LF.character = function(config)
 					var hit= scene.query(vol,This);
 					for( var t in hit)
 					{
-						if( !arest[ hit[t].id ])
+						if( arest[ hit[t].id ]===undefined || arest[ hit[t].id ] <= 0)
 							hit[t].hit(itr,This); //hit you!
 						
 						//rest: cannot attack you again for some time
@@ -619,6 +619,10 @@ F.LF.character = function(config)
 			else
 				effect.i=-1;
 		}
+		if( effect.duration===0)
+		{
+			sp.set_xy({x:ps.x, y:ps.y+ps.z});
+		}
 	}
 	
 	function logg(X)
@@ -654,7 +658,8 @@ F.LF.character = function(config)
 		//arest (attack rest)
 		for( var I in arest)
 		{
-			arest[I]--;
+			if( arest[I] > 0)
+				arest[I]--;
 		}
 	}
 	this.set_pos=function(x,y,z)
@@ -728,8 +733,7 @@ F.LF.character = function(config)
 			
 			if( !itr.dvy) effect.dvy = -6; //magic number
 		}
-		//
-		wait++; //always wait+1
+		wait=0;
 	}
 }
 

@@ -8,7 +8,7 @@ if( typeof F.LF=='undefined') F.LF=new Object();
 if( typeof F.LF.sprite=='undefined') //#ifndef
 {
 
-F.LF.sprite=function(bmp)
+F.LF.sprite=function(bmp, parent)
 {
 	var num_of_images = this.num_of_images = bmp.file.length;
 	var w = this.w = bmp.file[0].w+1;
@@ -19,7 +19,7 @@ F.LF.sprite=function(bmp)
 	
 	var sp_con=
 	{
-		canvas: document.getElementById('canvas'),
+		canvas: parent,
 		wh: {x:w,y:h},
 		img:{}
 	}

@@ -1,5 +1,5 @@
 (function ()
-{	
+{
 	//to load required files
 	
 	//get base path
@@ -68,7 +68,7 @@ scene.add( character); character.set_pos(500,0,100);
 scene.add( character2); character2.set_pos(400,0,100);
 
 //---run time-------------------
-var timer30 = setInterval(frame30,1000/31);
+var timer30 = setInterval(frame30,1000/1);
 function frame30()
 {
 	control_play.frame();
