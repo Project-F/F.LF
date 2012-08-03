@@ -11,6 +11,8 @@ reference:
 http://home.i-cable.com/starskywong/en_progress1.html
 -interaction
 http://lf-empire.de/en/lf2-empire/data-changing/frame-elements/174-itr-interaction
+-effects
+http://www.lf-empire.de/en/lf2-empire/data-changing/reference-pages/181-effects
  */
 
 if( typeof F=='undefined') F=new Object();
@@ -274,7 +276,7 @@ F.LF.character = function(config)
 		if( This.bdefend>0) This.bdefend--;
 	}
 	
-	var states= //state specific update every TU
+	var states= //state specific update
 	{
 		'0':function(event,K) //standing
 		{ switch (event) {
@@ -390,7 +392,7 @@ F.LF.character = function(config)
 					var hit= scene.query(vol,This);
 					for( var t in hit)
 					{
-						if( arest[ hit[t].id ]===undefined || arest[ hit[t].id ] <= 0)
+						if( !arest[ hit[t].id ])
 							hit[t].hit(itr,This); //hit you!
 						
 						//rest: cannot attack you again for some time

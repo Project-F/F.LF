@@ -5,7 +5,7 @@
 	//get base path
 	var f_core_path;
 	var str=window.location.href;
-	if( str.indexOf('http://c9.io') !== -1)
+	if( str.indexOf('//c9.io') !== -1)
 		f_core_path = '../../../f_core/workspace/'; //cloud9 relative path
 	else
 		f_core_path = '../../F.core/'; //local path
@@ -68,7 +68,7 @@ scene.add( character); character.set_pos(500,0,100);
 scene.add( character2); character2.set_pos(400,0,100);
 
 //---run time-------------------
-var timer30 = setInterval(frame30,1000/1);
+var timer30 = setInterval(frame30,1000/31);
 function frame30()
 {
 	control_play.frame();
