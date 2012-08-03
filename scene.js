@@ -8,7 +8,7 @@
 		zwidth	//zwidth spans into the +ve and -ve direction
 	}
  */
-//require: F.core/collision.js
+//require: F.core/collision.js, F.core/math.js
 
 if( typeof F=='undefined') F=new Object();
 if( typeof F.LF=='undefined') F.LF=new Object();
@@ -57,6 +57,15 @@ F.LF.scene.prototype.intersect = function(A,B) //return true if volume A and B i
 	{ left:A.z-A.zwidth, top:0, right:A.z+A.zwidth, bottom:1 },
 	{ left:B.z-B.zwidth, top:0, right:B.z+B.zwidth, bottom:1 }
 	));
+}
+
+F.LF.scene.prototype.distance=function(A,B) //return the distance between object A and B, as measured at center points
+{
+	var dx= (A.x+A.centerx) - (B.x+B.centerx);
+	var dy= A.y - B.y;
+	var dz= (A.z+A.centery) - (B.z+B.centery);
+	
+	return Math.sqrt(dx*dx+dy*dy+dz*dz);
 }
 
 } //#endif
