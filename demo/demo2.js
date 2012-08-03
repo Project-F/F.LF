@@ -74,8 +74,8 @@ function frame30()
 	control_play.frame();
 	//control_rec.frame();
 	
-	character.frame();
-	character2.frame();
+	character.TU();
+	character2.TU();
 	calculate_fps(1);
 }
 

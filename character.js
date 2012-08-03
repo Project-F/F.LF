@@ -48,16 +48,6 @@ F.LF.character = function(config)
 	//itr
 	var arest=[]; //a history of what have been hit by me recently
 	
-	//effect
-	var effect={enable:false, i:0};
-		//effect=
-		//{
-		//	dvx, dvy,
-		//	effect,
-		//	duration,
-		//	i
-		//}
-	
 	//---configurations---------------------------------------------
 	var log={enable: false};
 	if( log.enable)
@@ -123,6 +113,56 @@ F.LF.character = function(config)
 		return d;
 	}
 	
+	//---internal state machines------------------------------------
+	var effect_state_config=
+	{
+		event:
+		{
+			entry: 'vanish'
+		},
+		
+		active:
+		{
+			event:
+			{
+				'TU': function()
+				{
+					if( effect.effect===0) //mechanical injury
+					{
+						if( effect.i>=-1 && effect.i<=1)
+						{
+							sp.set_xy({x:ps.x + 2.5*effect.i, y:ps.y+ps.z}); //magic number
+							effect.i++;
+							if( effect.i>1)
+								effect.i=-1;
+						}
+						else
+							effect.i=-1;
+					}
+				},
+				'vanish': 'vanish'
+			}
+		},
+		
+		vanish:
+		{
+			event:
+			{
+				entry: function(S)
+				{
+					sp.set_xy({x:ps.x, y:ps.y+ps.z});
+					S.event_delay('dvxyz',1,'TU');
+				},
+				'dvxyz': function()
+				{
+					ps.vx += effect.dvx;
+					ps.vy += effect.dvy;
+				},
+				'new': 'active'
+			}
+		}
+	}
+	
 	//---set up-----------------------------------------------------
 	
 	//sprite
@@ -144,6 +184,15 @@ F.LF.character = function(config)
 	
 	//scene object
 	var scene = config.scene;
+	
+	//effect
+	var effect=
+	{
+		i:0,
+		state: new F.states(effect_state_config),
+		dvx:0, dvy:0,
+		effect:0
+	};
 	
 	//---internal functions-----------------------------------------
 	
@@ -467,13 +516,6 @@ F.LF.character = function(config)
 			
 			case 'combo':
 			break;
-			
-			case 'frame_exit':
-				ps.vx += effect.dvx;
-				ps.vy += effect.dvy;
-				effect.dvx=0;
-				effect.dvy=0;
-			break;
 		}},
 		
 		'15':function(event,K) //stop_running, crouch, crouch2, dash_attack
@@ -604,27 +646,7 @@ F.LF.character = function(config)
 			}
 		}
 	}
-	
-	function make_effect()
-	{
-		if( effect.effect===0)
-		{
-			if( effect.i>=-1 && effect.i<=1)
-			{
-				sp.set_xy({x:ps.x + 2.5*effect.i, y:ps.y+ps.z}); //magic number
-				effect.i++;
-				if( effect.i>1)
-					effect.i=-1;
-			}
-			else
-				effect.i=-1;
-		}
-		if( effect.duration===0)
-		{
-			sp.set_xy({x:ps.x, y:ps.y+ps.z});
-		}
-	}
-	
+
 	function logg(X)
 	{
 		if( log.enable)
@@ -639,9 +661,15 @@ F.LF.character = function(config)
 	}
 	
 	//---external interface-----------------------------------------
-	this.frame=function()
+	this.TU=function()
 	{
+		//state
 		state_update();
+		
+		//effect
+		effect.state.event('TU');
+		
+		//combo detector
 		dec.frame();
 		
 		//wait
@@ -649,11 +677,6 @@ F.LF.character = function(config)
 			frame_trans(next);
 		else
 			wait--;
-		
-		//effect
-		if( effect.duration>=0)
-			make_effect();
-		effect.duration--;
 		
 		//arest (attack rest)
 		for( var I in arest)
@@ -714,7 +737,8 @@ F.LF.character = function(config)
 		effect.dvx = itr.dvx ? att.dirh()*itr.dvx:0;
 		effect.dvy = itr.dvy ? itr.dvy:0;
 		effect.effect = itr.effect? itr.effect:0; //magic number
-		effect.duration = 3;
+		effect.state.event('new');
+		effect.state.event_delay('vanish', 4, 'TU');
 		
 		//fall
 		var fall=this.fall;
@@ -731,9 +755,9 @@ F.LF.character = function(config)
 			else
 				next=(186); //attacked in back
 			
-			if( !itr.dvy) effect.dvy = -6; //magic number
+			if( !itr.dvy) effect.dvy = -7; //magic number
 		}
-		wait=0;
+		wait=1;
 	}
 }
 
