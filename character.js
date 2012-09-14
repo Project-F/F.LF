@@ -87,6 +87,8 @@ F.LF.character = function(config)
 		no_repeat_key: true //eliminate repeated key strokes by browser
 	}
 	
+	//---internal state machines------------------------------------
+	
 	function switch_dir_fun(e)
 	{
 		if( dir==='left' && e==='right')
@@ -115,7 +117,6 @@ F.LF.character = function(config)
 		return d;
 	}
 	
-	//---internal state machines------------------------------------
 	var effect_state_config=
 	{
 		event:
@@ -196,7 +197,7 @@ F.LF.character = function(config)
 		effect:0
 	};
 	
-	//---internal functions-----------------------------------------
+	//---the processing pipeline------------------------------------
 	
 	function frame_update() //generic update done at every frame
 	{
@@ -276,7 +277,7 @@ F.LF.character = function(config)
 		if( This.bdefend>0) This.bdefend--;
 	}
 	
-	var states= //state specific update
+	var states= //state specific processing to different events-----
 	{
 		'0':function(event,K) //standing
 		{ switch (event) {

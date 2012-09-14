@@ -7,6 +7,7 @@ table {
 }
 td {
 	border:1px solid #AAA;
+	width:60px;
 }
 </style>
 </head>
@@ -49,13 +50,15 @@ function define()
 		{	name: 'run_attack',
 			frame: [10,85,85,85,85,86,86,86,87,87,87,87,0],
 			remark:[]
-		}
-		,
+		},
 		{	name: 'being hit by run attack',
 			frame: [0,180,180,180,180,181,181,181,181,182,182,182,182,183,230],
 			remark:['the TU being hit, nothing','affected by effect type 0','','','effect vanishes','starts moving, according to dvx,dvy']
-		}
-		,
+		},
+		{	name: 'being punch to fall at the front',
+			frame: [0,220,221,222,223,226,227,180,180,180,180,181,181,181,181,182,182,182,182,185,185,185,185,185,185,230],
+			remark:['[depends','on','rhythm','of','being','hit',']','stays in air','','','effect vanishes','starts moving','','','','','','','','bounce up, never actually touching the ground','','','','','']
+		},
 		{	name: '',
 			frame: [],
 			remark:[]
@@ -113,7 +116,7 @@ function add_cell(row, content)
 function main(append_at)
 {
 	var view = create_at(append_at, 'div', 'view');
-	view.style.width='1500px';
+	view.style.width='2000px';
 	
 	for( var j=0; j<list.length; j++)
 	{
