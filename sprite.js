@@ -54,7 +54,7 @@ F.sprite.prototype.set_xy=function(P)
 }
 F.sprite.prototype.set_z=function(z)
 {
-	this.el.style.zIndex=z;
+	this.el.style.zIndex=Math.round(z);
 }
 F.sprite.prototype.add_img=function(imgpath,name)
 {

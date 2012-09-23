@@ -34,6 +34,7 @@ function run()
 	perform("var A=new Array(LIM); for(var i=0; i < LIM; i++) A.shift();");
 	perform("var A=[]; for(var i=0; i < LIM; i++) A=A.concat([i]);");
 	perform("var A=new Array(10); for(var i=0; i < LIM; i++){ A.push(i); A.shift();}");
+	perform("var A=[]; for(var i=0; i < LIM; i++){ A=[i];}");
 	
 	/*
 	text.innerHTML+= "---no if\n";

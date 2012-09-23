@@ -23,7 +23,7 @@ F.master_controller = (function()
 	window.onkeyup   = F.double_delegate(window.onkeydown, F.keyup);
 	
 	var mas = new Object();
-	mas.child = new Array();
+	mas.child = [];
 	mas.key = function(e,down)
 	{
 		if (!e) e = window.event;
@@ -54,35 +54,71 @@ F.controller = function (config)
 {
 	this.state={};
 	this.config=config;
+	this.keycode={};
 	this.child=new Array(); //child system that has the method key('control name',down)
+	this.sync=false; //controllers can work in 2 modes, sync and async.
+			//if sync===false,
+			//  a key up-down event will be distributed to all child *immediately*
+			//if sync===true,
+			//  a key up-down event will be buffered, and must be fetch manually.
+	this.buf=new Array();
 	
-	this.key=function(e,down)
+	this.key=function(e,down) //interface to master_controller------
 	{
 		var caught=0;
 		for(var I in this.config)
 		{
-			if ( F.keyname_to_keycode(this.config[I])==e.keyCode)
+			if ( this.keycode[I]==e.keyCode)
 			{
-				if( this.child)
-					for(var J in this.child)
-						this.child[J].key(I,down);
-				
-				this.state[I]=down;
+				if( this.sync===false)
+				{
+					if( this.child)
+						for(var J in this.child)
+							this.child[J].key(I,down);
+					this.state[I]=down;
+				}
+				else
+				{
+					this.buf.push([I,down]);
+				}
 				caught=1;
+				break;
 			}
 		}
 		return caught;
 	}
 	
+	//interface to application--------------------------------------
 	this.clear_states=function()
 	{
 		for(var I in this.config)
 			this.state[I]=0;
 	}
+	this.fetch=function()
+	{
+		for( var i in this.buf)
+		{
+			var I=this.buf[i][0];
+			var down=this.buf[i][1];
+			if( this.child)
+				for(var J in this.child)
+					this.child[J].key(I,down);
+			this.state[I]=down;
+		}
+		this.buf=[];
+	}
+	this.flush=function()
+	{
+		this.buf=[];
+	}
 	
 	//[--constructor
 	F.master_controller.child.push(this);
 	this.clear_states();
+	for(var I in this.config)
+	{
+		this.keycode[I] = F.keyname_to_keycode(this.config[I]);
+	}
 	//--]
 }
 
@@ -91,19 +127,18 @@ F.keyname_to_keycode=function(A)
 	var code;
 	if( A.length==1)
 	{
-		//a-z only
 		var a=A.charCodeAt(0);
 		if ( (a>='a'.charCodeAt(0) && a<='z'.charCodeAt(0)) || (a>='A'.charCodeAt(0) && a<='Z'.charCodeAt(0)) )
 		{
-			A=A.toLowerCase();
-			code = A.charCodeAt(0) - 'a'.charCodeAt(0) + 65;
+			A=A.toUpperCase();
+			code=A.charCodeAt(0);
 		}
 		else if (a>='0'.charCodeAt(0) && a<='9'.charCodeAt(0))
 		{
-			code = A.charCodeAt(0) - '0'.charCodeAt(0) + 48;
+			code=A.charCodeAt(0);
 		}
 		else
-		{
+		{	//different browsers on different platforms are different for symbols
 			switch(A)
 			{
 				case '`': code=192; break;
@@ -122,6 +157,19 @@ F.keyname_to_keycode=function(A)
 		}
 	}
 	return code;
+}
+
+F.keycode_to_keyname=function(code)
+{
+	if( (code>='A'.charCodeAt(0) && code<='Z'.charCodeAt(0)) ||
+	    (code>='0'.charCodeAt(0) && code<='9'.charCodeAt(0)) )
+	{
+		return String.fromCharCode(code).toLowerCase();
+	}
+	else
+	{
+		return ''+code;
+	}
 }
 
 // http://www.quirksmode.org/js/keys.html

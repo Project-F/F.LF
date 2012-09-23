@@ -47,9 +47,16 @@ F.control_player = function(control_config, record)
 	this.state= F.extend_object({},control_config);
 	for ( var j in this.state)
 		this.state[j]=0;
-	this.child= [];
+	this.child=[];
+	this.sync=false;
 	
-	this.frame= function()
+	this.frame=function()
+	{
+		time++;
+		if( this.sync===false)
+			this.fetch();
+	}
+	this.fetch=function()
 	{
 		for (; time===rec[I].t; I++)
 		{
@@ -60,8 +67,9 @@ F.control_player = function(control_config, record)
 			if( I===rec.length-1)
 				I=0;
 		}
-		time++;
 	}
+	this.clear_states=function(){}
+	this.flush=function(){}
 }
 
 } //#endif
