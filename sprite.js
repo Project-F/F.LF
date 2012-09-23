@@ -1,7 +1,7 @@
 //sprite-animator for LF2
 //	accept a bmp object (defined in data file) as config
 //	support switching frames between multiple image files
-//require: F.core/sprite.js, F.core/animator.js
+//require: F.core/sprite.js
 
 if( typeof F=='undefined') F=new Object();
 if( typeof F.LF=='undefined') F.LF=new Object();
@@ -30,14 +30,22 @@ F.LF.sprite=function(bmp, parent)
 		var imgpath='';
 		for( var j in bmp.file[i])
 		{
-			if( typeof bmp.file[i][j] === 'string')
+			if( typeof bmp.file[i][j] === 'string' && 
+			    j.indexOf('file')===0 )
 				imgpath = bmp.file[i][j];
 		}
 		if( imgpath==='')
 			alert( 'cannot find img path in data:\n'+JSON.stringify(bmp.file[i]) );
 		sp.add_img( imgpath, i+'r');
-		var ext=imgpath.lastIndexOf('.');
-		sp.add_img( imgpath.slice(0,ext)+'_mirror'+imgpath.slice(ext), i+'l');
+		if( bmp.file[i]['mirror'])
+		{
+			sp.add_img( bmp.file[i]['mirror'], i+'l');
+		}
+		else
+		{
+			var ext=imgpath.lastIndexOf('.');
+			sp.add_img( imgpath.slice(0,ext)+'_mirror'+imgpath.slice(ext), i+'l');
+		}
 		
 		var ani_con=
 		{

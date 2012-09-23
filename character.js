@@ -28,9 +28,6 @@ F.LF.character = function(config)
 	this.type='character';
 	var This=this;
 	
-	//---hack-------------------------------------------------------
-	//some hacking over the original data to make compatible bahavior
-	
 	//---status-----------------------------------------------------
 	this.hp=100;
 	this.mp=100;
@@ -38,9 +35,25 @@ F.LF.character = function(config)
 	this.fall=0;
 	
 	//the state variable
-	var state=0;
-	var wait=1; //when wait decreases to zero, a frame transition happens
-	var next=999; //next frame
+	var _wait=1; //when wait decreases to zero, a frame transition happens
+	var _next=999; //next frame
+	var _lock=0;
+	//frame transitions are caused differently: going to the next frame, a combo is pressed, being hit, or being burnt
+	//  and they can all happen *at the same TU*, to determine which frame to go to,
+	//  each cause is given an authority which is used to resolve frame transition conflicts.
+	//  _lock=0 means unlocked
+	//  common authority values:
+	//0-9: natural
+	//     0: natural
+	// 1x: combo
+	//    10: move,defend,jump,punch
+	//    15: special move
+	// 2x: interactions
+	//    20: being punch
+	//    25: hit by special attack
+	// 3x: strong interactions
+	//    30: environmental
+	//    35: fire, ice, blast
 	
 	//frame
 	var framePN=0; //previous frame number
@@ -134,7 +147,7 @@ F.LF.character = function(config)
 					{
 						if( effect.i>=-1 && effect.i<=1)
 						{
-							sp.set_xy({x:ps.x + 2.5*effect.i, y:ps.y+ps.z}); //magic number
+							sp.set_xy({x:ps.x + 2.5*effect.i, y:ps.y+ps.z}); //defined oscillation amplitude for effect 0
 							effect.i++;
 							if( effect.i>1)
 								effect.i=-1;
@@ -210,12 +223,8 @@ F.LF.character = function(config)
 		ps.vy+= frame.dvy;
 		
 		//wait for next frame
-		wait=frame.wait;
-		next=frame.next;
-		
-		//set state
-		if(state !== frame.state)
-			state = frame.state;
+		set_wait(frame.wait,0);
+		set_next(frame.next,0);
 		
 		//state specific update
 		var tar=states[frame.state];
@@ -236,45 +245,53 @@ F.LF.character = function(config)
 		sp.set_xy({x:ps.x, y:ps.y+ps.z}); //projection onto screen
 		sp.set_z(ps.z); //z ordering
 		
-		
 		if( ps.y===0) //only on the ground
 		{	//friction proportional to speed
-			ps.vx *= 0.74; //magic number
+			ps.vx *= 0.74; //defined coefficient of friction
 			ps.vz *= 0.74;
-			if( ps.vx>-1 && ps.vx<1) ps.vx=0; //magic number
+			if( ps.vx>-1 && ps.vx<1) ps.vx=0; //defined minimum speed
 			if( ps.vz>-1 && ps.vz<1) ps.vz=0;
 		}
 		
 		if( ps.y<0) //gravity
-			ps.vy+= 1.7; //magic number
+			ps.vy+= 1.7; //defined gravity
 		
 		if( ps.y===0 && ps.vy>0)
-		{ //falling onto the ground
-			var tar=states[frame.state]; //state specific actions
+		{
+			ps.vy=0; //set to zero
+			ps.vx*=0.34; //defined friction when fell onto ground
+			ps.vz*=0.34;
+		}
+		else if( ps.y+ps.vy>=0 && ps.vy>0) //predict falling onto the ground
+		{
+			var tar=states[frame.state]; //state specific processing
 			if( tar) var result=tar('fall_onto_ground');
 			
 			if( result !== undefined && result !== null)
-				frame_trans(result);
+				frame_trans(result, 30);
 			else
 			{
 				switch (frameN)
 				{
 				case 212: //jumping
-					frame_trans(215); //crouch
+					frame_trans(215, 30); //crouch
 					break;
 				default:
-					frame_trans(219); //crouch2
+					frame_trans(219, 30); //crouch2
 				}
 			}
-			
-			ps.vy=0; //set to zero
-			ps.vx*=0.34; //magic number
-			ps.vz*=0.34;
 		}
 		
 		//recovery
-		if( This.fall>0) This.fall--;
-		if( This.bdefend>0) This.bdefend--;
+		if( This.fall>0) This.fall-=0.5; //default fall recover constant
+		if( This.bdefend>0) This.bdefend-=1; //default bdefend recover constant
+		
+		//arest (attack rest)
+		for( var I in arest)
+		{
+			if( arest[I] > 0)
+				arest[I]--;
+		}
 	}
 	
 	var states= //state specific processing to different events-----
@@ -291,24 +308,34 @@ F.LF.character = function(config)
 					frame_trans(5);
 			break;
 			
-			case 'frame':
-			break;
-			
 			case 'combo':
 				switch(K)
 				{
 				case 'run':
-					switch_dir=false;
-					ce.frame_trans(9);
+					frame_trans(9, 10);
 				break;
 				case 'def':
-					ce.frame_trans(110);
+					frame_trans(110, 10);
 				break;
 				case 'jump':
-					ce.frame_trans(210);
+					frame_trans(210, 10);
 				break;
 				case 'att':
-					ce.frame_trans(Math.random()<0.5? 60:65);
+					var vol=make_volume(dat.frame[61].itr); //punch, frame 61
+					if( vol.zwidth===0) vol.zwidth=12; //default zwidth for itr
+					var hit= scene.query(vol,This);
+					var to_punch=true;
+					for( var t in hit)
+					{
+						if( hit[t].cur_state()===16)
+						{
+							frame_trans(70, 10);
+							to_punch=false;
+							break;
+						}
+					}
+					if( to_punch===true)
+						frame_trans(Math.random()<0.5? 60:65, 10);
 				break;
 				}
 			break;
@@ -333,7 +360,7 @@ F.LF.character = function(config)
 			
 			case 'frame':
 				fu.oscillate(5,8);
-				wait=dat.bmp.walking_frame_rate;
+				set_wait(dat.bmp.walking_frame_rate);
 			break;
 			
 			case 'combo':
@@ -352,7 +379,11 @@ F.LF.character = function(config)
 			
 			case 'frame':
 				fu.oscillate(9,11);
-				wait=dat.bmp.running_frame_rate;
+				set_wait(dat.bmp.running_frame_rate);
+			break;
+			
+			case 'state_entry':
+				switch_dir=false;
 			break;
 			
 			case 'combo':
@@ -361,18 +392,17 @@ F.LF.character = function(config)
 				case 'left': case 'right':
 					if(K!=dir)
 					{
-						ce.frame_trans(218);
+						frame_trans(218, 10);
 					}
 					break;
 				case 'def':
-					ce.frame_trans(102);
+					frame_trans(102, 10);
 					break;
 				case 'jump':
-					switch_dir=true;
-					ce.goto_dash();
+					frame_trans(213, 10);
 					break;
 				case 'att':
-					ce.frame_trans(85);
+					frame_trans(85, 10);
 					break;
 				}
 			break;
@@ -382,58 +412,25 @@ F.LF.character = function(config)
 		{ switch (event) {
 			case 'frame':
 				if( frameN===81) //jump_attack
-					next=212; //back to jump
-				
-				var itr = frame.itr;
-				if( itr)
-				if( itr.kind===0)
-				{
-					var vol=make_volume(itr);
-					if( vol.zwidth===0) vol.zwidth=12; //magic number
-					var hit= scene.query(vol,This);
-					for( var t in hit)
-					{
-						if( !arest[ hit[t].id ])
-							hit[t].hit(itr,This); //hit you!
-						
-						//rest: cannot attack you again for some time
-						if( itr.arest) var rest=itr.arest;
-						if( itr.vrest) var rest=itr.vrest;
-						arest[ hit[t].id ] = rest;
-						
-						//attack one enemy only
-						if( itr.arest) break; //TODO: attack the closest
-					}
-				}
+					set_next(212); //back to jump
 			break;
 			
-			case 'frame_exit':
-				if( frameN===0) //going back to standing
-				{
-					switch_dir=true;
-				}
-				else if( frameN===212) //going back to jump
-				{
-					switch_dir=true;
-					if(con.state.left) switch_dir_fun('left');
-					if(con.state.right) switch_dir_fun('right');
-				}
+			case 'TU':
+				interaction();
+			break;
+			
+			case 'state_entry':
+				switch_dir=false;
+			break;
+			case 'state_exit':
+				switch_dir=true;
+				if(con.state.left) switch_dir_fun('left');
+				if(con.state.right) switch_dir_fun('right');
 			break;
 		}},
 		
 		'4':function(event,K) //jump
-		{ switch (event) {
-			case 'TU':
-				if( frameN===212) //is jumping
-				{
-					if( con.state.att)
-					{
-						switch_dir=false;
-						frame_trans(80);
-					}
-				}
-			break;
-			
+		{ switch (event) {			
 			case 'frame':
 				if( frameN===212 && framePN===211)
 				{	//start jumping
@@ -446,19 +443,32 @@ F.LF.character = function(config)
 				}
 			break;
 			
-			case 'combo':
+			case 'TU':
+				if( frameN===212) //is jumping
+				{
+					if( con.state.att)
+					{
+						frame_trans(80, 10);
+					}
+				}
 			break;
 		}},
 		
 		'5':function(event,K) //dash
 		{ switch (event) {
+			case 'state_entry':
+				switch_dir=true;
+				ps.vx= dirh() * dat.bmp.dash_distance;
+				ps.vz= dirv() * dat.bmp.dash_distancez;
+				ps.vy= dat.bmp.dash_height;
+			break;
+			
 			case 'combo':
 				if( K==='att')
 				{
 					if( dirh()==(ps.vx>0?1:-1)) //only if not turning back
 					{
-						switch_dir=false;
-						ce.frame_trans(90);
+						frame_trans(90, 10);
 					}
 				}
 				if( K==='left' || K==='right')
@@ -467,53 +477,104 @@ F.LF.character = function(config)
 					{
 						if( dirh()==(ps.vx>0?1:-1))
 						{//turn back
-							if( frameN===213) ce.frame_trans(214);
-							if( frameN===216) ce.frame_trans(217);
+							if( frameN===213) frame_trans(214, 0);
+							if( frameN===216) frame_trans(217, 0);
 						}
 						else
 						{//turn to front
-							if( frameN===214) ce.frame_trans(213);
-							if( frameN===217) ce.frame_trans(216);
+							if( frameN===214) frame_trans(213, 0);
+							if( frameN===217) frame_trans(216, 0);
 						}
 					}
 				}
 			break;
 		}},
 		
+		'6':function(event,K) //rowing
+		{ switch (event) {
+			case 'state_entry':
+				switch_dir=false;
+			break;
+			case 'state_exit':
+				switch_dir=true;
+			break;
+		}},
+		
+		'7':function(event,K) //defending
+		{ switch (event) {
+			case 'state_entry':
+				switch_dir=false;
+			break;
+			case 'state_exit':
+				switch_dir=true;
+			break;
+			case 'frame':
+				if( frameN===111) set_wait(_wait+4);
+			break;
+		}},
+		
+		'8':function(event,K) //broken defend
+		{ switch (event) {
+			case 'frame':
+				if( frameN===112) set_wait(_wait+4);
+			break;
+		}},
+		
+		'11':function(event,K) //injured
+		{ switch (event) {
+			case 'frame':
+				switch(frameN)
+				{
+					case 220: case 222: case 226:
+						set_wait(_wait+2);
+					break;
+				}
+			break;
+		}},
+		
 		'12':function(event,K) //falling
 		{ switch (event) {
-			case 'TU':
+			case 'state_entry':
+				switch_dir=false;
 			break;
 			
 			case 'frame':
 				switch (frameN)
 				{
 					case 180:
-						next=181;
+						set_next(181);
 						break;
 					case 181:
-						next=182;
+						set_next(182);
 						break;
 					case 182:
-						next=183;
+						set_next(183);
 						break;
 					//
 					case 186:
-						next=187;
+						set_next(187);
 						break;
 					case 187:
-						next=188;
+						set_next(188);
 						break;
 					case 188:
-						next=189;
+						set_next(189);
 						break;
 				}
 			break;
 			
 			case 'fall_onto_ground':
-				if( frameN >= 180 && frameN <= 185)
-					return 230;
-				if( frameN >= 186 && frameN <= 191)
+				if( ps.vx*ps.vx + ps.vy*ps.vy > 200) //defined square of speed to bounce up again
+				{
+					ps.vy *= -0.4; //defined bounce up coefficient
+					if( 180 <= frameN && frameN <= 184)
+						return 185;
+					if( 186 <= frameN && frameN <= 190)
+						return 191;
+				}
+				if( 180 <= frameN && frameN <= 185)
+					return 230; //next frame
+				if( 186 <= frameN && frameN <= 191)
 					return 231;
 			break;
 			
@@ -521,41 +582,57 @@ F.LF.character = function(config)
 			break;
 		}},
 		
+		'14':function(event,K) //lying
+		{ switch (event) {
+			case 'state_exit':
+				This.fall=0;
+				This.bdefend=0;
+				switch_dir=true;
+			break;
+		}},
+		
 		'15':function(event,K) //stop_running, crouch, crouch2, dash_attack
 		{ switch (event) {
-
+			case 'TU':
+				interaction();
+			break;
+			
 			case 'combo':
 				if( frameN===215) //only after jumping
 				{
 					if( K==='def')
 					{
-						switch_dir=false;
-						ce.frame_trans(102);
+						frame_trans(102, 10);
 					}
 					if( K==='jump')
 					{
 						if( con.state.left || con.state.right)
-							ce.goto_dash();
+							frame_trans(213, 10);
 						else
 						{
-							wait+=2;
-							next=210;
+							set_wait(_wait+2, 10);
+							set_next(210, 10);
 						}
 					}
 				}
 			break;
 			
-			case 'frame_exit':
-				if( frameN===0) //going back to standing
-				{
-					if( switch_dir===false)
-					{
-						switch_dir=true; //re-enable switch dir
-						if(con.state.left) switch_dir_fun('left');
-						if(con.state.right) switch_dir_fun('right');
-					}
-				}
+			case 'state_entry':
+				switch_dir=false;
 			break;
+			case 'state_exit':
+				switch_dir=true; //re-enable switch dir
+				if(con.state.left) switch_dir_fun('left');
+				if(con.state.right) switch_dir_fun('right');
+			break;
+		}},
+		
+		'16':function(event,K) //injured 2 (dance of pain)
+		{ switch (event) {
+		}},
+		
+		'x':function(event,K)
+		{ switch (event) {
 		}}
 	}
 	
@@ -570,27 +647,45 @@ F.LF.character = function(config)
 				fu.da.i=a+1;
 			}
 			if( fu.da.i<b && fu.da.up)
-				next=fu.da.i++;
+				set_next(fu.da.i++);
 			else if( fu.da.i>a && !fu.da.up)
-				next=fu.da.i--;
+				set_next(fu.da.i--);
 			if( fu.da.i==b) fu.da.up=false;
 			if( fu.da.i==a) fu.da.up=true;
 		}
 	}
 	
-	var ce= //combo event related functions
+	function interaction() //generic processing of frame interactions
 	{
-		'goto_dash':function()
+		var itr=frame.itr;
+		if( itr)
+		if( itr.kind===0)
 		{
-			ce.frame_trans(213);
-			ps.vx= dirh() * dat.bmp.dash_distance;
-			ps.vz= dirv() * dat.bmp.dash_distancez;
-			ps.vy= dat.bmp.dash_height;
-		},
-		'frame_trans':function(F)
-		{ //frame transitions triggered by combo events will have 1 less wait
-			frame_trans(F);
-			wait--;
+			var vol=make_volume(itr);
+			if( vol.zwidth===0) vol.zwidth=12; //default zwidth for itr
+			var hit= scene.query(vol,This);
+			for( var t in hit)
+			{
+				if( !arest[ hit[t].id ])
+				{
+					hit[t].hit(itr,This); //hit you!
+					
+					//rest: cannot attack you again for some time
+					if( itr.arest) var rest=itr.arest;
+					if( itr.vrest) var rest=itr.vrest;
+					if( rest===undefined) var rest=7;
+					arest[ hit[t].id ] = rest;
+					
+					if( frameN===61 || frameN===66) //if punch
+						set_wait(_wait+3, 10); // stalls for 3 TU
+					else if( frameN===72)
+						set_wait(_wait+4, 10);
+					
+					//attack one enemy only //TODO: attack the closest
+					//by sorting the hit array according to distance
+					if( itr.arest) break;
+				}
+			}
 		}
 	}
 	
@@ -606,27 +701,40 @@ F.LF.character = function(config)
 				switch_dir_fun(K);
 	}
 	
-	function frame_trans(F)
+	function frame_trans(F,au)
 	{
-		if( F===0)
+		set_next(F,au);
+		set_wait(0,au);
+	}
+	
+	function set_wait(value,au)
+	{
+		if(!au) au=0; //authority
+		if( au >= _lock)
 		{
-			//do nothing
+			_lock=au;
+			_wait=value;
 		}
-		else
+	}
+	
+	function set_next(value,au)
+	{
+		if(!au) au=0; //authority
+		if( au >= _lock)
 		{
-			if( F===999)
-				F=0;
-			framePN=frameN;
-			frameN=F;
-				var tar=states[frame.state];
-				if( tar) tar('frame_exit');
-			frame=dat.frame[F];
-			frame_update();
+			_lock=au;
+			_next=value;
 		}
 	}
 	
 	function make_volume(O)
 	{
+		if( !O)
+			return {
+				x:ps.x, y:ps.y, z:ps.z,
+				vx:0, vy:0, w:0, h:0, zwidth:0
+			};
+		
 		if( dir==='right')
 		{
 			return {x:ps.x, y:ps.y, z:ps.z,
@@ -666,6 +774,9 @@ F.LF.character = function(config)
 	//---external interface-----------------------------------------
 	this.TU=function()
 	{
+		//fetch inputs
+		con.fetch();
+		
 		//state
 		state_update();
 		
@@ -674,19 +785,45 @@ F.LF.character = function(config)
 		
 		//combo detector
 		dec.frame();
+	}
+	this.trans=function()
+	{
+		var oldlock=_lock;
+		_lock=0; //reset transition lock
 		
-		//wait
-		if( wait===0)
-			frame_trans(next);
-		else
-			wait--;
-		
-		//arest (attack rest)
-		for( var I in arest)
+		if( _wait===0)
 		{
-			if( arest[I] > 0)
-				arest[I]--;
+			if( _next===0)
+			{
+				//do nothing
+			}
+			else
+			{
+				if( _next===999)
+					_next=0;
+				framePN=frameN;
+				frameN=_next;
+					var tar=states[frame.state];
+					if( tar) tar('frame_exit');
+				
+				if(frame.state !== dat.frame[_next].state)
+				{ //state transition
+					var tar1=states[frame.state];
+					if( tar1) tar1('state_exit');
+					var tar2=states[dat.frame[_next].state];
+					if( tar2) tar2('state_entry');
+				}
+				
+				frame=dat.frame[_next];
+				frame_update();
+				
+				if( oldlock===10) //combo
+					if( _wait>0)
+						_wait-=1;
+			}
 		}
+		else
+			_wait--;
 	}
 	this.set_pos=function(x,y,z)
 	{
@@ -726,41 +863,68 @@ F.LF.character = function(config)
 			return ([make_volume(frame.bdy)]);
 		}
 	}
+	this.cur_state=function()
+	{
+		return frame.state;
+	}
 	this.hit=function(itr, att) //I am being hit by attacker `att`!
 	{
-		//only kind: 0 itr
-		
-		//numerical updates
-		if( itr.injury)	this.health -= itr.injury;
-		if( itr.fall)	this.fall += itr.fall;
-			else	this.fall += 20; //magic number
-		if( itr.bdefend)this.bdefend += itr.bdefend;
-		
-		//effect
+		//kind 0 itr
+		//only type 0 effect
 		effect.dvx = itr.dvx ? att.dirh()*itr.dvx:0;
 		effect.dvy = itr.dvy ? itr.dvy:0;
-		effect.effect = itr.effect? itr.effect:0; //magic number
-		effect.state.event('new');
-		effect.state.event_delay('vanish', 4, 'TU');
+		effect.effect = itr.effect? itr.effect:0; //default effect type
 		
-		//fall
-		var fall=this.fall;
-		if ( 0<fall && fall<=20)
-			next=(220);
-		else if (20<fall && fall<=40)
-			next=(Math.random()<0.5? 222:224);
-		else if (40<fall && fall<=60)
-			next=(226);
-		else if (60<fall)
+		//injury
+		if( itr.injury)	this.health -= itr.injury;
+		
+		if( frame.state===7 &&
+		    (att.ps.x > ps.x)===(dir==='right')) //attacked in front
 		{
-			if( (att.ps.x > ps.x)===(dir==='right')) //attacked in front
-				next=(180);
-			else
-				next=(186); //attacked in back
-			
-			if( !itr.dvy) effect.dvy = -7; //magic number
+			if( itr.bdefend) this.bdefend += itr.bdefend;
+			if( this.bdefend>40) //defined defend break
+			{
+				frame_trans(112, 20);
+			}
+			else //an effective defence
+			{
+				frame_trans(111, 20);
+			}
 		}
-		wait=1;
+		else
+		{
+			if( itr.fall)	this.fall += itr.fall;
+				else	this.fall += 20; //default fall
+			this.bdefend = 45; //lose defend ability immediately
+			
+			//fall
+			var fall=this.fall;
+			if ( 0<fall && fall<=20)
+				frame_trans(220, 20);
+			else if (20<fall && fall<=40)
+				frame_trans(Math.random()<0.5? 222:224, 20);
+			else if (40<fall && fall<60)
+				frame_trans(226, 20);
+			else if (60<=fall) //defined KO
+			{
+				if( (att.ps.x > ps.x)===(dir==='right')) //attacked in front
+					frame_trans(180, 20);
+				else
+					frame_trans(186, 20); //attacked in back
+				
+				if( !itr.dvy) effect.dvy = -6.9; //default dvy when falling
+			}
+		}
+		
+		//effect
+		effect.state.event('new');
+		var vanish=3;
+		switch( _next)
+		{
+			case 111: vanish=4; break;
+			case 112: vanish=5; break;
+		}
+		effect.state.event_delay('vanish', vanish, 'TU');
 	}
 }
 

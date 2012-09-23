@@ -1,7 +1,6 @@
 <head>
 <meta http-equiv='content-type' content='text/html; charset=UTF-8'>
 </head>
-
 <body>
 <textarea id='css' style='position:absolute; visibility:hidden; height:0px;'>
 .F_sprite
@@ -19,32 +18,25 @@ position:absolute;
 {
 position:relative;
 width:650px;
-height:300px;
+height:400px;
 border:1px solid #000;
 }
-.box
+.page
 {
-font-family:Arial,sans;
-width:40px; height:40px; background-color:#CCC; float:left; margin:2px 2px 2px 2px;
-border-radius: 3px;
+position:absolute;
+left:0px;
+top:0px;
+border:1px solid #000;
+visibility:hidden;
+z-index:1000;
 }
 </textarea>
-<div id='help' style='position:absolute; visibility:hidden;'>
-	<div class='box'>T<br /><span style='font-size:12px;'>attack</span></div>
-	<div class='box'>Y<br /><span style='font-size:12px;'>jump</span></div>
-	<div class='box' style='visibility:hidden;'></div>
-	<div class='box'>I</div>
-	<div style='clear:both'></div>
-	<div class='box' style='width:50px; visibility:hidden;'></div>
-	<div class='box'>H<br /><span style='font-size:12px;'>defend</span></div>
-	<div class='box'>J</div>
-	<div class='box'>K</div>
-	<div class='box'>L</div>
-	<div style='clear:both'></div>
-	Press these keys to control me!
-</div>
-<div id='canvas_of_demo3' class='canvas'></div>
+<div id='stage' class='canvas'></div>
+<button id='speed'>slow motion</button>
+<div id='keychanger' class='page'></div>
 <script>
+//----standalone utility----
+{
 F=new Object;
 F.embed_css = function (content)
 {
@@ -59,466 +51,11 @@ F.embed_css = function (content)
 	head.appendChild(style);
 }
 F.embed_css(document.getElementById('css').value);
-
-//character in F.LF
-if( typeof F=='undefined') F=new Object;
-if( typeof F.LF=='undefined') F.LF=new Object;
-if( typeof F.LF.character=='undefined') //#ifndef
-{
-
-F.LF.character = function(con)
-{
-	//data file
-	var dat = bandit;
-	this.name=dat.bmp.name;
-	
-	//---status-----------------------------------------------------
-	this.hp=100;
-	this.mp=100;
-	this.bdefend=70;
-	this.fall=70;
-	
-	//the state variable
-	var state=0;
-	var wait=1; //when wait decreases to zero, an event happens
-	var next=999; //next frame
-	
-	//frame
-	var framePN=0; //previous frame number
-	var frameN=0; //current frame number
-	var frame=dat.frame[0]; //current frame object
-	
-	//---configurations---------------------------------------------
-	
-	var W=dat.bmp.file0.w+1; //width, height of a frame
-	var H=dat.bmp.file0.h+1;
-	
-	//sprite config
-	var sp_con= 
-	{
-		canvas: document.getElementById('canvas_of_demo3'),
-		wh: {x:W,y:H},
-		img:
-		{
-			'l':'bandit_l.png',
-			'r':'bandit_r.png',
-		}
-	}
-	
-	//animator config
-	var ani_con=
-	{
-		x:0,  y:0,   //top left margin of the frames
-		w:W, h:H,    //width, height of a frame
-		gx:10, gy:14,//define a gx*gy grid of frames
-		tar:null,    //target F.sprite, object not exist yet, specify later
-	};
-	
-	//combo list
-	var combo_con = [
-		{ name:'left', seq:['left']},
-		{ name:'right', seq:['right']},
-		{ name:'def', seq:['def']},
-		{ name:'jump', seq:['jump']},
-		{ name:'att', seq:['att']},
-		{ name:'run', seq:['right','right']},
-		{ name:'run', seq:['left','left']},
-		{ name:'hit_Da', seq:['def','down','att']},
-		{ name:'hit_Fa', seq:['def','left','att']},
-		{ name:'hit_Fa', seq:['def','right','att']},
-		{ name:'hit_Ua', seq:['def','up','att']},
-		{ name:'hit_Dj', seq:['def','down','jump']},
-		{ name:'hit_Fj', seq:['def','left','jump']},
-		{ name:'hit_Fj', seq:['def','right','jump']},
-		{ name:'hit_Uj', seq:['def','up','jump']},
-		{ name:'hit_ja', seq:['def','jump','att']}
-	];
-	//combo detector config
-	var dec_con =
-	{
-		rp: {up:99,down:99,left:99,right:99,def:99,jump:99,att:99}, //the same key must repeat no more than X times
-		timeout:30, //time to clear buffer (approx. 1s in 30fps)
-		comboout:8, //the max time interval(in frames) between keys to make a combo
-		callback: combo_event, //callback function when combo detected
-		no_repeat_key: true //eliminate repeated key strokes by browser
-	}
-	
-	function switch_dir_fun(e)
-	{
-		if( dir==='left' && e==='right')
-		{
-			dir='right';
-			sp.switch_img('r');
-		}
-		else if( dir==='right' && e==='left')
-		{
-			dir='left';
-			sp.switch_img('l');
-		}
-	}
-	var switch_dir=true;
-	
-	function dirh()
-	{
-		return (dir==='left'?-1:1);
-	}
-	
-	function dirv()
-	{
-		var d=0;
-		if( con.state.up)   d-=1;
-		if( con.state.down) d+=1;
-		return d;
-	}
-	
-	//---set up-----------------------------------------------------
-	//sprite
-	var sp = new F.sprite(sp_con);
-	sp.x=100; sp.y=0; sp.z=100;
-	sp.vx=0; sp.vy=0; sp.vz=0;
-	sp.set_xy({x:sp.x, y:sp.y+sp.z});
-	
-	//animator
-	ani_con.tar=sp; //specify the target F.sprite
-	var ani = new F.animator(ani_con,'base');
-	
-	//direction switcher
-	var dir='right';
-	
-	//controller
-	// con is a parameter
-	
-	//combodec
-	var dec = new F.combodec(con, dec_con, combo_con);
-	
-	//---internal functions-----------------------------------------
-	
-	function frame_update() //special update done at every frame
-	{		
-		//show frame
-		ani.set_frame(frame.pic);
-		
-		//velocity
-		if( frame.dvx) sp.vx= dirh() * frame.dvx;
-		if( frame.dvz) sp.vz= dirv() * frame.dvz;
-		if( frame.dvy) sp.vy= frame.dvy;
-		
-		//wait for an event
-		wait=frame.wait;
-		next=frame.next;
-		
-		//set state
-		if(state !== frame.state)
-			state = frame.state;
-		
-		//special update
-		var tar=fu[frame.state];
-		if( tar) tar();
-	}
-	
-	function state_update() //update done at every TU (30fps)
-	{
-		var tar=su[frame.state];
-		if( tar) tar();
-		
-		if( sp.y===0)
-		{	//friction
-			if( sp.vx>0) { sp.vx-=1; if( sp.vx<0) sp.vx=0;}
-			if( sp.vx<0) { sp.vx+=1; if( sp.vx>0) sp.vx=0;}
-			if( sp.vz>0) { sp.vz-=1; if( sp.vz<0) sp.vz=0;}
-			if( sp.vz<0) { sp.vz+=1; if( sp.vz>0) sp.vz=0;}
-		}
-		
-		if( sp.y<0) //gravity
-			sp.vy+= 1.9;
-		
-		//position
-		sp.x += sp.vx;
-		sp.z += sp.vz;
-		sp.y += sp.vy;
-		if( sp.y>0) sp.y=0;
-		sp.set_xy({x:sp.x, y:sp.y+sp.z});
-		
-		if( sp.y===0 && sp.vy>0)
-		{//falling onto the ground
-			sp.vy=0;
-			sp.vx*=0.5; //half the speed
-			sp.vz*=0.5;
-			frame_trans(215);
-		}
-	}
-	
-	var su= //update done at every TU (30fps)
-	{
-		'0':function() //standing
-		{
-			var dx=0, dz=0; //to resolve key conflicts
-			if( con.state.up)   dz -=1;
-			if( con.state.down) dz +=1;
-			if( con.state.left) dx -=1;
-			if( con.state.right)dx +=1;
-			if( dx || dz)
-				frame_trans(5);
-		},
-
-		'1':function() //walking
-		{
-			if(con.state.up)    sp.z-=dat.bmp.walking_speedz;
-			if(con.state.down)  sp.z+=dat.bmp.walking_speedz;
-			if(con.state.left)  sp.x-=dat.bmp.walking_speed;
-			if(con.state.right) sp.x+=dat.bmp.walking_speed;
-			
-			var dx=0, dz=0; //to resolve key conflicts
-			if( con.state.up)   dz -=1;
-			if( con.state.down) dz +=1;
-			if( con.state.left) dx -=1;
-			if( con.state.right)dx +=1;
-			if( !dx && !dz)
-				frame_trans(999); //go back to standing
-		},
-
-		'2':function() //running
-		{
-			sp.x+= dirh()*dat.bmp.running_speed;
-			if(con.state.up)    sp.z-=dat.bmp.running_speedz;
-			if(con.state.down)  sp.z+=dat.bmp.running_speedz;
-		},
-
-		'4':function() //jump
-		{
-			if( frameN===212) //is jumping
-				if( con.state.att)
-				{
-					switch_dir=false;
-					frame_trans(80);
-				}
-		},
-
-		'15':function() //stop_running, crouch2, dash_attack
-		{
-			if( next===999 && wait===0) //leaving the current frame
-			{	//and going back to standing
-				if( switch_dir===false)
-				{
-					if(con.state.left) switch_dir_fun('left');
-					if(con.state.right) switch_dir_fun('right');
-					switch_dir=true; //re-enable switch dir
-				}
-			}
-		}
-	}
-	
-	var fu= //special update done at every frame
-	{
-		da:{}, //data area
-		'1':function() //walking
-		{
-			fu.oscillate(5,8);
-			wait=dat.bmp.walking_frame_rate;
-		},
-		'2':function() //running
-		{
-			fu.oscillate(9,11);
-			wait=dat.bmp.running_frame_rate;
-		},
-		'3':function() //punch, jump_attack, ...
-		{
-			if( frameN===81) //jump_attack
-				next=212; //back to jump
-		},
-		'4':function() //jump
-		{
-			if( frameN===212 && framePN===211)
-			{	//start jumping
-				var dx = 0;
-				if( con.state.left)  dx-= 1;
-				if( con.state.right) dx+= 1;
-				sp.vx= dx * dat.bmp.jump_distance;
-				sp.vz= dirv() * dat.bmp.jump_distancez;
-				sp.vy= dat.bmp.jump_height; //upward force
-			}
-		},
-		'6':function() //rowing
-		{
-			if( frameN>=102 && frameN<=104)
-			{
-				sp.vx *= 1.4;
-				wait+=1;
-			}
-		},
-		'15':function() //stop_running, crouch2, dash_attack
-		{
-			if( frameN===218) //is stop_running
-			{
-				sp.vx = dirh()*(5+frame.dvx);
-				wait = Math.floor(wait*1.5);
-			}
-		},
-		oscillate:function(a,b) //oscillate between frame a and b
-		{
-			if( typeof fu.da.i==='undefined' || fu.da.i<a || fu.da.i>b)
-			{
-				fu.da.up=true;
-				fu.da.i=a+1;
-			}
-			if( fu.da.i<b && fu.da.up)
-				next=fu.da.i++;
-			else if( fu.da.i>a && !fu.da.up)
-				next=fu.da.i--;
-			if( fu.da.i==b) fu.da.up=false;
-			if( fu.da.i==a) fu.da.up=true;
-		}
-	}
-	
-	var ce= //combo event
-	{
-		'0':function(K) //standing
-		{
-			switch(K)
-			{
-			case 'run':
-				switch_dir=false;
-				frame_trans(9);
-			break;
-			case 'def':
-				frame_trans(110);
-			break;
-			case 'jump':
-				frame_trans(210);
-			break;
-			case 'att':
-				frame_trans(Math.random()<0.5? 60:65);
-			break;
-			}
-		},
-		'1':function(K) //walking
-		{	//walking same as standing
-			return ce['0'](K);
-		},
-		'2':function(K) //running
-		{
-			switch(K)
-			{
-			case 'left': case 'right':
-				if(K!=dir)
-				{
-					frame_trans(218);
-				}
-			break;
-			case 'def':
-				switch_dir=false;
-				frame_trans(102);
-			break;
-			case 'jump':
-				switch_dir=true;
-				ce.goto_dash();
-			break;
-			}
-		},
-		'5':function(K) //dash
-		{
-			if( K==='att')
-			{
-				switch_dir=false;
-				frame_trans(90);
-			}
-			if( K==='left' || K==='right')
-			{
-				if( K!=dir)
-				{
-					if( dirh()==(sp.vx>0?1:-1))
-					{//turn back
-						if( frameN===213) frame_trans(214);
-						if( frameN===216) frame_trans(217);
-					}
-					else
-					{//turn to front
-						if( frameN===214) frame_trans(213);
-						if( frameN===217) frame_trans(216);
-					}
-				}
-			}
-		},
-		'15':function(K) //stop_running, crouch2, dash attack
-		{
-			if( framePN===212) //previous is jump
-			{
-				if( K==='def')
-					frame_trans(102);
-				if( K==='jump')
-					if( con.state.left || con.state.right)
-						ce.goto_dash();
-					else
-					{
-						wait+=5;
-						next=210;
-					}
-			}
-		},
-		'goto_dash':function()
-		{
-			frame_trans(213);
-			sp.vx= dirh() * dat.bmp.dash_distance;
-			sp.vz= dirv() * dat.bmp.dash_distancez;
-			sp.vy= dat.bmp.dash_height;
-		}
-	}
-	
-	function combo_event(kobj)
-	{
-		var K=kobj.name;
-		
-		var tar=ce[frame.state];
-		if( tar) tar(K);
-		
-		if( K=='left' || K=='right')
-			if( switch_dir)
-				switch_dir_fun(K);
-	}
-	
-	function event()
-	{
-		if( next===0)
-		{
-			//do nothing
-		}
-		else
-		{
-			frame_trans(next);
-		}
-	}
-	
-	function frame_trans(F)
-	{
-		if( F===999)
-			F=0;
-		framePN=frameN;
-		frameN=F;
-		frame=dat.frame[F];
-		frame_update();
-	}
-	
-	//---external functions-----------------------------------------
-	this.frame=function()
-	{
-		state_update();
-		dec.frame();
-		
-		if( wait===0)
-			event();
-		wait--;
-	}
-	this.switch_controller=function(C)
-	{
-		con = C;
-		dec = new F.combodec(con, dec_con, combo_con);
-	}
 }
-
-} //#endif
-/*Project F
+//----F.js----
+{/*Project F
  */
-if( typeof F=='undefined') F=new Object;
+if( typeof F=='undefined') F=new Object();
 if( typeof F.css=='undefined') //#ifndef
 {
 
@@ -548,9 +85,9 @@ F.double_delegate = function (function1, function2)
 	// http://roberthahn.ca/articles/2007/02/02/how-to-use-window-onload-the-right-way/
 	return function() {
 	if (function1)
-	    function1.apply(this,Array.prototype.slice.call(arguments));
+		function1.apply(this,Array.prototype.slice.call(arguments));
 	if (function2)
-	    function2.apply(this,Array.prototype.slice.call(arguments));
+		function2.apply(this,Array.prototype.slice.call(arguments));
 	}
 }
 
@@ -619,7 +156,7 @@ F.to_text = function ( //convert a JSON object to into text
 	TTL		//[optional] time-to-live to prevent infinite looping
 )
 {
-	if( TTL==0) return '';
+	if( TTL===0) return '';
 	if( !TTL) TTL=30;
 	if( !sep) sep='\n';
 	if( !pretext) pretext='';
@@ -661,7 +198,10 @@ F.to_text = function ( //convert a JSON object to into text
 
 } //#endif
 
-if( typeof F=='undefined') F=new Object;
+}
+//----math.js----
+{
+if( typeof F=='undefined') F=new Object();
 if( typeof F.add=='undefined') //#ifndef
 {
 
@@ -712,7 +252,7 @@ F.bezier2_step = function (A,C,B, i,steps)
 	
 	function getstep(x1, x2, stepcount, numofsteps)
 	{
-	      return ((numofsteps - stepcount) * x1 + stepcount * x2) / numofsteps;
+		return ((numofsteps - stepcount) * x1 + stepcount * x2) / numofsteps;
 	}
 }
 
@@ -789,7 +329,85 @@ F.intersect = function ( P1,P2, //line 1
 
 } //#endif
 
-if( typeof F=='undefined') F=new Object;
+}
+//----states.js----
+{//states: nested state transition system, a Hierarchical State Machine ( HSM )
+/*	controls state transitions
+ */
+/*	require: F.js
+ */
+/*	sample state_config =
+ 	{
+		event:
+		{
+			entry: 'state1', //define the init state
+			entry: function(), // OR use an init function
+			{
+				return 'state1';
+			}
+		},
+
+		state1:
+		{
+			event:
+			{
+				'event1': 'state2',  //name of target state
+				//  on  :   to
+				
+				'event2': function(state, //a reference to the `states` instance
+								event,p1,p2) //event and its parameters
+				{
+					alert(this.name); //gives 'state1'
+					alert(this.data.data_of_state1); //give 'hello'
+					return 'state2'; //the returned state name will cause a transition to that state, nothing will happen if returned null/undefined
+				} ,,,
+				
+				entry: function(state,event,prev_state) //called on enter state, passing in previous state
+				{
+					//some init
+				},
+				
+				exit: function, //called on leave state, passing in next state
+				
+				'guard': function(state,event,p1,p2) //if you consult a particular event of a state, you get its return value without causing any state transition
+				{
+					return allow_transition(p1,p2);
+				},
+			},
+
+			data:
+			{	//memory associated with each state
+				data_of_state1: 'hello'
+			},
+
+			state1_1:
+			{
+				event:
+				{
+					'event1':'state1',   //transit to superstate
+					'event2':'state1_2', //to other state within a superstate
+					'event3':'state2',   //out of the immediate superstate
+				},
+			},
+
+			state1_2: { ,,, },
+		
+		},
+
+		state2:
+		{
+			,,,
+		} ,,, //more states
+	};
+ */
+/*
+ The critical feature of hierarchy is:
+   -a state machine in a certain state is also in that state's superstate.
+   -an event/consult is propagated to the superstate of current state until handled.
+   -in a state transition, a machine must entry a state's superstate before entering that state.
+   -in a state transition, a machine must exit the current state before exiting the current state's superstate.
+ */
+if( typeof F=='undefined') F=new Object();
 if( typeof F.states=='undefined') //#ifndef
 {
 
@@ -961,7 +579,7 @@ F.states.prototype.event=function(event/*,arguments,,,*/)
 		{
 			if( this.evlay[I].i > -1)
 				this.evlay[I].i--;
-			if( this.evlay[I].i == 0)
+			if( this.evlay[I].i===0)
 				this.event.apply(this, this.evlay[I].arg); //fire a delayed event
 		}
 	}
@@ -972,17 +590,23 @@ F.states.prototype.event_delay=function(event,delay,frame/*,arguments,,,*/) //fi
 {
 	if( !this.valid_event(event))
 		return;
-
-	var res = F.arr_search( this.evlay, function(E){return E.i<=0;} );
-	if( res == -1)
-	{	//expand the array if all slots are full
-		this.evlay.push();
-		res = this.evlay.length-1;
+	if( delay===0)
+	{
+		this.event.apply(this, [event].concat(Array.prototype.slice.call(arguments,3)) );
 	}
-	this.evlay[res].event = event;
-	this.evlay[res].i = delay;
-	this.evlay[res].frame = frame;
-	this.evlay[res].arg = [event].concat(Array.prototype.slice.call(arguments,3)); //preserve arguments
+	else
+	{
+		var res = F.arr_search( this.evlay, function(E){return E.i<=0;} );
+		if( res == -1)
+		{	//expand the array if all slots are full
+			this.evlay.push();
+			res = this.evlay.length-1;
+		}
+		this.evlay[res].event = event;
+		this.evlay[res].i = delay;
+		this.evlay[res].frame = frame;
+		this.evlay[res].arg = [event].concat(Array.prototype.slice.call(arguments,3)); //preserve arguments
+	}
 }
 
 F.states.prototype.consult=function(consultant,
@@ -1048,7 +672,7 @@ F.states.prototype.search=function(A, //search for the path of state A
 
 F.states.prototype.valid_substate=function(S)
 {
-	return !(	S==null    ||
+	return !(	S===null   ||
 			S=='event' ||
 			S=='name'  ||
 			S=='data'  ||
@@ -1058,7 +682,7 @@ F.states.prototype.valid_substate=function(S)
 
 F.states.prototype.valid_event=function(E)
 {
-	return !(	E==null    ||
+	return !(	E===null   ||
 			E=='entry' ||
 			E=='exit'  ||
 		0);
@@ -1127,14 +751,16 @@ F.states.prototype.show_log=function(
 
 } //#endif
 
-//sprite system
+}
+//----sprite.js----
+{//sprite system
 /*	display and control sprites on page using <div> tag
  */
 /*	sample config for F_sprite
 	{
 		canvas: canvas,   //canvas *object*
 		wh: {x:100,y:100},// width and height
-		img:              //image list
+		img:              //[optional] image list, can call `add_img()` later
 		{
 			'tag name':'image path',,,  //the first image is visible
 		},
@@ -1143,7 +769,7 @@ F.states.prototype.show_log=function(
 /*	require: style.css
  */
 
-if( typeof F=='undefined') F=new Object;
+if( typeof F=='undefined') var F=new Object();
 if( typeof F.sprite=='undefined') //#ifndef
 {
 
@@ -1165,6 +791,7 @@ F.sprite = function (config)
 	this.cur_img=null;
 	
 	this.set_wh(config.wh);
+	if( config.img)
 	for ( var I in config.img)
 	{
 		this.add_img(config.img[I], I);
@@ -1179,6 +806,10 @@ F.sprite.prototype.set_xy=function(P)
 {
 	this.el.style.left=P.x+'px';
 	this.el.style.top=P.y+'px';
+}
+F.sprite.prototype.set_z=function(z)
+{
+	this.el.style.zIndex=Math.round(z);
 }
 F.sprite.prototype.add_img=function(imgpath,name)
 {
@@ -1218,7 +849,7 @@ F.sprite.prototype.switch_img=function(name)
 	}
 	this.cur_img=name;
 }
-F.sprite.prototype.delete=function()
+F.sprite.prototype.remove=function()
 {
 	this.el.parentNode.removeChild(this.el);
 }
@@ -1316,7 +947,7 @@ F.animator_set = function(set_config, base)
 {
 	if(!set_config)
 		return null;
-	var A=new Object;
+	var A=new Object();
 	
 	for( var I in set_config)
 	{
@@ -1336,121 +967,9 @@ F.animator_set = function(set_config, base)
 
 } //#endif
 
-//keyboard controller system
-/*	maintains a table of key states
- */
-/*	require: F.js
- */
-
-if( typeof F=='undefined') F=new Object;
-if( typeof F.master_controller=='undefined') //#ifndef
-{
-
-F.keydown = function(e)
-{
-	return F.master_controller.key(e,1);
 }
-F.keyup = function(e)
-{
-	return F.master_controller.key(e,0);
-}
-
-F.master_controller = (function()
-{
-	window.onkeydown = F.double_delegate(window.onkeydown, F.keydown);
-	window.onkeyup   = F.double_delegate(window.onkeydown, F.keyup);
-	
-	var mas = new Object;
-	mas.child = new Array();
-	mas.key = function(e,down)
-	{
-		if (!e) e = window.event;
-		for (var I in this.child)
-		{
-			if ( this.child[I].key(e,down))
-				break;//if one controller catches a key, the next controller will never receive an event
-		}
-	}
-	return mas;
-}());
-
-//keyboard controller
-/*	sample config for F.controller (control keys)
-	{
-		up:'h', down:'n', left:'b', 'control name':'control key',,, 
-	}
-	-each control key must be an alphabet
-	-F.controller doesnt care the name of each control
-*/
-/*	on the other hand, there can be other controllers with compatible definition and behavior,
-	(e.g. AI controller, network player controller, record playback controller)
-	-has the member variables `state`, `config`, `child`
-	-has the method `clear_states`
-	-behavior: call the `key` method of every member of `child` when keys arrive
- */
-F.controller = function (config)
-{
-	this.state={};
-	this.config=config;
-	this.child=new Array(); //child system that has the method key('control name',down)
-	
-	this.key=function(e,down)
-	{
-		var caught=0;
-		for(var I in this.config)
-		{
-			if ( F.keyname_to_keycode(this.config[I])==e.keyCode)
-			{
-				if( this.child)
-					for(var J in this.child)
-						this.child[J].key(I,down);
-				
-				this.state[I]=down;
-				caught=1;
-			}
-		}
-		return caught;
-	}
-	
-	this.clear_states=function()
-	{
-		for(var I in this.config)
-			this.state[I]=0;
-	}
-	
-	//[--constructor
-	F.master_controller.child.push(this);
-	this.clear_states();
-	//--]
-}
-
-F.keyname_to_keycode=function(A)
-{
-	if( A.length==1)
-	{
-		//a-z only
-		var a=A.charCodeAt(0);
-		if ( (a>='a'.charCodeAt(0) && a<='z'.charCodeAt(0)) || (a>='A'.charCodeAt(0) && a<='Z'.charCodeAt(0)) )
-		{
-			A=A.toLowerCase();
-			return code = A.charCodeAt(0) - 'a'.charCodeAt(0) + 65;
-		}
-		
-		if (a>='0'.charCodeAt(0) && a<='9'.charCodeAt(0))
-		{
-			return code = A.charCodeAt(0) - '0'.charCodeAt(0) + 48;
-		}
-	}
-	
-	//TODO: other keys not supported
-	//	for a good list, see controller1.html
-}
-
-// http://www.quirksmode.org/js/keys.html
-// http://unixpapa.com/js/key.html
-} //endif
-
-//require controller.js
+//----combodec.js----
+{//require controller.js
 
 //combo detection system
 /*	maintains a clean sequence of pressed keys
@@ -1475,7 +994,7 @@ F.keyname_to_keycode=function(A)
 	];
 */
 
-if( typeof F=='undefined') F=new Object;
+if( typeof F=='undefined') F=new Object();
 if( typeof F.combodec=='undefined') //#ifndef
 {
 
@@ -1563,39 +1082,345 @@ F.combodec = function (controller, config, combo)
 
 } //#endif
 
-bandit={
+}
+//----collision.js----
+{//collision detection system
+/*	perform
+	-rectangle-rectangle intersect test
+	-triangle-triangle intersect test
+	-circle-circle intersect test
+	-line-line intersect test
+	-point in rectangle test
+ */
+/*	require: math.js
+ */
+
+if(typeof F=='undefined') F=new Object();
+if( typeof F.collision=='undefined') //#ifndef
+{
+
+F.collision = new Object();
+
+//rectangle-rectangle intersect test
+F.collision.rect=function(rect1,rect2) //rect1,rect2: object in form {left,top,right,bottom}
+{
+	if(rect1.bottom < rect2.top)	return false;
+	if(rect1.top > rect2.bottom)	return false;
+	if(rect1.right < rect2.left)	return false;
+	if(rect1.left > rect2.right)	return false;
+
+	return true;
+}
+F.collision.normalize_rect=function(rect)
+{
+	if( rect.left > rect.right && rect.top > rect.bottom)
+		return {left:rect.right, right:rect.left,
+			top:rect.bottom, bottom:rect.top}
+	else if( rect.left > rect.right)
+		return {left:rect.right, right:rect.left,
+			top:rect.top, bottom:rect.bottom}
+	else if( rect.top > rect.bottom)
+		return {left:rect.left, right:rect.right,
+			top:rect.bottom, bottom:rect.top}
+	else
+		return rect;
+}
+
+//triangle-triangle intersect test
+//	return true if triangle A touchs B,
+//	  including cases when one is completely contained in other
+F.collision.tri=function(A,B) //triangle A,B: array of points in form {x,y}
+{
+	/*I assume this a fast enough implementation
+	  it performs a max. of 18 cross products when the triangles do not intersect.
+	    if they do, there may be fewer calculations
+	*/
+	var aa=F.signed_area;
+	var I=[];
+	//line line intersect tests
+	var tested=0;
+	I.push( aa(A[0],A[1],B[0])>0, aa(A[0],A[1],B[1])>0,
+		aa(A[0],B[0],B[1])>0, aa(A[1],B[0],B[1])>0
+	);if(test())return true;
+	I.push(         I[1]        , aa(A[0],A[1],B[2])>0,
+		aa(A[0],B[1],B[2])>0, aa(A[1],B[1],B[2])>0
+	);if(test())return true;
+	I.push(         I[0]        ,         I[5]        ,
+		aa(A[0],B[0],B[2])>0, aa(A[1],B[0],B[2])>0
+	);if(test())return true;
+	I.push( aa(A[1],A[2],B[0])>0, aa(A[1],A[2],B[1])>0,
+			I[3]        , aa(A[2],B[0],B[1])>0
+	);if(test())return true;
+	I.push(         I[13]       , aa(A[1],A[2],B[2])>0,
+			I[7]        , aa(A[2],B[1],B[2])>0
+	);if(test())return true;
+	I.push(         I[12]       ,         I[17]       ,
+			I[11]       , aa(A[2],B[0],B[2])>0
+	);if(test())return true;
+	I.push( aa(A[0],A[2],B[0])>0, aa(A[0],A[2],B[1])>0,
+			I[2]        ,         I[15]       
+	);if(test())return true;
+	I.push(         I[25]       , aa(A[0],A[2],B[2])>0,
+			I[6]        ,         I[19]       
+	);if(test())return true;
+	I.push(         I[24]       ,         I[29]       ,
+			I[10]       ,         I[23]       
+	);if(test())return true;
+	
+	function test()
+	{
+		var i=tested; tested+=4;
+		return (I[i]!=I[i+1] && I[i+2]!=I[i+3]);
+	}
+	
+	//point inside triangle test
+	var AinB=[ I[2]==I[6]&&I[6]==!I[10],   //true if A[0] is inside triangle B
+		   I[3]==I[7]&&I[7]==!I[11],   //  A[1]
+		   I[15]==I[19]&&I[19]==!I[23]]//  A[2]
+	
+	var BinA=[ I[0]==I[12]&&I[12]==!I[24], //true if B[0] is inside triangle A
+		   I[1]==I[13]&&I[13]==!I[25], //  B[1]
+		   I[9]==I[21]&&I[21]==!I[33]];//  B[2]
+	
+	if (AinB[0] && AinB[1] && AinB[2])  return true;
+	if (BinA[0] && BinA[1] && BinA[2])  return true;
+	
+	return false;
+	//another possible implementation http://jgt.akpeters.com/papers/Moller97/tritri.html
+}
+
+//circle-circle intersect test
+F.collision.circle = function (A,B) //A,B: circle in form {center,radius},
+						// where center is in form {x,y}, radius is a number
+{
+	return (F.distance(A.center,B.center) <= A.radius+B.radius);
+}
+
+//line-line intersect test
+//	return true if line AB intersects CD
+F.collision.line = function (A,B,C,D) //A,B,C,D: points in form {x,y}
+{
+	var res = (F.signed_area(A,B,C)>0 != F.signed_area(A,B,D)>0) &&
+		  (F.signed_area(C,D,A)>0 != F.signed_area(C,D,B)>0);
+	return res;
+}
+
+//point in rectangle test
+F.collision.point_in_rect=function(P,R) //P: point in form {x,y}, R: object in form {left,top,right,bottom}
+{
+	return (F.inbetween(P.x,R.left,R.right) && F.inbetween(P.y,R.top,R.bottom));
+}
+
+} //#endif
+
+}
+//----controller.js----
+{//keyboard controller system
+/*	maintains a table of key states
+ */
+/*	require: F.js
+ */
+
+if( typeof F=='undefined') F=new Object();
+if( typeof F.master_controller=='undefined') //#ifndef
+{
+
+F.keydown = function(e)
+{
+	return F.master_controller.key(e,1);
+}
+F.keyup = function(e)
+{
+	return F.master_controller.key(e,0);
+}
+
+F.master_controller = (function()
+{
+	window.onkeydown = F.double_delegate(window.onkeydown, F.keydown);
+	window.onkeyup   = F.double_delegate(window.onkeydown, F.keyup);
+	
+	var mas = new Object();
+	mas.child = [];
+	mas.key = function(e,down)
+	{
+		if (!e) e = window.event;
+		for (var I in this.child)
+		{
+			if ( this.child[I].key(e,down))
+				break;//if one controller catches a key, the next controller will never receive an event
+		}
+	}
+	return mas;
+}());
+
+//keyboard controller
+/*	sample config for F.controller (control keys)
+	{
+		up:'h', down:'n', left:'b', 'control name':'control key',,, 
+	}
+	-each control key must be an alphabet
+	-F.controller doesnt care the name of each control
+*/
+/*	on the other hand, there can be other controllers with compatible definition and behavior,
+	(e.g. AI controller, network player controller, record playback controller)
+	-has the member variables `state`, `config`, `child`
+	-has the method `clear_states`
+	-behavior: call the `key` method of every member of `child` when keys arrive
+ */
+F.controller = function (config)
+{
+	this.state={};
+	this.config=config;
+	this.keycode={};
+	this.child=new Array(); //child system that has the method key('control name',down)
+	this.sync=false; //controllers can work in 2 modes, sync and async.
+			//if sync===false,
+			//  a key up-down event will be distributed to all child *immediately*
+			//if sync===true,
+			//  a key up-down event will be buffered, and must be fetch manually.
+	this.buf=new Array();
+	
+	this.key=function(e,down) //interface to master_controller------
+	{
+		var caught=0;
+		for(var I in this.config)
+		{
+			if ( this.keycode[I]==e.keyCode)
+			{
+				if( this.sync===false)
+				{
+					if( this.child)
+						for(var J in this.child)
+							this.child[J].key(I,down);
+					this.state[I]=down;
+				}
+				else
+				{
+					this.buf.push([I,down]);
+				}
+				caught=1;
+				break;
+			}
+		}
+		return caught;
+	}
+	
+	//interface to application--------------------------------------
+	this.clear_states=function()
+	{
+		for(var I in this.config)
+			this.state[I]=0;
+	}
+	this.fetch=function()
+	{
+		for( var i in this.buf)
+		{
+			var I=this.buf[i][0];
+			var down=this.buf[i][1];
+			if( this.child)
+				for(var J in this.child)
+					this.child[J].key(I,down);
+			this.state[I]=down;
+		}
+		this.buf=[];
+	}
+	this.flush=function()
+	{
+		this.buf=[];
+	}
+	
+	//[--constructor
+	F.master_controller.child.push(this);
+	this.clear_states();
+	for(var I in this.config)
+	{
+		this.keycode[I] = F.keyname_to_keycode(this.config[I]);
+	}
+	//--]
+}
+
+F.keyname_to_keycode=function(A)
+{
+	var code;
+	if( A.length==1)
+	{
+		var a=A.charCodeAt(0);
+		if ( (a>='a'.charCodeAt(0) && a<='z'.charCodeAt(0)) || (a>='A'.charCodeAt(0) && a<='Z'.charCodeAt(0)) )
+		{
+			A=A.toUpperCase();
+			code=A.charCodeAt(0);
+		}
+		else if (a>='0'.charCodeAt(0) && a<='9'.charCodeAt(0))
+		{
+			code=A.charCodeAt(0);
+		}
+		else
+		{	//different browsers on different platforms are different for symbols
+			switch(A)
+			{
+				case '`': code=192; break;
+				case '-': code=189; break;
+				case '=': code=187; break;
+				case '[': code=219; break;
+				case ']': code=221; break;
+				case '\\': code=220; break;
+				case ';': code=186; break;
+				case "'": code=222; break;
+				case ',': code=188; break;
+				case '.': code=190; break;
+				case '/': code=191; break;
+				case ' ': code=32; break;
+			}
+		}
+	}
+	return code;
+}
+
+F.keycode_to_keyname=function(code)
+{
+	if( (code>='A'.charCodeAt(0) && code<='Z'.charCodeAt(0)) ||
+	    (code>='0'.charCodeAt(0) && code<='9'.charCodeAt(0)) )
+	{
+		return String.fromCharCode(code).toLowerCase();
+	}
+	else
+	{
+		return ''+code;
+	}
+}
+
+// http://www.quirksmode.org/js/keys.html
+// http://unixpapa.com/js/key.html
+} //endif
+
+}
+//----controller-recorder.js----
+{
+}
+//----bandit.js----
+{bandit={
 	"bmp": {
 		"name": "Bandit",
 		"head": "sprite\\sys\\bandit_f.bmp",
 		"small": "sprite\\sys\\bandit_s.bmp",
-		"file0": {
-			"file(0-69)": "sprite\\sys\\bandit_0.bmp",
-			"w": 79,
-			"h": 79,
-			"row": 10,
-			"col": 7
-		},
-		"file1": {
-			"file(70-139)": "sprite\\sys\\bandit_1.bmp",
-			"w": 79,
-			"h": 79,
-			"row": 10,
-			"col": 7
-		},
-		"file2": {
-			"file(140-209)": "sprite\\sys\\bandit_0b.bmp",
-			"w": 79,
-			"h": 79,
-			"row": 10,
-			"col": 7
-		},
-		"file3": {
-			"file(210-279)": "sprite\\sys\\bandit_1b.bmp",
-			"w": 79,
-			"h": 79,
-			"row": 10,
-			"col": 7
-		},
+		"file": [
+			{
+				"file(0-69)": "../bandit_0.png",
+				"mirror":"../bandit_0_mirror.png",
+				"w": 79,
+				"h": 79,
+				"row": 10,
+				"col": 7
+			},
+			{
+				"file(70-139)": "../bandit_1.png",
+				"mirror":"../bandit_1_mirror.png",
+				"w": 79,
+				"h": 79,
+				"row": 10,
+				"col": 7
+			}
+		],
 		"walking_frame_rate": 3,
 		"walking_speed": 4,
 		"walking_speedz": 2,
@@ -2453,22 +2278,20 @@ bandit={
 				"dvz": 0
 			},
 			"bdy": [
-				[
-					{
-						"kind": 0,
-						"x": 17,
-						"y": 21,
-						"w": 23,
-						"h": 59
-					},
-					{
-						"kind": 0,
-						"x": 4,
-						"y": 64,
-						"w": 14,
-						"h": 15
-					}
-				],
+				{
+					"kind": 0,
+					"x": 17,
+					"y": 21,
+					"w": 23,
+					"h": 59
+				},
+				{
+					"kind": 0,
+					"x": 4,
+					"y": 64,
+					"w": 14,
+					"h": 15
+				},
 				{
 					"kind": 0,
 					"x": 36,
@@ -6330,22 +6153,20 @@ bandit={
 				"dvz": 0
 			},
 			"bdy": [
-				[
-					{
-						"kind": 0,
-						"x": 46,
-						"y": 18,
-						"w": 22,
-						"h": 25
-					},
-					{
-						"kind": 0,
-						"x": 28,
-						"y": 29,
-						"w": 21,
-						"h": 33
-					}
-				],
+				{
+					"kind": 0,
+					"x": 46,
+					"y": 18,
+					"w": 22,
+					"h": 25
+				},
+				{
+					"kind": 0,
+					"x": 28,
+					"y": 29,
+					"w": 21,
+					"h": 33
+				},
 				{
 					"kind": 0,
 					"x": 13,
@@ -7211,62 +7032,1307 @@ bandit={
 	}
 }
 
-demo3();
+}
+//----scene.js----
+{//scene in F.LF
+//	keeps a list a characters and items
+//	scrolling across the background
+/*	vol= //the volume format
+	{
+		x, y, z, //the reference point
+		vx, vy, vw, vh, //the volume defined with reference to (x,y,z)
+		zwidth	//zwidth spans into the +ve and -ve direction
+	}
+ */
+//require: F.core/collision.js, F.core/math.js
 
-function demo3() {
+if( typeof F=='undefined') F=new Object();
+if( typeof F.LF=='undefined') F.LF=new Object();
+if( typeof F.LF.scene=='undefined') //#ifndef
+{
+
+F.LF.scene = function(config)
+{
+	this.obj = new Array(); //all objects
+}
+
+F.LF.scene.prototype.add = function(C)
+{
+	this.obj.push(C);
+	C.id = this.obj.length-1;
+}
+
+F.LF.scene.prototype.query = function(volume, This) //return the all the objects whose `bdy` intersect with `volume`
+							//except `This`
+{
+	var result=[];
+	for ( var i in this.obj)
+	{
+		if( this.obj[i] === This)
+			continue;
+		
+		var bdy = this.obj[i].bdy();
+		for( var j in bdy)
+		{
+			if( this.intersect( volume, bdy[j] ))
+			{
+				result.push( this.obj[i] );
+				break;
+			}
+		}
+	}
+	return result;
+}
+
+F.LF.scene.prototype.intersect = function(A,B) //return true if volume A and B intersect
+{
+	var AV={ left:A.x+A.vx, top:A.y+A.vy, right:A.x+A.vx+A.w, bottom:A.y+A.vy+A.h };
+	var BV={ left:B.x+B.vx, top:B.y+B.vy, right:B.x+B.vx+B.w, bottom:B.y+B.vy+B.h };
+	
+	return ( F.collision.rect( AV, BV ) && F.collision.rect(
+	{ left:A.z-A.zwidth, top:0, right:A.z+A.zwidth, bottom:1 },
+	{ left:B.z-B.zwidth, top:0, right:B.z+B.zwidth, bottom:1 }
+	));
+}
+
+F.LF.scene.prototype.distance=function(A,B) //return the distance between object A and B, as measured at center points
+{
+	var dx= (A.x+A.centerx) - (B.x+B.centerx);
+	var dy= A.y - B.y;
+	var dz= (A.z+A.centery) - (B.z+B.centery);
+	
+	return Math.sqrt(dx*dx+dy*dy+dz*dz);
+}
+
+} //#endif
+
+}
+//----F.LF/sprite.js----
+{//sprite-animator for LF2
+//	accept a bmp object (defined in data file) as config
+//	support switching frames between multiple image files
+//require: F.core/sprite.js
+
+if( typeof F=='undefined') F=new Object();
+if( typeof F.LF=='undefined') F.LF=new Object();
+if( typeof F.LF.sprite=='undefined') //#ifndef
+{
+
+F.LF.sprite=function(bmp, parent)
+{
+	var num_of_images = this.num_of_images = bmp.file.length;
+	var w = this.w = bmp.file[0].w+1;
+	var h = this.h = bmp.file[0].h+1;
+	var ani = this.ani = new Array();
+	this.dir = 'right';
+	this.cur_img = '0r';
+	
+	var sp_con=
+	{
+		canvas: parent,
+		wh: {x:w,y:h},
+		img:{}
+	}
+	var sp = this.sp = new F.sprite(sp_con);
+	
+	for( var i=0; i<bmp.file.length; i++)
+	{
+		var imgpath='';
+		for( var j in bmp.file[i])
+		{
+			if( typeof bmp.file[i][j] === 'string' && 
+			    j.indexOf('file')===0 )
+				imgpath = bmp.file[i][j];
+		}
+		if( imgpath==='')
+			alert( 'cannot find img path in data:\n'+JSON.stringify(bmp.file[i]) );
+		sp.add_img( imgpath, i+'r');
+		if( bmp.file[i]['mirror'])
+		{
+			sp.add_img( bmp.file[i]['mirror'], i+'l');
+		}
+		else
+		{
+			var ext=imgpath.lastIndexOf('.');
+			sp.add_img( imgpath.slice(0,ext)+'_mirror'+imgpath.slice(ext), i+'l');
+		}
+		
+		var ani_con=
+		{
+			x:0,  y:0,   //top left margin of the frames
+			w:bmp.file[i].w+1, h:bmp.file[i].h+1,    //width, height of a frame
+			gx:bmp.file[i].row, gy:bmp.file[i].col,//define a gx*gy grid of frames
+			tar:sp     //target F.sprite
+		};
+		var ani_mirror_con=
+		{
+			x:(bmp.file[i].row-1)*(bmp.file[i].w+1),  y:0,
+			w:-bmp.file[i].w-1, h:bmp.file[i].h+1,
+			gx:bmp.file[i].row, gy:bmp.file[i].col,
+			tar:sp
+		};
+		ani[i+'r'] = new F.animator(ani_con);
+		ani[i+'l'] = new F.animator(ani_mirror_con);
+	}
+}
+
+F.LF.sprite.prototype.show_pic = function(I)
+{
+	var slot=0;
+	for( var k in this.ani)
+	{
+		var i = I - this.ani[k].config.gx * this.ani[k].config.gy;
+		if( i >= 0)
+		{
+			I = i;
+			slot++;
+		}
+	}
+	this.cur_img = slot + (this.dir==='right' ? 'r':'l');
+	this.ani[this.cur_img].set_frame(I);
+	this.sp.switch_img(this.cur_img);
+	this.w = this.ani[this.cur_img].config.w;
+	this.w = this.w > 0 ? this.w:-this.w;
+	this.h = this.ani[this.cur_img].config.h;
+}
+
+F.LF.sprite.prototype.switch_lr = function(dir) //switch to `dir`
+{
+	var I = this.ani[this.cur_img].I;
+	this.dir=dir;
+	this.cur_img = this.cur_img.slice(0,-1) + (this.dir==='right' ? 'r':'l');
+	this.sp.switch_img(this.cur_img);
+	this.ani[this.cur_img].set_frame(I);
+}
+
+F.LF.sprite.prototype.set_xy = function(P)
+{
+	this.sp.set_xy(P);
+}
+F.LF.sprite.prototype.set_z = function(Z)
+{
+	this.sp.set_z(Z);
+}
+
+} //#endif
+}
+//----character.js----
+{//character in F.LF
+/*	config=
+	{
+		controller,
+		scene //F.LF.scene object
+	}
+ */
+/*
+reference:
+-milestone
+http://home.i-cable.com/starskywong/en_progress1.html
+-interaction
+http://lf-empire.de/en/lf2-empire/data-changing/frame-elements/174-itr-interaction
+-effects
+http://www.lf-empire.de/en/lf2-empire/data-changing/reference-pages/181-effects
+ */
+
+if( typeof F=='undefined') F=new Object();
+if( typeof F.LF=='undefined') F.LF=new Object();
+if( typeof F.LF.character=='undefined') //#ifndef
+{
+
+F.LF.character = function(config)
+{
+	//data file
+	var dat = bandit;
+	this.name=dat.bmp.name;
+	this.type='character';
+	var This=this;
+	
+	//---status-----------------------------------------------------
+	this.hp=100;
+	this.mp=100;
+	this.bdefend=0;
+	this.fall=0;
+	
+	//the state variable
+	var _wait=1; //when wait decreases to zero, a frame transition happens
+	var _next=999; //next frame
+	var _lock=0;
+	//frame transitions are caused differently: going to the next frame, a combo is pressed, being hit, or being burnt
+	//  and they can all happen *at the same TU*, to determine which frame to go to,
+	//  each cause is given an authority which is used to resolve frame transition conflicts.
+	//  _lock=0 means unlocked
+	//  common authority values:
+	//0-9: natural
+	//     0: natural
+	// 1x: combo
+	//    10: move,defend,jump,punch
+	//    15: special move
+	// 2x: interactions
+	//    20: being punch
+	//    25: hit by special attack
+	// 3x: strong interactions
+	//    30: environmental
+	//    35: fire, ice, blast
+	
+	//frame
+	var framePN=0; //previous frame number
+	var frameN=0; //current frame number
+	var frame=dat.frame[0]; //current frame object
+	
+	//itr
+	var arest=[]; //a history of what have been hit by me recently
+	
+	//---configurations---------------------------------------------
+	var log={enable: false};
+	if( log.enable)
+	{
+		log=document.getElementById('log');
+		log.enable=true;
+	}
+	
+	//combo list
+	var combo_con = [
+		{ name:'left', seq:['left']},
+		{ name:'right', seq:['right']},
+		{ name:'def', seq:['def']},
+		{ name:'jump', seq:['jump']},
+		{ name:'att', seq:['att']},
+		{ name:'run', seq:['right','right']},
+		{ name:'run', seq:['left','left']},
+		{ name:'hit_Da', seq:['def','down','att']},
+		{ name:'hit_Fa', seq:['def','left','att']},
+		{ name:'hit_Fa', seq:['def','right','att']},
+		{ name:'hit_Ua', seq:['def','up','att']},
+		{ name:'hit_Dj', seq:['def','down','jump']},
+		{ name:'hit_Fj', seq:['def','left','jump']},
+		{ name:'hit_Fj', seq:['def','right','jump']},
+		{ name:'hit_Uj', seq:['def','up','jump']},
+		{ name:'hit_ja', seq:['def','jump','att']}
+	];
+	//combo detector config
+	var dec_con =
+	{
+		rp: {up:99,down:99,left:99,right:99,def:99,jump:99,att:99}, //the same key must repeat no more than X times
+		timeout:30, //time to clear buffer (approx. 1s in 30fps)
+		comboout:8, //the max time interval(in frames) between keys to make a combo
+		callback: combo_event, //callback function when combo detected
+		no_repeat_key: true //eliminate repeated key strokes by browser
+	}
+	
+	//---internal state machines------------------------------------
+	
+	function switch_dir_fun(e)
+	{
+		if( dir==='left' && e==='right')
+		{
+			dir='right';
+			sp.switch_lr('right');
+		}
+		else if( dir==='right' && e==='left')
+		{
+			dir='left';
+			sp.switch_lr('left');
+		}
+	}
+	var switch_dir=true;
+	
+	function dirh()
+	{
+		return (dir==='left'?-1:1);
+	}
+	
+	function dirv()
+	{
+		var d=0;
+		if( con.state.up)   d-=1;
+		if( con.state.down) d+=1;
+		return d;
+	}
+	
+	var effect_state_config=
+	{
+		event:
+		{
+			entry: 'vanish'
+		},
+		
+		active:
+		{
+			event:
+			{
+				'TU': function()
+				{
+					if( effect.effect===0) //mechanical injury
+					{
+						if( effect.i>=-1 && effect.i<=1)
+						{
+							sp.set_xy({x:ps.x + 2.5*effect.i, y:ps.y+ps.z}); //defined oscillation amplitude for effect 0
+							effect.i++;
+							if( effect.i>1)
+								effect.i=-1;
+						}
+						else
+							effect.i=-1;
+					}
+				},
+				'vanish': 'vanish'
+			}
+		},
+		
+		vanish:
+		{
+			event:
+			{
+				entry: function(S)
+				{
+					sp.set_xy({x:ps.x, y:ps.y+ps.z});
+					S.event_delay('dvxyz',1,'TU');
+				},
+				'dvxyz': function()
+				{
+					ps.vx += effect.dvx;
+					ps.vy += effect.dvy;
+				},
+				'new': 'active'
+			}
+		}
+	}
+	
+	//---set up-----------------------------------------------------
+	
+	//sprite
+	var sp = new F.LF.sprite(dat.bmp, document.getElementById('stage'));
+	
+	//position, velocity
+	var ps = this.ps = {x:0, y:0, z:0, vx:0, vy:0, vz:0};
+	
+	//direction switcher
+	var dir='right';
+	
+	//controller
+	var con = config.controller;
+	if( log.enable)
+		var pri_con = new F.controller({log:'g'});
+	
+	//combodec
+	var dec = new F.combodec(con, dec_con, combo_con);
+	
+	//scene object
+	var scene = config.scene;
+	
+	//effect
+	var effect=
+	{
+		i:0,
+		state: new F.states(effect_state_config),
+		dvx:0, dvy:0,
+		effect:0
+	};
+	
+	//---the processing pipeline------------------------------------
+	
+	function frame_update() //generic update done at every frame
+	{
+		//show frame
+		sp.show_pic(frame.pic);
+		
+		//velocity
+		ps.vx+= dirh() * frame.dvx;
+		ps.vz+= dirv() * frame.dvz;
+		ps.vy+= frame.dvy;
+		
+		//wait for next frame
+		set_wait(frame.wait,0);
+		set_next(frame.next,0);
+		
+		//state specific update
+		var tar=states[frame.state];
+		if( tar) tar('frame');
+	}
+	
+	function state_update() //generic update done at every TU (30fps)
+	{
+		//state specific actions
+		var tar=states[frame.state];
+		if( tar) tar('TU'); //a TU event
+		
+		//position
+		ps.x += ps.vx;
+		ps.z += ps.vz;
+		ps.y += ps.vy;
+		if( ps.y>0) ps.y=0; //never below the ground
+		sp.set_xy({x:ps.x, y:ps.y+ps.z}); //projection onto screen
+		sp.set_z(ps.z); //z ordering
+		
+		if( ps.y===0) //only on the ground
+		{	//friction proportional to speed
+			ps.vx *= 0.74; //defined coefficient of friction
+			ps.vz *= 0.74;
+			if( ps.vx>-1 && ps.vx<1) ps.vx=0; //defined minimum speed
+			if( ps.vz>-1 && ps.vz<1) ps.vz=0;
+		}
+		
+		if( ps.y<0) //gravity
+			ps.vy+= 1.7; //defined gravity
+		
+		if( ps.y===0 && ps.vy>0)
+		{
+			ps.vy=0; //set to zero
+			ps.vx*=0.34; //defined friction when fell onto ground
+			ps.vz*=0.34;
+		}
+		else if( ps.y+ps.vy>=0 && ps.vy>0) //predict falling onto the ground
+		{
+			var tar=states[frame.state]; //state specific processing
+			if( tar) var result=tar('fall_onto_ground');
+			
+			if( result !== undefined && result !== null)
+				frame_trans(result, 30);
+			else
+			{
+				switch (frameN)
+				{
+				case 212: //jumping
+					frame_trans(215, 30); //crouch
+					break;
+				default:
+					frame_trans(219, 30); //crouch2
+				}
+			}
+		}
+		
+		//recovery
+		if( This.fall>0) This.fall-=0.5; //default fall recover constant
+		if( This.bdefend>0) This.bdefend-=1; //default bdefend recover constant
+		
+		//arest (attack rest)
+		for( var I in arest)
+		{
+			if( arest[I] > 0)
+				arest[I]--;
+		}
+	}
+	
+	var states= //state specific processing to different events-----
+	{
+		'0':function(event,K) //standing
+		{ switch (event) {
+			case 'TU':
+				var dx=0, dz=0; //to resolve key conflicts
+				if( con.state.up)   dz -=1;
+				if( con.state.down) dz +=1;
+				if( con.state.left) dx -=1;
+				if( con.state.right)dx +=1;
+				if( dx || dz)
+					frame_trans(5);
+			break;
+			
+			case 'combo':
+				switch(K)
+				{
+				case 'run':
+					frame_trans(9, 10);
+				break;
+				case 'def':
+					frame_trans(110, 10);
+				break;
+				case 'jump':
+					frame_trans(210, 10);
+				break;
+				case 'att':
+					var vol=make_volume(dat.frame[61].itr); //punch, frame 61
+					if( vol.zwidth===0) vol.zwidth=12; //default zwidth for itr
+					var hit= scene.query(vol,This);
+					var to_punch=true;
+					for( var t in hit)
+					{
+						if( hit[t].cur_state()===16)
+						{
+							frame_trans(70, 10);
+							to_punch=false;
+							break;
+						}
+					}
+					if( to_punch===true)
+						frame_trans(Math.random()<0.5? 60:65, 10);
+				break;
+				}
+			break;
+		}},
+		
+		'1':function(event,K) //walking
+		{ switch (event) {
+			case 'TU':
+				if(con.state.up)    ps.z-=dat.bmp.walking_speedz;
+				if(con.state.down)  ps.z+=dat.bmp.walking_speedz;
+				if(con.state.left)  ps.x-=dat.bmp.walking_speed;
+				if(con.state.right) ps.x+=dat.bmp.walking_speed;
+				
+				var dx=0, dz=0; //to resolve key conflicts
+				if( con.state.up)   dz -=1;
+				if( con.state.down) dz +=1;
+				if( con.state.left) dx -=1;
+				if( con.state.right)dx +=1;
+				if( !dx && !dz)
+					frame_trans(999); //go back to standing
+			break;
+			
+			case 'frame':
+				fu.oscillate(5,8);
+				set_wait(dat.bmp.walking_frame_rate);
+			break;
+			
+			case 'combo':
+				//walking same as standing
+				states['0'](event,K);
+			break;
+		}},
+		
+		'2':function(event,K) //running
+		{ switch (event) {
+			case 'TU':
+				//to maintain the velocity against friction
+				ps.vx= dirh() * dat.bmp.running_speed;
+				ps.vz= dirv() * dat.bmp.running_speedz;
+			break;
+			
+			case 'frame':
+				fu.oscillate(9,11);
+				set_wait(dat.bmp.running_frame_rate);
+			break;
+			
+			case 'state_entry':
+				switch_dir=false;
+			break;
+			
+			case 'combo':
+				switch(K)
+				{
+				case 'left': case 'right':
+					if(K!=dir)
+					{
+						frame_trans(218, 10);
+					}
+					break;
+				case 'def':
+					frame_trans(102, 10);
+					break;
+				case 'jump':
+					frame_trans(213, 10);
+					break;
+				case 'att':
+					frame_trans(85, 10);
+					break;
+				}
+			break;
+		}},
+		
+		'3':function(event,K) //punch, jump_attack, run_attack, ...
+		{ switch (event) {
+			case 'frame':
+				if( frameN===81) //jump_attack
+					set_next(212); //back to jump
+			break;
+			
+			case 'TU':
+				interaction();
+			break;
+			
+			case 'state_entry':
+				switch_dir=false;
+			break;
+			case 'state_exit':
+				switch_dir=true;
+				if(con.state.left) switch_dir_fun('left');
+				if(con.state.right) switch_dir_fun('right');
+			break;
+		}},
+		
+		'4':function(event,K) //jump
+		{ switch (event) {			
+			case 'frame':
+				if( frameN===212 && framePN===211)
+				{	//start jumping
+					var dx = 0;
+					if( con.state.left)  dx-= 1;
+					if( con.state.right) dx+= 1;
+					ps.vx= dx * dat.bmp.jump_distance;
+					ps.vz= dirv() * dat.bmp.jump_distancez;
+					ps.vy= dat.bmp.jump_height; //upward force
+				}
+			break;
+			
+			case 'TU':
+				if( frameN===212) //is jumping
+				{
+					if( con.state.att)
+					{
+						frame_trans(80, 10);
+					}
+				}
+			break;
+		}},
+		
+		'5':function(event,K) //dash
+		{ switch (event) {
+			case 'state_entry':
+				switch_dir=true;
+				ps.vx= dirh() * dat.bmp.dash_distance;
+				ps.vz= dirv() * dat.bmp.dash_distancez;
+				ps.vy= dat.bmp.dash_height;
+			break;
+			
+			case 'combo':
+				if( K==='att')
+				{
+					if( dirh()==(ps.vx>0?1:-1)) //only if not turning back
+					{
+						frame_trans(90, 10);
+					}
+				}
+				if( K==='left' || K==='right')
+				{
+					if( K!=dir)
+					{
+						if( dirh()==(ps.vx>0?1:-1))
+						{//turn back
+							if( frameN===213) frame_trans(214, 0);
+							if( frameN===216) frame_trans(217, 0);
+						}
+						else
+						{//turn to front
+							if( frameN===214) frame_trans(213, 0);
+							if( frameN===217) frame_trans(216, 0);
+						}
+					}
+				}
+			break;
+		}},
+		
+		'6':function(event,K) //rowing
+		{ switch (event) {
+			case 'state_entry':
+				switch_dir=false;
+			break;
+			case 'state_exit':
+				switch_dir=true;
+			break;
+		}},
+		
+		'7':function(event,K) //defending
+		{ switch (event) {
+			case 'state_entry':
+				switch_dir=false;
+			break;
+			case 'state_exit':
+				switch_dir=true;
+			break;
+			case 'frame':
+				if( frameN===111) set_wait(_wait+4);
+			break;
+		}},
+		
+		'8':function(event,K) //broken defend
+		{ switch (event) {
+			case 'frame':
+				if( frameN===112) set_wait(_wait+4);
+			break;
+		}},
+		
+		'11':function(event,K) //injured
+		{ switch (event) {
+			case 'frame':
+				switch(frameN)
+				{
+					case 220: case 222: case 226:
+						set_wait(_wait+2);
+					break;
+				}
+			break;
+		}},
+		
+		'12':function(event,K) //falling
+		{ switch (event) {
+			case 'state_entry':
+				switch_dir=false;
+			break;
+			
+			case 'frame':
+				switch (frameN)
+				{
+					case 180:
+						set_next(181);
+						break;
+					case 181:
+						set_next(182);
+						break;
+					case 182:
+						set_next(183);
+						break;
+					//
+					case 186:
+						set_next(187);
+						break;
+					case 187:
+						set_next(188);
+						break;
+					case 188:
+						set_next(189);
+						break;
+				}
+			break;
+			
+			case 'fall_onto_ground':
+				if( ps.vx*ps.vx + ps.vy*ps.vy > 200) //defined square of speed to bounce up again
+				{
+					ps.vy *= -0.4; //defined bounce up coefficient
+					if( 180 <= frameN && frameN <= 184)
+						return 185;
+					if( 186 <= frameN && frameN <= 190)
+						return 191;
+				}
+				if( 180 <= frameN && frameN <= 185)
+					return 230; //next frame
+				if( 186 <= frameN && frameN <= 191)
+					return 231;
+			break;
+			
+			case 'combo':
+			break;
+		}},
+		
+		'14':function(event,K) //lying
+		{ switch (event) {
+			case 'state_exit':
+				This.fall=0;
+				This.bdefend=0;
+				switch_dir=true;
+			break;
+		}},
+		
+		'15':function(event,K) //stop_running, crouch, crouch2, dash_attack
+		{ switch (event) {
+			case 'TU':
+				interaction();
+			break;
+			
+			case 'combo':
+				if( frameN===215) //only after jumping
+				{
+					if( K==='def')
+					{
+						frame_trans(102, 10);
+					}
+					if( K==='jump')
+					{
+						if( con.state.left || con.state.right)
+							frame_trans(213, 10);
+						else
+						{
+							set_wait(_wait+2, 10);
+							set_next(210, 10);
+						}
+					}
+				}
+			break;
+			
+			case 'state_entry':
+				switch_dir=false;
+			break;
+			case 'state_exit':
+				switch_dir=true; //re-enable switch dir
+				if(con.state.left) switch_dir_fun('left');
+				if(con.state.right) switch_dir_fun('right');
+			break;
+		}},
+		
+		'16':function(event,K) //injured 2 (dance of pain)
+		{ switch (event) {
+		}},
+		
+		'x':function(event,K)
+		{ switch (event) {
+		}}
+	}
+	
+	var fu= //frame related functions
+	{
+		da:{}, //data area
+		oscillate:function(a,b) //oscillate between frame a and b
+		{
+			if( typeof fu.da.i==='undefined' || fu.da.i<a || fu.da.i>b)
+			{
+				fu.da.up=true;
+				fu.da.i=a+1;
+			}
+			if( fu.da.i<b && fu.da.up)
+				set_next(fu.da.i++);
+			else if( fu.da.i>a && !fu.da.up)
+				set_next(fu.da.i--);
+			if( fu.da.i==b) fu.da.up=false;
+			if( fu.da.i==a) fu.da.up=true;
+		}
+	}
+	
+	function interaction() //generic processing of frame interactions
+	{
+		var itr=frame.itr;
+		if( itr)
+		if( itr.kind===0)
+		{
+			var vol=make_volume(itr);
+			if( vol.zwidth===0) vol.zwidth=12; //default zwidth for itr
+			var hit= scene.query(vol,This);
+			for( var t in hit)
+			{
+				if( !arest[ hit[t].id ])
+				{
+					hit[t].hit(itr,This); //hit you!
+					
+					//rest: cannot attack you again for some time
+					if( itr.arest) var rest=itr.arest;
+					if( itr.vrest) var rest=itr.vrest;
+					if( rest===undefined) var rest=7;
+					arest[ hit[t].id ] = rest;
+					
+					if( frameN===61 || frameN===66) //if punch
+						set_wait(_wait+3, 10); // stalls for 3 TU
+					else if( frameN===72)
+						set_wait(_wait+4, 10);
+					
+					//attack one enemy only //TODO: attack the closest
+					//by sorting the hit array according to distance
+					if( itr.arest) break;
+				}
+			}
+		}
+	}
+	
+	function combo_event(kobj)
+	{
+		var K=kobj.name;
+		//combo event
+		var tar=states[frame.state];
+		if( tar) tar('combo',K);
+		
+		if( K=='left' || K=='right')
+			if( switch_dir)
+				switch_dir_fun(K);
+	}
+	
+	function frame_trans(F,au)
+	{
+		set_next(F,au);
+		set_wait(0,au);
+	}
+	
+	function set_wait(value,au)
+	{
+		if(!au) au=0; //authority
+		if( au >= _lock)
+		{
+			_lock=au;
+			_wait=value;
+		}
+	}
+	
+	function set_next(value,au)
+	{
+		if(!au) au=0; //authority
+		if( au >= _lock)
+		{
+			_lock=au;
+			_next=value;
+		}
+	}
+	
+	function make_volume(O)
+	{
+		if( !O)
+			return {
+				x:ps.x, y:ps.y, z:ps.z,
+				vx:0, vy:0, w:0, h:0, zwidth:0
+			};
+		
+		if( dir==='right')
+		{
+			return {x:ps.x, y:ps.y, z:ps.z,
+				vx: O.x,
+				vy: O.y,
+				w : O.w,
+				h : O.h,
+				zwidth: O.zwidth? O.zwidth:0
+			}
+		}
+		else
+		{
+			var vx = sp.w-O.x-O.w;
+			return {x:ps.x+vx, y:ps.y, z:ps.z,
+				vx: vx,
+				vy: O.y,
+				w : O.w,
+				h : O.h,
+				zwidth: O.zwidth? O.zwidth:0
+			}
+		}
+	}
+
+	function logg(X)
+	{
+		if( log.enable)
+		{
+			if( pri_con.state.log)
+			{
+				log.value+= X;
+				if( log.value.length>10000) log.value='';
+				log.scrollTop+=20;
+			}
+		}
+	}
+	
+	//---external interface-----------------------------------------
+	this.TU=function()
+	{
+		//fetch inputs
+		con.fetch();
+		
+		//state
+		state_update();
+		
+		//effect
+		effect.state.event('TU');
+		
+		//combo detector
+		dec.frame();
+	}
+	this.trans=function()
+	{
+		var oldlock=_lock;
+		_lock=0; //reset transition lock
+		
+		if( _wait===0)
+		{
+			if( _next===0)
+			{
+				//do nothing
+			}
+			else
+			{
+				if( _next===999)
+					_next=0;
+				framePN=frameN;
+				frameN=_next;
+					var tar=states[frame.state];
+					if( tar) tar('frame_exit');
+				
+				if(frame.state !== dat.frame[_next].state)
+				{ //state transition
+					var tar1=states[frame.state];
+					if( tar1) tar1('state_exit');
+					var tar2=states[dat.frame[_next].state];
+					if( tar2) tar2('state_entry');
+				}
+				
+				frame=dat.frame[_next];
+				frame_update();
+				
+				if( oldlock===10) //combo
+					if( _wait>0)
+						_wait-=1;
+			}
+		}
+		else
+			_wait--;
+	}
+	this.set_pos=function(x,y,z)
+	{
+		ps.x=x; ps.y=y; ps.z=z;
+	}
+	this.dirv=dirv;
+	this.dirh=dirh;
+	this.bdy=function() //return the array of bdy volume of the current frame
+	{
+		if( frame.bdy instanceof Array)
+		{ //many bdy
+			if( frame.bdy.length === 2)
+			{ //unroll the loop
+				return ([make_volume(frame.bdy[0]),
+					make_volume(frame.bdy[1])
+				]);
+			}
+			else if( frame.bdy.length === 3)
+			{ //unroll the loop
+				return ([make_volume(frame.bdy[0]),
+					make_volume(frame.bdy[1]),
+					make_volume(frame.bdy[2])
+				]);
+			}
+			else
+			{
+				var B=[];
+				for( var i in frame.bdy)
+				{
+					B.push( make_volume(frame.bdy[i]) );
+				}
+				return B;
+			}
+		}
+		else
+		{ //1 bdy only
+			return ([make_volume(frame.bdy)]);
+		}
+	}
+	this.cur_state=function()
+	{
+		return frame.state;
+	}
+	this.hit=function(itr, att) //I am being hit by attacker `att`!
+	{
+		//kind 0 itr
+		//only type 0 effect
+		effect.dvx = itr.dvx ? att.dirh()*itr.dvx:0;
+		effect.dvy = itr.dvy ? itr.dvy:0;
+		effect.effect = itr.effect? itr.effect:0; //default effect type
+		
+		//injury
+		if( itr.injury)	this.health -= itr.injury;
+		
+		if( frame.state===7 &&
+		    (att.ps.x > ps.x)===(dir==='right')) //attacked in front
+		{
+			if( itr.bdefend) this.bdefend += itr.bdefend;
+			if( this.bdefend>40) //defined defend break
+			{
+				frame_trans(112, 20);
+			}
+			else //an effective defence
+			{
+				frame_trans(111, 20);
+			}
+		}
+		else
+		{
+			if( itr.fall)	this.fall += itr.fall;
+				else	this.fall += 20; //default fall
+			this.bdefend = 45; //lose defend ability immediately
+			
+			//fall
+			var fall=this.fall;
+			if ( 0<fall && fall<=20)
+				frame_trans(220, 20);
+			else if (20<fall && fall<=40)
+				frame_trans(Math.random()<0.5? 222:224, 20);
+			else if (40<fall && fall<60)
+				frame_trans(226, 20);
+			else if (60<=fall) //defined KO
+			{
+				if( (att.ps.x > ps.x)===(dir==='right')) //attacked in front
+					frame_trans(180, 20);
+				else
+					frame_trans(186, 20); //attacked in back
+				
+				if( !itr.dvy) effect.dvy = -6.9; //default dvy when falling
+			}
+		}
+		
+		//effect
+		effect.state.event('new');
+		var vanish=3;
+		switch( _next)
+		{
+			case 111: vanish=4; break;
+			case 112: vanish=5; break;
+		}
+		effect.state.event_delay('vanish', vanish, 'TU');
+	}
+}
+
+} //#endif
+
+}
+//----keychanger.js----
+{//a key changer utility for LF2
+//require: F.core/controller.js
+
+if( typeof F=='undefined') F=new Object();
+if( typeof F.LF=='undefined') F.LF=new Object();
+if( typeof F.LF.keychanger=='undefined') //#ifndef
+{
+
+F.LF.keychanger=function (append_at, controllers)
+{
+	append_at.style.textAlign='center';
+	
+	for( var i=0; i<controllers.length; i++)
+	{
+		add_player(controllers[i], i);
+	}
+	
+	//the ok button
+	var rule = create_at(append_at,'div');
+	rule.style.clear='both';
+	var ok = create_at(append_at,'button');
+	ok.innerHTML='close';
+	ok.style.width='120px';
+	ok.onclick= function()
+	{	//when click, the ok button will try to purge everything
+		ok.onclick= null;
+		append_at.parentNode.removeChild(append_at);
+	}
+	
+	function add_player(con, num)
+	{
+		if( num!==0)
+		{
+			var sep=create_at(append_at, 'div');
+			sep.style.float='left';
+			sep.innerHTML='&nbsp;&nbsp;&nbsp;&nbsp;';
+		}
+		
+		var table=create_at(append_at, 'table');
+		table.style.float='left';
+		
+		var row=[];
+		row[0]=create_at(table, 'tr');
+		var head= add_cell(row[0],'player '+(num+1));
+		head.colSpan='2';
+		
+		var i=1;
+		for( var I in con.config)
+		{
+			row[i]=create_at(table, 'tr');
+			add_pair(row[i],I);
+			i++;
+		}
+		
+		F.LF.keychanger.active=false;
+		
+		function add_pair(R,name)
+		{
+			add_cell(R,name);
+			var cell=add_cell(R, con.config[name]);
+			cell.onclick=function()
+			{
+				if( !F.LF.keychanger.active)
+				{
+					F.LF.keychanger.active=true;
+					var This=this;
+					This.style.backgroundColor= "#FAA";
+					var hold=window.onkeydown;
+					window.onkeydown=function(e)
+					{
+						if (!e) e = window.event;
+						var value=e.keyCode;
+						window.onkeydown=hold;
+						cell.innerHTML=F.keycode_to_keyname(value);
+						con.config[name]=F.keycode_to_keyname(value);
+						con.keycode[name]=value;
+						This.style.backgroundColor= "#EEE";
+						F.LF.keychanger.active=false;
+					}
+				}
+			}
+		}
+	}
+	
+	function create_at(parent, tag, id)
+	{
+		var E = document.createElement(tag);
+		parent.appendChild(E);
+		if( id)
+			E.id = id;
+		return E;
+	}
+
+	function add_cell(row, content)
+	{
+		var td = create_at(row, 'td')
+		td.innerHTML= content;
+		td.style.border="1px solid #AAA";
+		td.style.backgroundColor= "#EEE";
+		td.style.fontFamily="monospace";
+		td.style.width='40px';
+		td.style.textAlign='center';
+		return td;
+	}
+}
+
+}
+
+}
+//----demo2.js----
+{function demoSep12() {
 
 //set up controller-------------
 var control_con =
 {
 	up:'i',down:'k',left:'j',right:'l',def:'h',jump:'y',att:'t'
-}
-var control = new F.controller(control_con);
-
-//controller recorder and player
-function control_player(control_con)
-{
-	var rec=[
-{"t":13,"k":"left","d":1},{"t":16,"k":"left","d":1},{"t":16,"k":"left","d":0},{"t":16,"k":"right","d":1},{"t":19,"k":"right","d":1},{"t":19,"k":"right","d":0},{"t":19,"k":"left","d":1},{"t":22,"k":"right","d":1},{"t":22,"k":"left","d":1},{"t":22,"k":"left","d":0},{"t":24,"k":"right","d":1},{"t":24,"k":"right","d":0},{"t":32,"k":"right","d":1},{"t":33,"k":"right","d":1},{"t":33,"k":"right","d":0},{"t":36,"k":"right","d":1},{"t":38,"k":"right","d":1},{"t":38,"k":"right","d":0},{"t":71,"k":"def","d":1},{"t":75,"k":"def","d":1},{"t":75,"k":"def","d":0},{"t":87,"k":"left","d":1},{"t":88,"k":"left","d":1},{"t":88,"k":"left","d":0},{"t":90,"k":"left","d":1},{"t":94,"k":"left","d":1},{"t":94,"k":"left","d":0},{"t":105,"k":"jump","d":1},{"t":108,"k":"att","d":1},{"t":110,"k":"jump","d":1},{"t":110,"k":"jump","d":0},{"t":114,"k":"att","d":1},{"t":114,"k":"att","d":0},{"t":127,"k":"left","d":1},{"t":131,"k":"left","d":1},{"t":131,"k":"left","d":0},{"t":136,"k":"jump","d":1},{"t":141,"k":"jump","d":1},{"t":141,"k":"jump","d":0},{"t":148,"k":"right","d":1},{"t":157,"k":"jump","d":1},{"t":160,"k":"jump","d":1},{"t":160,"k":"jump","d":0},{"t":169,"k":"jump","d":1},{"t":172,"k":"jump","d":1},{"t":172,"k":"jump","d":0},{"t":185,"k":"right","d":1},{"t":185,"k":"right","d":0},{"t":190,"k":"right","d":1},{"t":192,"k":"jump","d":1},{"t":196,"k":"jump","d":1},{"t":196,"k":"jump","d":0},{"t":201,"k":"right","d":1},{"t":201,"k":"right","d":0},{"t":203,"k":"left","d":1},{"t":207,"k":"jump","d":1},{"t":210,"k":"jump","d":1},{"t":210,"k":"jump","d":0},{"t":230,"k":"jump","d":1},{"t":233,"k":"jump","d":1},{"t":233,"k":"jump","d":0},{"t":239,"k":"left","d":1},{"t":239,"k":"left","d":0},{"t":239,"k":"right","d":1},{"t":248,"k":"right","d":1},{"t":248,"k":"right","d":0},{"t":250,"k":"jump","d":1},{"t":254,"k":"jump","d":1},{"t":254,"k":"jump","d":0},{"t":266,"k":"att","d":1},{"t":271,"k":"att","d":1},{"t":271,"k":"att","d":0},{"t":279,"k":"att","d":1},{"t":282,"k":"att","d":1},{"t":282,"k":"att","d":0},{"t":285,"k":"att","d":1},{"t":288,"k":"att","d":1},{"t":288,"k":"att","d":0},{"t":291,"k":"att","d":1},{"t":294,"k":"att","d":1},{"t":294,"k":"att","d":0},{"t":296,"k":"att","d":1},{"t":299,"k":"att","d":1},{"t":299,"k":"att","d":0}
-];
-	var I=0;
-	var time=0;
-	this.state= F.extend_object({},control_con);
-	for ( var j in this.state)
-		this.state[j]=0;
-	this.child= [];
-	
-	this.frame= function()
-	{
-		for (; time===rec[I].t; I++)
-		{
-			for( var i in this.child)
-				this.child[i].key(rec[I].k, rec[I].d);
-			this.state[rec[I].k] = rec[I].d;
-			
-			if( I===rec.length-1)
-			{
-				I=0;
-				character.switch_controller(control);
-				var help=document.getElementById('help');
-				help.style.visibility='visible';
-			}
-		}
-		time++;
-	}
 };
-var control_play = new control_player(control_con);
+var control_con2 =
+{
+	up:'w',down:'x',left:'a',right:'d',def:'z',jump:'q',att:'s'
+};
+var control = new F.controller(control_con);
+var control2 = new F.controller(control_con2);
+control.sync=true;
+control2.sync=true;
+
+//user interface----------------
+document.getElementById('speed').onclick=function()
+{
+	if( slow_motion===false)
+	{
+		this.innerHTML='normal';
+		slow_motion=true;
+	}
+	else
+	{
+		this.innerHTML='slow motion';
+		slow_motion=false;
+	}
+}
+var keychanger = document.getElementById('keychanger');
+F.LF.keychanger(keychanger, [control, control2]);
+keychanger.style.backgroundColor='#FFF';
+keychanger.style.visibility='visible';
+
+//set up scene------------------
+var scene = new F.LF.scene();
 
 //set up a character------------
-var character = new F.LF.character(control_play);
+var character = new F.LF.character( {controller: control, scene:scene} ); //choose from `control` and `control_play`
+var character2 = new F.LF.character( {controller: control2, scene:scene} );
+scene.add( character); character.set_pos(400,0,150);
+scene.add( character2); character2.set_pos(250,0,50);
 
 //---run time-------------------
-var timer30 = setInterval(frame30,1000/32);
+var timer30 = setInterval(frame30,1000/30.8);
+var counter=0;
+var slow_motion=false;
 function frame30()
 {
-	control_play.frame();
-	character.frame();
+	if( counter++===14)
+		counter=0;
+	if( slow_motion && counter!==0) return;
+	
+	character.TU();
+	character2.TU();
+	character.trans();
+	character2.trans();
+	
+	calculate_fps(1);
 }
 
-};
+function calculate_fps(mul)
+{
+	if(!this.t) this.t=0;
+	var ot=this.time;
+	this.time = new Date().getTime();
+	var diff = this.time-ot;
+}
+
+}
+}
+demoSep12();
 </script>
 </body>

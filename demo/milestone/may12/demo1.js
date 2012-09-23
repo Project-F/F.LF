@@ -1,17 +1,17 @@
 head.js('character.js',
-	'../../../F.core/F.js',
-	'../../../F.core/math.js',
-	'../../../F.core/states.js',
-	'../../../F.core/sprite.js',
-	'../../../F.core/combodec.js',
-	'../../../F.core/controller.js',
+	'../../../../F.core/F.js',
+	'../../../../F.core/math.js',
+	'../../../../F.core/states.js',
+	'../../../../F.core/sprite.js',
+	'../../../../F.core/combodec.js',
+	'../../../../F.core/controller.js',
 	demo1
 );
 
 function demo1() {
 
 //load CSS
-F.css('../../../F.core/style.css');
+F.css('../../../../F.core/style.css');
 
 //---configurations--------------
 var state_con =
@@ -551,8 +551,8 @@ var sp_con= //sprite config
 	wh: {x:L,y:L},
 	img:
 	{
-		'l':'../bandit_l.png',
-		'r':'../bandit_r.png',
+		'l':'../../bandit_l.png',
+		'r':'../../bandit_r.png',
 	}
 }
 

@@ -10,10 +10,11 @@
 	else
 		f_core_path = '../../F.core/'; //local path
 	
-	//laod scripts
+	//load scripts
 	head.js('../scene.js',
 		'../sprite.js',
 		'../character.js',
+		'../keychanger.js',
 		f_core_path+'F.js',
 		f_core_path+'math.js',
 		f_core_path+'states.js',
@@ -46,11 +47,13 @@ var control_con =
 };
 var control_con2 =
 {
-	up:'w',down:'x',left:'a',right:'d',def:'`',jump:'q',att:'s'
+	up:'w',down:'x',left:'a',right:'d',def:'z',jump:'q',att:'s'
 };
 var control = new F.controller(control_con);
 var control2 = new F.controller(control_con2);
 var control_play = new F.control_player(control_con, record);
+control.sync=true;
+control2.sync=true;
 
 /*var control_rec = new F.control_recorder(control_play);
 document.getElementById('export').onclick=function()
@@ -58,34 +61,63 @@ document.getElementById('export').onclick=function()
 	document.getElementById('log').value += control_rec.export_str();
 } */
 
+//user interface----------------
+document.getElementById('speed').onclick=function()
+{
+	if( slow_motion===false)
+	{
+		this.innerHTML='normal';
+		slow_motion=true;
+	}
+	else
+	{
+		this.innerHTML='slow motion';
+		slow_motion=false;
+	}
+}
+var keychanger = document.getElementById('keychanger');
+F.LF.keychanger(keychanger, [control, control2]);
+keychanger.style.backgroundColor='#FFF';
+keychanger.style.visibility='visible';
+
 //set up scene------------------
 var scene = new F.LF.scene();
 
 //set up a character------------
 var character = new F.LF.character( {controller: control, scene:scene} ); //choose from `control` and `control_play`
 var character2 = new F.LF.character( {controller: control2, scene:scene} );
-scene.add( character); character.set_pos(500,0,100);
-scene.add( character2); character2.set_pos(400,0,100);
+scene.add( character); character.set_pos(400,0,100);
+scene.add( character2); character2.set_pos(300,0,100);
 
 //---run time-------------------
-var timer30 = setInterval(frame30,1000/31);
+var timer30 = setInterval(frame30,1000/30.8);
+var counter=0;
+var slow_motion=false;
 function frame30()
 {
+	if( counter++===14)
+		counter=0;
+	if( slow_motion && counter!==0) return;
+
 	control_play.frame();
 	//control_rec.frame();
 	
 	character.TU();
 	character2.TU();
+	character.trans();
+	character2.trans();
+	
 	calculate_fps(1);
 }
 
 var fps=document.getElementById('fps');
 function calculate_fps(mul)
 {
+	if(!this.t) this.t=0;
 	var ot=this.time;
 	this.time = new Date().getTime();
 	var diff = this.time-ot;
-	fps.value = Math.round(1000/diff*mul)+'fps';
+	fps.value = Math.round(1000/diff*mul)+'fps - '+(this.t++)%99;
 }
 
 }
