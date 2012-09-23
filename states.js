@@ -257,17 +257,23 @@ F.states.prototype.event_delay=function(event,delay,frame/*,arguments,,,*/) //fi
 {
 	if( !this.valid_event(event))
 		return;
-
-	var res = F.arr_search( this.evlay, function(E){return E.i<=0;} );
-	if( res == -1)
-	{	//expand the array if all slots are full
-		this.evlay.push();
-		res = this.evlay.length-1;
+	if( delay===0)
+	{
+		this.event.apply(this, [event].concat(Array.prototype.slice.call(arguments,3)) );
 	}
-	this.evlay[res].event = event;
-	this.evlay[res].i = delay;
-	this.evlay[res].frame = frame;
-	this.evlay[res].arg = [event].concat(Array.prototype.slice.call(arguments,3)); //preserve arguments
+	else
+	{
+		var res = F.arr_search( this.evlay, function(E){return E.i<=0;} );
+		if( res == -1)
+		{	//expand the array if all slots are full
+			this.evlay.push();
+			res = this.evlay.length-1;
+		}
+		this.evlay[res].event = event;
+		this.evlay[res].i = delay;
+		this.evlay[res].frame = frame;
+		this.evlay[res].arg = [event].concat(Array.prototype.slice.call(arguments,3)); //preserve arguments
+	}
 }
 
 F.states.prototype.consult=function(consultant,
