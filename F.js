@@ -18,6 +18,7 @@ F.js = function (filename)
 }*/
 F.css = function (filename)
 {
+	//attach a stylesheed to page
 	var head = document.getElementsByTagName('head')[0];
 	var link = document.createElement('link');
 	link.href = filename;
