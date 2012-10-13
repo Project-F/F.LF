@@ -8,15 +8,13 @@
    World           View
 */
 
-if(typeof F=='undefined') F=new Object();
-if( typeof F.world=='undefined') //#ifndef
-{
+define(['core/math'],function(math){ //exports a class `world`
 
-F.world = function ()
+function world ()
 {
 	this.P = new Array(); //points in 3d space
 	this.pp= new Array(); //points in 2d space
-	
+
 	this.areax=800;  //width
 	this.areay=600;  //   and height of canvas area
 	this.tho=270;    //view angle o (rotate using z axis)
@@ -24,7 +22,7 @@ F.world = function ()
 	this.panx=this.areax/2;  //panned x
 	this.pany=this.areay/2;  //   and y
 	this.zoom=40;
-	
+
 	this.project=function() //project from 3d world space to 2d space
 	{
 		var T=this;
@@ -37,7 +35,7 @@ F.world = function ()
 		sinthp=Math.sin(T.thp/180*Math.PI);
 		costho=Math.cos(T.tho/180*Math.PI);
 		costhp=Math.cos(T.thp/180*Math.PI);
-		
+
 		for (var i=0; i<T.P.length; i++)
 		{
 			var x = T.P[i].x;
@@ -50,7 +48,7 @@ F.world = function ()
 			//perspective
 			px = px*100/pz;
 			py = py*100/pz;
-			
+
 			T.pp[i]={x:px, y:py};
 		}
 	}
@@ -58,9 +56,10 @@ F.world = function ()
 	this.view=function(pp) //convert from projected 2d space to view space
 	{
 		//round off in effect to reduce number of decimals in SVG, not sure if it helps?
-		return {x:F.round_d2(pp.x*this.zoom+this.panx),
-		        y:F.round_d2(pp.y*-this.zoom+this.pany) };
+		return {x:math.round_d2(pp.x*this.zoom+this.panx),
+		        y:math.round_d2(pp.y*-this.zoom+this.pany) };
 	}
 }
 
-} //#endif
+return world;
+});

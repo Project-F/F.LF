@@ -4,9 +4,12 @@
 </head>
 <body>
 <div class='canvas' id='canvas'></div>
-<script src='../F.js'></script>
-<script src='../sprite.js'></script>
+
+<script data-main="../" src="../require.js"></script>
 <script>
+requirejs(['sprite','animator'], function(sprite,animator)
+{
+
 canvas = document.getElementById('canvas');
 var sp1_config=
 {
@@ -16,7 +19,7 @@ var sp1_config=
 		'1':'test_sprite.png',
 	}
 }
-sp1 = new F.sprite(sp1_config);
+sp1 = new sprite(sp1_config);
 sp1.set_xy({x:150, y:100});
 
 var sp1_an_config=
@@ -26,14 +29,15 @@ var sp1_an_config=
 	gx:4,gy:4,   //define a gx*gy grid of frames
 	tar:sp1      //target F_sprite
 }
-sp1_an = new F.animator(sp1_an_config);
+sp1_an = new animator(sp1_an_config);
 sp1_an.set_frame(9); //frame count from 0, top left corner
-
 
 TIMER = setInterval(onEnterFrame,1000/4); //4 fps
 function onEnterFrame()
 {
 	sp1_an.next_frame();
 }
+
+});
 </script>
 </body>

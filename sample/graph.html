@@ -5,16 +5,17 @@
 <h1>An integrated sample using sprite.js, collision.js and graph.js<br />
 in gas particles collision simulation</h1>
 <input id='fps' value='NaNfps' style='width:370px;'></input>
-<button onclick='switch_mode()'>switch mode</button>
-<button onclick='switch_size()'>switch size</button>
-<button onclick='generate_particles()'>add</button>
+<button id='switch_mode'>switch mode</button>
+<button id='switch_size'>switch size</button>
+<button id='generate_particles'>add</button>
 <div id='canvas' style='position:absolute; width:600px; height:600px; border:1px solid black;'></div>
-<script src='../F.js'></script>
-<script src='../math.js'></script>
-<script src='../sprite.js'></script>
-<script src='../collision.js'></script>
-<script src='../graph.js'></script>
+
+<script data-main="../" src="../require.js"></script>
 <script>
+requirejs(['sprite','collision','graph'],
+function(   sprite , collision , Graph)
+{
+
 var timer = setInterval(frame,1);
 var canvas = get('canvas');
 var fps = get('fps');
@@ -27,6 +28,9 @@ var batch=10; //number of particles to add per batch
 var speed=1; //speed of the particles
 var mode=0;
 var size='B';
+get('switch_mode').onclick=switch_mode;
+get('switch_size').onclick=switch_size;
+get('generate_particles').onclick=generate_particles;
 
 var sp_config=
 {
@@ -53,7 +57,7 @@ function generate_particles()
 {
 	for( var i=0; i<batch; i++)
 	{
-		var A = new F.sprite(sp_config);
+		var A = new sprite(sp_config);
 		A.switch_img( size+(Math.random()<0.5? 0:1) );
 		var angle = 2*Math.random()*Math.PI;
 		A.vx=Math.cos(angle)*speed;
@@ -71,7 +75,7 @@ function frame()
 	particle_collision();
 	boundary_collision();
 	fly();
-	
+
 	if( !this.i)
 		this.i=100;
 	if( this.i==1)
@@ -88,7 +92,7 @@ function fly()
 		P[i].y += P[i].vy;
 		P[i].set_xy(P[i]);
 		var tP = {x:P[i].x, y:P[i].y};
-		
+
 		if( mode===1)
 			graph.move(P[i],lP,tP);
 	}
@@ -112,7 +116,7 @@ function particle_collision()
 			g[1]=graph.get(graph.at({x:P[i].x+pw,y:P[i].y}));
 			g[2]=graph.get(graph.at({x:P[i].x,y:P[i].y+pw}));
 			g[3]=graph.get(graph.at({x:P[i].x+pw,y:P[i].y+pw}));
-			
+
 			for( var k=0; k<4; k++)
 			if( k==0 || g[k]!==g[0])
 			{
@@ -126,7 +130,7 @@ function particle_collision()
 
 function collide(A,B)
 {
-	if( F.collision.circle(
+	if( collision.circle(
 	{center:{x:A.x+pr, y:A.y+pr}, radius:pr},
 	{center:{x:B.x+pr, y:B.y+pr}, radius:pr}
 	))
@@ -135,18 +139,18 @@ function collide(A,B)
 		var vx=A.vx;
 		A.vx=B.vx;
 		B.vx=vx;
-		
+
 		var vy=A.vy;
 		A.vy=B.vy;
 		B.vy=vy;
-		
+
 		//force them separate
 		var lP = {x:B.x, y:B.y};
-		var K=F.sub(B,A);
+		var K=math.sub(B,A);
 		B.x += K.x*0.15;
 		B.y += K.y*0.15;
 		var tP = {x:B.x, y:B.y};
-		
+
 		if( mode===1)
 			graph.move(B,lP,tP);
 	}
@@ -160,7 +164,7 @@ function boundary_collision()
 			P[i].vx = Math.abs(P[i].vx);
 		if( P[i].x+pw>=boxx)
 			P[i].vx = -Math.abs(P[i].vx);
-		
+
 		if( P[i].y<=0)
 			P[i].vy = Math.abs(P[i].vy);
 		if( P[i].y+pw>=boxy)
@@ -186,7 +190,7 @@ function calculate_fps(mul)
 function switch_mode()
 {
 	mode = mode==0?1:0;
-	graph = new F.graph(graph_config);
+	graph = new Graph(graph_config);
 	for( var i=0; i<P.length; i++)
 	{
 		graph.add(P[i],P[i]);
@@ -212,11 +216,11 @@ function switch_size()
 		graph_config.gridx=20;
 		graph_config.gridy=20;
 	}
-	
+
 	for( var i=0; i<P.length; i++) //delete all
-		P[i].delete();
+		P[i].remove();
 	P=new Array(); //and new again
-	graph=new F.graph(graph_config);
+	graph=new Graph(graph_config);
 	generate_particles();
 }
 
@@ -224,5 +228,7 @@ function get(x)
 {
 	return document.getElementById(x);
 }
+
+});
 </script>
 </body>

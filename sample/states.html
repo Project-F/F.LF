@@ -1,9 +1,11 @@
 <body>
 <pre id='text'><h1>Functional testing of states.js</h1></pre>
 
-<script src='../F.js'></script>
-<script src='../states.js'></script>
+<script data-main="../" src="../require.js"></script>
 <script>
+requirejs(['F','states'], function(F,states)
+{
+
 function default_event(state,event)
 {
 	text.innerHTML+= event+' of '+this.name;
@@ -37,7 +39,7 @@ var states_config=
 	{
 		entry:'A_1_1_1',
 	},
-	
+
 	A:
 	{
 		event:
@@ -46,7 +48,7 @@ var states_config=
 			entry: default_event,
 			exit:  default_event,
 		},
-		
+
 		A_1:
 		{
 			event:
@@ -55,7 +57,7 @@ var states_config=
 				entry: default_event,
 				exit:  default_event,
 			},
-			
+
 			A_1_1:
 			{
 				event:
@@ -64,7 +66,7 @@ var states_config=
 					entry: default_event,
 					exit:  default_event,
 				},
-				
+
 				A_1_1_1:
 				{
 					event:
@@ -126,7 +128,7 @@ var states_config=
 }
 text=document.getElementById('text');
 text.innerHTML+= 'init entry event:\n';
-state = new F.states(states_config);
+state = new states(states_config);
 
 text.innerHTML+= '\n';
 text.innerHTML+= F.to_text(states_config,'state',null,null,function(p,P){
@@ -183,5 +185,6 @@ state.propagate_up(99,function(S){
 	state.execute_event('hi',S);
 });
 
+});
 </script>
 </body>

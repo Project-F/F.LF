@@ -6,14 +6,16 @@
 <div id='seq'></div><br>
 <div id='info'></div>
 
-<script src='../F.js'></script>
-<script src='../controller.js'></script>
-<script src='../combodec.js'></script>
-<script>
-var con_fg = {up:'h',down:'n',left:'b',right:'m',def:'v',jump:'f',att:'d'};
-var con = new F.controller(con_fg);
+<script data-main="../" src="../require.js"></script>
 
-var dec_config = 
+<script>
+requirejs(['F','controller','combodec'], function(F,controller,combodec)
+{
+
+var con_fg = {up:'h',down:'n',left:'b',right:'m',def:'v',jump:'f',att:'d'};
+var con = new controller(con_fg);
+
+var dec_config =
 {
 	rp: {up:1,down:1,left:2,right:2,def:3,jump:1,att:5}, //the same key must repeat no more than X times
 	timeout:72, //in a 72 fps key control system, approx. 1s
@@ -32,7 +34,7 @@ var combo = [
 	{ name:'下格', seq:['def','down','jump']},
 	{ name:'大絕', seq:['up','down','left','right','def','jump','att']}
 ];
-var dec = new F.combodec(con, dec_config, combo);
+var dec = new combodec(con, dec_config, combo);
 
 //--
 
@@ -55,5 +57,7 @@ function print(combo)
 var str=F.to_text(con_fg,'con_fg',' ','');
 str   +='<br>'+F.to_text(combo, 'combo', ' ','');
 document.getElementById('info').innerHTML=str;
+
+});
 </script>
 </body>

@@ -2,9 +2,11 @@
 <div id='states'></div>
 <div id='sp1' style='position:absolute; left:200px; top:300px; width:40px; height:40px; border:1px solid black;'></div>
 <div id='sp2' style='position:absolute; left:600px; top:300px; width:40px; height:40px; border:1px solid black;'></div>
-<script src='../F.js'></script>
-<script src='../controller.js'></script>
+<script data-main="../" src="../require.js"></script>
 <script>
+requirejs(['controller'], function(controller)
+{
+
 sp1 = document.getElementById('sp1');
 sp2 = document.getElementById('sp2');
 states = document.getElementById('states');
@@ -12,8 +14,8 @@ SPD = 4;
 
 var con1_fg = {up:'h',down:'n',left:'b',right:'m'};
 var con2_fg = {up:'s',down:'x',left:'z',right:'c'};
-con1 = new F.controller(con1_fg);
-con2 = new F.controller(con2_fg);
+con1 = new controller(con1_fg);
+con2 = new controller(con2_fg);
 
 //--
 
@@ -25,7 +27,7 @@ function onEnterFrame()
 	{
 		var con=list[I].con;
 		var sp =list[I].sp;
-		
+
 		if(con.state.up)
 			sp.style.top=parseInt(sp.style.top)-SPD;
 		if(con.state.down)
@@ -39,6 +41,8 @@ function onEnterFrame()
 	con1.state.right+'<br>controller2: up:'+con2.state.up+' down:'+con2.state.down+' left:'+con2.state.left+' right:'+
 	con2.state.right;
 }
+
+});
 </script>
 <br>try pressing
 <pre>

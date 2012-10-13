@@ -1,8 +1,6 @@
 //states: nested state transition system, a Hierarchical State Machine ( HSM )
 /*	controls state transitions
  */
-/*	require: F.js
- */
 /*	sample state_config =
  	{
 		event:
@@ -20,7 +18,7 @@
 			{
 				'event1': 'state2',  //name of target state
 				//  on  :   to
-				
+
 				'event2': function(state, //a reference to the `states` instance
 								event,p1,p2) //event and its parameters
 				{
@@ -28,14 +26,14 @@
 					alert(this.data.data_of_state1); //give 'hello'
 					return 'state2'; //the returned state name will cause a transition to that state, nothing will happen if returned null/undefined
 				} ,,,
-				
+
 				entry: function(state,event,prev_state) //called on enter state, passing in previous state
 				{
 					//some init
 				},
-				
+
 				exit: function, //called on leave state, passing in next state
-				
+
 				'guard': function(state,event,p1,p2) //if you consult a particular event of a state, you get its return value without causing any state transition
 				{
 					return allow_transition(p1,p2);
@@ -58,7 +56,7 @@
 			},
 
 			state1_2: { ,,, },
-		
+
 		},
 
 		state2:
@@ -74,12 +72,12 @@
    -in a state transition, a machine must entry a state's superstate before entering that state.
    -in a state transition, a machine must exit the current state before exiting the current state's superstate.
  */
-if( typeof F=='undefined') F=new Object();
-if( typeof F.states=='undefined') //#ifndef
+
+define(['core/F'],function(F) //exports a class `states`
 {
 
-F.state_list=[];
-F.states = function (state_def)
+var state_list=[];
+function states (state_def)
 {
 	//[--constructor
 	//	no private member
@@ -92,7 +90,7 @@ F.states = function (state_def)
 		state.superstate=superstate;
 	});
 
-	this.evlay=new Array(20); //the array of delayed events 
+	this.evlay=new Array(20); //the array of delayed events
 	for( var i=0; i<this.evlay.length; i++)
 		this.evlay[i]={i:-1};
 
@@ -102,9 +100,9 @@ F.states = function (state_def)
 	this.cur_name='root';
 	this.cur_state=this.state; //a reference to the current state in state_def
 	this.chain_event(true,this.cur,1,'entry',true,null);
-	
-	F.state_list.push(this); //the list of state objects
-	
+
+	state_list.push(this); //the list of state objects
+
 	this.log_enable=false;   //not log by default
 	this.log_filter=null;	//a function to return true to not log an item
 	this.log_size=100;
@@ -116,14 +114,14 @@ F.states = function (state_def)
 	//--]
 }
 
-F.states.prototype.propagate_down=function(level,fun,node)
+states.prototype.propagate_down=function(level,fun,node)
 {
 	if( level<=0)
 		return;
 
 	if(!node)
 		node=this.state;
-	
+
 	for( var I in node)
 	{
 		if( this.valid_substate(I))
@@ -134,7 +132,7 @@ F.states.prototype.propagate_down=function(level,fun,node)
 	}
 }
 
-F.states.prototype.propagate_up=function(level,fun,node)
+states.prototype.propagate_up=function(level,fun,node)
 {
 	if(!node)
 		node=this.cur_state;
@@ -153,10 +151,10 @@ F.states.prototype.propagate_up=function(level,fun,node)
 	}
 }
 
-F.states.prototype.chain_event=function(allow_transition,chain,TTL,event,down,sub, arg)
+states.prototype.chain_event=function(allow_transition,chain,TTL,event,down,sub, arg)
 {
 	var result={ result:null, absorbed:false};
-	
+
 	if( down)
 	{
 		var i=0;
@@ -171,7 +169,7 @@ F.states.prototype.chain_event=function(allow_transition,chain,TTL,event,down,su
 	for(;;)
 	{
 		result = this.execute_event(event,I,arg);
-		
+
 		if( result.absorbed)
 		{
 			if( allow_transition && result.result)
@@ -179,7 +177,7 @@ F.states.prototype.chain_event=function(allow_transition,chain,TTL,event,down,su
 			if( --TTL <= 0)
 				break;
 		}
-		
+
 		if( down)
 		{	//move down along tree
 			if( i>=chain.length-1) break;
@@ -200,7 +198,7 @@ F.states.prototype.chain_event=function(allow_transition,chain,TTL,event,down,su
 	return result; //return the most recent result
 }
 
-F.states.prototype.execute_event=function(event,state,arg)
+states.prototype.execute_event=function(event,state,arg)
 {
 	if( !arg)
 		arg=[];
@@ -232,14 +230,14 @@ F.states.prototype.execute_event=function(event,state,arg)
 	return res;
 }
 
-F.states.prototype.event=function(event/*,arguments,,,*/)
+states.prototype.event=function(event/*,arguments,,,*/)
 {
 	if( this.valid_event(event))
 	{
 		var chain=this.cur;
 		this.chain_event(true,chain,1,event,false,null, Array.prototype.slice.call(arguments,1));
 	}
-	
+
 	for( var I=0; I<this.evlay.length; I++)
 	{
 		if( this.evlay[I].frame == event)
@@ -253,7 +251,7 @@ F.states.prototype.event=function(event/*,arguments,,,*/)
 	/* TODO: return true if state transition happened*/
 }
 
-F.states.prototype.event_delay=function(event,delay,frame/*,arguments,,,*/) //fire an event 'event' after 'delay' number of 'frame' events
+states.prototype.event_delay=function(event,delay,frame/*,arguments,,,*/) //fire an event 'event' after 'delay' number of 'frame' events
 {
 	if( !this.valid_event(event))
 		return;
@@ -276,7 +274,7 @@ F.states.prototype.event_delay=function(event,delay,frame/*,arguments,,,*/) //fi
 	}
 }
 
-F.states.prototype.consult=function(consultant,
+states.prototype.consult=function(consultant,
 			state //[optional] state name
 			/*,arguments,,,*/) //[optional]
 {
@@ -291,7 +289,7 @@ F.states.prototype.consult=function(consultant,
 	return result.result;
 }
 
-F.states.prototype.state_at=function(A) //return the state object of path array A
+states.prototype.state_at=function(A) //return the state object of path array A
 {
 	var obj=this.state;
 	for( var i=0; i<A.length; i++)
@@ -301,7 +299,7 @@ F.states.prototype.state_at=function(A) //return the state object of path array 
 	return obj;
 }
 
-F.states.prototype.search=function(A, //search for the path of state A
+states.prototype.search=function(A, //search for the path of state A
 				node) //[optional] under node
 				//return an Array representing path
 {
@@ -312,7 +310,7 @@ F.states.prototype.search=function(A, //search for the path of state A
 	{	//if not specified, search in root
 		node=this.state;
 	}
-	
+
 	if( A=='root')
 	{
 		return [];
@@ -337,7 +335,7 @@ F.states.prototype.search=function(A, //search for the path of state A
 	}
 }
 
-F.states.prototype.valid_substate=function(S)
+states.prototype.valid_substate=function(S)
 {
 	return !(	S===null   ||
 			S=='event' ||
@@ -347,7 +345,7 @@ F.states.prototype.valid_substate=function(S)
 		0);
 }
 
-F.states.prototype.valid_event=function(E)
+states.prototype.valid_event=function(E)
 {
 	return !(	E===null   ||
 			E=='entry' ||
@@ -355,7 +353,7 @@ F.states.prototype.valid_event=function(E)
 		0);
 }
 
-F.states.prototype.to=function(target_name)
+states.prototype.to=function(target_name)
 {
 	var prev=this.cur_state;
 	var A=this.cur;
@@ -375,7 +373,7 @@ F.states.prototype.to=function(target_name)
 		else
 			break;
 	}
-	
+
 	this.chain_event(false,A,999,'exit',false,a, [target_state]);
 		if( this.log_enable)
 		{	//logging
@@ -387,15 +385,15 @@ F.states.prototype.to=function(target_name)
 			}
 		}
 	this.chain_event(false,B,999,'entry',true,b, [prev]);
-	
+
 	this.cur=target;
 	this.cur_name=target_name;
 	this.cur_state=target_state;
 }
 
-F.states.prototype.show_log=function(
-	filter //[optional] return true to hide an item
-){
+states.prototype.show_log=function(
+	filter) //[optional] return true to hide an item
+{
 	var str='(lastest at top)\n';
 	var L=this.log;
 	for( var i=L.length-1; i>=0; i--)
@@ -416,4 +414,6 @@ F.states.prototype.show_log=function(
 	return str;
 }
 
-} //#endif
+return states;
+
+});

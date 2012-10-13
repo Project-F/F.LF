@@ -11,9 +11,11 @@
 <div id='line1' style='position:absolute'><img id='line1i' width=100 src='line1.png'/></div>
 <div id='line2' style='position:absolute'><img width=50 src='line2.png'/></div>
 
-<script src='../math.js'></script>
-<script src='../collision.js'></script>
+<script data-main="../" src="../require.js"></script>
 <script>
+requirejs(['collision'], function(collision)
+{
+
 var timer = setInterval(frame,1000/12);
 
 //rect
@@ -62,7 +64,7 @@ function frame()
 function test_rectangle()
 {
 	move(R1);
-	if( F.collision.rect(
+	if( collision.rect(
 	{left:R1.x, top:R1.y, right:R1.x+80, bottom:R1.y+80},
 	{left:R2.x, top:R2.y, right:R2.x+40, bottom:R2.y+40}
 	))
@@ -74,7 +76,7 @@ function test_rectangle()
 function test_triangle()
 {
 	move(T1);
-	if( F.collision.tri(
+	if( collision.tri(
 	[{x:T1.x, y:T1.y+70},{x:T1.x+70, y:T1.y},{x:T1.x+100, y:T1.y+100}],
 	[{x:T2.x, y:T2.y+35},{x:T2.x+35, y:T2.y},{x:T2.x+50, y:T2.y+50}]
 	))
@@ -86,7 +88,7 @@ function test_triangle()
 function test_circle()
 {
 	move(C1);
-	if( F.collision.circle(
+	if( collision.circle(
 	{center:{x:C1.x+50, y:C1.y+50}, radius:50},
 	{center:{x:C2.x+25, y:C2.y+25}, radius:25}
 	))
@@ -98,7 +100,7 @@ function test_circle()
 function test_line()
 {
 	move(L1);
-	if( F.collision.line(
+	if( collision.line(
 	{x:L1.x,y:L1.y+100}, {x:L1.x+100,y:L1.y},
 	{x:L2.x,y:L2.y}, {x:L2.x+50,y:L2.y+50}
 	))
@@ -122,5 +124,7 @@ function get(x)
 {
 	return document.getElementById(x);
 }
+
+});
 </script>
 </body>

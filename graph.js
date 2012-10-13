@@ -14,14 +14,11 @@
 		celly: cy //   each cell is cx*cy
 	}
  */
-/*	require: F.js
- */
 
-if(typeof F=='undefined') F=new Object();
-if( typeof F.graph=='undefined') //#ifndef
+define(['core/F'],function(F) //exports a class `graph`
 {
 
-F.graph = function(config)
+function graph (config)
 {
 	//[--constructor
 	//	no private member
@@ -40,7 +37,7 @@ F.graph = function(config)
 	//--]
 }
 
-F.graph.prototype.create_graph=function(w,h) //create a 3D array
+graph.prototype.create_graph=function(w,h) //create a 3D array
 {
 	var A = new Array(w);
 	for ( var i=0; i<w; i++)
@@ -52,7 +49,7 @@ F.graph.prototype.create_graph=function(w,h) //create a 3D array
 	this.G = A; //grid storing indices of objects
 }
 
-F.graph.prototype.at=function(P) //convert P from world space to grid space
+graph.prototype.at=function(P) //convert P from world space to grid space
 {
 	var A={ x:Math.floor(P.x/this.config.cellx), y:Math.floor(P.y/this.config.celly) };
 	//include the boundaries
@@ -63,24 +60,24 @@ F.graph.prototype.at=function(P) //convert P from world space to grid space
 	return A;
 }
 
-F.graph.prototype.get=function(P) //return array of object('s index) present at a particular point
+graph.prototype.get=function(P) //return array of object('s index) present at a particular point
 {
 	return this.G[P.x][P.y];
 }
 
-F.graph.prototype.add=function(i,P) //add an object i at P
+graph.prototype.add=function(i,P) //add an object i at P
 {
 	this.get(this.at(P)).push(i);
 }
 
-F.graph.prototype.remove=function(i,P) //remove object i at P
+graph.prototype.remove=function(i,P) //remove object i at P
 {
 	var g=this.get(this.at(P));
 	var res = F.arr_search( g, function(e){return e==i} ); //search for i
 	if (res) g.splice(res,1); //remove
 }
 
-F.graph.prototype.move=function(i,A,B) //an object i moves from A to B
+graph.prototype.move=function(i,A,B) //an object i moves from A to B
 {
 	var gA=this.get(this.at(A));
 	var gB=this.get(this.at(B));
@@ -94,4 +91,6 @@ F.graph.prototype.move=function(i,A,B) //an object i moves from A to B
 	}
 }
 
-} //#endif
+return graph;
+
+});

@@ -4,12 +4,13 @@
 /*	require: F.js
  */
 
-if( typeof F=='undefined') F=new Object();
-if( typeof F.control_recorder=='undefined') //#ifndef
+define(['core/F'],function(F) //exports 2 classes `control_recorder` and `control_player` in an object
 {
 
+return {
+
 //control recorder
-F.control_recorder = function(target_controller)
+control_recorder: function(target_controller)
 {
 	this.time=0;
 	this.rec= new Array();
@@ -36,10 +37,10 @@ F.control_recorder = function(target_controller)
 		return str;
 	}
 	target_controller.child.push(this);
-}
+},
 
 //control record playback
-F.control_player = function(control_config, record)
+control_player: function(control_config, record)
 {
 	var I=0;
 	var time=0;
@@ -49,7 +50,7 @@ F.control_player = function(control_config, record)
 		this.state[j]=0;
 	this.child=[];
 	this.sync=false;
-	
+
 	this.frame=function()
 	{
 		time++;
@@ -63,7 +64,7 @@ F.control_player = function(control_config, record)
 			for( var i in this.child)
 				this.child[i].key(rec[I].k, rec[I].d);
 			this.state[rec[I].k] = rec[I].d;
-			
+
 			if( I===rec.length-1)
 				I=0;
 		}
@@ -72,4 +73,4 @@ F.control_player = function(control_config, record)
 	this.flush=function(){}
 }
 
-} //#endif
+}});

@@ -1,27 +1,25 @@
 //keyboard controller system
 /*	maintains a table of key states
  */
-/*	require: F.js
- */
 
-if( typeof F=='undefined') F=new Object();
-if( typeof F.master_controller=='undefined') //#ifndef
+define(['core/F'],function(F) //exports a class `controller`
 {
 
-F.keydown = function(e)
+function keydown(e)
 {
-	return F.master_controller.key(e,1);
-}
-F.keyup = function(e)
-{
-	return F.master_controller.key(e,0);
+	return master_controller.key(e,1);
 }
 
-F.master_controller = (function()
+function keyup(e)
 {
-	window.onkeydown = F.double_delegate(window.onkeydown, F.keydown);
-	window.onkeyup   = F.double_delegate(window.onkeydown, F.keyup);
-	
+	return master_controller.key(e,0);
+}
+
+var master_controller = (function()
+{
+	window.onkeydown = F.double_delegate(window.onkeydown, keydown);
+	window.onkeyup   = F.double_delegate(window.onkeydown, keyup);
+
 	var mas = new Object();
 	mas.child = [];
 	mas.key = function(e,down)
@@ -39,18 +37,21 @@ F.master_controller = (function()
 //keyboard controller
 /*	sample config for F.controller (control keys)
 	{
-		up:'h', down:'n', left:'b', 'control name':'control key',,, 
+		up:'h', down:'n', left:'b', 'control name':'control key',,,
 	}
 	-each control key must be an alphabet
 	-F.controller doesnt care the name of each control
 */
 /*	on the other hand, there can be other controllers with compatible definition and behavior,
 	(e.g. AI controller, network player controller, record playback controller)
-	-has the member variables `state`, `config`, `child`
-	-has the method `clear_states`
+	-has the member variables `state`, `config`, `child`, `sync`
 	-behavior: call the `key` method of every member of `child` when keys arrive
+	-has the method `clear_states`, `fetch` and `flush`
+	-behavior: if `sync` is true, the controller should buffer key inputs,
+	           and only dispatch to child when `fetch` is called,
+	           and flush the buffer when `flush` is called
  */
-F.controller = function (config)
+function controller (config)
 {
 	this.state={};
 	this.config=config;
@@ -62,7 +63,7 @@ F.controller = function (config)
 			//if sync===true,
 			//  a key up-down event will be buffered, and must be fetch manually.
 	this.buf=new Array();
-	
+
 	this.key=function(e,down) //interface to master_controller------
 	{
 		var caught=0;
@@ -87,7 +88,7 @@ F.controller = function (config)
 		}
 		return caught;
 	}
-	
+
 	//interface to application--------------------------------------
 	this.clear_states=function()
 	{
@@ -111,18 +112,18 @@ F.controller = function (config)
 	{
 		this.buf=[];
 	}
-	
+
 	//[--constructor
-	F.master_controller.child.push(this);
+	master_controller.child.push(this);
 	this.clear_states();
 	for(var I in this.config)
 	{
-		this.keycode[I] = F.keyname_to_keycode(this.config[I]);
+		this.keycode[I] = controller.keyname_to_keycode(this.config[I]);
 	}
 	//--]
 }
 
-F.keyname_to_keycode=function(A)
+controller.keyname_to_keycode=function(A)
 {
 	var code;
 	if( A.length==1)
@@ -159,7 +160,7 @@ F.keyname_to_keycode=function(A)
 	return code;
 }
 
-F.keycode_to_keyname=function(code)
+controller.keycode_to_keyname=function(code)
 {
 	if( (code>='A'.charCodeAt(0) && code<='Z'.charCodeAt(0)) ||
 	    (code>='0'.charCodeAt(0) && code<='9'.charCodeAt(0)) )
@@ -172,6 +173,8 @@ F.keycode_to_keyname=function(code)
 	}
 }
 
+return controller;
+
 // http://www.quirksmode.org/js/keys.html
 // http://unixpapa.com/js/key.html
-} //endif
+});

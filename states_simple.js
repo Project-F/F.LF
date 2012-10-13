@@ -13,45 +13,48 @@
 				return 'state1';
 			}
 		},
-		
+
 		state1:
 		{
 			event:
 			{
 				'event1': 'state2',  //name of target state
 				//  on  :   to
-				
+
 				'event2': function(This, //current state object
 								event,p1,p2) //event and its parameters
 				{
 					return 'state2'; //the returned state name will cause a transition to that state,
 					//nothing will happen if returned null
 				} ,,,
-				
+
 				entry: function(This,event,prev_state) //called on enter state, passing in previous state
 				{
 					//some init
 				},
-				
+
 				exit: function, //called on leave state, passing in next state
-				
+
 				'consultant': function(p1,p2) //if you consult a particular event of a state, you get its return value without causing any state transition
 				{
 					return allow_entry(p1,p2);
 				},
 			},
-		
+
 		} ,,, //more states
 	};
  */
 /*	public API: see each function definition for details
-	F.states(state_config)	//constructor
+	states(state_config)	//constructor
 	event(event)		//fire an event
 	event_delay(event,delay,frame)	//fire a delayed event
 	consult(event,state)	//call a function without causing state transition
  */
-if(typeof F=='undefined') F=new Object();
-F.states = function (state_config)
+
+define(['core/F'],function(F) //exports a class `states`
+{
+
+function states (state_config)
 {
 	//[--constructor
 	//	no private member
@@ -61,7 +64,7 @@ F.states = function (state_config)
 	this.evlay=new Array(20);
 	for( var i=0; i<this.evlay.length; i++)
 		this.evlay[i]={i:-1};
-	
+
 	for ( var I in this.state) //initialize cur with the first state
 		{ this.cur=I; break; }
 
@@ -90,7 +93,7 @@ F.states = function (state_config)
 	//--]
 }
 
-F.states.prototype.event=function(E/*,arguments,,,*/) //supply events with parameters to F_states
+states.prototype.event=function(E/*,arguments,,,*/) //supply events with parameters to F_states
 //	return true if there is a state transition
 {
 	if( this.valid_event(event))
@@ -114,10 +117,10 @@ F.states.prototype.event=function(E/*,arguments,,,*/) //supply events with param
 					{
 						var h_cur=this.cur;
 						this.cur = nes;
-						
+
 						if( this.state[h_cur].event.exit)
 							this.state[h_cur].event.exit(this.state[h_cur],'exit',nes);
-						
+
 						if( this.state[nes].event)
 						if( this.state[nes].event.entry)
 							this.state[nes].event.entry(this.state[nes],'entry',h_cur);
@@ -127,7 +130,7 @@ F.states.prototype.event=function(E/*,arguments,,,*/) //supply events with param
 			}
 		}
 	}
-	
+
 	for( var I=0; I<this.evlay.length; I++)
 	{
 		if( this.evlay[I].frame == E)
@@ -141,7 +144,7 @@ F.states.prototype.event=function(E/*,arguments,,,*/) //supply events with param
 	return result;
 }
 
-F.states.prototype.consult=function(E,state_name/*,arguments,,,*/)
+states.prototype.consult=function(E,state_name/*,arguments,,,*/)
 {
 	if( !this.valid_event(E))
 		return null;
@@ -163,7 +166,7 @@ F.states.prototype.consult=function(E,state_name/*,arguments,,,*/)
 	return null;
 }
 
-F.states.prototype.event_delay=function(event,delay,frame/*,arguments,,,*/) //fire an event 'event' after 'delay' number of 'frame' events
+states.prototype.event_delay=function(event,delay,frame/*,arguments,,,*/) //fire an event 'event' after 'delay' number of 'frame' events
 {
 	if( !this.valid_event(event))
 		return;
@@ -180,10 +183,13 @@ F.states.prototype.event_delay=function(event,delay,frame/*,arguments,,,*/) //fi
 	this.evlay[res].arg = [event].concat(Array.prototype.slice.call(arguments,3)); //preserve arguments
 }
 
-F.states.prototype.valid_event=function(E)
+states.prototype.valid_event=function(E)
 {
 	return !(	E=='entry' ||
 			E=='exit'  ||
 			E===null   ||
 		0);
 }
+
+return states;
+});
