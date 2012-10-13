@@ -1,20 +1,19 @@
 //a key changer utility for LF2
-//require: F.core/controller.js
 
-if( typeof F=='undefined') F=new Object();
-if( typeof F.LF=='undefined') F.LF=new Object();
-if( typeof F.LF.keychanger=='undefined') //#ifndef
+define(['core/controller'], function (Fcontroller)
 {
 
-F.LF.keychanger=function (append_at, controllers)
+change_active=false;
+
+function keychanger (append_at, controllers)
 {
 	append_at.style.textAlign='center';
-	
+
 	for( var i=0; i<controllers.length; i++)
 	{
 		add_player(controllers[i], i);
 	}
-	
+
 	//the ok button
 	var rule = create_at(append_at,'div');
 	rule.style.clear='both';
@@ -26,7 +25,7 @@ F.LF.keychanger=function (append_at, controllers)
 		ok.onclick= null;
 		append_at.parentNode.removeChild(append_at);
 	}
-	
+
 	function add_player(con, num)
 	{
 		if( num!==0)
@@ -35,15 +34,15 @@ F.LF.keychanger=function (append_at, controllers)
 			sep.style.float='left';
 			sep.innerHTML='&nbsp;&nbsp;&nbsp;&nbsp;';
 		}
-		
+
 		var table=create_at(append_at, 'table');
 		table.style.float='left';
-		
+
 		var row=[];
 		row[0]=create_at(table, 'tr');
 		var head= add_cell(row[0],'player '+(num+1));
 		head.colSpan='2';
-		
+
 		var i=1;
 		for( var I in con.config)
 		{
@@ -51,18 +50,16 @@ F.LF.keychanger=function (append_at, controllers)
 			add_pair(row[i],I);
 			i++;
 		}
-		
-		F.LF.keychanger.active=false;
-		
+
 		function add_pair(R,name)
 		{
 			add_cell(R,name);
 			var cell=add_cell(R, con.config[name]);
 			cell.onclick=function()
 			{
-				if( !F.LF.keychanger.active)
+				if( !change_active)
 				{
-					F.LF.keychanger.active=true;
+					change_active=true;
 					var This=this;
 					This.style.backgroundColor= "#FAA";
 					var hold=window.onkeydown;
@@ -71,17 +68,17 @@ F.LF.keychanger=function (append_at, controllers)
 						if (!e) e = window.event;
 						var value=e.keyCode;
 						window.onkeydown=hold;
-						cell.innerHTML=F.keycode_to_keyname(value);
-						con.config[name]=F.keycode_to_keyname(value);
+						cell.innerHTML=Fcontroller.keycode_to_keyname(value);
+						con.config[name]=Fcontroller.keycode_to_keyname(value);
 						con.keycode[name]=value;
 						This.style.backgroundColor= "#EEE";
-						F.LF.keychanger.active=false;
+						change_active=false;
 					}
 				}
 			}
 		}
 	}
-	
+
 	function create_at(parent, tag, id)
 	{
 		var E = document.createElement(tag);
@@ -104,4 +101,5 @@ F.LF.keychanger=function (append_at, controllers)
 	}
 }
 
-}
+return keychanger;
+});

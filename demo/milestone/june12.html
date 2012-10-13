@@ -71,40 +71,40 @@ F.LF.character = function(con)
 	//data file
 	var dat = bandit;
 	this.name=dat.bmp.name;
-	
+
 	//---status-----------------------------------------------------
 	this.hp=100;
 	this.mp=100;
 	this.bdefend=70;
 	this.fall=70;
-	
+
 	//the state variable
 	var state=0;
 	var wait=1; //when wait decreases to zero, an event happens
 	var next=999; //next frame
-	
+
 	//frame
 	var framePN=0; //previous frame number
 	var frameN=0; //current frame number
 	var frame=dat.frame[0]; //current frame object
-	
+
 	//---configurations---------------------------------------------
-	
+
 	var W=dat.bmp.file0.w+1; //width, height of a frame
 	var H=dat.bmp.file0.h+1;
-	
+
 	//sprite config
-	var sp_con= 
+	var sp_con=
 	{
 		canvas: document.getElementById('canvas_of_demo3'),
 		wh: {x:W,y:H},
 		img:
 		{
-			'l':'../bandit_l.png',
-			'r':'../bandit_r.png',
+			'l':'may12/bandit_l.png',
+			'r':'may12/bandit_r.png',
 		}
 	}
-	
+
 	//animator config
 	var ani_con=
 	{
@@ -113,7 +113,7 @@ F.LF.character = function(con)
 		gx:10, gy:14,//define a gx*gy grid of frames
 		tar:null,    //target F.sprite, object not exist yet, specify later
 	};
-	
+
 	//combo list
 	var combo_con = [
 		{ name:'left', seq:['left']},
@@ -142,7 +142,7 @@ F.LF.character = function(con)
 		callback: combo_event, //callback function when combo detected
 		no_repeat_key: true //eliminate repeated key strokes by browser
 	}
-	
+
 	function switch_dir_fun(e)
 	{
 		if( dir==='left' && e==='right')
@@ -157,12 +157,12 @@ F.LF.character = function(con)
 		}
 	}
 	var switch_dir=true;
-	
+
 	function dirh()
 	{
 		return (dir==='left'?-1:1);
 	}
-	
+
 	function dirv()
 	{
 		var d=0;
@@ -170,57 +170,57 @@ F.LF.character = function(con)
 		if( con.state.down) d+=1;
 		return d;
 	}
-	
+
 	//---set up-----------------------------------------------------
 	//sprite
 	var sp = new F.sprite(sp_con);
 	sp.x=100; sp.y=0; sp.z=100;
 	sp.vx=0; sp.vy=0; sp.vz=0;
 	sp.set_xy({x:sp.x, y:sp.y+sp.z});
-	
+
 	//animator
 	ani_con.tar=sp; //specify the target F.sprite
 	var ani = new F.animator(ani_con,'base');
-	
+
 	//direction switcher
 	var dir='right';
-	
+
 	//controller
 	// con is a parameter
-	
+
 	//combodec
 	var dec = new F.combodec(con, dec_con, combo_con);
-	
+
 	//---internal functions-----------------------------------------
-	
+
 	function frame_update() //special update done at every frame
-	{		
+	{
 		//show frame
 		ani.set_frame(frame.pic);
-		
+
 		//velocity
 		if( frame.dvx) sp.vx= dirh() * frame.dvx;
 		if( frame.dvz) sp.vz= dirv() * frame.dvz;
 		if( frame.dvy) sp.vy= frame.dvy;
-		
+
 		//wait for an event
 		wait=frame.wait;
 		next=frame.next;
-		
+
 		//set state
 		if(state !== frame.state)
 			state = frame.state;
-		
+
 		//special update
 		var tar=fu[frame.state];
 		if( tar) tar();
 	}
-	
+
 	function state_update() //update done at every TU (30fps)
 	{
 		var tar=su[frame.state];
 		if( tar) tar();
-		
+
 		if( sp.y===0)
 		{	//friction
 			if( sp.vx>0) { sp.vx-=1; if( sp.vx<0) sp.vx=0;}
@@ -228,17 +228,17 @@ F.LF.character = function(con)
 			if( sp.vz>0) { sp.vz-=1; if( sp.vz<0) sp.vz=0;}
 			if( sp.vz<0) { sp.vz+=1; if( sp.vz>0) sp.vz=0;}
 		}
-		
+
 		if( sp.y<0) //gravity
 			sp.vy+= 1.9;
-		
+
 		//position
 		sp.x += sp.vx;
 		sp.z += sp.vz;
 		sp.y += sp.vy;
 		if( sp.y>0) sp.y=0;
 		sp.set_xy({x:sp.x, y:sp.y+sp.z});
-		
+
 		if( sp.y===0 && sp.vy>0)
 		{//falling onto the ground
 			sp.vy=0;
@@ -247,7 +247,7 @@ F.LF.character = function(con)
 			frame_trans(215);
 		}
 	}
-	
+
 	var su= //update done at every TU (30fps)
 	{
 		'0':function() //standing
@@ -267,7 +267,7 @@ F.LF.character = function(con)
 			if(con.state.down)  sp.z+=dat.bmp.walking_speedz;
 			if(con.state.left)  sp.x-=dat.bmp.walking_speed;
 			if(con.state.right) sp.x+=dat.bmp.walking_speed;
-			
+
 			var dx=0, dz=0; //to resolve key conflicts
 			if( con.state.up)   dz -=1;
 			if( con.state.down) dz +=1;
@@ -307,7 +307,7 @@ F.LF.character = function(con)
 			}
 		}
 	}
-	
+
 	var fu= //special update done at every frame
 	{
 		da:{}, //data area
@@ -369,7 +369,7 @@ F.LF.character = function(con)
 			if( fu.da.i==a) fu.da.up=true;
 		}
 	}
-	
+
 	var ce= //combo event
 	{
 		'0':function(K) //standing
@@ -463,19 +463,19 @@ F.LF.character = function(con)
 			sp.vy= dat.bmp.dash_height;
 		}
 	}
-	
+
 	function combo_event(kobj)
 	{
 		var K=kobj.name;
-		
+
 		var tar=ce[frame.state];
 		if( tar) tar(K);
-		
+
 		if( K=='left' || K=='right')
 			if( switch_dir)
 				switch_dir_fun(K);
 	}
-	
+
 	function event()
 	{
 		if( next===0)
@@ -487,7 +487,7 @@ F.LF.character = function(con)
 			frame_trans(next);
 		}
 	}
-	
+
 	function frame_trans(F)
 	{
 		if( F===999)
@@ -497,13 +497,13 @@ F.LF.character = function(con)
 		frame=dat.frame[F];
 		frame_update();
 	}
-	
+
 	//---external functions-----------------------------------------
 	this.frame=function()
 	{
 		state_update();
 		dec.frame();
-		
+
 		if( wait===0)
 			event();
 		wait--;
@@ -623,7 +623,7 @@ F.to_text = function ( //convert a JSON object to into text
 	if( !TTL) TTL=30;
 	if( !sep) sep='\n';
 	if( !pretext) pretext='';
-	
+
 	var str = pretext+ name +':'+sep;
 	str+= pretext+ '{';
 	var cc=0;
@@ -709,7 +709,7 @@ F.bezier2_step = function (A,C,B, i,steps)
 	P.x = getstep(getstep(A.x, C.x, i, steps), getstep(C.x, B.x, i, steps), i, steps);
 	P.y = getstep(getstep(A.y, C.y, i, steps), getstep(C.y, B.y, i, steps), i, steps);
 	return P;
-	
+
 	function getstep(x1, x2, stepcount, numofsteps)
 	{
 	      return ((numofsteps - stepcount) * x1 + stepcount * x2) / numofsteps;
@@ -767,7 +767,7 @@ F.intersect = function ( P1,P2, //line 1
 	denom  = (P4.y-P3.y) * (P2.x-P1.x) - (P4.x-P3.x) * (P2.y-P1.y);
 	numera = (P4.x-P3.x) * (P1.y-P3.y) - (P4.y-P3.y) * (P1.x-P3.x);
 	numerb = (P2.x-P1.x) * (P1.y-P3.y) - (P2.y-P1.y) * (P1.x-P3.x);
-	
+
 	if ( negligible(numera) && negligible(numerb) && negligible(denom)) {
 		//meaning the lines coincide
 		return { x: (P1.x + P2.x) * 0.5,
@@ -807,7 +807,7 @@ F.states = function (state_def)
 		state.superstate=superstate;
 	});
 
-	this.evlay=new Array(20); //the array of delayed events 
+	this.evlay=new Array(20); //the array of delayed events
 	for( var i=0; i<this.evlay.length; i++)
 		this.evlay[i]={i:-1};
 
@@ -817,9 +817,9 @@ F.states = function (state_def)
 	this.cur_name='root';
 	this.cur_state=this.state; //a reference to the current state in state_def
 	this.chain_event(true,this.cur,1,'entry',true,null);
-	
+
 	F.state_list.push(this); //the list of state objects
-	
+
 	this.log_enable=false;   //not log by default
 	this.log_filter=null;	//a function to return true to not log an item
 	this.log_size=100;
@@ -838,7 +838,7 @@ F.states.prototype.propagate_down=function(level,fun,node)
 
 	if(!node)
 		node=this.state;
-	
+
 	for( var I in node)
 	{
 		if( this.valid_substate(I))
@@ -871,7 +871,7 @@ F.states.prototype.propagate_up=function(level,fun,node)
 F.states.prototype.chain_event=function(allow_transition,chain,TTL,event,down,sub, arg)
 {
 	var result={ result:null, absorbed:false};
-	
+
 	if( down)
 	{
 		var i=0;
@@ -886,7 +886,7 @@ F.states.prototype.chain_event=function(allow_transition,chain,TTL,event,down,su
 	for(;;)
 	{
 		result = this.execute_event(event,I,arg);
-		
+
 		if( result.absorbed)
 		{
 			if( allow_transition && result.result)
@@ -894,7 +894,7 @@ F.states.prototype.chain_event=function(allow_transition,chain,TTL,event,down,su
 			if( --TTL <= 0)
 				break;
 		}
-		
+
 		if( down)
 		{	//move down along tree
 			if( i>=chain.length-1) break;
@@ -954,7 +954,7 @@ F.states.prototype.event=function(event/*,arguments,,,*/)
 		var chain=this.cur;
 		this.chain_event(true,chain,1,event,false,null, Array.prototype.slice.call(arguments,1));
 	}
-	
+
 	for( var I=0; I<this.evlay.length; I++)
 	{
 		if( this.evlay[I].frame == event)
@@ -1021,7 +1021,7 @@ F.states.prototype.search=function(A, //search for the path of state A
 	{	//if not specified, search in root
 		node=this.state;
 	}
-	
+
 	if( A=='root')
 	{
 		return [];
@@ -1084,7 +1084,7 @@ F.states.prototype.to=function(target_name)
 		else
 			break;
 	}
-	
+
 	this.chain_event(false,A,999,'exit',false,a, [target_state]);
 		if( this.log_enable)
 		{	//logging
@@ -1096,7 +1096,7 @@ F.states.prototype.to=function(target_name)
 			}
 		}
 	this.chain_event(false,B,999,'entry',true,b, [prev]);
-	
+
 	this.cur=target;
 	this.cur_name=target_name;
 	this.cur_state=target_state;
@@ -1155,15 +1155,15 @@ F.sprite = function (config)
 	//	config is one time only and should be dumped after constructor returns
 	this.ID=F.sp_count;
 	F.sp_count++;
-	
+
 	this.el = document.createElement('div');
 	this.el.setAttribute('class','F_sprite');
 	this.el.id='sp'+this.ID;
 	config.canvas.appendChild(this.el);
-	
+
 	this.img={};
 	this.cur_img=null;
-	
+
 	this.set_wh(config.wh);
 	for ( var I in config.img)
 	{
@@ -1186,7 +1186,7 @@ F.sprite.prototype.add_img=function(imgpath,name)
 	im.setAttribute('class','F_sprite_img');
 	im.src=imgpath;
 	this.el.appendChild(im);
-	
+
 	this.img[name]=im;
 	this.switch_img(name);
 	return im;
@@ -1304,7 +1304,7 @@ F.animator.prototype.get_at=function(i) //get the content of the graph at frame 
 			gx:4,gy:1,   //define a gx*gy grid of frames
 			tar:null,    //target F.sprite
 		},
-		
+
 		'standing':
 		{	//change only values you want to
 			x:0,y:0,     //top left margin of the frames
@@ -1317,18 +1317,18 @@ F.animator_set = function(set_config, base)
 	if(!set_config)
 		return null;
 	var A=new Object;
-	
+
 	for( var I in set_config)
 	{
 		if( base) if( I==base)
 			continue;
-		
+
 		if( base) if( set_config[base])
 		{
 			for( var J in set_config[base])
 				set_config[I][J] = set_config[base][J];
 		}
-		
+
 		A[I]=new F.animator(set_config[I]);
 	}
 	return A;
@@ -1359,7 +1359,7 @@ F.master_controller = (function()
 {
 	window.onkeydown = F.double_delegate(window.onkeydown, F.keydown);
 	window.onkeyup   = F.double_delegate(window.onkeydown, F.keyup);
-	
+
 	var mas = new Object;
 	mas.child = new Array();
 	mas.key = function(e,down)
@@ -1377,7 +1377,7 @@ F.master_controller = (function()
 //keyboard controller
 /*	sample config for F.controller (control keys)
 	{
-		up:'h', down:'n', left:'b', 'control name':'control key',,, 
+		up:'h', down:'n', left:'b', 'control name':'control key',,,
 	}
 	-each control key must be an alphabet
 	-F.controller doesnt care the name of each control
@@ -1393,7 +1393,7 @@ F.controller = function (config)
 	this.state={};
 	this.config=config;
 	this.child=new Array(); //child system that has the method key('control name',down)
-	
+
 	this.key=function(e,down)
 	{
 		var caught=0;
@@ -1404,20 +1404,20 @@ F.controller = function (config)
 				if( this.child)
 					for(var J in this.child)
 						this.child[J].key(I,down);
-				
+
 				this.state[I]=down;
 				caught=1;
 			}
 		}
 		return caught;
 	}
-	
+
 	this.clear_states=function()
 	{
 		for(var I in this.config)
 			this.state[I]=0;
 	}
-	
+
 	//[--constructor
 	F.master_controller.child.push(this);
 	this.clear_states();
@@ -1435,13 +1435,13 @@ F.keyname_to_keycode=function(A)
 			A=A.toLowerCase();
 			return code = A.charCodeAt(0) - 'a'.charCodeAt(0) + 65;
 		}
-		
+
 		if (a>='0'.charCodeAt(0) && a<='9'.charCodeAt(0))
 		{
 			return code = A.charCodeAt(0) - '0'.charCodeAt(0) + 48;
 		}
 	}
-	
+
 	//TODO: other keys not supported
 	//	for a good list, see controller1.html
 }
@@ -1492,16 +1492,16 @@ F.combodec = function (controller, config, combo)
 	this.config=config;
 	this.callback=config.callback;
 	this.combo=combo;
-	
+
 	this.con.child.push(this);
 	//
 	this.key=function(K, down)
 	{
 		if(!down)
 			return;
-		
+
 		var seq=this.seq;
-		
+
 		var push=true;
 		if( this.config.rp)
 		{	//detect repeated keys
@@ -1509,19 +1509,19 @@ F.combodec = function (controller, config, combo)
 				if( cc>=this.config.rp[K])
 					push=false;
 		}
-		
+
 		if( this.config.no_repeat_key)
 		{
 			if( this.con.state[K])
 				push=false;
 		}
-		
+
 		outframe=framec+this.config.timeout;
 		outcombo=framec+this.config.comboout;
-		
+
 		if( push)
 			seq.push(K);
-		
+
 		if ( this.combo && push)
 		{	//detect combo
 			var C = this.combo;
@@ -1545,12 +1545,12 @@ F.combodec = function (controller, config, combo)
 			}
 		}
 	}
-	
+
 	this.clear_seq=function()
 	{
 		this.seq.length=0;
 	}
-	
+
 	this.frame=function()
 	{
 		if( framec==outframe)
@@ -7234,7 +7234,7 @@ function control_player(control_con)
 	for ( var j in this.state)
 		this.state[j]=0;
 	this.child= [];
-	
+
 	this.frame= function()
 	{
 		for (; time===rec[I].t; I++)
@@ -7242,7 +7242,7 @@ function control_player(control_con)
 			for( var i in this.child)
 				this.child[i].key(rec[I].k, rec[I].d);
 			this.state[rec[I].k] = rec[I].d;
-			
+
 			if( I===rec.length-1)
 			{
 				I=0;

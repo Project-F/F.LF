@@ -1,14 +1,11 @@
 //sprite-animator for LF2
 //	accept a bmp object (defined in data file) as config
 //	support switching frames between multiple image files
-//require: F.core/sprite.js
 
-if( typeof F=='undefined') F=new Object();
-if( typeof F.LF=='undefined') F.LF=new Object();
-if( typeof F.LF.sprite=='undefined') //#ifndef
+define(['core/sprite','core/animator'], function (Fsprite, Fanimator)
 {
 
-F.LF.sprite=function(bmp, parent)
+function sprite (bmp, parent)
 {
 	var num_of_images = this.num_of_images = bmp.file.length;
 	var w = this.w = bmp.file[0].w+1;
@@ -16,21 +13,21 @@ F.LF.sprite=function(bmp, parent)
 	var ani = this.ani = new Array();
 	this.dir = 'right';
 	this.cur_img = '0r';
-	
+
 	var sp_con=
 	{
 		canvas: parent,
 		wh: {x:w,y:h},
 		img:{}
 	}
-	var sp = this.sp = new F.sprite(sp_con);
-	
+	var sp = this.sp = new Fsprite(sp_con);
+
 	for( var i=0; i<bmp.file.length; i++)
 	{
 		var imgpath='';
 		for( var j in bmp.file[i])
 		{
-			if( typeof bmp.file[i][j] === 'string' && 
+			if( typeof bmp.file[i][j] === 'string' &&
 			    j.indexOf('file')===0 )
 				imgpath = bmp.file[i][j];
 		}
@@ -46,13 +43,13 @@ F.LF.sprite=function(bmp, parent)
 			var ext=imgpath.lastIndexOf('.');
 			sp.add_img( imgpath.slice(0,ext)+'_mirror'+imgpath.slice(ext), i+'l');
 		}
-		
+
 		var ani_con=
 		{
 			x:0,  y:0,   //top left margin of the frames
 			w:bmp.file[i].w+1, h:bmp.file[i].h+1,    //width, height of a frame
 			gx:bmp.file[i].row, gy:bmp.file[i].col,//define a gx*gy grid of frames
-			tar:sp     //target F.sprite
+			tar:sp     //target sprite
 		};
 		var ani_mirror_con=
 		{
@@ -61,12 +58,12 @@ F.LF.sprite=function(bmp, parent)
 			gx:bmp.file[i].row, gy:bmp.file[i].col,
 			tar:sp
 		};
-		ani[i+'r'] = new F.animator(ani_con);
-		ani[i+'l'] = new F.animator(ani_mirror_con);
+		ani[i+'r'] = new Fanimator(ani_con);
+		ani[i+'l'] = new Fanimator(ani_mirror_con);
 	}
 }
 
-F.LF.sprite.prototype.show_pic = function(I)
+sprite.prototype.show_pic = function(I)
 {
 	var slot=0;
 	for( var k in this.ani)
@@ -86,7 +83,7 @@ F.LF.sprite.prototype.show_pic = function(I)
 	this.h = this.ani[this.cur_img].config.h;
 }
 
-F.LF.sprite.prototype.switch_lr = function(dir) //switch to `dir`
+sprite.prototype.switch_lr = function(dir) //switch to `dir`
 {
 	var I = this.ani[this.cur_img].I;
 	this.dir=dir;
@@ -95,13 +92,14 @@ F.LF.sprite.prototype.switch_lr = function(dir) //switch to `dir`
 	this.ani[this.cur_img].set_frame(I);
 }
 
-F.LF.sprite.prototype.set_xy = function(P)
+sprite.prototype.set_xy = function(P)
 {
 	this.sp.set_xy(P);
 }
-F.LF.sprite.prototype.set_z = function(Z)
+sprite.prototype.set_z = function(Z)
 {
 	this.sp.set_z(Z);
 }
 
-} //#endif
+return sprite;
+});

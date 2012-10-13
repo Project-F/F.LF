@@ -8,25 +8,22 @@
 		zwidth	//zwidth spans into the +ve and -ve direction
 	}
  */
-//require: F.core/collision.js, F.core/math.js
 
-if( typeof F=='undefined') F=new Object();
-if( typeof F.LF=='undefined') F.LF=new Object();
-if( typeof F.LF.scene=='undefined') //#ifndef
+define(['core/collision'], function (Fcollision)
 {
 
-F.LF.scene = function(config)
+function scene (config)
 {
 	this.obj = new Array(); //all objects
 }
 
-F.LF.scene.prototype.add = function(C)
+scene.prototype.add = function(C)
 {
 	this.obj.push(C);
-	C.id = this.obj.length-1;
+	C.uid = this.obj.length-1;
 }
 
-F.LF.scene.prototype.query = function(volume, This) //return the all the objects whose `bdy` intersect with `volume`
+scene.prototype.query = function(volume, This) //return the all the objects whose `bdy` intersect with `volume`
 							//except `This`
 {
 	var result=[];
@@ -34,7 +31,7 @@ F.LF.scene.prototype.query = function(volume, This) //return the all the objects
 	{
 		if( this.obj[i] === This)
 			continue;
-		
+
 		var bdy = this.obj[i].bdy();
 		for( var j in bdy)
 		{
@@ -48,24 +45,25 @@ F.LF.scene.prototype.query = function(volume, This) //return the all the objects
 	return result;
 }
 
-F.LF.scene.prototype.intersect = function(A,B) //return true if volume A and B intersect
+scene.prototype.intersect = function(A,B) //return true if volume A and B intersect
 {
 	var AV={ left:A.x+A.vx, top:A.y+A.vy, right:A.x+A.vx+A.w, bottom:A.y+A.vy+A.h };
 	var BV={ left:B.x+B.vx, top:B.y+B.vy, right:B.x+B.vx+B.w, bottom:B.y+B.vy+B.h };
-	
-	return ( F.collision.rect( AV, BV ) && F.collision.rect(
+
+	return ( Fcollision.rect( AV, BV ) && Fcollision.rect(
 	{ left:A.z-A.zwidth, top:0, right:A.z+A.zwidth, bottom:1 },
 	{ left:B.z-B.zwidth, top:0, right:B.z+B.zwidth, bottom:1 }
 	));
 }
 
-F.LF.scene.prototype.distance=function(A,B) //return the distance between object A and B, as measured at center points
+scene.prototype.distance=function(A,B) //return the distance between object A and B, as measured at center points
 {
 	var dx= (A.x+A.centerx) - (B.x+B.centerx);
 	var dy= A.y - B.y;
 	var dz= (A.z+A.centery) - (B.z+B.centery);
-	
+
 	return Math.sqrt(dx*dx+dy*dy+dz*dz);
 }
 
-} //#endif
+return scene;
+});

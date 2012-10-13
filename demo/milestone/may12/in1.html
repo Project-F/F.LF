@@ -1,12 +1,17 @@
 <head>
 <meta http-equiv='content-type' content='text/html; charset=UTF-8'>
-<link href='../../../../F.core/style.css' rel='stylesheet' type='text/css'>
+<link href='../../../../core/style.css' rel='stylesheet' type='text/css'>
 </head>
 <body>
 <div class='canvas' id='canvas'></div>
-<script src='../../../../F.core/F.js'></script>
-<script src='../../../../F.core/sprite.js'></script>
+<script src="../../../third_party/require.js"></script>
 <script>
+requirejs.config({
+	baseUrl: '../../../../'
+});
+requirejs(['core/sprite','core/animator'], function(Fsprite,Fanimator)
+{
+
 canvas = document.getElementById('canvas');
 
 var sp = new Array(35);
@@ -18,10 +23,10 @@ for (var i=0; i<sp.length; i++)
 		canvas: canvas,
 		wh: {x:L,y:L},
 		img: {
-			'r':'../../bandit_r.png',
+			'r':'bandit_r.png',
 		}
 	}
-	sp[i] = new F.sprite(sp_config);
+	sp[i] = new Fsprite(sp_config);
 	sp[i].set_xy({x:2*L*(i%5), y:L*Math.floor(i/5)});
 }
 
@@ -31,7 +36,7 @@ config=
 	w:L, h:L,    //width, height of a frame
 	gx:4,gy:1,   //define a gx*gy grid of frames
 	tar: sp[r++] //target F.sprite
-}; standing = new F.animator(config);
+}; standing = new Fanimator(config);
 
 config=
 {
@@ -41,7 +46,7 @@ config=
 	tar: sp[r++],//target F_.sprite
 	ani:         //animation sequence.
 	   [0,1,2,3,2,1]//custom frame sequence (count from 0)
-}; walking = new F.animator(config);
+}; walking = new Fanimator(config);
 
 config=
 {
@@ -50,7 +55,7 @@ config=
 	gx:3,gy:1,
 	tar: sp[r++],
 	ani: [0,1,2,1]
-}; running = new F.animator(config);
+}; running = new Fanimator(config);
 
 config=
 {
@@ -59,7 +64,7 @@ config=
 	gx:4,gy:1,
 	tar: sp[r++],
 	ani: [0,1,2,3,2,1]
-}; heavy_obj_walk = new F.animator(config);
+}; heavy_obj_walk = new Fanimator(config);
 
 config=
 {
@@ -67,7 +72,7 @@ config=
 	w:L, h:L,
 	gx:3,gy:1,
 	tar: sp[r++]
-}; heavy_obj_run = new F.animator(config);
+}; heavy_obj_run = new Fanimator(config);
 
 config=
 {
@@ -75,7 +80,7 @@ config=
 	w:L, h:L,
 	gx:8,gy:1,
 	tar: sp[r++]
-}; normal_weapon_atck = new F.animator(config);
+}; normal_weapon_atck = new Fanimator(config);
 
 config=
 {
@@ -83,7 +88,7 @@ config=
 	w:L, h:L,
 	gx:4,gy:1,
 	tar: sp[r++]
-}; jump_weapon_atck = new F.animator(config);
+}; jump_weapon_atck = new Fanimator(config);
 
 config=
 {
@@ -91,7 +96,7 @@ config=
 	w:L, h:L,
 	gx:3,gy:1,
 	tar: sp[r++]
-}; run_weapon_atck = new F.animator(config);
+}; run_weapon_atck = new Fanimator(config);
 
 config=
 {
@@ -99,7 +104,7 @@ config=
 	w:L, h:L,
 	gx:3,gy:1,
 	tar: sp[r++]
-}; light_weapon_thw = new F.animator(config);
+}; light_weapon_thw = new Fanimator(config);
 
 config=
 {
@@ -107,7 +112,7 @@ config=
 	w:L, h:L,
 	gx:2,gy:1,
 	tar: sp[r++]
-}; heavy_weapon_thw = new F.animator(config);
+}; heavy_weapon_thw = new Fanimator(config);
 
 config=
 {
@@ -115,7 +120,7 @@ config=
 	w:L, h:L,
 	gx:3,gy:1,
 	tar: sp[r++]
-}; sky_lgt_wp_thw = new F.animator(config); //sky light weapon throw
+}; sky_lgt_wp_thw = new Fanimator(config); //sky light weapon throw
 
 config=
 {
@@ -124,7 +129,7 @@ config=
 	gx:3,gy:1,
 	tar: sp[r++],
 	ani: [0,1,2,1]
-}; weapon_drink = new F.animator(config);
+}; weapon_drink = new Fanimator(config);
 
 config=
 {
@@ -132,7 +137,7 @@ config=
 	w:L, h:L,
 	gx:4,gy:1,
 	tar: sp[r++]
-}; punch = new F.animator(config);
+}; punch = new Fanimator(config);
 
 config=
 {
@@ -140,7 +145,7 @@ config=
 	w:L, h:L,
 	gx:3,gy:1,
 	tar: sp[r++]
-}; super_punch = new F.animator(config);
+}; super_punch = new Fanimator(config);
 
 config=
 {
@@ -148,7 +153,7 @@ config=
 	w:L, h:L,
 	gx:2,gy:1,
 	tar: sp[r++]
-}; jump_attack = new F.animator(config);
+}; jump_attack = new Fanimator(config);
 
 config=
 {
@@ -156,7 +161,7 @@ config=
 	w:L, h:L,
 	gx:3,gy:1,
 	tar: sp[r++]
-}; run_attack = new F.animator(config);
+}; run_attack = new Fanimator(config);
 
 config=
 {
@@ -164,7 +169,7 @@ config=
 	w:L, h:L,
 	gx:2,gy:1,
 	tar: sp[r++]
-}; dash_attack = new F.animator(config); //跑跳攻
+}; dash_attack = new Fanimator(config); //跑跳攻
 
 config=
 {
@@ -173,7 +178,7 @@ config=
 	gx:2,gy:1,
 	tar: sp[r++],
 	ani: [1,0]
-}; back_row = new F.animator(config); //後受身
+}; back_row = new Fanimator(config); //後受身
 
 config=
 {
@@ -181,7 +186,7 @@ config=
 	w:L, h:L,
 	gx:3,gy:1,
 	tar: sp[r++]
-}; forward_row = new F.animator(config); //前受身
+}; forward_row = new Fanimator(config); //前受身
 
 config=
 {
@@ -190,7 +195,7 @@ config=
 	gx:2,gy:2,
 	tar: sp[r++],
 	ani: [3,2,1]
-}; rowing = new F.animator(config); //滾地
+}; rowing = new Fanimator(config); //滾地
 
 config=
 {
@@ -198,7 +203,7 @@ config=
 	w:L, h:L,
 	gx:2,gy:1,
 	tar: sp[r++]
-}; defend = new F.animator(config);
+}; defend = new Fanimator(config);
 
 config=
 {
@@ -206,7 +211,7 @@ config=
 	w:L, h:L,
 	gx:3,gy:1,
 	tar: sp[r++]
-}; broken_defend = new F.animator(config);
+}; broken_defend = new Fanimator(config);
 
 //picking light
 //picking heavy
@@ -218,7 +223,7 @@ config=
 	gx:2,gy:1,
 	tar: sp[r++],
 	ani: [1,0]
-}; catching = new F.animator(config);
+}; catching = new Fanimator(config);
 
 config=
 {
@@ -226,7 +231,7 @@ config=
 	w:L, h:L,
 	gx:2,gy:1,
 	tar: sp[r++]
-}; catch_attack = new F.animator(config);
+}; catch_attack = new Fanimator(config);
 
 config=
 {
@@ -234,7 +239,7 @@ config=
 	w:L, h:L,
 	gx:3,gy:1,
 	tar: sp[r++]
-}; caught = new F.animator(config);
+}; caught = new Fanimator(config);
 
 config=
 {
@@ -242,7 +247,7 @@ config=
 	w:L, h:L,
 	gx:6,gy:1,
 	tar: sp[r++]
-}; backward_fall = new F.animator(config);
+}; backward_fall = new Fanimator(config);
 
 config=
 {
@@ -250,7 +255,7 @@ config=
 	w:L, h:L,
 	gx:6,gy:1,
 	tar: sp[r++]
-}; forward_fall = new F.animator(config);
+}; forward_fall = new Fanimator(config);
 
 config=
 {
@@ -258,7 +263,7 @@ config=
 	w:L, h:L,
 	gx:1,gy:2,
 	tar: sp[r++]
-}; ice = new F.animator(config);
+}; ice = new Fanimator(config);
 
 config=
 {
@@ -266,7 +271,7 @@ config=
 	w:L, h:L,
 	gx:2,gy:2,
 	tar: sp[r++]
-}; fire = new F.animator(config);
+}; fire = new Fanimator(config);
 
 config=
 {
@@ -274,7 +279,7 @@ config=
 	w:L, h:L,
 	gx:3,gy:1,
 	tar: sp[r++]
-}; jump = new F.animator(config);
+}; jump = new Fanimator(config);
 
 config=
 {
@@ -282,7 +287,7 @@ config=
 	w:L, h:L,
 	gx:3,gy:1,
 	tar: sp[r++]
-}; pain1 = new F.animator(config);
+}; pain1 = new Fanimator(config);
 
 config=
 {
@@ -290,7 +295,7 @@ config=
 	w:L, h:L,
 	gx:2,gy:1,
 	tar: sp[r++]
-}; pain2 = new F.animator(config);
+}; pain2 = new Fanimator(config);
 
 config=
 {
@@ -298,7 +303,7 @@ config=
 	w:L, h:L,
 	gx:2,gy:1,
 	tar: sp[r++]
-}; pain3 = new F.animator(config);
+}; pain3 = new Fanimator(config);
 
 
 //
@@ -349,5 +354,7 @@ function frame8()
 	backward_fall.next_frame();
 	forward_fall.next_frame();
 }
+
+});
 </script>
 </body>

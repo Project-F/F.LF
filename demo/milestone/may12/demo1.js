@@ -1,17 +1,15 @@
-head.js('character.js',
-	'../../../../F.core/F.js',
-	'../../../../F.core/math.js',
-	'../../../../F.core/states.js',
-	'../../../../F.core/sprite.js',
-	'../../../../F.core/combodec.js',
-	'../../../../F.core/controller.js',
-	demo1
-);
+requirejs.config({
+	baseUrl: '../../../../'
+});
+requirejs(['core/F','core/math','core/controller','./character.js'], function(A,B,C,D)
+{
+	demo1(A,B,C,D);
+});
 
-function demo1() {
+function demo1(F,Fmath,Fcontroller,Character) {
 
 //load CSS
-F.css('../../../../F.core/style.css');
+F.css('../../../../core/style.css');
 
 //---configurations--------------
 var state_con =
@@ -20,7 +18,7 @@ var state_con =
 	{
 		entry: 'standing' //initial state
 	},
-	
+
 	standing:
 	{
 		event:
@@ -28,7 +26,7 @@ var state_con =
 			'run':'running',
 			'jump':'start_jumping',
 			'att':'punch',
-			
+
 			'4fps': function(S)
 			{
 				S.C.next_frame(this.name);
@@ -51,7 +49,7 @@ var state_con =
 			},
 		},
 	},
-	
+
 	walking:
 	{
 		event:
@@ -59,7 +57,7 @@ var state_con =
 			'run':'running',
 			'jump':'start_jumping',
 			'att':'punch',
-			
+
 			'8fps': function(S)
 			{
 				S.C.next_frame(this.name);
@@ -72,7 +70,7 @@ var state_con =
 				if(S.C.con.state.left)  S.C.sp.x-=data.speed;
 				if(S.C.con.state.right) S.C.sp.x+=data.speed;
 				S.C.move(this); //update position
-				
+
 				if (
 				(!S.C.con.state.up && !S.C.con.state.down && !S.C.con.state.left && !S.C.con.state.right) //if all directional keys are released
 				|| //or
@@ -89,7 +87,7 @@ var state_con =
 			speedz: 2,
 		}
 	},
-	
+
 	running:
 	{
 		event:
@@ -121,7 +119,7 @@ var state_con =
 				}
 				if(S.C.con.state.up)   S.C.sp.z-=data.speedz;
 				if(S.C.con.state.down) S.C.sp.z+=data.speedz;
-				
+
 				S.C.move(this); //update position
 			},
 			entry: function(S)
@@ -135,7 +133,7 @@ var state_con =
 			speedz: 1.3,
 		},
 	},
-	
+
 	stop_running:
 	{
 		event:
@@ -162,7 +160,7 @@ var state_con =
 			wait: 7, //delay for 7 frames, i.e. 7/30 second
 		},
 	},
-	
+
 	start_jumping:
 	{
 		event:
@@ -192,7 +190,7 @@ var state_con =
 			wait: 4, //time before leaving the ground
 		},
 	},
-	
+
 	jumping:
 	{
 		event:
@@ -201,14 +199,14 @@ var state_con =
 			{
 				var data=this.data;
 				var I=data.counter++;
-				
-				var P=F.bezier2_step(data.parabola[0],data.parabola[1],data.parabola[2],
+
+				var P=Fmath.bezier2_step(data.parabola[0],data.parabola[1],data.parabola[2],
 						I,data.step); //get a step from the jump parabola
 				S.C.sp.y = P.y; // the parabola is upward along the y axis
 				S.C.sp.x+= data.speed * this.data.movex; //movement
 				S.C.sp.z+= data.speedz* this.data.movez;
 				S.C.move(this);
-				
+
 				if( I==data.step) //touching the ground
 					return 'stop_jumping';
 			},
@@ -234,7 +232,7 @@ var state_con =
 			speed: 7,
 			speedz: 3,
 		},
-		
+
 		jump_normal:
 		{
 			event:
@@ -252,7 +250,7 @@ var state_con =
 				'att': 'jump_attack',
 			},
 		},
-		
+
 		jump_attack:
 		{
 			event:
@@ -286,7 +284,7 @@ var state_con =
 			},
 		},
 	},
-	
+
 	stop_jumping:
 	{
 		event:
@@ -330,7 +328,7 @@ var state_con =
 			last: 2,
 		},
 	},
-	
+
 	rowing:
 	{
 		event:
@@ -343,12 +341,12 @@ var state_con =
 			{
 				var data=this.data;
 				S.C.move(this);
-				
+
 				if( data.counter == data.rowing_length)
 					return 'standing';
 				data.counter++;
 			},
-			
+
 			entry: function(S)
 			{
 				S.C.next_frame(this.name);
@@ -366,7 +364,7 @@ var state_con =
 			rowing_length: 18, //in terms of no. of frames
 		},
 	},
-	
+
 	dashing:
 	{
 		event:
@@ -375,8 +373,8 @@ var state_con =
 			{
 				var data=this.data;
 				var I=data.counter++;
-				
-				var P=F.bezier2_step(data.parabola[0],data.parabola[1],data.parabola[2], I,data.step);
+
+				var P=Fmath.bezier2_step(data.parabola[0],data.parabola[1],data.parabola[2], I,data.step);
 				S.C.sp.y = P.y;
 				switch(data.dir)
 				{
@@ -385,13 +383,13 @@ var state_con =
 				}
 				S.C.sp.z+= data.speedz * data.movez;
 				S.C.move(this);
-				
+
 				if( I>=Math.floor(data.step/2)+1)
 					S.consult('late');
 				if( I==data.step)
 					return 'stop_jumping';
 			},
-			
+
 			entry: function(S)
 			{
 				var data=this.data;
@@ -410,11 +408,11 @@ var state_con =
 			{
 			        0:{x:0,y:0}, 1:{x:100,y:-70}, 2:{x:200,y:0}
 			},
-			
+
 			step: 14,
 			speedz: 3.75,
 		},
-		
+
 		dash_normal:
 		{
 			event:
@@ -445,7 +443,7 @@ var state_con =
 				},
 			},
 		},
-		
+
 		dash_attack:
 		{
 			event:
@@ -472,7 +470,7 @@ var state_con =
 			},
 		},
 	},
-	
+
 	punch:
 	{
 		event:
@@ -502,7 +500,7 @@ var state_con =
 			dvx: 3,
 		},
 	},
-	
+
 	run_attack:
 	{
 		event:
@@ -551,8 +549,8 @@ var sp_con= //sprite config
 	wh: {x:L,y:L},
 	img:
 	{
-		'l':'../../bandit_l.png',
-		'r':'../../bandit_r.png',
+		'l':'bandit_l.png',
+		'r':'bandit_r.png',
 	}
 }
 
@@ -563,7 +561,7 @@ var ani_con= //animator set config
 		w:L, h:L,    //width, height of a frame
 		tar:null,    //target F.sprite, object not exist yet, specify later
 	},
-	
+
 	standing:
 	{
 		x:0,  y:0,   //top left margin of the frames
@@ -782,13 +780,13 @@ var control_con =
 {
 	up:'i',down:'k',left:'j',right:'l',def:'h',jump:'y',att:'t'
 }
-var control = new F.controller(control_con);
+var control = new Fcontroller(control_con);
 
 var control_con1 =
 {
 	up:'f',down:'v',left:'c',right:'b',def:'x',jump:'s',att:'a'
 }
-var control1 = new F.controller(control_con1);
+var control1 = new Fcontroller(control_con1);
 
 //set up a character------------
 var cha_con =
@@ -799,7 +797,7 @@ var cha_con =
 	con: control,
 	combo: combo_con
 }
-var character = new F.LF.character(cha_con);
+var character = new Character(cha_con);
 
 var cha_con1 =
 {
@@ -809,7 +807,7 @@ var cha_con1 =
 	con: control1, //all config are the same except the controller
 	combo: combo_con
 }
-var character1 = new F.LF.character(cha_con1);
+var character1 = new Character(cha_con1);
 
 //---run time-------------------
 var timer4 = setInterval(frame4,1000/4);

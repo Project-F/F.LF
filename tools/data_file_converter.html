@@ -2029,15 +2029,26 @@ function convert()
 		if( A.length > 2) alert(A.join());
 		if( A[1])
 		{
-			var value;
-			A[1] = trim(A[1]);
-			if( is_integer(A[1]))
-				value = parseInt(A[1]);
-			else if( is_float(A[1]))
-				value = parseFloat(A[1]);
+			if( A[0]==='catchingact' ||
+			    A[0]==='caughtact')
+			{
+				var B = A[1].split(' ');
+				var v0 = parseInt(B[0]);
+				var v1 = parseInt(B[1]);
+				T[A[0]]= [v0,v1];
+			}
 			else
-				value = A[1];
-			T[A[0]] = value;
+			{
+				var value;
+				A[1] = trim(A[1]);
+				if( is_integer(A[1]))
+					value = parseInt(A[1]);
+				else if( is_float(A[1]))
+					value = parseFloat(A[1]);
+				else
+					value = A[1];
+				T[A[0]] = value;
+			}
 		}
 	}
 	function addl(T,S) //add long: target, "P1_s1_V1_s2_P2_s1_V2..."

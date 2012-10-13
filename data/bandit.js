@@ -1,18 +1,18 @@
-bandit={
+define({
 	"bmp": {
 		"name": "Bandit",
 		"head": "sprite\\sys\\bandit_f.bmp",
 		"small": "sprite\\sys\\bandit_s.bmp",
 		"file": [
 			{
-				"file(0-69)": "bandit_0.png",
+				"file(0-69)": "../sprite/bandit_0.png",
 				"w": 79,
 				"h": 79,
 				"row": 10,
 				"col": 7
 			},
 			{
-				"file(70-139)": "bandit_1.png",
+				"file(70-139)": "../sprite/bandit_1.png",
 				"w": 79,
 				"h": 79,
 				"row": 10,
@@ -222,8 +222,14 @@ bandit={
 				"y": 16,
 				"w": 25,
 				"h": 65,
-				"catchingact": "120 120",
-				"caughtact": "130 130"
+				"catchingact": [
+					120,
+					120
+				],
+				"caughtact": [
+					130,
+					130
+				]
 			},
 			"bdy": {
 				"kind": 0,
@@ -268,8 +274,14 @@ bandit={
 				"y": 16,
 				"w": 25,
 				"h": 65,
-				"catchingact": "120 120",
-				"caughtact": "130 130"
+				"catchingact": [
+					120,
+					120
+				],
+				"caughtact": [
+					130,
+					130
+				]
 			},
 			"bdy": {
 				"kind": 0,
@@ -314,8 +326,14 @@ bandit={
 				"y": 16,
 				"w": 25,
 				"h": 65,
-				"catchingact": "120 120",
-				"caughtact": "130 130"
+				"catchingact": [
+					120,
+					120
+				],
+				"caughtact": [
+					130,
+					130
+				]
 			},
 			"bdy": {
 				"kind": 0,
@@ -360,8 +378,14 @@ bandit={
 				"y": 16,
 				"w": 25,
 				"h": 65,
-				"catchingact": "120 120",
-				"caughtact": "130 130"
+				"catchingact": [
+					120,
+					120
+				],
+				"caughtact": [
+					130,
+					130
+				]
 			},
 			"bdy": {
 				"kind": 0,
@@ -5628,4 +5652,4 @@ bandit={
 			}
 		}
 	}
-}
+});

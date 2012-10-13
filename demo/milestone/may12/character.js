@@ -29,31 +29,29 @@
 	}
  */
 
-if( typeof F=='undefined') F=new Object;
-if( typeof F.LF=='undefined') F.LF=new Object;
-if( typeof F.LF.character=='undefined') //#ifndef
+define( ['core/F','core/sprite','core/animator','core/states','core/combodec'],function(F,Fsprite,Fanimator,Fstates,Fcombodec)
 {
 
-F.LF.character = function(config)
+function character(config)
 {
 	this.name='I am a LF2 character';
-	
+
 	//sprite
-	var sp = this.sp = new F.sprite(config.sp);
+	var sp = this.sp = new Fsprite(config.sp);
 	sp.x=100; sp.y=0; sp.z=100;
 	sp.set_xy({x:sp.x, y:sp.y+sp.z});
-	
+
 	//animator
-	config.ani.base.tar=sp; //specify the target F.sprite
-	var ani = this.ani = F.animator_set(config.ani,'base');
-	
+	config.ani.base.tar=sp; //specify the target Fsprite
+	var ani = this.ani = Fanimator.set(config.ani,'base');
+
 	//states
 	if( config.state.event && config.state.event.entry)
 	{
 		var init_event=config.state.event; //store the original
 		config.state.event = null;
 	}
-	var state = this.state = new F.states(config.state);
+	var state = this.state = new Fstates(config.state);
 	state.C = this;
 	/*state.log_enable=true;
 	state.log_size=1000;
@@ -66,10 +64,10 @@ F.LF.character = function(config)
 	{
 		alert(state.show_log());
 	};*/
-	
+
 	//controller
 	var con = this.con = config.con;
-	
+
 	//combo detector
 	var basic_combo = [
 		{ name:'def', seq:['def']},
@@ -88,8 +86,8 @@ F.LF.character = function(config)
 		},
 		no_repeat_key: true //eliminate repeated key strokes by browser
 	}
-	var dec = this.dec = new F.combodec(con, dec_con, basic_combo.concat(config.combo));
-	
+	var dec = this.dec = new Fcombodec(con, dec_con, basic_combo.concat(config.combo));
+
 	//the left-right switch
 	this.lrswitch =
 	{
@@ -105,7 +103,7 @@ F.LF.character = function(config)
 		},
 		enable_dir: true
 	}
-	
+
 	//direction switcher
 	var dir_con =
 	{
@@ -136,8 +134,8 @@ F.LF.character = function(config)
 			}
 		}
 	}
-	var dir = this.dir = new F.states(dir_con);
-	
+	var dir = this.dir = new Fstates(dir_con);
+
 	//initiate `states` after everything have been set up
 	if( init_event)
 	{
@@ -147,26 +145,26 @@ F.LF.character = function(config)
 	}
 }
 
-F.LF.character.prototype.switch_dir=function(bool)
+character.prototype.switch_dir=function(bool)
 {
 	this.lrswitch.enable_dir=bool;
 }
 
-F.LF.character.prototype.set_frame=function(f, animator_name)
+character.prototype.set_frame=function(f, animator_name)
 {
 	var tar=animator_name;
 	if( !tar) tar = this.state.cur_name;
 	this.ani[tar].set_frame(f);
 }
 
-F.LF.character.prototype.next_frame=function(animator_name)
+character.prototype.next_frame=function(animator_name)
 {
 	var tar=animator_name;
 	if( !tar) tar = this.state.cur_name;
 	this.ani[tar].next_frame();
 }
 
-F.LF.character.prototype.move=function(state)
+character.prototype.move=function(state)
 {	//perform dvx, dvy, dvz
 	if( state.data.dvx) this.sp.x += (this.dir.cur_name=='left'?-1:1)* state.data.dvx;
 	if( state.data.dvy) this.sp.y += state.data.dvy;
@@ -174,12 +172,12 @@ F.LF.character.prototype.move=function(state)
 	this.sp.set_xy({x:this.sp.x, y:this.sp.y+this.sp.z});
 }
 
-F.LF.character.prototype.next=function(event,wait)
+character.prototype.next=function(event,wait)
 {
 	this.state.event_delay(event,wait,'30fps');
 }
 
-F.LF.character.prototype.frame=function(f)
+character.prototype.frame=function(f)
 {
 	switch (f)
 	{
@@ -194,4 +192,5 @@ F.LF.character.prototype.frame=function(f)
 	}
 }
 
-} //#endif
+return character;
+});

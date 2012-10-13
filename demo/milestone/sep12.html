@@ -160,7 +160,7 @@ F.to_text = function ( //convert a JSON object to into text
 	if( !TTL) TTL=30;
 	if( !sep) sep='\n';
 	if( !pretext) pretext='';
-	
+
 	var str = pretext+ name +':'+sep;
 	str+= pretext+ '{';
 	var cc=0;
@@ -249,7 +249,7 @@ F.bezier2_step = function (A,C,B, i,steps)
 	P.x = getstep(getstep(A.x, C.x, i, steps), getstep(C.x, B.x, i, steps), i, steps);
 	P.y = getstep(getstep(A.y, C.y, i, steps), getstep(C.y, B.y, i, steps), i, steps);
 	return P;
-	
+
 	function getstep(x1, x2, stepcount, numofsteps)
 	{
 		return ((numofsteps - stepcount) * x1 + stepcount * x2) / numofsteps;
@@ -307,7 +307,7 @@ F.intersect = function ( P1,P2, //line 1
 	denom  = (P4.y-P3.y) * (P2.x-P1.x) - (P4.x-P3.x) * (P2.y-P1.y);
 	numera = (P4.x-P3.x) * (P1.y-P3.y) - (P4.y-P3.y) * (P1.x-P3.x);
 	numerb = (P2.x-P1.x) * (P1.y-P3.y) - (P2.y-P1.y) * (P1.x-P3.x);
-	
+
 	if ( negligible(numera) && negligible(numerb) && negligible(denom)) {
 		//meaning the lines coincide
 		return { x: (P1.x + P2.x) * 0.5,
@@ -353,7 +353,7 @@ F.intersect = function ( P1,P2, //line 1
 			{
 				'event1': 'state2',  //name of target state
 				//  on  :   to
-				
+
 				'event2': function(state, //a reference to the `states` instance
 								event,p1,p2) //event and its parameters
 				{
@@ -361,14 +361,14 @@ F.intersect = function ( P1,P2, //line 1
 					alert(this.data.data_of_state1); //give 'hello'
 					return 'state2'; //the returned state name will cause a transition to that state, nothing will happen if returned null/undefined
 				} ,,,
-				
+
 				entry: function(state,event,prev_state) //called on enter state, passing in previous state
 				{
 					//some init
 				},
-				
+
 				exit: function, //called on leave state, passing in next state
-				
+
 				'guard': function(state,event,p1,p2) //if you consult a particular event of a state, you get its return value without causing any state transition
 				{
 					return allow_transition(p1,p2);
@@ -391,7 +391,7 @@ F.intersect = function ( P1,P2, //line 1
 			},
 
 			state1_2: { ,,, },
-		
+
 		},
 
 		state2:
@@ -425,7 +425,7 @@ F.states = function (state_def)
 		state.superstate=superstate;
 	});
 
-	this.evlay=new Array(20); //the array of delayed events 
+	this.evlay=new Array(20); //the array of delayed events
 	for( var i=0; i<this.evlay.length; i++)
 		this.evlay[i]={i:-1};
 
@@ -435,9 +435,9 @@ F.states = function (state_def)
 	this.cur_name='root';
 	this.cur_state=this.state; //a reference to the current state in state_def
 	this.chain_event(true,this.cur,1,'entry',true,null);
-	
+
 	F.state_list.push(this); //the list of state objects
-	
+
 	this.log_enable=false;   //not log by default
 	this.log_filter=null;	//a function to return true to not log an item
 	this.log_size=100;
@@ -456,7 +456,7 @@ F.states.prototype.propagate_down=function(level,fun,node)
 
 	if(!node)
 		node=this.state;
-	
+
 	for( var I in node)
 	{
 		if( this.valid_substate(I))
@@ -489,7 +489,7 @@ F.states.prototype.propagate_up=function(level,fun,node)
 F.states.prototype.chain_event=function(allow_transition,chain,TTL,event,down,sub, arg)
 {
 	var result={ result:null, absorbed:false};
-	
+
 	if( down)
 	{
 		var i=0;
@@ -504,7 +504,7 @@ F.states.prototype.chain_event=function(allow_transition,chain,TTL,event,down,su
 	for(;;)
 	{
 		result = this.execute_event(event,I,arg);
-		
+
 		if( result.absorbed)
 		{
 			if( allow_transition && result.result)
@@ -512,7 +512,7 @@ F.states.prototype.chain_event=function(allow_transition,chain,TTL,event,down,su
 			if( --TTL <= 0)
 				break;
 		}
-		
+
 		if( down)
 		{	//move down along tree
 			if( i>=chain.length-1) break;
@@ -572,7 +572,7 @@ F.states.prototype.event=function(event/*,arguments,,,*/)
 		var chain=this.cur;
 		this.chain_event(true,chain,1,event,false,null, Array.prototype.slice.call(arguments,1));
 	}
-	
+
 	for( var I=0; I<this.evlay.length; I++)
 	{
 		if( this.evlay[I].frame == event)
@@ -645,7 +645,7 @@ F.states.prototype.search=function(A, //search for the path of state A
 	{	//if not specified, search in root
 		node=this.state;
 	}
-	
+
 	if( A=='root')
 	{
 		return [];
@@ -708,7 +708,7 @@ F.states.prototype.to=function(target_name)
 		else
 			break;
 	}
-	
+
 	this.chain_event(false,A,999,'exit',false,a, [target_state]);
 		if( this.log_enable)
 		{	//logging
@@ -720,7 +720,7 @@ F.states.prototype.to=function(target_name)
 			}
 		}
 	this.chain_event(false,B,999,'entry',true,b, [prev]);
-	
+
 	this.cur=target;
 	this.cur_name=target_name;
 	this.cur_state=target_state;
@@ -781,15 +781,15 @@ F.sprite = function (config)
 	//	config is one time only and should be dumped after constructor returns
 	this.ID=F.sp_count;
 	F.sp_count++;
-	
+
 	this.el = document.createElement('div');
 	this.el.setAttribute('class','F_sprite');
 	this.el.id='sp'+this.ID;
 	config.canvas.appendChild(this.el);
-	
+
 	this.img={};
 	this.cur_img=null;
-	
+
 	this.set_wh(config.wh);
 	if( config.img)
 	for ( var I in config.img)
@@ -817,7 +817,7 @@ F.sprite.prototype.add_img=function(imgpath,name)
 	im.setAttribute('class','F_sprite_img');
 	im.src=imgpath;
 	this.el.appendChild(im);
-	
+
 	this.img[name]=im;
 	this.switch_img(name);
 	return im;
@@ -935,7 +935,7 @@ F.animator.prototype.get_at=function(i) //get the content of the graph at frame 
 			gx:4,gy:1,   //define a gx*gy grid of frames
 			tar:null,    //target F.sprite
 		},
-		
+
 		'standing':
 		{	//change only values you want to
 			x:0,y:0,     //top left margin of the frames
@@ -948,18 +948,18 @@ F.animator_set = function(set_config, base)
 	if(!set_config)
 		return null;
 	var A=new Object();
-	
+
 	for( var I in set_config)
 	{
 		if( base) if( I==base)
 			continue;
-		
+
 		if( base) if( set_config[base])
 		{
 			for( var J in set_config[base])
 				set_config[I][J] = set_config[base][J];
 		}
-		
+
 		A[I]=new F.animator(set_config[I]);
 	}
 	return A;
@@ -1011,16 +1011,16 @@ F.combodec = function (controller, config, combo)
 	this.config=config;
 	this.callback=config.callback;
 	this.combo=combo;
-	
+
 	this.con.child.push(this);
 	//
 	this.key=function(K, down)
 	{
 		if(!down)
 			return;
-		
+
 		var seq=this.seq;
-		
+
 		var push=true;
 		if( this.config.rp)
 		{	//detect repeated keys
@@ -1028,19 +1028,19 @@ F.combodec = function (controller, config, combo)
 				if( cc>=this.config.rp[K])
 					push=false;
 		}
-		
+
 		if( this.config.no_repeat_key)
 		{
 			if( this.con.state[K])
 				push=false;
 		}
-		
+
 		outframe=framec+this.config.timeout;
 		outcombo=framec+this.config.comboout;
-		
+
 		if( push)
 			seq.push(K);
-		
+
 		if ( this.combo && push)
 		{	//detect combo
 			var C = this.combo;
@@ -1064,12 +1064,12 @@ F.combodec = function (controller, config, combo)
 			}
 		}
 	}
-	
+
 	this.clear_seq=function()
 	{
 		this.seq.length=0;
 	}
-	
+
 	this.frame=function()
 	{
 		if( framec==outframe)
@@ -1158,33 +1158,33 @@ F.collision.tri=function(A,B) //triangle A,B: array of points in form {x,y}
 			I[11]       , aa(A[2],B[0],B[2])>0
 	);if(test())return true;
 	I.push( aa(A[0],A[2],B[0])>0, aa(A[0],A[2],B[1])>0,
-			I[2]        ,         I[15]       
+			I[2]        ,         I[15]
 	);if(test())return true;
 	I.push(         I[25]       , aa(A[0],A[2],B[2])>0,
-			I[6]        ,         I[19]       
+			I[6]        ,         I[19]
 	);if(test())return true;
 	I.push(         I[24]       ,         I[29]       ,
-			I[10]       ,         I[23]       
+			I[10]       ,         I[23]
 	);if(test())return true;
-	
+
 	function test()
 	{
 		var i=tested; tested+=4;
 		return (I[i]!=I[i+1] && I[i+2]!=I[i+3]);
 	}
-	
+
 	//point inside triangle test
 	var AinB=[ I[2]==I[6]&&I[6]==!I[10],   //true if A[0] is inside triangle B
 		   I[3]==I[7]&&I[7]==!I[11],   //  A[1]
 		   I[15]==I[19]&&I[19]==!I[23]]//  A[2]
-	
+
 	var BinA=[ I[0]==I[12]&&I[12]==!I[24], //true if B[0] is inside triangle A
 		   I[1]==I[13]&&I[13]==!I[25], //  B[1]
 		   I[9]==I[21]&&I[21]==!I[33]];//  B[2]
-	
+
 	if (AinB[0] && AinB[1] && AinB[2])  return true;
 	if (BinA[0] && BinA[1] && BinA[2])  return true;
-	
+
 	return false;
 	//another possible implementation http://jgt.akpeters.com/papers/Moller97/tritri.html
 }
@@ -1238,7 +1238,7 @@ F.master_controller = (function()
 {
 	window.onkeydown = F.double_delegate(window.onkeydown, F.keydown);
 	window.onkeyup   = F.double_delegate(window.onkeydown, F.keyup);
-	
+
 	var mas = new Object();
 	mas.child = [];
 	mas.key = function(e,down)
@@ -1256,7 +1256,7 @@ F.master_controller = (function()
 //keyboard controller
 /*	sample config for F.controller (control keys)
 	{
-		up:'h', down:'n', left:'b', 'control name':'control key',,, 
+		up:'h', down:'n', left:'b', 'control name':'control key',,,
 	}
 	-each control key must be an alphabet
 	-F.controller doesnt care the name of each control
@@ -1279,7 +1279,7 @@ F.controller = function (config)
 			//if sync===true,
 			//  a key up-down event will be buffered, and must be fetch manually.
 	this.buf=new Array();
-	
+
 	this.key=function(e,down) //interface to master_controller------
 	{
 		var caught=0;
@@ -1304,7 +1304,7 @@ F.controller = function (config)
 		}
 		return caught;
 	}
-	
+
 	//interface to application--------------------------------------
 	this.clear_states=function()
 	{
@@ -1328,7 +1328,7 @@ F.controller = function (config)
 	{
 		this.buf=[];
 	}
-	
+
 	//[--constructor
 	F.master_controller.child.push(this);
 	this.clear_states();
@@ -1405,16 +1405,16 @@ F.keycode_to_keyname=function(code)
 		"small": "sprite\\sys\\bandit_s.bmp",
 		"file": [
 			{
-				"file(0-69)": "../bandit_0.png",
-				"mirror":"../bandit_0_mirror.png",
+				"file(0-69)": "../../sprite/bandit_0.png",
+				"mirror":"../../sprite/bandit_0_mirror.png",
 				"w": 79,
 				"h": 79,
 				"row": 10,
 				"col": 7
 			},
 			{
-				"file(70-139)": "../bandit_1.png",
-				"mirror":"../bandit_1_mirror.png",
+				"file(70-139)": "../../sprite/bandit_1.png",
+				"mirror":"../../sprite/bandit_1_mirror.png",
 				"w": 79,
 				"h": 79,
 				"row": 10,
@@ -7070,7 +7070,7 @@ F.LF.scene.prototype.query = function(volume, This) //return the all the objects
 	{
 		if( this.obj[i] === This)
 			continue;
-		
+
 		var bdy = this.obj[i].bdy();
 		for( var j in bdy)
 		{
@@ -7088,7 +7088,7 @@ F.LF.scene.prototype.intersect = function(A,B) //return true if volume A and B i
 {
 	var AV={ left:A.x+A.vx, top:A.y+A.vy, right:A.x+A.vx+A.w, bottom:A.y+A.vy+A.h };
 	var BV={ left:B.x+B.vx, top:B.y+B.vy, right:B.x+B.vx+B.w, bottom:B.y+B.vy+B.h };
-	
+
 	return ( F.collision.rect( AV, BV ) && F.collision.rect(
 	{ left:A.z-A.zwidth, top:0, right:A.z+A.zwidth, bottom:1 },
 	{ left:B.z-B.zwidth, top:0, right:B.z+B.zwidth, bottom:1 }
@@ -7100,7 +7100,7 @@ F.LF.scene.prototype.distance=function(A,B) //return the distance between object
 	var dx= (A.x+A.centerx) - (B.x+B.centerx);
 	var dy= A.y - B.y;
 	var dz= (A.z+A.centery) - (B.z+B.centery);
-	
+
 	return Math.sqrt(dx*dx+dy*dy+dz*dz);
 }
 
@@ -7126,7 +7126,7 @@ F.LF.sprite=function(bmp, parent)
 	var ani = this.ani = new Array();
 	this.dir = 'right';
 	this.cur_img = '0r';
-	
+
 	var sp_con=
 	{
 		canvas: parent,
@@ -7134,13 +7134,13 @@ F.LF.sprite=function(bmp, parent)
 		img:{}
 	}
 	var sp = this.sp = new F.sprite(sp_con);
-	
+
 	for( var i=0; i<bmp.file.length; i++)
 	{
 		var imgpath='';
 		for( var j in bmp.file[i])
 		{
-			if( typeof bmp.file[i][j] === 'string' && 
+			if( typeof bmp.file[i][j] === 'string' &&
 			    j.indexOf('file')===0 )
 				imgpath = bmp.file[i][j];
 		}
@@ -7156,7 +7156,7 @@ F.LF.sprite=function(bmp, parent)
 			var ext=imgpath.lastIndexOf('.');
 			sp.add_img( imgpath.slice(0,ext)+'_mirror'+imgpath.slice(ext), i+'l');
 		}
-		
+
 		var ani_con=
 		{
 			x:0,  y:0,   //top left margin of the frames
@@ -7246,13 +7246,13 @@ F.LF.character = function(config)
 	this.name=dat.bmp.name;
 	this.type='character';
 	var This=this;
-	
+
 	//---status-----------------------------------------------------
 	this.hp=100;
 	this.mp=100;
 	this.bdefend=0;
 	this.fall=0;
-	
+
 	//the state variable
 	var _wait=1; //when wait decreases to zero, a frame transition happens
 	var _next=999; //next frame
@@ -7273,15 +7273,15 @@ F.LF.character = function(config)
 	// 3x: strong interactions
 	//    30: environmental
 	//    35: fire, ice, blast
-	
+
 	//frame
 	var framePN=0; //previous frame number
 	var frameN=0; //current frame number
 	var frame=dat.frame[0]; //current frame object
-	
+
 	//itr
 	var arest=[]; //a history of what have been hit by me recently
-	
+
 	//---configurations---------------------------------------------
 	var log={enable: false};
 	if( log.enable)
@@ -7289,7 +7289,7 @@ F.LF.character = function(config)
 		log=document.getElementById('log');
 		log.enable=true;
 	}
-	
+
 	//combo list
 	var combo_con = [
 		{ name:'left', seq:['left']},
@@ -7318,9 +7318,9 @@ F.LF.character = function(config)
 		callback: combo_event, //callback function when combo detected
 		no_repeat_key: true //eliminate repeated key strokes by browser
 	}
-	
+
 	//---internal state machines------------------------------------
-	
+
 	function switch_dir_fun(e)
 	{
 		if( dir==='left' && e==='right')
@@ -7335,12 +7335,12 @@ F.LF.character = function(config)
 		}
 	}
 	var switch_dir=true;
-	
+
 	function dirh()
 	{
 		return (dir==='left'?-1:1);
 	}
-	
+
 	function dirv()
 	{
 		var d=0;
@@ -7348,14 +7348,14 @@ F.LF.character = function(config)
 		if( con.state.down) d+=1;
 		return d;
 	}
-	
+
 	var effect_state_config=
 	{
 		event:
 		{
 			entry: 'vanish'
 		},
-		
+
 		active:
 		{
 			event:
@@ -7378,7 +7378,7 @@ F.LF.character = function(config)
 				'vanish': 'vanish'
 			}
 		},
-		
+
 		vanish:
 		{
 			event:
@@ -7397,29 +7397,29 @@ F.LF.character = function(config)
 			}
 		}
 	}
-	
+
 	//---set up-----------------------------------------------------
-	
+
 	//sprite
 	var sp = new F.LF.sprite(dat.bmp, document.getElementById('stage'));
-	
+
 	//position, velocity
 	var ps = this.ps = {x:0, y:0, z:0, vx:0, vy:0, vz:0};
-	
+
 	//direction switcher
 	var dir='right';
-	
+
 	//controller
 	var con = config.controller;
 	if( log.enable)
 		var pri_con = new F.controller({log:'g'});
-	
+
 	//combodec
 	var dec = new F.combodec(con, dec_con, combo_con);
-	
+
 	//scene object
 	var scene = config.scene;
-	
+
 	//effect
 	var effect=
 	{
@@ -7428,34 +7428,34 @@ F.LF.character = function(config)
 		dvx:0, dvy:0,
 		effect:0
 	};
-	
+
 	//---the processing pipeline------------------------------------
-	
+
 	function frame_update() //generic update done at every frame
 	{
 		//show frame
 		sp.show_pic(frame.pic);
-		
+
 		//velocity
 		ps.vx+= dirh() * frame.dvx;
 		ps.vz+= dirv() * frame.dvz;
 		ps.vy+= frame.dvy;
-		
+
 		//wait for next frame
 		set_wait(frame.wait,0);
 		set_next(frame.next,0);
-		
+
 		//state specific update
 		var tar=states[frame.state];
 		if( tar) tar('frame');
 	}
-	
+
 	function state_update() //generic update done at every TU (30fps)
 	{
 		//state specific actions
 		var tar=states[frame.state];
 		if( tar) tar('TU'); //a TU event
-		
+
 		//position
 		ps.x += ps.vx;
 		ps.z += ps.vz;
@@ -7463,7 +7463,7 @@ F.LF.character = function(config)
 		if( ps.y>0) ps.y=0; //never below the ground
 		sp.set_xy({x:ps.x, y:ps.y+ps.z}); //projection onto screen
 		sp.set_z(ps.z); //z ordering
-		
+
 		if( ps.y===0) //only on the ground
 		{	//friction proportional to speed
 			ps.vx *= 0.74; //defined coefficient of friction
@@ -7471,10 +7471,10 @@ F.LF.character = function(config)
 			if( ps.vx>-1 && ps.vx<1) ps.vx=0; //defined minimum speed
 			if( ps.vz>-1 && ps.vz<1) ps.vz=0;
 		}
-		
+
 		if( ps.y<0) //gravity
 			ps.vy+= 1.7; //defined gravity
-		
+
 		if( ps.y===0 && ps.vy>0)
 		{
 			ps.vy=0; //set to zero
@@ -7485,7 +7485,7 @@ F.LF.character = function(config)
 		{
 			var tar=states[frame.state]; //state specific processing
 			if( tar) var result=tar('fall_onto_ground');
-			
+
 			if( result !== undefined && result !== null)
 				frame_trans(result, 30);
 			else
@@ -7500,11 +7500,11 @@ F.LF.character = function(config)
 				}
 			}
 		}
-		
+
 		//recovery
 		if( This.fall>0) This.fall-=0.5; //default fall recover constant
 		if( This.bdefend>0) This.bdefend-=1; //default bdefend recover constant
-		
+
 		//arest (attack rest)
 		for( var I in arest)
 		{
@@ -7512,7 +7512,7 @@ F.LF.character = function(config)
 				arest[I]--;
 		}
 	}
-	
+
 	var states= //state specific processing to different events-----
 	{
 		'0':function(event,K) //standing
@@ -7526,7 +7526,7 @@ F.LF.character = function(config)
 				if( dx || dz)
 					frame_trans(5);
 			break;
-			
+
 			case 'combo':
 				switch(K)
 				{
@@ -7559,7 +7559,7 @@ F.LF.character = function(config)
 				}
 			break;
 		}},
-		
+
 		'1':function(event,K) //walking
 		{ switch (event) {
 			case 'TU':
@@ -7567,7 +7567,7 @@ F.LF.character = function(config)
 				if(con.state.down)  ps.z+=dat.bmp.walking_speedz;
 				if(con.state.left)  ps.x-=dat.bmp.walking_speed;
 				if(con.state.right) ps.x+=dat.bmp.walking_speed;
-				
+
 				var dx=0, dz=0; //to resolve key conflicts
 				if( con.state.up)   dz -=1;
 				if( con.state.down) dz +=1;
@@ -7576,18 +7576,18 @@ F.LF.character = function(config)
 				if( !dx && !dz)
 					frame_trans(999); //go back to standing
 			break;
-			
+
 			case 'frame':
 				fu.oscillate(5,8);
 				set_wait(dat.bmp.walking_frame_rate);
 			break;
-			
+
 			case 'combo':
 				//walking same as standing
 				states['0'](event,K);
 			break;
 		}},
-		
+
 		'2':function(event,K) //running
 		{ switch (event) {
 			case 'TU':
@@ -7595,16 +7595,16 @@ F.LF.character = function(config)
 				ps.vx= dirh() * dat.bmp.running_speed;
 				ps.vz= dirv() * dat.bmp.running_speedz;
 			break;
-			
+
 			case 'frame':
 				fu.oscillate(9,11);
 				set_wait(dat.bmp.running_frame_rate);
 			break;
-			
+
 			case 'state_entry':
 				switch_dir=false;
 			break;
-			
+
 			case 'combo':
 				switch(K)
 				{
@@ -7626,18 +7626,18 @@ F.LF.character = function(config)
 				}
 			break;
 		}},
-		
+
 		'3':function(event,K) //punch, jump_attack, run_attack, ...
 		{ switch (event) {
 			case 'frame':
 				if( frameN===81) //jump_attack
 					set_next(212); //back to jump
 			break;
-			
+
 			case 'TU':
 				interaction();
 			break;
-			
+
 			case 'state_entry':
 				switch_dir=false;
 			break;
@@ -7647,9 +7647,9 @@ F.LF.character = function(config)
 				if(con.state.right) switch_dir_fun('right');
 			break;
 		}},
-		
+
 		'4':function(event,K) //jump
-		{ switch (event) {			
+		{ switch (event) {
 			case 'frame':
 				if( frameN===212 && framePN===211)
 				{	//start jumping
@@ -7661,7 +7661,7 @@ F.LF.character = function(config)
 					ps.vy= dat.bmp.jump_height; //upward force
 				}
 			break;
-			
+
 			case 'TU':
 				if( frameN===212) //is jumping
 				{
@@ -7672,7 +7672,7 @@ F.LF.character = function(config)
 				}
 			break;
 		}},
-		
+
 		'5':function(event,K) //dash
 		{ switch (event) {
 			case 'state_entry':
@@ -7681,7 +7681,7 @@ F.LF.character = function(config)
 				ps.vz= dirv() * dat.bmp.dash_distancez;
 				ps.vy= dat.bmp.dash_height;
 			break;
-			
+
 			case 'combo':
 				if( K==='att')
 				{
@@ -7708,7 +7708,7 @@ F.LF.character = function(config)
 				}
 			break;
 		}},
-		
+
 		'6':function(event,K) //rowing
 		{ switch (event) {
 			case 'state_entry':
@@ -7718,7 +7718,7 @@ F.LF.character = function(config)
 				switch_dir=true;
 			break;
 		}},
-		
+
 		'7':function(event,K) //defending
 		{ switch (event) {
 			case 'state_entry':
@@ -7731,14 +7731,14 @@ F.LF.character = function(config)
 				if( frameN===111) set_wait(_wait+4);
 			break;
 		}},
-		
+
 		'8':function(event,K) //broken defend
 		{ switch (event) {
 			case 'frame':
 				if( frameN===112) set_wait(_wait+4);
 			break;
 		}},
-		
+
 		'11':function(event,K) //injured
 		{ switch (event) {
 			case 'frame':
@@ -7750,13 +7750,13 @@ F.LF.character = function(config)
 				}
 			break;
 		}},
-		
+
 		'12':function(event,K) //falling
 		{ switch (event) {
 			case 'state_entry':
 				switch_dir=false;
 			break;
-			
+
 			case 'frame':
 				switch (frameN)
 				{
@@ -7781,7 +7781,7 @@ F.LF.character = function(config)
 						break;
 				}
 			break;
-			
+
 			case 'fall_onto_ground':
 				if( ps.vx*ps.vx + ps.vy*ps.vy > 200) //defined square of speed to bounce up again
 				{
@@ -7796,11 +7796,11 @@ F.LF.character = function(config)
 				if( 186 <= frameN && frameN <= 191)
 					return 231;
 			break;
-			
+
 			case 'combo':
 			break;
 		}},
-		
+
 		'14':function(event,K) //lying
 		{ switch (event) {
 			case 'state_exit':
@@ -7809,13 +7809,13 @@ F.LF.character = function(config)
 				switch_dir=true;
 			break;
 		}},
-		
+
 		'15':function(event,K) //stop_running, crouch, crouch2, dash_attack
 		{ switch (event) {
 			case 'TU':
 				interaction();
 			break;
-			
+
 			case 'combo':
 				if( frameN===215) //only after jumping
 				{
@@ -7835,7 +7835,7 @@ F.LF.character = function(config)
 					}
 				}
 			break;
-			
+
 			case 'state_entry':
 				switch_dir=false;
 			break;
@@ -7845,16 +7845,16 @@ F.LF.character = function(config)
 				if(con.state.right) switch_dir_fun('right');
 			break;
 		}},
-		
+
 		'16':function(event,K) //injured 2 (dance of pain)
 		{ switch (event) {
 		}},
-		
+
 		'x':function(event,K)
 		{ switch (event) {
 		}}
 	}
-	
+
 	var fu= //frame related functions
 	{
 		da:{}, //data area
@@ -7873,7 +7873,7 @@ F.LF.character = function(config)
 			if( fu.da.i==a) fu.da.up=true;
 		}
 	}
-	
+
 	function interaction() //generic processing of frame interactions
 	{
 		var itr=frame.itr;
@@ -7888,18 +7888,18 @@ F.LF.character = function(config)
 				if( !arest[ hit[t].id ])
 				{
 					hit[t].hit(itr,This); //hit you!
-					
+
 					//rest: cannot attack you again for some time
 					if( itr.arest) var rest=itr.arest;
 					if( itr.vrest) var rest=itr.vrest;
 					if( rest===undefined) var rest=7;
 					arest[ hit[t].id ] = rest;
-					
+
 					if( frameN===61 || frameN===66) //if punch
 						set_wait(_wait+3, 10); // stalls for 3 TU
 					else if( frameN===72)
 						set_wait(_wait+4, 10);
-					
+
 					//attack one enemy only //TODO: attack the closest
 					//by sorting the hit array according to distance
 					if( itr.arest) break;
@@ -7907,25 +7907,25 @@ F.LF.character = function(config)
 			}
 		}
 	}
-	
+
 	function combo_event(kobj)
 	{
 		var K=kobj.name;
 		//combo event
 		var tar=states[frame.state];
 		if( tar) tar('combo',K);
-		
+
 		if( K=='left' || K=='right')
 			if( switch_dir)
 				switch_dir_fun(K);
 	}
-	
+
 	function frame_trans(F,au)
 	{
 		set_next(F,au);
 		set_wait(0,au);
 	}
-	
+
 	function set_wait(value,au)
 	{
 		if(!au) au=0; //authority
@@ -7935,7 +7935,7 @@ F.LF.character = function(config)
 			_wait=value;
 		}
 	}
-	
+
 	function set_next(value,au)
 	{
 		if(!au) au=0; //authority
@@ -7945,7 +7945,7 @@ F.LF.character = function(config)
 			_next=value;
 		}
 	}
-	
+
 	function make_volume(O)
 	{
 		if( !O)
@@ -7953,7 +7953,7 @@ F.LF.character = function(config)
 				x:ps.x, y:ps.y, z:ps.z,
 				vx:0, vy:0, w:0, h:0, zwidth:0
 			};
-		
+
 		if( dir==='right')
 		{
 			return {x:ps.x, y:ps.y, z:ps.z,
@@ -7989,19 +7989,19 @@ F.LF.character = function(config)
 			}
 		}
 	}
-	
+
 	//---external interface-----------------------------------------
 	this.TU=function()
 	{
 		//fetch inputs
 		con.fetch();
-		
+
 		//state
 		state_update();
-		
+
 		//effect
 		effect.state.event('TU');
-		
+
 		//combo detector
 		dec.frame();
 	}
@@ -8009,7 +8009,7 @@ F.LF.character = function(config)
 	{
 		var oldlock=_lock;
 		_lock=0; //reset transition lock
-		
+
 		if( _wait===0)
 		{
 			if( _next===0)
@@ -8024,7 +8024,7 @@ F.LF.character = function(config)
 				frameN=_next;
 					var tar=states[frame.state];
 					if( tar) tar('frame_exit');
-				
+
 				if(frame.state !== dat.frame[_next].state)
 				{ //state transition
 					var tar1=states[frame.state];
@@ -8032,10 +8032,10 @@ F.LF.character = function(config)
 					var tar2=states[dat.frame[_next].state];
 					if( tar2) tar2('state_entry');
 				}
-				
+
 				frame=dat.frame[_next];
 				frame_update();
-				
+
 				if( oldlock===10) //combo
 					if( _wait>0)
 						_wait-=1;
@@ -8093,10 +8093,10 @@ F.LF.character = function(config)
 		effect.dvx = itr.dvx ? att.dirh()*itr.dvx:0;
 		effect.dvy = itr.dvy ? itr.dvy:0;
 		effect.effect = itr.effect? itr.effect:0; //default effect type
-		
+
 		//injury
 		if( itr.injury)	this.health -= itr.injury;
-		
+
 		if( frame.state===7 &&
 		    (att.ps.x > ps.x)===(dir==='right')) //attacked in front
 		{
@@ -8115,7 +8115,7 @@ F.LF.character = function(config)
 			if( itr.fall)	this.fall += itr.fall;
 				else	this.fall += 20; //default fall
 			this.bdefend = 45; //lose defend ability immediately
-			
+
 			//fall
 			var fall=this.fall;
 			if ( 0<fall && fall<=20)
@@ -8130,11 +8130,11 @@ F.LF.character = function(config)
 					frame_trans(180, 20);
 				else
 					frame_trans(186, 20); //attacked in back
-				
+
 				if( !itr.dvy) effect.dvy = -6.9; //default dvy when falling
 			}
 		}
-		
+
 		//effect
 		effect.state.event('new');
 		var vanish=3;
@@ -8162,12 +8162,12 @@ if( typeof F.LF.keychanger=='undefined') //#ifndef
 F.LF.keychanger=function (append_at, controllers)
 {
 	append_at.style.textAlign='center';
-	
+
 	for( var i=0; i<controllers.length; i++)
 	{
 		add_player(controllers[i], i);
 	}
-	
+
 	//the ok button
 	var rule = create_at(append_at,'div');
 	rule.style.clear='both';
@@ -8179,7 +8179,7 @@ F.LF.keychanger=function (append_at, controllers)
 		ok.onclick= null;
 		append_at.parentNode.removeChild(append_at);
 	}
-	
+
 	function add_player(con, num)
 	{
 		if( num!==0)
@@ -8188,15 +8188,15 @@ F.LF.keychanger=function (append_at, controllers)
 			sep.style.float='left';
 			sep.innerHTML='&nbsp;&nbsp;&nbsp;&nbsp;';
 		}
-		
+
 		var table=create_at(append_at, 'table');
 		table.style.float='left';
-		
+
 		var row=[];
 		row[0]=create_at(table, 'tr');
 		var head= add_cell(row[0],'player '+(num+1));
 		head.colSpan='2';
-		
+
 		var i=1;
 		for( var I in con.config)
 		{
@@ -8204,9 +8204,9 @@ F.LF.keychanger=function (append_at, controllers)
 			add_pair(row[i],I);
 			i++;
 		}
-		
+
 		F.LF.keychanger.active=false;
-		
+
 		function add_pair(R,name)
 		{
 			add_cell(R,name);
@@ -8234,7 +8234,7 @@ F.LF.keychanger=function (append_at, controllers)
 			}
 		}
 	}
-	
+
 	function create_at(parent, tag, id)
 	{
 		var E = document.createElement(tag);
@@ -8314,12 +8314,12 @@ function frame30()
 	if( counter++===14)
 		counter=0;
 	if( slow_motion && counter!==0) return;
-	
+
 	character.TU();
 	character2.TU();
 	character.trans();
 	character2.trans();
-	
+
 	calculate_fps(1);
 }
 
