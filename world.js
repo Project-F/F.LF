@@ -1,5 +1,7 @@
-//the world coordinate system
-/*
+/**	@fileOverview
+	@description
+	the world coordinate system
+	@example
  z              O-------x
  |  y           |
  | /       =>   |
@@ -10,6 +12,8 @@
 
 define(['core/math'],function(math){ //exports a class `world`
 
+/**	@class
+*/
 function world ()
 {
 	this.P = new Array(); //points in 3d space
@@ -23,7 +27,10 @@ function world ()
 	this.pany=this.areay/2;  //   and y
 	this.zoom=40;
 
-	this.project=function() //project from 3d world space to 2d space
+	/**	project from 3d world space to 2d space
+		@function
+	*/
+	this.project=function()
 	{
 		var T=this;
 		var sintho,sinthp,costho,costhp;
@@ -53,7 +60,10 @@ function world ()
 		}
 	}
 
-	this.view=function(pp) //convert from projected 2d space to view space
+	/**	convert from projected 2d space to view space
+		@function
+	*/
+	this.view=function(pp)
 	{
 		//round off in effect to reduce number of decimals in SVG, not sure if it helps?
 		return {x:math.round_d2(pp.x*this.zoom+this.panx),

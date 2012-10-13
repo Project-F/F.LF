@@ -1,7 +1,9 @@
-//states: nested state transition system, a Hierarchical State Machine ( HSM )
-/*	controls state transitions
- */
-/*	sample state_config =
+/**	@fileOverview
+	@description
+	states: nested state transition system, a Hierarchical State Machine ( HSM )
+	controls state transitions
+	@example
+	state_config =
  	{
 		event:
 		{
@@ -65,7 +67,7 @@
 		} ,,, //more states
 	};
  */
-/*
+/**
  The critical feature of hierarchy is:
    -a state machine in a certain state is also in that state's superstate.
    -an event/consult is propagated to the superstate of current state until handled.
@@ -77,11 +79,14 @@ define(['core/F'],function(F) //exports a class `states`
 {
 
 var state_list=[];
+/**	@constructor
+*/
 function states (state_def)
 {
 	//[--constructor
 	//	no private member
-	//	this.state can be altered dynamically
+	/** @property this.state can be altered dynamically
+	*/
 	this.state=state_def;
 
 	this.state.name='root'; //build an accessible tree
@@ -94,18 +99,29 @@ function states (state_def)
 	for( var i=0; i<this.evlay.length; i++)
 		this.evlay[i]={i:-1};
 
-	this.cur=[]; //cur defines the path of current state,
-			//e.g.   cur=['state1','state1_1','state1_1_1'];
-			//represents   state1-> state1_1-> state1_1_1(cur is here)
+	/**	@property this.cur defines the path of current state
+		@example
+		       cur=['state1','state1_1','state1_1_1'];
+		represents   state1-> state1_1-> state1_1_1(cur is here)
+	*/
+	this.cur=[];
 	this.cur_name='root';
 	this.cur_state=this.state; //a reference to the current state in state_def
 	this.chain_event(true,this.cur,1,'entry',true,null);
 
 	state_list.push(this); //the list of state objects
 
-	this.log_enable=false;   //not log by default
-	this.log_filter=null;	//a function to return true to not log an item
+	/** @property this.log_enable not log by default
+	*/
+	this.log_enable=false;
+	/** @property this.log_filter a function to return true to not log an item
+	*/
+	this.log_filter=null;
+	/** @property this.log_size 100 lines by default
+	*/
 	this.log_size=100;
+	/** @property this.log the JSON object
+	*/
 	this.log=new Array(this.log_size); //log state transitions in form of
 		//[
 		// {type:'t', from:path, to:path},
@@ -114,6 +130,9 @@ function states (state_def)
 	//--]
 }
 
+/**	propagate an event from top to down, performing some computation on each node
+	@function
+*/
 states.prototype.propagate_down=function(level,fun,node)
 {
 	if( level<=0)
@@ -132,6 +151,9 @@ states.prototype.propagate_down=function(level,fun,node)
 	}
 }
 
+/**	propagate an event from current node to root, performing some computation on each node
+	@function
+*/
 states.prototype.propagate_up=function(level,fun,node)
 {
 	if(!node)
@@ -230,6 +252,9 @@ states.prototype.execute_event=function(event,state,arg)
 	return res;
 }
 
+/**	fire an event
+	@function
+*/
 states.prototype.event=function(event/*,arguments,,,*/)
 {
 	if( this.valid_event(event))
@@ -251,7 +276,13 @@ states.prototype.event=function(event/*,arguments,,,*/)
 	/* TODO: return true if state transition happened*/
 }
 
-states.prototype.event_delay=function(event,delay,frame/*,arguments,,,*/) //fire an event 'event' after 'delay' number of 'frame' events
+/**	fire an event 'event' after 'delay' number of 'frame' events
+	@function
+	@param event
+	@param delay
+	@param frame
+*/
+states.prototype.event_delay=function(event,delay,frame/*,arguments,,,*/)
 {
 	if( !this.valid_event(event))
 		return;
@@ -274,6 +305,9 @@ states.prototype.event_delay=function(event,delay,frame/*,arguments,,,*/) //fire
 	}
 }
 
+/**	call an event handler and get its return value, without actually firing an event
+	@function
+*/
 states.prototype.consult=function(consultant,
 			state //[optional] state name
 			/*,arguments,,,*/) //[optional]
@@ -289,7 +323,10 @@ states.prototype.consult=function(consultant,
 	return result.result;
 }
 
-states.prototype.state_at=function(A) //return the state object of path array A
+/**	return the state object of path array A
+	@function
+*/
+states.prototype.state_at=function(A)
 {
 	var obj=this.state;
 	for( var i=0; i<A.length; i++)
@@ -299,9 +336,14 @@ states.prototype.state_at=function(A) //return the state object of path array A
 	return obj;
 }
 
-states.prototype.search=function(A, //search for the path of state A
-				node) //[optional] under node
-				//return an Array representing path
+/**	search for the path of state A
+	@function
+	@param A
+	@param node [optional] under a particular node
+	@return an Array representing path
+*/
+states.prototype.search=function(A,
+				node)
 {
 	var path=new Array();
 	if( node)
@@ -391,8 +433,12 @@ states.prototype.to=function(target_name)
 	this.cur_state=target_state;
 }
 
+/**
+	@function
+	@param filter [optional] return true to hide an item
+*/
 states.prototype.show_log=function(
-	filter) //[optional] return true to hide an item
+	filter)
 {
 	var str='(lastest at top)\n';
 	var L=this.log;

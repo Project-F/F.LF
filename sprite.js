@@ -1,7 +1,15 @@
-//sprite system
-/*	display and control sprites on page using <div> tag
- */
-/*	sample config for F_sprite
+/**	@fileOverview
+	@description
+	sprite system
+	display and control sprites on page using <div> tag
+	require: style.css
+
+	basically what set_xy does is the HTML4 way (set left, top)
+	we actually have much room for performance enhancement here
+	-use CSS transition (the HTML5 way) instead
+	http://paulirish.com/2011/dom-html5-css3-performance/
+	@example
+	config=
 	{
 		canvas: canvas,   //canvas *object*
 		wh: {x:100,y:100},// width and height
@@ -11,23 +19,19 @@
 		},
 	}
  */
-/*	require: style.css
- */
-/*	basically what set_xy does is the HTML4 way (set left, top)
-	we actually have much room for performance enhancement here
-	-use CSS transition (the HTML5 way) instead
-	http://paulirish.com/2011/dom-html5-css3-performance/
- */
 
 define(function() //exports a class `sprite`
 {
 
 var sp_count=0; //sprite count
+/**	@class
+*/
+/**	no private member
+	@constructor
+	@param config config is one time only and should be dumped after constructor returns
+*/
 function sprite (config)
 {
-	//constructor
-	//	no private member
-	//	config is one time only and should be dumped after constructor returns
 	this.ID=sp_count;
 	sp_count++;
 
@@ -46,20 +50,31 @@ function sprite (config)
 		this.add_img(config.img[I], I);
 	}
 }
+/**	@function
+*/
 sprite.prototype.set_wh=function(P)
 {
 	this.el.style.width=P.x+'px';
 	this.el.style.height=P.y+'px';
 }
+/**	@function
+*/
 sprite.prototype.set_xy=function(P)
 {
 	this.el.style.left=P.x+'px';
 	this.el.style.top=P.y+'px';
 }
+/**	set the css zIndex. Great! we do not need to do z-sorting manually
+	@function
+*/
 sprite.prototype.set_z=function(z)
 {
 	this.el.style.zIndex=Math.round(z);
 }
+/**	@function
+	@param imgpath
+	@param name
+*/
 sprite.prototype.add_img=function(imgpath,name)
 {
 	var im = document.createElement('img');
@@ -71,6 +86,9 @@ sprite.prototype.add_img=function(imgpath,name)
 	this.switch_img(name);
 	return im;
 }
+/**	@function
+	@param name
+*/
 sprite.prototype.switch_img=function(name)
 {
 	var left,top;
@@ -98,6 +116,9 @@ sprite.prototype.switch_img=function(name)
 	}
 	this.cur_img=name;
 }
+/**	remove from DOM
+	@function
+*/
 sprite.prototype.remove=function()
 {
 	this.el.parentNode.removeChild(this.el);

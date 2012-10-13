@@ -1,8 +1,9 @@
-//combo detection system
-/*	maintains a clean sequence of pressed keys
-	  and fire event when combo detected
- */
-/*	sample config for F_combodec
+/**	@fileOverview
+	@description
+	combo detection system
+	maintains a clean sequence of pressed keys and fire event when combo detected
+	@example
+	config=
 	{
 		rp:     //[optional] max repeat count of each key, unlimited if not stated
 		timeout://time before clearing the sequence buffer in terms of frames
@@ -10,7 +11,7 @@
 		callback: //callback function when combo detected
 		no_repeat_key: true //eliminate repeated key strokes by browser, does not work on Opera Linux
 	};
-	var combo = [
+	combo = [
 		{
 			name: 'blast ball',	//combo name
 			seq:  ['def','right','att'], //array of key sequence
@@ -21,11 +22,18 @@
 
 define( function(){ //exports a class `combodec`
 
+
+/**	@class
+	no private member
+*/
+/**
+	@constructor
+	@param controller the F.controller object
+	@param config
+	@param combo combo definition
+*/
 function combodec (controller, config, combo)
 {
-	//constructor
-	//	no private member
-	//	be careful since multiple animator reference to the same config, except callback
 	var framec=1;
 	var outframe=0;
 	var outcombo=0;
@@ -36,6 +44,11 @@ function combodec (controller, config, combo)
 	this.combo=combo;
 	this.con.child.push(this);
 
+	/**	supply keys to combodec
+		@function
+		@param K key **name**
+		@param down
+	*/
 	this.key=function(K, down)
 	{
 		if(!down)
@@ -87,11 +100,17 @@ function combodec (controller, config, combo)
 		}
 	}
 
+	/**	clear sequence
+		@function
+	*/
 	this.clear_seq=function()
 	{
 		this.seq.length=0;
 	}
 
+	/**	a tick of time passed
+		@function
+	*/
 	this.frame=function()
 	{
 		if( framec==outframe)

@@ -1,5 +1,7 @@
-//keyboard controller system
-/*	maintains a table of key states
+/**	@fileOverview
+	@description
+	keyboard controller system
+	maintains a table of key states
  */
 
 define(['core/F'],function(F) //exports a class `controller`
@@ -34,15 +36,15 @@ var master_controller = (function()
 	return mas;
 }());
 
-//keyboard controller
-/*	sample config for F.controller (control keys)
+/**	@class
+	keyboard controller
+	@example
+	config=
 	{
 		up:'h', down:'n', left:'b', 'control name':'control key',,,
 	}
-	-each control key must be an alphabet
-	-F.controller doesnt care the name of each control
-*/
-/*	on the other hand, there can be other controllers with compatible definition and behavior,
+	@description
+	on the other hand, there can be other controllers with compatible definition and behavior,
 	(e.g. AI controller, network player controller, record playback controller)
 	-has the member variables `state`, `config`, `child`, `sync`
 	-behavior: call the `key` method of every member of `child` when keys arrive
@@ -56,14 +58,23 @@ function controller (config)
 	this.state={};
 	this.config=config;
 	this.keycode={};
-	this.child=new Array(); //child system that has the method key('control name',down)
-	this.sync=false; //controllers can work in 2 modes, sync and async.
-			//if sync===false,
-			//  a key up-down event will be distributed to all child *immediately*
-			//if sync===true,
-			//  a key up-down event will be buffered, and must be fetch manually.
+	/**	@property controller.child child system that has the method key('control name',down)
+		push a child into this array to listen to key events
+	*/
+	this.child=new Array();
+	/**	@property controller.sync controllers can work in 2 modes, sync and async.
+		if sync===false, a key up-down event will be distributed to all child **immediately**.
+		if sync===true, a key up-down event will be buffered, and must be fetch manually.
+	*/
+	this.sync=false;
 	this.buf=new Array();
 
+	/**	supply events to controller
+		(master controller will do this automatically)
+		@function
+		@param e event
+		@param down
+	*/
 	this.key=function(e,down) //interface to master_controller------
 	{
 		var caught=0;
@@ -90,11 +101,18 @@ function controller (config)
 	}
 
 	//interface to application--------------------------------------
+	/**	clear the key state table
+		@function
+	*/
 	this.clear_states=function()
 	{
 		for(var I in this.config)
 			this.state[I]=0;
 	}
+	/**	fetch for inputs received since the last fetch
+		will flush buffer afterwards
+		@function
+	*/
 	this.fetch=function()
 	{
 		for( var i in this.buf)
@@ -108,6 +126,9 @@ function controller (config)
 		}
 		this.buf=[];
 	}
+	/**	flush the buffer manually
+		@function
+	*/
 	this.flush=function()
 	{
 		this.buf=[];
@@ -123,6 +144,9 @@ function controller (config)
 	//--]
 }
 
+/**	convert keyname to keycode
+	@function
+*/
 controller.keyname_to_keycode=function(A)
 {
 	var code;
@@ -160,6 +184,9 @@ controller.keyname_to_keycode=function(A)
 	return code;
 }
 
+/**	convert keycode back to keyname
+	@function
+*/
 controller.keycode_to_keyname=function(code)
 {
 	if( (code>='A'.charCodeAt(0) && code<='Z'.charCodeAt(0)) ||

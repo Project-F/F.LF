@@ -1,10 +1,12 @@
-//collision detection system
-/*	perform
-	-rectangle-rectangle intersect test
-	-triangle-triangle intersect test
-	-circle-circle intersect test
-	-line-line intersect test
-	-point in rectangle test
+/**	@fileOverview
+	@description
+	collision detection system
+	perform
+	- rectangle-rectangle intersect test
+	- triangle-triangle intersect test
+	- circle-circle intersect test
+	- line-line intersect test
+	- point in rectangle test
  */
 
 define(['core/math'], function(Fm) //exports a set of functions in an object
@@ -12,8 +14,12 @@ define(['core/math'], function(Fm) //exports a set of functions in an object
 
 return {
 
-//rectangle-rectangle intersect test
-rect: function (rect1,rect2) //rect1,rect2: object in form {left,top,right,bottom}
+/**	rectangle-rectangle intersect test
+	@function
+	@param rect1
+	@param rect2 object in form {left,top,right,bottom}
+*/
+rect: function (rect1,rect2)
 {
 	if(rect1.bottom < rect2.top)	return false;
 	if(rect1.top > rect2.bottom)	return false;
@@ -38,10 +44,12 @@ normalize_rect: function (rect)
 		return rect;
 },
 
-//triangle-triangle intersect test
-//	return true if triangle A touchs B,
-//	  including cases when one is completely contained in other
-tri: function (A,B) //triangle A,B: array of points in form {x,y}
+/**	triangle-triangle intersect test
+	@function
+	@param A
+	@param B array of points in form {x,y}
+*/
+tri: function (A,B)
 {
 	/*I assume this a fast enough implementation
 	  it performs a max. of 18 cross products when the triangles do not intersect.
@@ -101,24 +109,36 @@ tri: function (A,B) //triangle A,B: array of points in form {x,y}
 	//another possible implementation http://jgt.akpeters.com/papers/Moller97/tritri.html
 },
 
-//circle-circle intersect test
-circle: function (A,B) //A,B: circle in form {center,radius},
-						// where center is in form {x,y}, radius is a number
+/**	circle-circle intersect test
+	@function
+	@param A
+	@param B circle in form {center,radius}, where center is in form {x,y}, radius is a number
+*/
+circle: function (A,B)
 {
 	return (Fm.distance(A.center,B.center) <= A.radius+B.radius);
 },
 
-//line-line intersect test
-//	return true if line AB intersects CD
-line: function (A,B,C,D) //A,B,C,D: points in form {x,y}
+/**	line-line intersect test, true if line AB intersects CD
+	@function
+	@param A
+	@param B
+	@param C
+	@param D points in form {x,y}
+*/
+line: function (A,B,C,D)
 {
 	var res = (Fm.signed_area(A,B,C)>0 != Fm.signed_area(A,B,D)>0) &&
 		  (Fm.signed_area(C,D,A)>0 != Fm.signed_area(C,D,B)>0);
 	return res;
 },
 
-//point in rectangle test
-point_in_rect: function (P,R) //P: point in form {x,y}, R: object in form {left,top,right,bottom}
+/**	point in rectangle test
+	@function
+	@param P point in form {x,y}
+	@param R object in form {left,top,right,bottom}
+*/
+point_in_rect: function (P,R)
 {
 	return (Fm.inbetween(P.x,R.left,R.right) && Fm.inbetween(P.y,R.top,R.bottom));
 }

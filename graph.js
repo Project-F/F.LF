@@ -1,8 +1,10 @@
-//to maintain a graph
-/*	a graph is a mapping/hashing of objects in finite 2d world into a 2d array
+/**	@fileOverview
+	@description
+	to maintain a graph
+	a graph is a mapping/hashing of objects in finite 2d world into a 2d array
 	is used in collision detection to boost performance
- */
-/*	config=
+	@example
+	config=
 	{
 		width: w, //width
 		height: h,//   and height of the 2d world
@@ -18,6 +20,8 @@
 define(['core/F'],function(F) //exports a class `graph`
 {
 
+/**	@class
+*/
 function graph (config)
 {
 	//[--constructor
@@ -37,7 +41,10 @@ function graph (config)
 	//--]
 }
 
-graph.prototype.create_graph=function(w,h) //create a 3D array
+/**	create a 3D array
+	@function
+*/
+graph.prototype.create_graph=function(w,h)
 {
 	var A = new Array(w);
 	for ( var i=0; i<w; i++)
@@ -49,7 +56,10 @@ graph.prototype.create_graph=function(w,h) //create a 3D array
 	this.G = A; //grid storing indices of objects
 }
 
-graph.prototype.at=function(P) //convert P from world space to grid space
+/**	convert P from world space to grid space
+	@function
+*/
+graph.prototype.at=function(P)
 {
 	var A={ x:Math.floor(P.x/this.config.cellx), y:Math.floor(P.y/this.config.celly) };
 	//include the boundaries
@@ -60,24 +70,36 @@ graph.prototype.at=function(P) //convert P from world space to grid space
 	return A;
 }
 
-graph.prototype.get=function(P) //return array of object('s index) present at a particular point
+/**	return array of object('s index) present at a particular point
+	@function
+*/
+graph.prototype.get=function(P)
 {
 	return this.G[P.x][P.y];
 }
 
-graph.prototype.add=function(i,P) //add an object i at P
+/**	add an object i at P
+	@function
+*/
+graph.prototype.add=function(i,P)
 {
 	this.get(this.at(P)).push(i);
 }
 
-graph.prototype.remove=function(i,P) //remove object i at P
+/**	remove object i at P
+	@function
+*/
+graph.prototype.remove=function(i,P)
 {
 	var g=this.get(this.at(P));
 	var res = F.arr_search( g, function(e){return e==i} ); //search for i
 	if (res) g.splice(res,1); //remove
 }
 
-graph.prototype.move=function(i,A,B) //an object i moves from A to B
+/**	an object i moves from A to B
+	@function
+*/
+graph.prototype.move=function(i,A,B)
 {
 	var gA=this.get(this.at(A));
 	var gB=this.get(this.at(B));

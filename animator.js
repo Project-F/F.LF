@@ -1,7 +1,11 @@
-//sprite animator
-/*	animate sprites
- */
-/*	sample config for F_animator
+define(function() //exports a class `animator`
+{
+
+/**	@class
+	@description
+	animate sprites
+	samle config @example
+	config
 	{
 	x:0,y:0,     //top left margin of the frames
 	w:100, h:100,//width, height of a frame
@@ -15,20 +19,21 @@
 	    [2,3]]   //		to store custom data for each frame
 	}
  */
-
-define(function() //exports a class `animator`
-{
-
+/**	@constructor
+	no private member
+	@param config multiple animator reference to the same config
+*/
 function animator (config)
 {
-	//constructor
-	//	no private member
-	//	multiple animator reference to the same config, except tar
 	this.config=config;
 	this.target=config.tar;
 	this.I=0;//current frame
 }
-animator.prototype.next_frame=function() //turn to the next frame, return the index of the frame just shown
+/**	@function
+	@description
+	turn to the next frame, return the index of the frame just shown
+*/
+animator.prototype.next_frame=function()
 {
 	var c=this.config;
 	this.I++;
@@ -51,6 +56,11 @@ animator.prototype.next_frame=function() //turn to the next frame, return the in
 	}
 	return this.I;
 }
+/**	@function
+	@description
+	set to a particular frame
+	@param i
+*/
 animator.prototype.set_frame=function(i)
 {
 	this.I=i;
@@ -70,11 +80,13 @@ animator.prototype.get_at=function(i) //get the content of the graph at frame i
 	return c.graph[(i%c.gx)][(Math.floor(i/c.gx))];
 }
 
-//animator set
-/*	a helper function to constructor a set of animators
-	animator set is not a class. do NOT `var ani = new animator_set()` instead `var ani = animator_set()`
- */
-/*	example set_config
+/**	@function
+	@description
+	a helper function to constructor a set of animators
+	animator set is not a class. do NOT <code>var ani = new animator_set()</code>,
+	instead do <code>var ani = animator_set()</code>
+	@example
+	set_config=
 	{
 		'base': //default parameters, must be specified as base when calling animator_set(set_config,*base*)
 		{

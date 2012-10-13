@@ -3,10 +3,17 @@
 define(function(){ //exports a set of functions in an object
 
 math={
-//
-//math helper functions-----
-//
-inbetween: function (x,L,R) //x in between L and R
+/**
+math helper functions-----
+*/
+/**
+	@function
+	@param x
+	@param L
+	@param R
+	@return true if x is in between L and R
+*/
+inbetween: function (x,L,R)
 {
 	var l,r;
 	if ( L<=R)
@@ -19,19 +26,27 @@ inbetween: function (x,L,R) //x in between L and R
 	}
 	return x>=l && x<=r;
 },
+/**	round to decimal 2
+	@function
+*/
 round_d2: function (I)
 {
 	return Math.round(I*100)/100;
 },
+/**	@function
+*/
 negligible: function (M)
 {
 	return -0.00000001 < M && M < 0.00000001;
 },
 
-//
-//curves--------------------
-//
-bezier2: function (A,C,B,steps) //degree 2 bezier
+/**
+curves--------------------
+*/
+/**	degree 2 bezier
+	@function
+*/
+bezier2: function (A,C,B,steps)
 {
 	var curve = new Array();
 	for( var i=0; i<steps; i++)
@@ -54,51 +69,79 @@ bezier2_step: function (A,C,B, i,steps)
 	}
 },
 
-//
-//vector math--------------
-//
-add: function (A,B) //A+B
+/**
+vector math--------------
+*/
+/**	A+B
+	@function
+*/
+add: function (A,B)
 {
 	return {x:A.x+B.x, y:A.y+B.y};
 },
-sub: function (A,B) //A-B
+/**	A-B
+	@function
+*/
+sub: function (A,B)
 {
 	return {x:A.x-B.x, y:A.y-B.y};
 },
-sca: function (A,t) //scale
+/**	scale
+	@function
+*/
+sca: function (A,t)
 {
 	return {x:A.x*t, y:A.y*t};
 },
+/**	@function
+*/
 length: function (A)
 {
 	return Math.sqrt( A.x*A.x + A.y*A.y );
 },
+/**	@function
+*/
 distance: function (p1,p2)
 {
 	return Math.sqrt( (p2.x-p1.x)*(p2.x-p1.x) + (p2.y-p1.y)*(p2.y-p1.y) );
 },
+/**	@function
+*/
 negative: function (A)
 {
 	return {x:-A.x, y:-A.y};
 },
+/**	@function
+*/
 normalize: function (A)
 {
 	return math.sca(A, 1/math.length(A));
 },
-perpen: function (A) //perpendicular: anti-clockwise 90 degrees
+/**	perpendicular: anti-clockwise 90 degrees, assume origin in lower left
+	@function
+*/
+perpen: function (A)
 {
 	return {x:-A.y, y:A.x};
 },
+/**	@function
+*/
 signed_area: function (p1,p2,p3)
 {
 	var D = (p2.x-p1.x)*(p3.y-p1.y)-(p3.x-p1.x)*(p2.y-p1.y);
 	return D;
 },
-intersect: function ( P1,P2, //line 1
-			P3,P4)  //line 2
+/**	line-line intersection
+	@function
+	@param P1 line 1
+	@param P2 line 1
+	@param P3 line 2
+	@param P4 line 2
+	@return the intersection point of P1-P2 with P3-P4
+*/
+intersect: function ( P1,P2,
+			P3,P4)
 {
-	//line-line intersection
-	//	return the intersection point of P1-P2 with P3-P4
 	var mua,mub;
 	var denom,numera,numerb;
 

@@ -3,10 +3,13 @@
  */
 define({ //exports a set of functions in an object
 
-//
-//javascript-----------------
-//
-/* //deprecated in favour of the use of head.js, now requirejs
+/** javascript-----------------
+*/
+/**	inject a .js file
+	@function
+	@param filename
+	@deprecated deprecated in favour of the use of head.js, now requirejs
+*/
 js: function (filename)
 {
 	var head = document.getElementsByTagName('head')[0];
@@ -14,10 +17,13 @@ js: function (filename)
 	script.src = filename;
 	script.type = 'text/javascript';
 	head.appendChild(script);
-},*/
+},
+/**	attach a stylesheed to page
+	@function
+	@param filename
+*/
 css: function (filename)
 {
-	//attach a stylesheed to page
 	var head = document.getElementsByTagName('head')[0];
 	var link = document.createElement('link');
 	link.href = filename;
@@ -25,6 +31,8 @@ css: function (filename)
 	link.type = 'text/css';
 	head.appendChild(link);
 },
+/**	@function
+*/
 double_delegate: function (function1, function2)
 {
 	// http://roberthahn.ca/articles/2007/02/02/how-to-use-window-onload-the-right-way/
@@ -39,11 +47,16 @@ double_delegate: function (function1, function2)
 //
 //data structure------------
 //
+/**	@function
+	@param arr target array to be searched
+	@param fc_criteria function to return true when an accepted element is passed in
+	@param fc_replace [optional] function to return a replacement value when original value is passed in
+	@param search_all [optional] if true, will search through entire array before returning the list of index, otherwise, will return immediately at the first accepted element
+*/
 arr_search: function ( arr,
-		fc_criteria,  //function to return true when an accepted element is passed in
-		fc_replace,   //[optional] function to return a replacement value when original value is passed in
-		search_all)   //[optional] if true, will search through entire array before returning the list of index
-				//otherwise, will return immediately at the first accepted element
+		fc_criteria,
+		fc_replace,
+		search_all)
 {
 	var found_list=new Array();
 	//for ( var i=0; i<arr.length; i++)
@@ -68,13 +81,21 @@ arr_search: function ( arr,
 	}
 },
 
+/**	push only if not exists in array
+	@function
+*/
 push_unique: function ( array, element)
 {
 	var res = arr_search( array, function(E){return E==element} );
 	if (res == -1) array.push(element);
 },
 
-extend_object: function (obj1, obj2) //extend obj1 with all members of obj2
+/**	extend obj1 with all members of obj2
+	@function
+	@param obj1
+	@param obj2
+*/
+extend_object: function (obj1, obj2)
 {
 	for (var p in obj2)
 	{
@@ -90,15 +111,22 @@ extend_object: function (obj1, obj2) //extend obj1 with all members of obj2
 	// http://stackoverflow.com/questions/122102/what-is-the-most-efficient-way-to-clone-a-javascript-object
 },
 
-to_text: function ( //convert a JSON object to into text
-			//	usage: F.to_text(obj,'obj');
-	obj2, name,	//object and its name
-	sep,		//[optional] separator, default as '\n'
-	pretext,	//[used in recursion only] set it to null
-	filter,		//[optional] a filter function(p,P) passing in name p and object P
-			//	return 1 to completely hide the attribute,
-			//	OR return a string to be shown
-	TTL		//[optional] time-to-live to prevent infinite looping
+/**	convert a JSON object to into text
+	@function
+	@param obj2 the object
+	@param name	the object's name
+	@param sep [optional] separator, default as '\n'
+	@param pretext [used in recursion only] set it to null
+	@param filter [optional] a filter function(p,P) passing in name p and object P, return 1 to completely hide the attribute, OR return a string to be shown
+	@param TTL [optional] time-to-live to prevent infinite looping
+	@example usage: F.to_text(obj,'obj');
+*/
+to_text: function (
+	obj2, name,
+	sep,
+	pretext,
+	filter,
+	TTL
 )
 {
 	if( TTL===0) return '';
