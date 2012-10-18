@@ -3,7 +3,7 @@ requirejs.config({
 	baseUrl: '../../'
 });
 requirejs(['core/F','core/controller','core/controller-recorder','LF/scene','LF/character','LF/keychanger','LF/data/bandit'],
-function(F,Fcontroller,Fcr,Scene,Character,Keychanger,bandit_data)
+function(F,Fcontroller,Fcr,Scene,Character,Keychanger,bandit)
 {
 	//get base path
 	var f_core_path;
@@ -15,7 +15,6 @@ function(F,Fcontroller,Fcr,Scene,Character,Keychanger,bandit_data)
 
 	F.css(f_core_path+'style.css'); //load CSS
 
-	bandit=bandit_data; //make it global
 	demo2();
 
 	function demo2() {
@@ -69,8 +68,8 @@ function(F,Fcontroller,Fcr,Scene,Character,Keychanger,bandit_data)
 	var scene = new Scene();
 
 	//set up a character------------
-	var character1 = new Character( {controller: control, scene:scene} ); //choose from `control` and `control_play`
-	var character2 = new Character( {controller: control2, scene:scene} );
+	var character1 = new Character( {controller: control, scene:scene, data:bandit} ); //choose from `control` and `control_play`
+	var character2 = new Character( {controller: control2, scene:scene, data:bandit} );
 	scene.add( character1); character1.set_pos(400,0,100);
 	scene.add( character2); character2.set_pos(300,0,100);
 
@@ -87,10 +86,10 @@ function(F,Fcontroller,Fcr,Scene,Character,Keychanger,bandit_data)
 		control_play.frame();
 		//control_rec.frame();
 
-		character1.TU();
-		character2.TU();
 		character1.trans();
 		character2.trans();
+		character1.TU();
+		character2.TU();
 
 		calculate_fps(1);
 	}
