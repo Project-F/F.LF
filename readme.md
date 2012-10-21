@@ -15,6 +15,9 @@ F.LF provide a tool to convert xml-like LF2 data files into JSON.
 LF2 sprite images in 24bit bmp must be converted to 32bit png with transparency.
 F.LF requires XXX.png to be mirrored into XXX_mirror.png.
 
+# Status
+F.LF is still in mid-stage development. Check out the latest milestone at [f-lf2.blogspot.hk](http://f-lf2.blogspot.hk/search/label/latest-demo).
+
 # Install
 F.LF is built upon F.core. Place the two repositories side-by-side.
 
