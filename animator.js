@@ -5,18 +5,22 @@ define(function() //exports a class `animator`
 	@description
 	animate sprites
 	samle config @example
-	config
+	config=
 	{
-	x:0,y:0,     //top left margin of the frames
-	w:100, h:100,//width, height of a frame
-	gx:4,gy:4,   //define a gx*gy grid of frames
-	tar:         //target F_sprite
-	ani:         //animation sequence:
-	   null,     //if undefined or null, loop through top left to lower right, row by row
-	   [0,1,2,1,0],//use custom frame sequence
-	graph:       //graph:
-	   [[0,1],   //	a 2d array gx*gy sized
-	    [2,3]]   //		to store custom data for each frame
+		x:0,y:0,     //top left margin of the frames
+		w:100, h:100,//width, height of a frame
+		gx:4,gy:4,   //define a gx*gy grid of frames
+		tar:         //target F_sprite
+		ani:         //animation sequence:
+		   null,     //if undefined or null, loop through top left to lower right, row by row
+		   [0,1,2,1,0],//use custom frame sequence
+		graph:       //graph:
+		   [[0,1],   //	a 2d array gx*gy sized
+		    [2,3]],  //		to store custom data for each frame
+		borderright: 1, //trim the right edge pixels away
+		borderbottom: 1,
+		borderleft: 1
+		bordertop: 1,
 	}
  */
 /**	@constructor
@@ -28,6 +32,10 @@ function animator (config)
 	this.config=config;
 	this.target=config.tar;
 	this.I=0;//current frame
+	if( !config.borderright)  config.borderright=0;
+	if( !config.borderbottom) config.borderbottom=0;
+	if( !config.borderleft)  config.borderleft=0;
+	if( !config.bordertop)   config.bordertop=0;
 }
 /**	@function
 	@description
@@ -69,9 +77,13 @@ animator.prototype.set_frame=function(i)
 animator.prototype.show_frame=function(i)
 {
 	var c=this.config;
-	this.target.set_wh({x:c.w, y:c.h});
-	this.target.img[this.target.cur_img].style.left= -((i%c.gx)*c.w+c.x) +'px';
-	this.target.img[this.target.cur_img].style.top = -((Math.floor(i/c.gx))*c.h+c.y) +'px';
+	this.target.set_wh({
+		x:  c.w-c.borderleft-c.borderright,
+		y:  c.h-c.bordertop-c.borderbottom
+	});
+	this.target.img[this.target.cur_img].style.left= -((i%c.gx)*c.w+c.x+c.borderleft) +'px';
+	this.target.img[this.target.cur_img].style.top = -((Math.floor(i/c.gx))*c.h+c.y+c.bordertop) +'px';
+	//may also need to set_xy to compensate the border
 }
 animator.prototype.get_at=function(i) //get the content of the graph at frame i
 {	//by default at the current frame

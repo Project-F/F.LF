@@ -10,10 +10,10 @@ in gas particles collision simulation</h1>
 <button id='generate_particles'>add</button>
 <div id='canvas' style='position:absolute; width:600px; height:600px; border:1px solid black;'></div>
 
-<script data-main="../" src="../require.js"></script>
+<script data-main="../../" src="../require.js"></script>
 <script>
-requirejs(['sprite','collision','graph'],
-function(   sprite , collision , Graph)
+requirejs(['core/sprite','core/collision','core/graph'],
+function(        sprite ,      collision ,      Graph)
 {
 
 var timer = setInterval(frame,1);

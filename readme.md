@@ -54,8 +54,5 @@ and point in rectangle test
 ### in general
 - [requirejs](http://requirejs.org/) compatible
 
-## Documentation
-Try [http://jsdoc.info/tyt2y3/F.core/](http://jsdoc.info/tyt2y3/F.core/)
-
 ## License
 Generally has complete freedom except for profit- making. For exact terms see [license](http://project--f.blogspot.hk/2012/05/license.html).

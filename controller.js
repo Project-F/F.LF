@@ -4,7 +4,7 @@
 	maintains a table of key states
  */
 
-define(['core/F'],function(F) //exports a class `controller`
+define(function() //exports a class `controller`
 {
 
 function keydown(e)
@@ -19,8 +19,16 @@ function keyup(e)
 
 var master_controller = (function()
 {
-	window.onkeydown = F.double_delegate(window.onkeydown, keydown);
-	window.onkeyup   = F.double_delegate(window.onkeydown, keyup);
+	if (document.addEventListener){
+		document.addEventListener("keydown", keydown, true);
+		document.addEventListener("keyup", keyup, true);
+	} else if (document.attachEvent){
+		document.attachEvent("keydown", keydown);
+		document.attachEvent("keyup", keyup);
+	} else {
+		//window.onkeydown = F.double_delegate(window.onkeydown, keydown);
+		//window.onkeyup   = F.double_delegate(window.onkeydown, keyup);
+	}
 
 	var mas = new Object();
 	mas.child = [];

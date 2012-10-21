@@ -1,8 +1,12 @@
-//Project F
-/*	generic functions
+/**	@fileOverview
+	@description
+	Project F
+	generic functions
  */
-define({ //exports a set of functions in an object
 
+define(function(){ //exports a set of functions in an object
+
+var F={
 /** javascript-----------------
 */
 /**	inject a .js file
@@ -86,7 +90,7 @@ arr_search: function ( arr,
 */
 push_unique: function ( array, element)
 {
-	var res = arr_search( array, function(E){return E==element} );
+	var res = F.arr_search( array, function(E){return E==element} );
 	if (res == -1) array.push(element);
 },
 
@@ -168,5 +172,7 @@ to_text: function (
 	str+= sep+pretext+ '}';
 	return str;
 }
+};
 
+return F;
 });

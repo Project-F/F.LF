@@ -5,18 +5,18 @@
 <body>
 <div class='canvas' id='canvas'></div>
 
-<script data-main="../" src="../require.js"></script>
+<script data-main="../../" src="../require.js"></script>
 <script>
-requirejs(['sprite','animator'], function(sprite,animator)
+requirejs(['core/sprite','core/animator'], function(sprite,animator)
 {
 
-canvas = document.getElementById('canvas');
+var canvas = document.getElementById('canvas');
 var sp1_config=
 {
 	canvas: canvas,
 	wh: {x:100,y:100},
 	img:{
-		'1':'test_sprite.png',
+		'1':'test_sprite.png'
 	}
 }
 sp1 = new sprite(sp1_config);
