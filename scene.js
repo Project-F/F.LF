@@ -11,6 +11,7 @@
 
 define(['core/collision'], function (Fcollision)
 {
+var UID=0;
 
 function scene (config)
 {
@@ -20,25 +21,55 @@ function scene (config)
 scene.prototype.add = function(C)
 {
 	this.obj.push(C);
-	C.uid = this.obj.length-1;
+	C.uid = UID++;
 }
 
-scene.prototype.query = function(volume, This) //return the all the objects whose `bdy` intersect with `volume`
-							//except `This`
+scene.prototype.query = function(volume, This, filter) //return the all the objects whose `bdy` intersect with `volume`
+		//except `This`
+		//what to intersect with. {body:0} to intersect with body and {itr:2} to intersect with itr kind:2
 {
 	var result=[];
+	var tag, type;
+	for ( var kk in filter)
+	{
+		tag=kk;
+		type=filter[kk];
+		break;
+	}
+
 	for ( var i in this.obj)
 	{
 		if( this.obj[i] === This)
 			continue;
 
-		var bdy = this.obj[i].bdy();
-		for( var j in bdy)
+		if( tag==='itr')
 		{
-			if( this.intersect( volume, bdy[j] ))
+			if( this.obj[i].itr) //not every object has itr
 			{
-				result.push( this.obj[i] );
-				break;
+				var itr = this.obj[i].itr(type);
+				for( var j in itr)
+				{
+					if( itr[j].kind===type)
+					{
+						if( this.intersect( volume, itr[j]))
+						{
+							result.push( this.obj[i] );
+							break;
+						}
+					}
+				}
+			}
+		}
+		else
+		{
+			var bdy = this.obj[i].bdy();
+			for( var j in bdy)
+			{
+				if( this.intersect( volume, bdy[j] ))
+				{
+					result.push( this.obj[i] );
+					break;
+				}
 			}
 		}
 	}

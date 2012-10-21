@@ -49,14 +49,18 @@ function sprite (bmp, parent)
 			x:0,  y:0,   //top left margin of the frames
 			w:bmp.file[i].w+1, h:bmp.file[i].h+1,    //width, height of a frame
 			gx:bmp.file[i].row, gy:bmp.file[i].col,//define a gx*gy grid of frames
-			tar:sp     //target sprite
+			tar:sp,     //target sprite
+			borderright: 1,
+			borderbottom: 1
 		};
 		var ani_mirror_con=
 		{
 			x:(bmp.file[i].row-1)*(bmp.file[i].w+1),  y:0,
 			w:-bmp.file[i].w-1, h:bmp.file[i].h+1,
 			gx:bmp.file[i].row, gy:bmp.file[i].col,
-			tar:sp
+			tar:sp,
+			borderleft: 1,
+			borderbottom: 1
 		};
 		ani[i+'r'] = new Fanimator(ani_con);
 		ani[i+'l'] = new Fanimator(ani_mirror_con);

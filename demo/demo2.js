@@ -2,8 +2,8 @@
 requirejs.config({
 	baseUrl: '../../'
 });
-requirejs(['core/F','core/controller','core/controller-recorder','LF/scene','LF/character','LF/keychanger','LF/data/bandit'],
-function(F,Fcontroller,Fcr,Scene,Character,Keychanger,bandit)
+requirejs(['core/F','core/controller','core/controller-recorder','LF/scene','LF/character','LF/lightweapon','LF/keychanger','LF/data/bandit','LF/data/weapon0'],
+function(F,Fcontroller,Fcr,Scene,Character,Lightweapon,Keychanger,Bandit,Weapon0)
 {
 	//get base path
 	var f_core_path;
@@ -68,10 +68,13 @@ function(F,Fcontroller,Fcr,Scene,Character,Keychanger,bandit)
 	var scene = new Scene();
 
 	//set up a character------------
-	var character1 = new Character( {controller: control, scene:scene, data:bandit} ); //choose from `control` and `control_play`
-	var character2 = new Character( {controller: control2, scene:scene, data:bandit} );
-	scene.add( character1); character1.set_pos(400,0,100);
-	scene.add( character2); character2.set_pos(300,0,100);
+	var stage = document.getElementById('stage');
+	var character1 = new Character( {controller: control, stage:stage, scene:scene, data:Bandit} ); //choose from `control` and `control_play`
+	var character2 = new Character( {controller: control2, stage:stage, scene:scene, data:Bandit} );
+	scene.add( character1); character1.set_pos(400,0,200);
+	scene.add( character2); character2.set_pos(300,0,200);
+	var weapon1 = new Lightweapon( {stage:stage,scene:scene,data:Weapon0});
+	scene.add( weapon1); weapon1.set_pos(100,-200,200);
 
 	//---run time-------------------
 	var timer30 = setInterval(frame30,1000/30.5);
@@ -88,8 +91,11 @@ function(F,Fcontroller,Fcr,Scene,Character,Keychanger,bandit)
 
 		character1.trans();
 		character2.trans();
+		weapon1.trans();
+
 		character1.TU();
 		character2.TU();
+		weapon1.TU();
 
 		calculate_fps(1);
 	}
