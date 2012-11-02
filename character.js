@@ -1,5 +1,5 @@
-//character in F.LF
-/*	config=
+/**	a LF2 character
+	config=
 	{
 		controller,
 		stage,
@@ -12,8 +12,8 @@ milestone reference:
 http://home.i-cable.com/starskywong/en_progress1.html
  */
 
-define(['LF/sprite','LF/mechanics','core/combodec','core/states'],
-function ( Sprite, Mech, Fcombodec, Fstates)
+define(['LF/global','LF/sprite','LF/mechanics','core/util','core/combodec','core/states'],
+function ( Global, Sprite, Mech, Futil, Fcombodec, Fstates)
 {
 
 function character (config)
@@ -22,9 +22,10 @@ function character (config)
 	var dat = config.data;
 	this.name=dat.bmp.name;
 	this.type='character';
-	this.uid; //unique id, set by scene
+	this.uid=-1; //unique id, set by scene
 	this.id=0; //character id
 	var This=this;
+	var GC=Global.gameplay;
 
 	//---configurations---------------------------------------------
 {
@@ -254,7 +255,7 @@ function character (config)
 							effect.i=-1;
 						else
 							effect.i=1;
-						sp.set_xy({x:ps.sx + 4*effect.i, y:ps.sy+ps.sz}); //defined oscillation amplitude for effect 0
+						sp.set_xy({x:ps.sx + GC.effect0_amplitude *effect.i, y:ps.sy+ps.sz});
 					}
 				},
 				'entry': function()
@@ -390,8 +391,8 @@ function character (config)
 		if( ps.y===0 && ps.vy>0) //fell onto ground
 		{
 			ps.vy=0; //set to zero
-			ps.vx*=0.34; //defined friction when fell onto ground
-			ps.vz*=0.34;
+			ps.vx *= GC.friction_fell_factor;
+			ps.vz *= GC.friction_fell_factor;
 		}
 		else if( ps.y+ps.vy>=0 && ps.vy>0) //predict falling onto the ground
 		{
@@ -418,8 +419,8 @@ function character (config)
 		if( itr.lasthit<-3)
 		{
 			if( health.fall>0 && health.fall<10) health.fall=0;
-			if( health.fall>0) health.fall-=1; //default fall recover constant
-			if( health.bdefend>0) health.bdefend-=0.5; //default bdefend recover constant
+			if( health.fall>0) health.fall += GC.fall_recover;
+			if( health.bdefend>0) health.bdefend += GC.bdefend_recover;
 		}
 
 		//attack rest
@@ -487,7 +488,7 @@ function character (config)
 					}
 					//
 					var vol=mech.volume(dat.frame[72].itr); //super punch, frame 72
-					if( vol.zwidth===0) vol.zwidth=12; //default zwidth for itr
+					if( vol.zwidth===0) vol.zwidth = GC.default_itr_zwidth;
 					var hit= scene.query(vol, This, {itr:6});
 					for( var t in hit)
 					{	//if someone is in my hitting scoope who has itr kind:6
@@ -618,10 +619,18 @@ function character (config)
 				{
 					if( con.state.att)
 					{
-						if( holding) //light weapon attack
-							trans.frame(30, 10);
+						if( holding)
+						{
+							var dx = 0;
+							if( con.state.left)  dx-= 1;
+							if( con.state.right) dx+= 1;
+							if( dx)
+								trans.frame(52, 10); //sky light weapon throw
+							else
+								trans.frame(30, 10); //light weapon attack
+						}
 						else
-							trans.frame(80, 10);
+							trans.frame(80, 10); //jump attack
 					}
 				}
 			break;
@@ -715,7 +724,7 @@ function character (config)
 						trans.inc_wait(1, 10, 99);
 					}
 					//cover
-					var cover=0; //default cpoint cover
+					var cover = GC.default_cpoint_cover;
 					if( frame.D.cpoint.cover) cover=frame.D.cpoint.cover;
 					if( cover===0 || cover===10 )
 						ps.zz=1;
@@ -798,7 +807,7 @@ function character (config)
 						if( cpoint.vaction)
 							trans.frame(cpoint.vaction, 20);
 
-						if( cpoint.throwvz !== -842150451)
+						if( cpoint.throwvz !== GC.unspecified)
 						{	//I am being thrown!
 							var dvx=cpoint.throwvx, dvy=cpoint.throwvy, dvz=cpoint.throwvz;
 							if( dvx !==0) ps.vx = (adir==='right'?1:-1)* dvx;
@@ -817,7 +826,7 @@ function character (config)
 							{
 								if( cpoint.cover && cpoint.cover>=10)
 									switch_dir_fun(adir); //follow dir of catcher
-								else //default cover
+								else //default cpoint cover
 									switch_dir_fun(adir==='left'?'right':'left'); //face the catcher
 
 								mech.coincideXZ(holdpoint,mech.make_point(frame.D.cpoint));
@@ -880,11 +889,11 @@ function character (config)
 			break;
 
 			case 'fall_onto_ground':
-				if( ps.vx*ps.vx + ps.vy*ps.vy > 200) //defined square of speed to bounce up again
+				if( ps.vx*ps.vx + ps.vy*ps.vy > GC.bounceup_limit)
 				{
-					ps.vy *= -0.4; //defined bounce up coefficient
-					ps.vx *= 0.6;
-					ps.vz *= 0.6;
+					ps.vy *= GC.bounceup_factor_y;
+					ps.vx *= GC.bounceup_factor_x;
+					ps.vz *= GC.bounceup_factor_z;
 					if( 180 <= frame.N && frame.N <= 185)
 						return 185;
 					if( 186 <= frame.N && frame.N <= 191)
@@ -973,26 +982,19 @@ function character (config)
 
 	function interaction() //generic processing of frame interactions
 	{
-		var ITR_LIST=[];
-		if( frame.D.itr)
-		{
-			if( frame.D.itr instanceof Array)
-				var ITR_LIST=frame.D.itr;
-			else
-				var ITR_LIST=[frame.D.itr];
-		}
+		var ITR_LIST=Futil.make_array(frame.D.itr);
 
+		/*TODO: */
 		/*某葉: 基本上會以先填入的itr為優先， 但在範圍重複、同effect的情況下的2組itr，
 			攻擊時，會隨機指定其中一個itr的效果。
 			（在範圍有部份重複或是完全重複的部份才有隨機效果。）*/
-		/*TODO: */
 
 		for( var i in ITR_LIST)
 		{
 			var ITR=ITR_LIST[i]; //the itr tag in data
 			//first check for what I have got into intersect with
 			var vol=mech.volume(ITR);
-			if( vol.zwidth===0) vol.zwidth=12; //default zwidth for ITR
+			if( vol.zwidth===0) vol.zwidth = GC.default_itr_zwidth;
 			var hit= scene.query(vol, This, {body:0});
 
 			switch (ITR.kind)
@@ -1058,7 +1060,7 @@ function character (config)
 				else if( ITR.vrest && ITR.vrest!==1)
 					itr.vrest[ uid ] = ITR.vrest;
 				else
-					itr.arest=7;
+					itr.arest = GC.default_arest;
 				return true;
 			}
 			return false;
@@ -1154,6 +1156,10 @@ function character (config)
 	{
 		return mech.body();
 	}
+	this.disappear=function()
+	{
+		mech.disappear();
+	}
 
 	//---inter living objects protocal------------------------------
 	this.cur_state=function()
@@ -1184,7 +1190,7 @@ function character (config)
 				if( ITR.injury>0)
 				{
 					effect.state.event('new');
-					effect.state.event_delay('vanish', 3, 'TU'); //default effect lasting duration
+					effect.state.event_delay('vanish', GC.default_effect_duration, 'TU');
 					var tar=(attps.x > ps.x)===(ps.dir==='right') ? frame.D.cpoint.fronthurtact : frame.D.cpoint.backhurtact;
 					if( ITR.vaction)
 						tar=ITR.vaction;
@@ -1198,14 +1204,14 @@ function character (config)
 			//only type 0 effect
 			effect.dvx = ITR.dvx ? att.dirh()*ITR.dvx:0;
 			effect.dvy = ITR.dvy ? ITR.dvy:0;
-			effect.effect = ITR.effect? ITR.effect:0; //default effect type
+			effect.effect = ITR.effect? ITR.effect : GC.default_effect_type;
 
 			if( frame.D.state===7 &&
 			    (attps.x > ps.x)===(ps.dir==='right')) //attacked in front
 			{
-				if( ITR.injury)	health.hp -= 0.1*ITR.injury; //defined defend injury coefficient
+				if( ITR.injury)	health.hp -= GC.defend_injury_factor * ITR.injury;
 				if( ITR.bdefend) health.bdefend += ITR.bdefend;
-				if( health.bdefend>40) //defined defend break
+				if( health.bdefend > GC.defend_break)
 				{
 					trans.frame(112, 20);
 				}
@@ -1223,7 +1229,7 @@ function character (config)
 
 			//effect
 			effect.state.event('new');
-			var vanish=3; //default effect lasting duration
+			var vanish = GC.default_effect_duration;
 			switch( trans.next())
 			{
 				case 111: vanish=4; break;
@@ -1234,7 +1240,7 @@ function character (config)
 			function fall()
 			{
 				if( ITR.fall)	health.fall += ITR.fall;
-					else	health.fall += 20; //default fall
+					else	health.fall += GC.default_fall;
 				var fall=health.fall;
 				if ( 0<fall && fall<=20)
 					trans.frame(220, 20);
@@ -1244,7 +1250,7 @@ function character (config)
 					trans.frame(Math.random()<0.5? 222:224, 20);
 				else if (40<fall && fall<=60)
 					trans.frame(226, 20);
-				else if (60<fall) //defined KO
+				else if (GC.KO<fall)
 					falldown();
 			}
 
@@ -1256,7 +1262,7 @@ function character (config)
 				else
 					trans.frame(186, 20); //attacked in back
 
-				if( !ITR.dvy) effect.dvy = -6.9; //default dvy when falling
+				if( !ITR.dvy) effect.dvy = GC.default_fall_dvy;
 				drop_weapon(effect.dvx,effect.dvy);
 			}
 		}
@@ -1291,14 +1297,14 @@ function character (config)
 			if( frame.D.cpoint && frame.D.cpoint.hurtable)
 				return frame.D.cpoint.hurtable;
 			else
-				return 0; //default hurtable
+				return GC.default_hurtable;
 		},
 		'throw': function(cpoint,throwz)
 		{	//I am being thrown
 			if( cpoint.vaction)
 				trans.frame(cpoint.vaction, 20);
 			else
-				trans.frame(135, 20); //default frame being thrown
+				trans.frame(GC.default_frame_thrown, 20);
 			This.caught.throwinjury=cpoint.throwinjury;
 			This.caught.throwz=throwz;
 		}

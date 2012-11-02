@@ -9,65 +9,98 @@
 	}
  */
 
-define(['core/collision'], function (Fcollision)
+define(['core/util','core/collision'], function (Futil,Fcollision)
 {
 var UID=0;
 
 function scene (config)
 {
-	this.obj = new Array(); //all objects
+	this.live = {}; //list of living objects
 }
 
 scene.prototype.add = function(C)
 {
-	this.obj.push(C);
 	C.uid = UID++;
+	this.live[C.uid]=C;
 }
 
-scene.prototype.query = function(volume, This, filter) //return the all the objects whose `bdy` intersect with `volume`
-		//except `This`
-		//what to intersect with. {body:0} to intersect with body and {itr:2} to intersect with itr kind:2
+scene.prototype.remove = function(C)
+{
+	delete this.live[C.uid];
+}
+
+/**	@function
+	@return the all the objects whose volume intersect with a specified volume
+	@param exclude [single Object] or [array]
+	@param where [Object] what to intersect with
+	[default] {body:0} intersect with body
+			{itr:2} intersect with itr kind:2
+			{type:'character'} with character only
+*/
+scene.prototype.query = function(volume, exclude, where)
 {
 	var result=[];
-	var tag, type;
-	for ( var kk in filter)
+	var tag='body';
+	var tagvalue;
+	var type;
+	exclude=Futil.make_array(exclude);
+	if( where)
+	for ( var kk in where)
 	{
-		tag=kk;
-		type=filter[kk];
-		break;
+		if( kk==='body' || kk==='itr')
+		{
+			tag=kk;
+			tagvalue=where[kk];
+		}
+		else if( kk==='type')
+		{
+			type=where[kk];
+		}
 	}
 
-	for ( var i in this.obj)
+	for ( var i in this.live)
 	{
-		if( this.obj[i] === This)
+		var excluded=false;
+		for( var ex in exclude)
+		{
+			if( this.live[i] === exclude[ex])
+			{
+				excluded=true;
+				break;
+			}
+		}
+		if( excluded)
+			continue;
+
+		if( type && this.live[i].type !== type)
 			continue;
 
 		if( tag==='itr')
 		{
-			if( this.obj[i].itr) //not every object has itr
+			if( this.live[i].itr) //not every object has itr
 			{
-				var itr = this.obj[i].itr(type);
+				var itr = this.live[i].itr(tagvalue);
 				for( var j in itr)
 				{
-					if( itr[j].kind===type)
+					if( itr[j].kind===tagvalue)
 					{
 						if( this.intersect( volume, itr[j]))
 						{
-							result.push( this.obj[i] );
+							result.push( this.live[i] );
 							break;
 						}
 					}
 				}
 			}
 		}
-		else
+		else if( tag==='body')
 		{
-			var bdy = this.obj[i].bdy();
+			var bdy = this.live[i].bdy();
 			for( var j in bdy)
 			{
 				if( this.intersect( volume, bdy[j] ))
 				{
-					result.push( this.obj[i] );
+					result.push( this.live[i] );
 					break;
 				}
 			}

@@ -1,8 +1,8 @@
 /** a template for making a living object
  */
 
-define(['LF/sprite','LF/mechanics','core/states'],
-function ( Sprite, Mech, Fstates)
+define(['LF/global','LF/sprite','LF/mechanics','core/states'],
+function ( Global, Sprite, Mech, Fstates)
 {
 
 /**	@constructor
@@ -21,7 +21,9 @@ function livingobject(config)
 	var dat = config.data; //alias to data
 	this.name='some object';
 	this.type='object';
-	this.uid; //unique id, will be assigned by scene
+	this.uid=-1; //unique id, will be assigned by scene
+	var This=this;
+	var GC=Global.gameplay;
 
 	function frame_transistor()
 	{
@@ -129,6 +131,21 @@ function livingobject(config)
 		mech.dynamics();
 	}
 
+	function interaction() //if you might use interaction
+	{
+		var ITR=Futil.make_array(frame.D.itr);
+
+		for( var j in ITR)
+		{	//for each itr tag
+			var vol=mech.volume(ITR[j]);
+			if( vol.zwidth===0) vol.zwidth = GC.default_itr_zwidth;
+			var hit= config.scene.query(vol, att, {body:0});
+			for( var k in hit)
+			{	//for each being hit
+			}
+		}
+	}
+
 	//---external interface---
 
 	this.TU=function()
@@ -146,6 +163,10 @@ function livingobject(config)
 	this.bdy=function()
 	{
 		return mech.body();
+	}
+	this.disappear=function()
+	{
+		mech.disappear();
 	}
 
 	//---inter living objects protocal---

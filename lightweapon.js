@@ -1,8 +1,8 @@
 /** a template for making a living object
  */
 
-define(['LF/sprite','LF/mechanics','core/states'],
-function ( Sprite, Mech, Fstates)
+define(['LF/global','LF/sprite','LF/mechanics','core/util','core/states'],
+function ( Global, Sprite, Mech, Futil, Fstates)
 {
 
 /**	config=
@@ -18,7 +18,9 @@ function lightweapon(config)
 	var dat = config.data; //alias to data
 	this.name='baseball bat';
 	this.type='light weapon';
-	this.uid; //unique id, will be assigned by scene
+	this.uid=-1; //unique id, will be assigned by scene
+	var This=this;
+	var GC=Global.gameplay;
 
 	function frame_transistor()
 	{
@@ -77,6 +79,16 @@ function lightweapon(config)
 		mobility: 1 //ignor it
 	};
 
+	var effect=
+	{
+		freeze: 0 //duration to freeze
+	};
+
+	var itr=
+	{
+		vrest: 0
+	};
+
 	//the mechanics backend
 	var mech = new Mech(frame,sp);
 	var ps = mech.create_metric(); //position, velocity, and other physical properties
@@ -122,22 +134,57 @@ function lightweapon(config)
 	//generic update done at every TU (30fps)
 	function state_update()
 	{
-		if( frame.D.state===1001)
-		{	//I am passive! so I dont need to care states of myself
+		if( effect.freeze===0)
+		{
+			interaction();
+
+			if( frame.D.state===1001)
+			{	//I am passive! so I dont need to care states of myself
+			}
+			else
+			{	//dynamics: position, friction, gravity
+				mech.dynamics();
+			}
+			if( frame.D.state===1002)
+			{	//being thrown
+				ps.vy -= 1.1; //compensate some gravity
+			}
+
+			if( ps.y===0 && ps.vy>0) //fell onto ground
+			{
+				ps.vy=0; //set to zero
+				trans.frame(70);
+			}
 		}
 		else
-		{	//dynamics: position, friction, gravity
-			mech.dynamics();
-		}
-		if( frame.D.state===1002)
-		{	//being thrown
-			ps.vy -= 1.1; //compensate some gravity
-		}
+			effect.freeze--;
 
-		if( ps.y===0 && ps.vy>0) //fell onto ground
-		{
-			ps.vy=0; //set to zero
-			trans.frame(70);
+		if( itr.vrest>0)
+			itr.vrest--;
+	}
+
+	function interaction()
+	{
+		var ITR=Futil.make_array(frame.D.itr);
+
+		if( itr.vrest===0)
+		for( var j in ITR)
+		{	//for each itr tag
+			if( ITR[j].kind===0) //kind 0 only
+			{
+				var vol=mech.volume(ITR[j]);
+				if( vol.zwidth===0) vol.zwidth = GC.default_itr_zwidth;
+				var hit= config.scene.query(vol, This, {body:0});
+				for( var k in hit)
+				{	//for each being hit
+					hit[k].hit(ITR[j],This,{x:ps.x,y:ps.y,z:ps.z}); //hit you!
+					ps.vx = dirh() * GC.weapon_hit_vx;
+					ps.vy = GC.weapon_hit_vy;
+					effect.freeze = 2;
+					itr.vrest = GC.default_weapon_vrest;
+				}
+			}
+			//kind 5 is handled in `act()`
 		}
 	}
 
@@ -149,7 +196,8 @@ function lightweapon(config)
 	}
 	this.trans=function()
 	{
-		trans.trans();
+		if( effect.freeze===0)
+			trans.trans();
 	}
 	this.set_pos=function(x,y,z)
 	{
@@ -159,16 +207,25 @@ function lightweapon(config)
 	{
 		return mech.body();
 	}
+	this.disappear=function()
+	{
+		mech.disappear();
+	}
 
 	//---inter living objects protocal---
 
+	this.dirh=dirh;
 	this.hit=function(ITR, att, attps)
 	{
 		ITR; //the itr object
 		att; //the attacker!
 		attps; //position of attacker
+		if( (att.dirh()>0)!==(ps.vx>0))
+			ps.vx *= GC.weapon_reverse_factor_vx;
+		ps.vy *= GC.weapon_reverse_factor_vy;
+		ps.vz *= GC.weapon_reverse_factor_vz;
 	}
-	this.act=function(wpoint,holdpoint,attps,attitr,att)
+	this.act=function(wpoint,holdpoint,attps,attitr,att) //I act according to the character who is holding me
 	{
 		var fD = frame.D;
 		var thrown = false;
@@ -194,9 +251,9 @@ function lightweapon(config)
 			}
 
 			if( wpoint.cover && wpoint.cover===1)
-				ps.zz=-1;
+				ps.zz = -1;
 			else
-				ps.zz=1; //default cover
+				ps.zz = GC.default_cover;
 
 			if( !thrown)
 			{
@@ -206,31 +263,31 @@ function lightweapon(config)
 				mech.project();
 			}
 
+			if( itr.vrest===0)
 			if( wpoint.attacking)
 			{
-				var ITR;
-				if( fD.itr instanceof Array)
-					ITR=fD.itr;
-				else
-					ITR=[fD.itr];
+				var ITR=Futil.make_array(fD.itr);
+
 				for( var j in ITR)
 				{	//for each itr tag
-					if( ITR[j].kind===5)
+					if( ITR[j].kind===5) //kind 5 only
 					{
 						var vol=mech.volume(ITR[j]);
-						if( vol.zwidth===0) vol.zwidth=12; //default zwidth for ITR
-						var hit= config.scene.query(vol, att, {body:0});
+						if( vol.zwidth===0) vol.zwidth = GC.default_itr_zwidth;
+						var hit= config.scene.query(vol, [att,This], {body:0});
+						console.log(hit);
 						for( var k in hit)
 						{	//for each being hit
 							if( !attitr.vrest[ hit[k].uid ])
 							{
-								var itr;
+								var citr;
 								if( dat.weapon_strength_list[wpoint.attacking])
-									itr = dat.weapon_strength_list[wpoint.attacking];
+									citr = dat.weapon_strength_list[wpoint.attacking];
 								else
-									itr = ITR[j];
-								hit[k].hit(itr,att,{x:attps.x,y:attps.y,z:attps.z}); //hit you!
-								attitr.vrest[ hit[k].uid ] = 7; //default weapon vrest
+									citr = ITR[j];
+								hit[k].hit(citr,att,{x:attps.x,y:attps.y,z:attps.z}); //hit you!
+								attitr.vrest[ hit[k].uid ] = GC.default_weapon_vrest;
+								itr.vrest = GC.default_weapon_vrest;
 							}
 						}
 					}

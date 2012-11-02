@@ -2,7 +2,7 @@
 requirejs.config({
 	baseUrl: '../../'
 });
-requirejs(['core/F','core/controller','core/controller-recorder','LF/scene','LF/character','LF/lightweapon','LF/keychanger','LF/data/bandit','LF/data/weapon0'],
+requirejs(['core/util','core/controller','core/controller-recorder','LF/scene','LF/character','LF/lightweapon','LF/keychanger','LF/data/bandit','LF/data/weapon0'],
 function(F,Fcontroller,Fcr,Scene,Character,Lightweapon,Keychanger,Bandit,Weapon0)
 {
 	//get base path
@@ -59,10 +59,10 @@ function(F,Fcontroller,Fcr,Scene,Character,Lightweapon,Keychanger,Bandit,Weapon0
 		}
 	}
 
-	/* var keychanger = document.getElementById('keychanger');
+	var keychanger = document.getElementById('keychanger');
 	Keychanger(keychanger, [control, control2]);
 	keychanger.style.backgroundColor='#FFF';
-	keychanger.style.visibility='visible'; */
+	keychanger.style.visibility='visible';
 
 	//set up scene------------------
 	var scene = new Scene();

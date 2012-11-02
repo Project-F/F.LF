@@ -2,7 +2,8 @@
 	mechanical properties that all living objects should have
  */
 
-define(function(){
+define(['LF/global'],
+function(Global){
 
 function mech(frame,sp)
 {
@@ -131,6 +132,16 @@ mech.prototype.create_metric= function()
 	return this.ps;
 }
 
+mech.prototype.reset= function()
+{
+	//frame,ps,sp
+	ps.x=0; ps.y=0; ps.z=0;
+	ps.sx=0; ps.sy=0; ps.sz=0;
+	ps.vx=0; ps.vy=0; ps.vz=0;
+	ps.zz=0;
+	ps.dir='right';
+}
+
 mech.prototype.set_pos= function(x,y,z)
 {	//place the center of mass of the object at x,y,z
 	var ps=this.ps;
@@ -149,6 +160,7 @@ mech.prototype.dynamics= function()
 	var sp=this.sp;
 	var fD=this.frame.D;
 	var fmob=this.frame.mobility;
+	var GC=Global.gameplay;
 
 	ps.x += ps.vx * fmob;
 	ps.y += ps.vy * fmob;
@@ -169,14 +181,14 @@ mech.prototype.dynamics= function()
 
 	if( ps.y===0) //only when on the ground
 	{	//viscous friction
-		ps.vx *= 0.74; //defined coefficient of friction
-		ps.vz *= 0.74;
-		if( ps.vx>-1 && ps.vx<1) ps.vx=0; //defined minimum speed
-		if( ps.vz>-1 && ps.vz<1) ps.vz=0;
+		ps.vx *= GC.friction_factor;
+		ps.vz *= GC.friction_factor;
+		if( ps.vx>-GC.min_speed && ps.vx<GC.min_speed) ps.vx=0; //defined minimum speed
+		if( ps.vz>-GC.min_speed && ps.vz<GC.min_speed) ps.vz=0;
 	}
 
-	if( ps.y<0) //gravity
-		ps.vy+= 1.7; //defined gravity
+	if( ps.y<0)
+		ps.vy+= GC.gravity;
 }
 
 mech.prototype.project= function()
@@ -185,6 +197,11 @@ mech.prototype.project= function()
 	var sp=this.sp;
 	sp.set_xy({x:ps.sx, y:ps.sy+ps.sz}); //projection onto screen
 	sp.set_z(ps.sz+ps.zz);  //z ordering
+}
+
+mech.prototype.disappear= function() //I am removed from scene
+{
+	this.sp.remove();
 }
 
 return mech;
