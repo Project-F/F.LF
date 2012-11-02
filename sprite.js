@@ -122,6 +122,15 @@ sprite.prototype.switch_img=function(name)
 sprite.prototype.remove=function()
 {
 	this.el.parentNode.removeChild(this.el);
+	this.removed=true;
+}
+/**	if previously removed, attach back to DOM
+	@function
+*/
+sprite.prototype.reattach=function()
+{
+	if( this.removed)
+		config.canvas.appendChild(this.el);
 }
 
 return sprite;

@@ -17,7 +17,7 @@
 	}
  */
 
-define(['core/F'],function(F) //exports a class `graph`
+define(['core/util'],function(F) //exports a class `graph`
 {
 
 /**	@class

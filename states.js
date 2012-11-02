@@ -75,7 +75,7 @@
    -in a state transition, a machine must exit the current state before exiting the current state's superstate.
  */
 
-define(['core/F'],function(F) //exports a class `states`
+define(['core/util'],function(F) //exports a class `states`
 {
 
 var state_list=[];

@@ -4,7 +4,7 @@
 	to record and playback activity of a controller
  */
 
-define(['core/F'],function(F) //exports 2 classes `control_recorder` and `control_player` in an object
+define(['core/util'],function(F) //exports 2 classes `control_recorder` and `control_player` in an object
 {
 
 return {

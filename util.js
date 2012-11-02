@@ -47,6 +47,25 @@ double_delegate: function (function1, function2)
 		function2.apply(this,Array.prototype.slice.call(arguments));
 	}
 },
+/**	@function
+	@param target
+	@description
+	if target is an array, return target as is.
+	if target is an object, return encapsulated in an array.
+	if target is false (null, undefined or zero), return an empty array.
+*/
+make_array: function (target)
+{
+	if( target)
+	{
+		if( target instanceof Array)
+			return target;
+		else
+			return [target];
+	}
+	else
+		return [];
+},
 
 //
 //data structure------------
