@@ -2,19 +2,23 @@
 requirejs.config({
 	baseUrl: '../../'
 });
-requirejs(['core/util','core/controller','core/controller-recorder','LF/scene','LF/character','LF/lightweapon','LF/keychanger','LF/data/bandit','LF/data/weapon0'],
-function(F,Fcontroller,Fcr,Scene,Character,Lightweapon,Keychanger,Bandit,Weapon0)
+
+/* if( window.location.href.indexOf('//c9.io') !== -1)
+	requirejs.config({
+		baseUrl: '../../../',
+		paths: {
+			'core':'f_core/workspace',
+			'LF':'f_lf/workspace'
+		}
+	}); */
+
+requirejs(['core/controller','core/controller-recorder',
+'LF/scene','LF/character','LF/lightweapon','LF/keychanger','LF/effects',
+'LF/data/bandit','LF/data/weapon0','LF/data/effect0'],
+function(Fcontroller, Fcr,
+Scene, Character, Lightweapon, Keychanger, Effects,
+bandit, weapon0, effect0)
 {
-	//get base path
-	var f_core_path;
-	/* var str=window.location.href;
-	if( str.indexOf('//c9.io') !== -1)
-		f_core_path = '../../../f_core/workspace/'; //cloud9 relative path
-	else */
-		f_core_path = '../../core/'; //local path
-
-	F.css(f_core_path+'style.css'); //load CSS
-
 	demo2();
 
 	function demo2() {
@@ -26,7 +30,7 @@ function(F,Fcontroller,Fcr,Scene,Character,Lightweapon,Keychanger,Bandit,Weapon0
 
 	var control_con =
 	{
-		up:'i',down:'k',left:'j',right:'l',def:'h',jump:'y',att:'t'
+		up:'u',down:'m',left:'h',right:'k',def:',',jump:'i',att:'j'
 	};
 	var control_con2 =
 	{
@@ -38,7 +42,7 @@ function(F,Fcontroller,Fcr,Scene,Character,Lightweapon,Keychanger,Bandit,Weapon0
 	control.sync=true;
 	control2.sync=true;
 
-	/*var control_rec = new Fcr.control_recorder(control_play);
+	/* var control_rec = new Fcr.control_recorder(control_play);
 	document.getElementById('export').onclick=function()
 	{
 		document.getElementById('log').value += control_rec.export_str();
@@ -60,20 +64,34 @@ function(F,Fcontroller,Fcr,Scene,Character,Lightweapon,Keychanger,Bandit,Weapon0
 	}
 
 	var keychanger = document.getElementById('keychanger');
+	keychanger.style.display='none';
 	Keychanger(keychanger, [control, control2]);
 	keychanger.style.backgroundColor='#FFF';
-	keychanger.style.visibility='visible';
+	//keychanger.style.display='';
 
 	//set up scene------------------
 	var scene = new Scene();
+	var stage = document.getElementById('stage');
+
+	//effects-----------------------
+	var effects = new Effects( {init_size:10, stage:stage}, [effect0], [300]);
 
 	//set up a character------------
-	var stage = document.getElementById('stage');
-	var character1 = new Character( {controller: control, stage:stage, scene:scene, data:Bandit} ); //choose from `control` and `control_play`
-	var character2 = new Character( {controller: control2, stage:stage, scene:scene, data:Bandit} );
-	scene.add( character1); character1.set_pos(400,0,200);
-	scene.add( character2); character2.set_pos(300,0,200);
-	var weapon1 = new Lightweapon( {stage:stage,scene:scene,data:Weapon0});
+	var char_config=
+	{
+		stage: stage,
+		scene: scene,
+		effects: effects,
+		controller: null
+	};
+	char_config.controller= control; //choose from `control` and `control_play`
+	var character1 = new Character( char_config, bandit, 0);
+	char_config.controller= control2;
+	var character2 = new Character( char_config, bandit, 0);
+	scene.add( character1); character1.set_pos(400,0,200); character1.team=1;
+	scene.add( character2); character2.set_pos(300,0,200); character2.team=2;
+
+	var weapon1 = new Lightweapon( {stage:stage,scene:scene}, weapon0, 100);
 	scene.add( weapon1); weapon1.set_pos(100,-200,200);
 
 	//---run time-------------------
@@ -96,6 +114,7 @@ function(F,Fcontroller,Fcr,Scene,Character,Lightweapon,Keychanger,Bandit,Weapon0
 		character1.TU();
 		character2.TU();
 		weapon1.TU();
+		effects.TU();
 
 		calculate_fps(1);
 	}

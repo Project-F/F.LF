@@ -22,40 +22,34 @@ scene.prototype.add = function(C)
 {
 	C.uid = UID++;
 	this.live[C.uid]=C;
+	return C.uid;
 }
 
 scene.prototype.remove = function(C)
 {
 	delete this.live[C.uid];
+	C.uid=-1;
 }
 
 /**	@function
 	@return the all the objects whose volume intersect with a specified volume
-	@param exclude [single Object] or [array]
+	@param exclude [single Object] or [array of objects]
 	@param where [Object] what to intersect with
 	[default] {body:0} intersect with body
 			{itr:2} intersect with itr kind:2
 			{type:'character'} with character only
+			{not_team:1} exclude team
 */
 scene.prototype.query = function(volume, exclude, where)
 {
 	var result=[];
 	var tag='body';
 	var tagvalue;
-	var type;
 	exclude=Futil.make_array(exclude);
-	if( where)
-	for ( var kk in where)
+	if( where.itr)
 	{
-		if( kk==='body' || kk==='itr')
-		{
-			tag=kk;
-			tagvalue=where[kk];
-		}
-		else if( kk==='type')
-		{
-			type=where[kk];
-		}
+		tag='itr';
+		tagvalue=where.itr;
 	}
 
 	for ( var i in this.live)
@@ -72,7 +66,10 @@ scene.prototype.query = function(volume, exclude, where)
 		if( excluded)
 			continue;
 
-		if( type && this.live[i].type !== type)
+		if( where.not_team && this.live[i].team === where.not_team)
+			continue;
+
+		if( where.type && this.live[i].type !== where.type)
 			continue;
 
 		if( tag==='itr')

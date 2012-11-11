@@ -1,4 +1,4 @@
-/** a template for making a living object
+/** light weapons
  */
 
 define(['LF/global','LF/sprite','LF/mechanics','core/util','core/states'],
@@ -8,17 +8,17 @@ function ( Global, Sprite, Mech, Futil, Fstates)
 /**	config=
 	{
 		stage,
-		scene,
-		data
+		scene
 	}
  */
-function lightweapon(config)
+function lightweapon(config,dat,id)
 {
 	//must have these for identity
-	var dat = config.data; //alias to data
-	this.name='baseball bat';
 	this.type='light weapon';
 	this.uid=-1; //unique id, will be assigned by scene
+	this.id=id; //identify special behavior. accept values from 100-149
+	this.team=0;
+
 	var This=this;
 	var GC=Global.gameplay;
 
@@ -129,6 +129,9 @@ function lightweapon(config)
 		//wait for next frame
 		trans.set_wait(frame.D.wait);
 		trans.set_next(frame.D.next);
+
+		if( frame.N === 64)
+			This.team=0; //loses team
 	}
 
 	//generic update done at every TU (30fps)
@@ -153,7 +156,7 @@ function lightweapon(config)
 			if( ps.y===0 && ps.vy>0) //fell onto ground
 			{
 				ps.vy=0; //set to zero
-				trans.frame(70);
+				trans.frame(70); //go to frame 70
 			}
 		}
 		else
@@ -168,20 +171,21 @@ function lightweapon(config)
 		var ITR=Futil.make_array(frame.D.itr);
 
 		if( itr.vrest===0)
+		if( This.team!==0)
 		for( var j in ITR)
 		{	//for each itr tag
 			if( ITR[j].kind===0) //kind 0 only
 			{
 				var vol=mech.volume(ITR[j]);
-				if( vol.zwidth===0) vol.zwidth = GC.default_itr_zwidth;
-				var hit= config.scene.query(vol, This, {body:0});
+				if( vol.zwidth===0) vol.zwidth = GC.default.itr.zwidth;
+				var hit= config.scene.query(vol, This, {body:0, not_team:This.team});
 				for( var k in hit)
 				{	//for each being hit
 					hit[k].hit(ITR[j],This,{x:ps.x,y:ps.y,z:ps.z}); //hit you!
-					ps.vx = dirh() * GC.weapon_hit_vx;
-					ps.vy = GC.weapon_hit_vy;
+					ps.vx = dirh() * GC.weapon.hit.vx;
+					ps.vy = GC.weapon.hit.vy;
 					effect.freeze = 2;
-					itr.vrest = GC.default_weapon_vrest;
+					itr.vrest = GC.default.weapon.vrest;
 				}
 			}
 			//kind 5 is handled in `act()`
@@ -207,10 +211,6 @@ function lightweapon(config)
 	{
 		return mech.body();
 	}
-	this.disappear=function()
-	{
-		mech.disappear();
-	}
 
 	//---inter living objects protocal---
 
@@ -222,8 +222,9 @@ function lightweapon(config)
 		attps; //position of attacker
 		if( (att.dirh()>0)!==(ps.vx>0))
 			ps.vx *= GC.weapon_reverse_factor_vx;
-		ps.vy *= GC.weapon_reverse_factor_vy;
-		ps.vz *= GC.weapon_reverse_factor_vz;
+		ps.vy *= GC.weapon.reverse.factor.vy;
+		ps.vz *= GC.weapon.reverse.factor.vz;
+		this.team = att.team; //change team!
 	}
 	this.act=function(wpoint,holdpoint,attps,attitr,att) //I act according to the character who is holding me
 	{
@@ -253,7 +254,7 @@ function lightweapon(config)
 			if( wpoint.cover && wpoint.cover===1)
 				ps.zz = -1;
 			else
-				ps.zz = GC.default_cover;
+				ps.zz = GC.default.wpoint.cover;
 
 			if( !thrown)
 			{
@@ -273,9 +274,8 @@ function lightweapon(config)
 					if( ITR[j].kind===5) //kind 5 only
 					{
 						var vol=mech.volume(ITR[j]);
-						if( vol.zwidth===0) vol.zwidth = GC.default_itr_zwidth;
-						var hit= config.scene.query(vol, [att,This], {body:0});
-						console.log(hit);
+						if( vol.zwidth===0) vol.zwidth = GC.default.itr.zwidth;
+						var hit= config.scene.query(vol, [This, att], {body:0, not_team:This.team});
 						for( var k in hit)
 						{	//for each being hit
 							if( !attitr.vrest[ hit[k].uid ])
@@ -286,8 +286,8 @@ function lightweapon(config)
 								else
 									citr = ITR[j];
 								hit[k].hit(citr,att,{x:attps.x,y:attps.y,z:attps.z}); //hit you!
-								attitr.vrest[ hit[k].uid ] = GC.default_weapon_vrest;
-								itr.vrest = GC.default_weapon_vrest;
+								attitr.vrest[ hit[k].uid ] = GC.default.weapon.vrest;
+								itr.vrest = GC.default.weapon.vrest;
 							}
 						}
 					}
@@ -298,6 +298,7 @@ function lightweapon(config)
 	}
 	this.drop=function(dvx,dvy)
 	{
+		This.team=0;
 		if( dvx) ps.vx=dvx * 0.5;
 		if( dvy) ps.vy=dvy * 0.2;
 		ps.zz=0;

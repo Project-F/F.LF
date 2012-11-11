@@ -1,3 +1,3 @@
-demo:
+demo2:
 	echo "make sure you have node installed."
-	node ../third_party/r.js -o build.js
+	node ../third_party/r.js -o demo2-build.js

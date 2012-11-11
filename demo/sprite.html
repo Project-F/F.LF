@@ -10,10 +10,8 @@
 requirejs.config({
 	baseUrl: '../../'
 });
-requirejs(['core/F','LF/sprite','LF/data/bandit'], function(F,sprite,data_bandit)
+requirejs(['LF/sprite','LF/data/bandit'], function(sprite,data_bandit)
 {
-	F.css('../../core/style.css');
-	//
 	bandit=data_bandit;
 	var sp = new sprite(bandit.bmp,document.getElementById('canvas'));
 	sp.show_pic(71);

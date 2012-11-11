@@ -12,16 +12,16 @@ function ( Global, Sprite, Mech, Fstates)
 	{
 		stage, //the div where I append myself into
 		scene, //to interact with other living objects in the scene
-		data //should accept a data structure
 	}
  */
-function livingobject(config)
+function livingobject(config,dat,id)
 {
 	//must have these for identity
-	var dat = config.data; //alias to data
-	this.name='some object';
-	this.type='object';
+	this.type='light weapon';
 	this.uid=-1; //unique id, will be assigned by scene
+	this.id=id; //identify special behavior. accept values from 100-149
+	this.team=0;
+
 	var This=this;
 	var GC=Global.gameplay;
 
@@ -163,10 +163,6 @@ function livingobject(config)
 	this.bdy=function()
 	{
 		return mech.body();
-	}
-	this.disappear=function()
-	{
-		mech.disappear();
 	}
 
 	//---inter living objects protocal---

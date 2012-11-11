@@ -4,7 +4,7 @@
 		controller,
 		stage,
 		scene,
-		data
+		effects
 	}
  */
 /*
@@ -16,52 +16,23 @@ define(['LF/global','LF/sprite','LF/mechanics','core/util','core/combodec','core
 function ( Global, Sprite, Mech, Futil, Fcombodec, Fstates)
 {
 
-function character (config)
+function character (config,dat,thisID)
 {
-	//data file
-	var dat = config.data;
-	this.name=dat.bmp.name;
 	this.type='character';
-	this.uid=-1; //unique id, set by scene
-	this.id=0; //character id
+	/*DC*/this.name=dat.bmp.name;
+	/*DC*/this.uid=-1; //unique id, set by scene
+	/*DC*/this.id=thisID; //character id, specify tactical behavior. accept values from 0~99
+	/*DC*/this.team=0;
+
 	var This=this;
 	var GC=Global.gameplay;
+	var scene = config.scene;
 
-	//---configurations---------------------------------------------
-{
-	//combo list
-	var combo_con = [
-		{ name:'left', seq:['left']},
-		{ name:'right', seq:['right']},
-		{ name:'def', seq:['def']},
-		{ name:'jump', seq:['jump']},
-		{ name:'att', seq:['att']},
-		{ name:'run', seq:['right','right']},
-		{ name:'run', seq:['left','left']},
-		{ name:'DvA', seq:['def','down','att']},
-		{ name:'D<A', seq:['def','left','att']},
-		{ name:'D>A', seq:['def','right','att']},
-		{ name:'D^A', seq:['def','up','att']},
-		{ name:'DvJ', seq:['def','down','jump']},
-		{ name:'D<J', seq:['def','left','jump']},
-		{ name:'D>J', seq:['def','right','jump']},
-		{ name:'D^J', seq:['def','up','jump']},
-		{ name:'DJA', seq:['def','jump','att']}
-	];
-	//combo detector config
-	var dec_con =
-	{
-		rp: {up:99,down:99,left:99,right:99,def:99,jump:99,att:99}, //the same key must repeat no more than X times
-		timeout:30, //time to clear buffer (approx. 1s in 30fps)
-		comboout:8, //the max time interval(in frames) between keys to make a combo
-		callback: combo_event, //callback function when combo detected
-		no_repeat_key: true //eliminate repeated key strokes by browser
-	}
-}
 	//---internal state machines------------------------------------
 {
 	function frame_transistor()
 	{
+		/*DC*/
 		var wait=1; //when wait decreases to zero, a frame transition happens
 		var next=999; //next frame
 		var lock=0;
@@ -249,18 +220,19 @@ function character (config)
 			{
 				'TU': function()
 				{
-					if( effect.effect===0) //mechanical injury
+					if( IDprop(effect.id,'oscillate'))
 					{
 						if( effect.i===1)
 							effect.i=-1;
 						else
 							effect.i=1;
-						sp.set_xy({x:ps.sx + GC.effect0_amplitude *effect.i, y:ps.sy+ps.sz});
+						sp.set_xy({x:ps.sx + IDprop(effect.id,'oscillate')*effect.i, y:ps.sy+ps.sz});
 					}
 				},
 				'entry': function()
-				{
-					frame.mobility=0;
+				{	/*DC*/
+					if( IDprop(effect.id,'cant_move'))
+						frame.mobility=0;
 				},
 				'vanish': 'vanish'
 			}
@@ -276,7 +248,7 @@ function character (config)
 					S.event_delay('dvxyz',1,'TU');
 				},
 				'dvxyz': function()
-				{
+				{	/*DC*/
 					ps.vx += effect.dvx;
 					ps.vy += effect.dvy;
 				},
@@ -288,9 +260,9 @@ function character (config)
 
 	//---states-----------------------------------------------------
 {
-	var sp = new Sprite(dat.bmp, config.stage);
+	/*DC*/var sp = new Sprite(dat.bmp, config.stage);
 
-	var health=
+	/*DC*/var health=
 	{
 		hp: 100,
 		mp: 100,
@@ -298,7 +270,7 @@ function character (config)
 		fall: 0
 	};
 
-	var frame=
+	/*DC*/var frame=
 	{
 		PN: 0, //previous frame number
 		N: 0, //current frame number
@@ -308,38 +280,49 @@ function character (config)
 
 	//the mechanics backend
 	var mech = new Mech(frame,sp);
-	var ps = mech.create_metric(); //position, velocity, and other physical properties
+	/*DC*/var ps = mech.create_metric(); //position, velocity, and other physical properties
 
-	var trans = new frame_transistor();
+	/*DC*/var trans = new frame_transistor();
 
-	var itr=
+	/*DC*/var itr=
 	{
 		arest: 0,
 		vrest: [], //a history of what have been hit by me recently
 		lasthit: -100 //time when last being hit
 	};
 
-	var catching= 0; //state 9: the object being caught by me now
+	/*DC*/var catching= 0; //state 9: the object being caught by me now
 				//OR state 10: the object catching me now
-	var holding= 0; //the weapon being held by me
-
-	var effect=
+	/*DC*/var hold=
 	{
-		i:0,
+		obj: null, //the weapon being held by me
+		 id: 0 //id of holding
+	};
+
+	/*DC*/var effect=
+	{
+		i: 0, //iteration variable
 		state: new Fstates(effect_state_config),
-		dvx:0, dvy:0,
-		effect:0
+		dvx: 0, dvy: 0,
+		id: 0,
+		M: config.effects
 	};
 
 	//direction switcher
-	var switch_dir=true;
+	/*DC*/var switch_dir=true;
 
 	//controller
-	var con = config.controller;
+	/*DC*/var con = config.controller;
 
-	var combodec = new Fcombodec(con, dec_con, combo_con);
-
-	var scene = config.scene;
+	//combo detector config
+	var dec_con =
+	{
+		timeout: Global.detector_config.timeout,
+		comboout: Global.detector_config.comboout,
+		no_repeat_key: Global.detector_config.no_repeat_key,
+		callback: combo_event //callback function when combo detected
+	}
+	/*DC*/var combodec = new Fcombodec(con, dec_con, Global.combo_list);
 }
 
 	//---the processing pipeline------------------------------------
@@ -391,8 +374,8 @@ function character (config)
 		if( ps.y===0 && ps.vy>0) //fell onto ground
 		{
 			ps.vy=0; //set to zero
-			ps.vx *= GC.friction_fell_factor;
-			ps.vz *= GC.friction_fell_factor;
+			ps.vx *= GC.friction.fell.factor;
+			ps.vz *= GC.friction.fell.factor;
 		}
 		else if( ps.y+ps.vy>=0 && ps.vy>0) //predict falling onto the ground
 		{
@@ -419,8 +402,8 @@ function character (config)
 		if( itr.lasthit<-3)
 		{
 			if( health.fall>0 && health.fall<10) health.fall=0;
-			if( health.fall>0) health.fall += GC.fall_recover;
-			if( health.bdefend>0) health.bdefend += GC.bdefend_recover;
+			if( health.fall>0) health.fall += GC.recover.fall;
+			if( health.bdefend>0) health.bdefend += GC.recover.bdefend;
 		}
 
 		//attack rest
@@ -481,15 +464,32 @@ function character (config)
 					trans.frame(210, 10);
 				break;
 				case 'att':
-					if( holding) //light weapon attack
+					if( hold.obj)
 					{
-						trans.frame(Math.random()<0.5? 20:25, 10);
-						return ;
+						var dx = 0;
+						if( con.state.left)  dx-= 1;
+						if( con.state.right) dx+= 1;
+
+						if( IDprop(hold.id,'just_throw'))
+						{
+							trans.frame(45, 10); //throw weapon
+							return ;
+						}
+						else if ( dx && IDprop(hold.id,'stand_throw'))
+						{
+							trans.frame(45, 10); //throw weapon
+							return ;
+						}
+						else if( IDprop(hold.id,'attackable')) //light weapon attack
+						{
+							trans.frame(Math.random()<0.5? 20:25, 10);
+							return ;
+						}
 					}
 					//
 					var vol=mech.volume(dat.frame[72].itr); //super punch, frame 72
-					if( vol.zwidth===0) vol.zwidth = GC.default_itr_zwidth;
-					var hit= scene.query(vol, This, {itr:6});
+					if( vol.zwidth===0) vol.zwidth = GC.default.itr.zwidth;
+					var hit= scene.query(vol, This, {itr:6, not_team:This.team});
 					for( var t in hit)
 					{	//if someone is in my hitting scoope who has itr kind:6
 						trans.frame(70, 10); //I 'll use super punch!
@@ -575,18 +575,23 @@ function character (config)
 				break;
 
 				case 'att':
-					if( holding) //light weapon attack
+					if( hold.obj) //light weapon attack
 					{
 						var dx = 0;
 						if( con.state.left)  dx-= 1;
 						if( con.state.right) dx+= 1;
-						if( dx)
+						if( dx && IDprop(hold.id,'run_throw'))
+						{
 							trans.frame(45, 10); //throw weapon
-						else
+							return ;
+						}
+						else if( IDprop(hold.id,'attackable'))
+						{
 							trans.frame(35, 10);
+							return ;
+						}
 					}
-					else
-						trans.frame(85, 10);
+					trans.frame(85, 10);
 				break;
 				}
 			break;
@@ -619,14 +624,14 @@ function character (config)
 				{
 					if( con.state.att)
 					{
-						if( holding)
+						if( hold.obj)
 						{
 							var dx = 0;
 							if( con.state.left)  dx-= 1;
 							if( con.state.right) dx+= 1;
-							if( dx)
+							if( dx && IDprop(hold.id,'jump_throw'))
 								trans.frame(52, 10); //sky light weapon throw
-							else
+							else if( IDprop(hold.id,'attackable'))
 								trans.frame(30, 10); //light weapon attack
 						}
 						else
@@ -649,7 +654,7 @@ function character (config)
 				{
 					if( dirh()===(ps.vx>0?1:-1)) //only if not turning back
 					{
-						if( holding) //light weapon attack
+						if( hold.obj && IDprop(hold.id,'attackable')) //light weapon attack
 							trans.frame(40, 10);
 						else
 							trans.frame(90, 10);
@@ -704,7 +709,7 @@ function character (config)
 			break;
 
 			case 'frame':
-				states['9'].frameTU=true;
+				/*DC*/states['9'].frameTU=true;
 				catching.caught.b(mech.make_point(frame.D.cpoint),
 						frame.D.cpoint,ps.dir);
 			break;
@@ -724,7 +729,7 @@ function character (config)
 						trans.inc_wait(1, 10, 99);
 					}
 					//cover
-					var cover = GC.default_cpoint_cover;
+					var cover = GC.default.cpoint.cover;
 					if( frame.D.cpoint.cover) cover=frame.D.cpoint.cover;
 					if( cover===0 || cover===10 )
 						ps.zz=1;
@@ -788,7 +793,7 @@ function character (config)
 			break;
 
 			case 'frame':
-				states['10'].frameTU=true;
+				/*DC*/states['10'].frameTU=true;
 				trans.set_wait(99, 10, 99);
 				frame.mobility=0; //never moves
 			break;
@@ -889,11 +894,11 @@ function character (config)
 			break;
 
 			case 'fall_onto_ground':
-				if( ps.vx*ps.vx + ps.vy*ps.vy > GC.bounceup_limit)
+				if( ps.vx*ps.vx + ps.vy*ps.vy > GC.bounceup.limit)
 				{
-					ps.vy *= GC.bounceup_factor_y;
-					ps.vx *= GC.bounceup_factor_x;
-					ps.vz *= GC.bounceup_factor_z;
+					ps.vy *= GC.bounceup.factor.y;
+					ps.vx *= GC.bounceup.factor.x;
+					ps.vz *= GC.bounceup.factor.z;
 					if( 180 <= frame.N && frame.N <= 185)
 						return 185;
 					if( 186 <= frame.N && frame.N <= 191)
@@ -994,7 +999,7 @@ function character (config)
 			var ITR=ITR_LIST[i]; //the itr tag in data
 			//first check for what I have got into intersect with
 			var vol=mech.volume(ITR);
-			if( vol.zwidth===0) vol.zwidth = GC.default_itr_zwidth;
+			if( vol.zwidth===0) vol.zwidth = GC.default.itr.zwidth;
 			var hit= scene.query(vol, This, {body:0});
 
 			switch (ITR.kind)
@@ -1002,7 +1007,8 @@ function character (config)
 			case 0: //normal attack
 				for( var t in hit)
 				{
-					if( update_rest(hit[t].uid))
+					if( hit[t].team !== This.team) //only attack other teams
+					if( update_rest(hit[t].uid)) //important! this must be the last if clause
 					{
 						hit[t].hit(ITR,This,{x:ps.x,y:ps.y,z:ps.z}); //hit you!
 
@@ -1020,9 +1026,10 @@ function character (config)
 			case 1: //catch
 				for( var t in hit)
 				{
-					if( update_rest(hit[t].uid))
-					if( hit[t].type==='character')
+					if( hit[t].team !== This.team) //only attack other teams
+					if( hit[t].type==='character') //only catch characters
 					if( hit[t].cur_state()===16) //you are in dance of pain!
+					if( update_rest(hit[t].uid)) //important! to be the last
 					{
 						var dir = hit[t].caught.a(ITR,This,{x:ps.x,y:ps.y,z:ps.z});
 						if( dir==='front')
@@ -1042,7 +1049,9 @@ function character (config)
 					{
 						update_rest(hit[t].uid);
 						trans.frame(115, 10);
-						holding = hit[t];
+						hold.obj = hit[t];
+						hold.obj.team = This.team;
+						hold.id= hold.obj.id;
 					}
 				}
 			break;
@@ -1060,33 +1069,44 @@ function character (config)
 				else if( ITR.vrest && ITR.vrest!==1)
 					itr.vrest[ uid ] = ITR.vrest;
 				else
-					itr.arest = GC.default_arest;
+					itr.arest = GC.default.character.arest;
+
 				return true;
 			}
-			return false;
+			else
+				return false;
 		}
 	}
 
 	function wpoint()
 	{
-		if( holding)
+		if( hold.obj)
 		if( frame.D.wpoint)
 		{
-			var act = holding.act(frame.D.wpoint, mech.make_point(frame.D.wpoint), ps, itr, This);
+			var act = hold.obj.act(frame.D.wpoint, mech.make_point(frame.D.wpoint), ps, itr, This);
 			if( act==='thrown')
 			{
-				holding=0;
+				hold.obj=null;
+				hold.id=0;
 			}
 		}
 	}
 
 	function drop_weapon(dvx,dvy)
 	{
-		if( holding)
+		if( hold.obj)
 		{
-			holding.drop(dvx,dvy);
-			holding=0;
+			hold.obj.drop(dvx,dvy);
+			hold.obj=null;
+			hold.id=0;
 		}
+	}
+
+	function IDprop(id,prop)
+	{
+		if( Global.id[id])
+			return Global.id[id][prop];
+		return null;
 	}
 
 	//----internal helpers------------------------------------------
@@ -1156,10 +1176,6 @@ function character (config)
 	{
 		return mech.body();
 	}
-	this.disappear=function()
-	{
-		mech.disappear();
-	}
 
 	//---inter living objects protocal------------------------------
 	this.cur_state=function()
@@ -1172,7 +1188,6 @@ function character (config)
 	this.hit=function(ITR, att, attps) //I am being hit by attacker `att`!
 	{
 		itr.lasthit=0;
-		var This=this;
 
 		if( frame.D.state===10) //being caught
 		{
@@ -1190,7 +1205,7 @@ function character (config)
 				if( ITR.injury>0)
 				{
 					effect.state.event('new');
-					effect.state.event_delay('vanish', GC.default_effect_duration, 'TU');
+					effect.state.event_delay('vanish', GC.default.effect.duration, 'TU');
 					var tar=(attps.x > ps.x)===(ps.dir==='right') ? frame.D.cpoint.fronthurtact : frame.D.cpoint.backhurtact;
 					if( ITR.vaction)
 						tar=ITR.vaction;
@@ -1204,14 +1219,15 @@ function character (config)
 			//only type 0 effect
 			effect.dvx = ITR.dvx ? att.dirh()*ITR.dvx:0;
 			effect.dvy = ITR.dvy ? ITR.dvy:0;
-			effect.effect = ITR.effect? ITR.effect : GC.default_effect_type;
+			effect.id = ITR.effect ? ITR.effect : GC.default.effect.num;
+			effect.id += GC.effect.num_to_id; //important! convert num to id
 
 			if( frame.D.state===7 &&
 			    (attps.x > ps.x)===(ps.dir==='right')) //attacked in front
 			{
-				if( ITR.injury)	health.hp -= GC.defend_injury_factor * ITR.injury;
+				if( ITR.injury)	health.hp -= GC.defend.injury.factor * ITR.injury;
 				if( ITR.bdefend) health.bdefend += ITR.bdefend;
-				if( health.bdefend > GC.defend_break)
+				if( health.bdefend > GC.defend.break)
 				{
 					trans.frame(112, 20);
 				}
@@ -1229,18 +1245,19 @@ function character (config)
 
 			//effect
 			effect.state.event('new');
-			var vanish = GC.default_effect_duration;
+			var vanish = GC.default.effect.duration;
 			switch( trans.next())
 			{
 				case 111: vanish=4; break;
 				case 112: vanish=5; break;
 			}
 			effect.state.event_delay('vanish', vanish, 'TU');
+			effect.M.create({x:ps.x, y:ps.sy+sp.h/2, z:ps.z}, effect.id, health.fall>0?1:2);
 
 			function fall()
 			{
 				if( ITR.fall)	health.fall += ITR.fall;
-					else	health.fall += GC.default_fall;
+					else	health.fall += GC.default.fall.value;
 				var fall=health.fall;
 				if ( 0<fall && fall<=20)
 					trans.frame(220, 20);
@@ -1250,7 +1267,7 @@ function character (config)
 					trans.frame(Math.random()<0.5? 222:224, 20);
 				else if (40<fall && fall<=60)
 					trans.frame(226, 20);
-				else if (GC.KO<fall)
+				else if (GC.fall.KO<fall)
 					falldown();
 			}
 
@@ -1262,8 +1279,9 @@ function character (config)
 				else
 					trans.frame(186, 20); //attacked in back
 
-				if( !ITR.dvy) effect.dvy = GC.default_fall_dvy;
-				drop_weapon(effect.dvx,effect.dvy);
+				if( !ITR.dvy) effect.dvy = GC.default.fall.dvy;
+				if( IDprop(effect.id,'drop_weapon'))
+					drop_weapon(effect.dvx,effect.dvy);
 			}
 		}
 	}
@@ -1297,14 +1315,14 @@ function character (config)
 			if( frame.D.cpoint && frame.D.cpoint.hurtable)
 				return frame.D.cpoint.hurtable;
 			else
-				return GC.default_hurtable;
+				return GC.default.hurtable;
 		},
 		'throw': function(cpoint,throwz)
 		{	//I am being thrown
 			if( cpoint.vaction)
 				trans.frame(cpoint.vaction, 20);
 			else
-				trans.frame(GC.default_frame_thrown, 20);
+				trans.frame(GC.default.throw.frame, 20);
 			This.caught.throwinjury=cpoint.throwinjury;
 			This.caught.throwz=throwz;
 		}

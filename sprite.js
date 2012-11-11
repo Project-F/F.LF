@@ -10,7 +10,7 @@ function sprite (bmp, parent)
 	var num_of_images = this.num_of_images = bmp.file.length;
 	var w = this.w = bmp.file[0].w+1;
 	var h = this.h = bmp.file[0].h+1;
-	var ani = this.ani = new Array();
+	var ani = this.ani = {length:0};
 	this.dir = 'right';
 	this.cur_img = '0r';
 
@@ -34,9 +34,10 @@ function sprite (bmp, parent)
 		if( imgpath==='')
 			alert( 'cannot find img path in data:\n'+JSON.stringify(bmp.file[i]) );
 		sp.add_img( imgpath, i+'r');
-		if( bmp.file[i]['mirror'])
+		if( bmp.file[i]['mirror']) //extended standard
 		{
-			sp.add_img( bmp.file[i]['mirror'], i+'l');
+			if( bmp.file[i]['mirror'] !== 'none')
+				sp.add_img( bmp.file[i]['mirror'], i+'l');
 		}
 		else
 		{
@@ -62,22 +63,26 @@ function sprite (bmp, parent)
 			borderleft: 1,
 			borderbottom: 1
 		};
+		ani.length++; //watch out! ani.length means how many _pairs_
 		ani[i+'r'] = new Fanimator(ani_con);
-		ani[i+'l'] = new Fanimator(ani_mirror_con);
+		if( sp.img[i+'l']); //some sprites do not need mirror
+			ani[i+'l'] = new Fanimator(ani_mirror_con);
 	}
 }
 
 sprite.prototype.show_pic = function(I)
 {
 	var slot=0;
-	for( var k in this.ani)
+	for( var k=0; k<this.ani.length; k++)
 	{
-		var i = I - this.ani[k].config.gx * this.ani[k].config.gy;
+		var i = I - this.ani[k+'r'].config.gx * this.ani[k+'r'].config.gy;
 		if( i >= 0)
 		{
 			I = i;
 			slot++;
 		}
+		else
+			break;
 	}
 	this.cur_img = slot + (this.dir==='right' ? 'r':'l');
 	this.ani[this.cur_img].set_frame(I);
@@ -103,6 +108,15 @@ sprite.prototype.set_xy = function(P)
 sprite.prototype.set_z = function(Z)
 {
 	this.sp.set_z(Z);
+}
+
+sprite.prototype.show = function()
+{
+	this.sp.show();
+}
+sprite.prototype.hide = function()
+{
+	this.sp.hide();
 }
 
 return sprite;

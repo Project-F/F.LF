@@ -29,7 +29,7 @@
 	}
  */
 
-define( ['core/F','core/sprite','core/animator','core/states','core/combodec'],function(F,Fsprite,Fanimator,Fstates,Fcombodec)
+define( ['core/util','core/sprite','core/animator','core/states','core/combodec'],function(F,Fsprite,Fanimator,Fstates,Fcombodec)
 {
 
 function character(config)

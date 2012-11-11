@@ -181,10 +181,10 @@ mech.prototype.dynamics= function()
 
 	if( ps.y===0) //only when on the ground
 	{	//viscous friction
-		ps.vx *= GC.friction_factor;
-		ps.vz *= GC.friction_factor;
-		if( ps.vx>-GC.min_speed && ps.vx<GC.min_speed) ps.vx=0; //defined minimum speed
-		if( ps.vz>-GC.min_speed && ps.vz<GC.min_speed) ps.vz=0;
+		ps.vx *= GC.friction.factor;
+		ps.vz *= GC.friction.factor;
+		if( ps.vx!==0 && ps.vx>-GC.min_speed && ps.vx<GC.min_speed) ps.vx=0; //defined minimum speed
+		if( ps.vz!==0 && ps.vz>-GC.min_speed && ps.vz<GC.min_speed) ps.vz=0;
 	}
 
 	if( ps.y<0)
@@ -197,11 +197,6 @@ mech.prototype.project= function()
 	var sp=this.sp;
 	sp.set_xy({x:ps.sx, y:ps.sy+ps.sz}); //projection onto screen
 	sp.set_z(ps.sz+ps.zz);  //z ordering
-}
-
-mech.prototype.disappear= function() //I am removed from scene
-{
-	this.sp.remove();
 }
 
 return mech;

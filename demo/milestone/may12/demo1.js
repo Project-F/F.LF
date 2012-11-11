@@ -1,15 +1,12 @@
 requirejs.config({
 	baseUrl: '../../../../'
 });
-requirejs(['core/F','core/math','core/controller','./character.js'], function(A,B,C,D)
+requirejs(['core/math','core/controller','./character.js'], function(A,B,C)
 {
-	demo1(A,B,C,D);
+	demo1(A,B,C);
 });
 
-function demo1(F,Fmath,Fcontroller,Character) {
-
-//load CSS
-F.css('../../../../core/style.css');
+function demo1(Fmath,Fcontroller,Character) {
 
 //---configurations--------------
 var state_con =
