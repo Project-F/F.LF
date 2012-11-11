@@ -19,10 +19,9 @@ border:1px solid #000;
 }
 .page
 {
-position:absolute;
-left:0px;
-top:0px;
-border:1px solid #000;
-visibility:hidden;
-z-index:1000;
+position: absolute;
+left: 0px;
+top: 0px;
+border: 1px solid #000;
+z-index: 10000;
 }

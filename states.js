@@ -122,7 +122,7 @@ function states (state_def)
 	this.log_size=100;
 	/** @property this.log the JSON object
 	*/
-	this.log=new Array(this.log_size); //log state transitions in form of
+	this.log=[]; //log state transitions in form of
 		//[
 		// {type:'t', from:path, to:path},
 		// {type:'c', event:event, target:state, return:result},
@@ -245,7 +245,8 @@ states.prototype.execute_event=function(event,state,arg)
 		if( !this.log_filter || !this.log_filter(L))
 		{
 			this.log.push(L);
-			this.log.shift();
+			if( this.log.length >= this.log_size)
+				this.log.shift();
 		}
 	}
 
@@ -423,7 +424,8 @@ states.prototype.to=function(target_name)
 			if( !this.log_filter || !this.log_filter(L))
 			{
 				this.log.push(L);
-				this.log.shift();
+				if( this.log.length >= this.log_size)
+					this.log.shift();
 			}
 		}
 	this.chain_event(false,B,999,'entry',true,b, [prev]);

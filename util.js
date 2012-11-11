@@ -9,22 +9,20 @@ define(function(){ //exports a set of functions in an object
 var F={
 /** javascript-----------------
 */
+
 /**	inject a .js file
-	@function
-	@param filename
-	@deprecated deprecated in favour of the use of head.js, now requirejs
+	deprecated in favour of the use of head.js, now requirejs
 */
-js: function (filename)
+/* js: function (filename)
 {
 	var head = document.getElementsByTagName('head')[0];
 	var script = document.createElement('script');
 	script.src = filename;
 	script.type = 'text/javascript';
 	head.appendChild(script);
-},
+}, */
+
 /**	attach a stylesheed to page
-	@function
-	@param filename
 */
 css: function (filename)
 {
@@ -35,6 +33,7 @@ css: function (filename)
 	link.type = 'text/css';
 	head.appendChild(link);
 },
+
 /**	@function
 */
 double_delegate: function (function1, function2)
@@ -47,6 +46,7 @@ double_delegate: function (function1, function2)
 		function2.apply(this,Array.prototype.slice.call(arguments));
 	}
 },
+
 /**	@function
 	@param target
 	@description

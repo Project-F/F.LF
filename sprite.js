@@ -2,7 +2,6 @@
 	@description
 	sprite system
 	display and control sprites on page using <div> tag
-	require: style.css
 
 	basically what set_xy does is the HTML4 way (set left, top)
 	we actually have much room for performance enhancement here
@@ -20,7 +19,7 @@
 	}
  */
 
-define(function() //exports a class `sprite`
+define(['core/css!core/style.css'],function() //exports a class `sprite`
 {
 
 var sp_count=0; //sprite count
@@ -127,10 +126,24 @@ sprite.prototype.remove=function()
 /**	if previously removed, attach back to DOM
 	@function
 */
-sprite.prototype.reattach=function()
+sprite.prototype.attach=function()
 {
 	if( this.removed)
 		config.canvas.appendChild(this.el);
+}
+/**	hide (set display to none) without removing off DOM
+	@function
+*/
+sprite.prototype.hide=function()
+{
+	this.el.style.display='none';
+}
+/**	show (set display to default)
+	@function
+*/
+sprite.prototype.show=function()
+{
+	this.el.style.display='';
 }
 
 return sprite;
