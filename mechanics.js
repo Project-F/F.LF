@@ -5,8 +5,13 @@
 define(['LF/global'],
 function(Global){
 
-function mech(frame,sp)
+function mech(id,frame,sp)
 {
+	if( Global.id[id] && Global.id[id].mass)
+		this.mass=Global.id[id].mass;
+	else
+		this.mass=Global.gameplay.default.machanics.mass;
+
 	this.frame=frame;
 	this.sp=sp;
 }
@@ -188,7 +193,7 @@ mech.prototype.dynamics= function()
 	}
 
 	if( ps.y<0)
-		ps.vy+= GC.gravity;
+		ps.vy+= this.mass * GC.gravity;
 }
 
 mech.prototype.project= function()

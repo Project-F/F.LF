@@ -85,14 +85,16 @@ bandit, weapon0, effect0)
 		controller: null
 	};
 	char_config.controller= control; //choose from `control` and `control_play`
+	char_config.team = 1;
 	var character1 = new Character( char_config, bandit, 0);
 	char_config.controller= control2;
+	char_config.team = 2;
 	var character2 = new Character( char_config, bandit, 0);
-	scene.add( character1); character1.set_pos(400,0,200); character1.team=1;
-	scene.add( character2); character2.set_pos(300,0,200); character2.team=2;
+	character1.set_pos(400,0,200);
+	character2.set_pos(300,0,200);
 
 	var weapon1 = new Lightweapon( {stage:stage,scene:scene}, weapon0, 100);
-	scene.add( weapon1); weapon1.set_pos(100,-200,200);
+	weapon1.set_pos(100,-200,200);
 
 	//---run time-------------------
 	var timer30 = setInterval(frame30,1000/30.5);

@@ -2,9 +2,11 @@
 	config=
 	{
 		controller,
+		match,
 		stage,
 		scene,
-		effects
+		effects,
+		team
 	}
  */
 /*
@@ -22,11 +24,13 @@ function character (config,dat,thisID)
 	/*DC*/this.name=dat.bmp.name;
 	/*DC*/this.uid=-1; //unique id, set by scene
 	/*DC*/this.id=thisID; //character id, specify tactical behavior. accept values from 0~99
-	/*DC*/this.team=0;
+	/*DC*/this.team=config.team;
+	config.scene.add(this);
 
 	var This=this;
 	var GC=Global.gameplay;
 	var scene = config.scene;
+	var match = config.match;
 
 	//---internal state machines------------------------------------
 {
@@ -279,7 +283,7 @@ function character (config,dat,thisID)
 	};
 
 	//the mechanics backend
-	var mech = new Mech(frame,sp);
+	var mech = new Mech(this.id,frame,sp);
 	/*DC*/var ps = mech.create_metric(); //position, velocity, and other physical properties
 
 	/*DC*/var trans = new frame_transistor();
@@ -482,7 +486,7 @@ function character (config,dat,thisID)
 						}
 						else if( IDprop(hold.id,'attackable')) //light weapon attack
 						{
-							trans.frame(Math.random()<0.5? 20:25, 10);
+							trans.frame(match.random()<0.5? 20:25, 10);
 							return ;
 						}
 					}
@@ -504,7 +508,7 @@ function character (config,dat,thisID)
 						return;
 					}
 					//
-					trans.frame(Math.random()<0.5? 60:65, 10);
+					trans.frame(match.random()<0.5? 60:65, 10);
 				break;
 				}
 			break;
@@ -1010,15 +1014,18 @@ function character (config,dat,thisID)
 					if( hit[t].team !== This.team) //only attack other teams
 					if( update_rest(hit[t].uid)) //important! this must be the last if clause
 					{
-						hit[t].hit(ITR,This,{x:ps.x,y:ps.y,z:ps.z}); //hit you!
+						if( hit[t].hit(ITR,This,{x:ps.x,y:ps.y,z:ps.z}))
+						{	//hit you!
 
-						if( frame.N===61 || frame.N===66) //if punch
-							trans.inc_wait(3, 10); // stalls for 3 TU
-						else if( frame.N===72)
-							trans.inc_wait(4, 10);
+							//stalls
+							if( frame.N===72)
+								trans.inc_wait(4, 10);
+							else
+								trans.inc_wait(GC.default.itr.hit_stall, 10);
 
-						//attack one enemy only
-						if( ITR.arest) break;
+							//attack one enemy only
+							if( ITR.arest) break;
+						}
 					}
 				}
 			break;
@@ -1045,13 +1052,15 @@ function character (config,dat,thisID)
 			case 2: //pick weapon
 				for( var t in hit)
 				{
-					if( hit[t].type==='light weapon')
+					if( hit[t].type==='lightweapon')
+					if( hit[t].pick(This))
 					{
 						update_rest(hit[t].uid);
 						trans.frame(115, 10);
 						hold.obj = hit[t];
 						hold.obj.team = This.team;
 						hold.id= hold.obj.id;
+						break;
 					}
 				}
 			break;
@@ -1084,10 +1093,17 @@ function character (config,dat,thisID)
 		if( frame.D.wpoint)
 		{
 			var act = hold.obj.act(frame.D.wpoint, mech.make_point(frame.D.wpoint), ps, itr, This);
-			if( act==='thrown')
+			if( act.thrown)
 			{
 				hold.obj=null;
 				hold.id=0;
+			}
+			if( act.hit!==null && act.hit!==undefined)
+			{
+				//update vrest
+				itr.vrest[ act.hit ] = act.rest;
+				//stalls
+				trans.inc_wait(GC.default.itr.hit_stall, 10);
 			}
 		}
 	}
@@ -1187,12 +1203,13 @@ function character (config,dat,thisID)
 	this.itr=get_itr;
 	this.hit=function(ITR, att, attps) //I am being hit by attacker `att`!
 	{
-		itr.lasthit=0;
+		var accepthit=false;
 
 		if( frame.D.state===10) //being caught
 		{
 			if( catching.caught.cpointhurtable())
 			{
+				itr.lasthit=0; accepthit=true;
 				fall();
 			}
 			if( catching.caught.cpointhurtable()===0 && catching!==att)
@@ -1201,6 +1218,7 @@ function character (config,dat,thisID)
 			}
 			else
 			{
+				itr.lasthit=0; accepthit=true;
 				health.hp -= Math.abs(ITR.injury);
 				if( ITR.injury>0)
 				{
@@ -1213,8 +1231,13 @@ function character (config,dat,thisID)
 				}
 			}
 		}
+		else if( frame.D.state===14)
+		{
+			//lying
+		}
 		else
 		{
+			itr.lasthit=0; accepthit=true;
 			//kind 0 ITR
 			//only type 0 effect
 			effect.dvx = ITR.dvx ? att.dirh()*ITR.dvx:0;
@@ -1264,7 +1287,7 @@ function character (config,dat,thisID)
 				else if (20<fall && fall<=40 && ps.y<0)
 					falldown();
 				else if (20<fall && fall<=40)
-					trans.frame(Math.random()<0.5? 222:224, 20);
+					trans.frame(match.random()<0.5? 222:224, 20);
 				else if (40<fall && fall<=60)
 					trans.frame(226, 20);
 				else if (GC.fall.KO<fall)
@@ -1284,6 +1307,7 @@ function character (config,dat,thisID)
 					drop_weapon(effect.dvx,effect.dvy);
 			}
 		}
+		return accepthit;
 	}
 	this.caught=
 	{

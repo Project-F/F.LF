@@ -6,6 +6,8 @@ define(['LF/global','LF/sprite'],
 function ( Global, Sprite)
 {
 
+/** effect_set is the set of all kinds of effects
+ */
 function effect_set(config,DATA,ID) //DATA and ID are arrays
 {
 	this.efs={};
@@ -16,7 +18,7 @@ function effect_set(config,DATA,ID) //DATA and ID are arrays
 }
 
 /**	@param param
-	@param num effect number, note that object id is 300+num
+	@param id object id of the desired effect
 	@param subnum specify the variants of an effect
  */
 effect_set.prototype.create=function(param,id,subnum)
@@ -32,6 +34,10 @@ effect_set.prototype.TU=function()
 	{
 		this.efs[i].TU();
 	}
+}
+
+effect_set.prototype.trans=function()
+{
 }
 
 /** effects is a single object managing a pool of effect instances

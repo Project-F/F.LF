@@ -10,17 +10,18 @@ function ( Global, Sprite, Mech, Fstates)
  */
 /**	config=
 	{
-		stage, //the div where I append myself into
-		scene, //to interact with other living objects in the scene
+		stage,
+		scene
 	}
  */
 function livingobject(config,dat,id)
 {
 	//must have these for identity
-	this.type='light weapon';
+	this.type='livingobject';
 	this.uid=-1; //unique id, will be assigned by scene
 	this.id=id; //identify special behavior. accept values from 100-149
 	this.team=0;
+	config.scene.add(this); //if you need to interact with other objects in the scene
 
 	var This=this;
 	var GC=Global.gameplay;
@@ -65,7 +66,7 @@ function livingobject(config,dat,id)
 	}
 
 	//create a sprite as specified by dat.bmp and append to stage
-	var sp = new Sprite(dat.bmp, stage);
+	var sp = new Sprite(dat.bmp, config.stage);
 
 	//reasonably to have health
 	var health=
@@ -83,7 +84,7 @@ function livingobject(config,dat,id)
 	};
 
 	//the mechanics backend
-	var mech = new Mech(frame,sp);
+	var mech = new Mech(id,frame,sp);
 	var ps = mech.create_metric(); //position, velocity, and other physical properties
 
 	//you will need a simple frame transistor

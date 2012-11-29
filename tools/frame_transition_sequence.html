@@ -17,10 +17,9 @@ td {
 requirejs.config({
 	baseUrl: '../../'
 });
-requirejs(['core/F','LF/sprite','LF/data/bandit'],
-function(F,sprite,bandit)
+requirejs(['LF/sprite','LF/data/bandit'],
+function(sprite,bandit)
 {
-	F.css('../../core/style.css'); //load CSS
 	define();
 	main(document.getElementsByTagName('body')[0]);
 

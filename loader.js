@@ -23,7 +23,6 @@ define(function(){
 
 	var gamedata={};
 	var written=false;
-	var util;
 
 	return {
 
@@ -31,16 +30,12 @@ define(function(){
 		{
 			if( config.isBuild)
 			{
-				require( ['core/util'], function(U)
-				{
-					util=U;
-				});
+				load();
+				return;
 			}
 
 			require( [name], function (datalist)
 			{
-				console.log('loader-build: datalist: '+datalist);
-
 				var datafile_depend=[];
 
 				for( var i=0; i<datalist.object.length; i++)
@@ -77,7 +72,7 @@ define(function(){
 			{
 				console.log('loader-build: write');
 				written=true;
-				var dump=util.to_text(gamedata,'');
+				var dump='gamedatadump!';
 				write('define("gamedatadump", {'+dump+'});\n');
 			}
 		}

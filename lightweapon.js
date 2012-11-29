@@ -1,4 +1,4 @@
-/** light weapons
+/** light and heavy weapons
  */
 
 define(['LF/global','LF/sprite','LF/mechanics','core/util','core/states'],
@@ -14,10 +14,11 @@ function ( Global, Sprite, Mech, Futil, Fstates)
 function lightweapon(config,dat,id)
 {
 	//must have these for identity
-	this.type='light weapon';
+	this.type='lightweapon';
 	this.uid=-1; //unique id, will be assigned by scene
 	this.id=id; //identify special behavior. accept values from 100-149
 	this.team=0;
+	config.scene.add(this);
 
 	var This=this;
 	var GC=Global.gameplay;
@@ -62,12 +63,12 @@ function lightweapon(config,dat,id)
 	}
 
 	//create a sprite as specified by dat.bmp and append to stage
-	var sp = new Sprite(dat.bmp, stage);
+	var sp = new Sprite(dat.bmp, config.stage);
 
 	//reasonably to have health
 	var health=
 	{
-		hp: 100
+		hp: dat.bmp.weapon_hp
 	};
 
 	//for frame transition
@@ -89,8 +90,10 @@ function lightweapon(config,dat,id)
 		vrest: 0
 	};
 
+	var holder=null; //the character holding me
+
 	//the mechanics backend
-	var mech = new Mech(frame,sp);
+	var mech = new Mech(id,frame,sp);
 	var ps = mech.create_metric(); //position, velocity, and other physical properties
 
 	//you will need a simple frame transistor
@@ -130,33 +133,36 @@ function lightweapon(config,dat,id)
 		trans.set_wait(frame.D.wait);
 		trans.set_next(frame.D.next);
 
-		if( frame.N === 64)
+		if( frame.N === 64) //on ground
 			This.team=0; //loses team
 	}
 
 	//generic update done at every TU (30fps)
 	function state_update()
 	{
+		if( This.id===101)
+			var x;
 		if( effect.freeze===0)
 		{
 			interaction();
 
-			if( frame.D.state===1001)
-			{	//I am passive! so I dont need to care states of myself
-			}
-			else
-			{	//dynamics: position, friction, gravity
-				mech.dynamics();
-			}
-			if( frame.D.state===1002)
-			{	//being thrown
-				ps.vy -= 1.1; //compensate some gravity
+			switch( frame.D.state)
+			{
+				case 1001:
+					//I am passive! so I dont need to care states of myself
+				break;
+
+				default:
+					//dynamics: position, friction, gravity
+					mech.dynamics();
+				break;
 			}
 
 			if( ps.y===0 && ps.vy>0) //fell onto ground
 			{
 				ps.vy=0; //set to zero
 				trans.frame(70); //go to frame 70
+				health.hp -= dat.bmp.weapon_drop_hurt;
 			}
 		}
 		else
@@ -181,11 +187,13 @@ function lightweapon(config,dat,id)
 				var hit= config.scene.query(vol, This, {body:0, not_team:This.team});
 				for( var k in hit)
 				{	//for each being hit
-					hit[k].hit(ITR[j],This,{x:ps.x,y:ps.y,z:ps.z}); //hit you!
-					ps.vx = dirh() * GC.weapon.hit.vx;
-					ps.vy = GC.weapon.hit.vy;
-					effect.freeze = 2;
-					itr.vrest = GC.default.weapon.vrest;
+					if( hit[k].hit(ITR[j],This,{x:ps.x,y:ps.y,z:ps.z}))
+					{	//hit you!
+						ps.vx = dirh() * GC.weapon.hit.vx;
+						ps.vy = GC.weapon.hit.vy;
+						effect.freeze = 2;
+						itr.vrest = GC.default.weapon.vrest;
+					}
 				}
 			}
 			//kind 5 is handled in `act()`
@@ -217,19 +225,23 @@ function lightweapon(config,dat,id)
 	this.dirh=dirh;
 	this.hit=function(ITR, att, attps)
 	{
-		ITR; //the itr object
-		att; //the attacker!
-		attps; //position of attacker
-		if( (att.dirh()>0)!==(ps.vx>0))
-			ps.vx *= GC.weapon_reverse_factor_vx;
-		ps.vy *= GC.weapon.reverse.factor.vy;
-		ps.vz *= GC.weapon.reverse.factor.vz;
-		this.team = att.team; //change team!
+		if( frame.D.state===1002) //if in air
+		{
+			ITR; //the itr object
+			att; //the attacker!
+			attps; //position of attacker
+			if( (att.dirh()>0)!==(ps.vx>0))
+				ps.vx *= GC.weapon.reverse.factor.vx;
+			ps.vy *= GC.weapon.reverse.factor.vy;
+			ps.vz *= GC.weapon.reverse.factor.vz;
+			this.team = att.team; //change team!
+			return true;
+		}
 	}
 	this.act=function(wpoint,holdpoint,attps,attitr,att) //I act according to the character who is holding me
 	{
 		var fD = frame.D;
-		var thrown = false;
+		var result={};
 
 		trans.frame(wpoint.weaponact);
 		trans.trans();
@@ -248,7 +260,8 @@ function lightweapon(config,dat,id)
 				ps.zz=0;
 				trans.frame(40);
 				trans.trans();
-				thrown=true;
+				holder=null;
+				result.thrown=true;
 			}
 
 			if( wpoint.cover && wpoint.cover===1)
@@ -256,7 +269,7 @@ function lightweapon(config,dat,id)
 			else
 				ps.zz = GC.default.wpoint.cover;
 
-			if( !thrown)
+			if( !result.thrown)
 			{
 				switch_dir_fun(attps.dir);
 				ps.sz = ps.z = attps.z;
@@ -279,30 +292,47 @@ function lightweapon(config,dat,id)
 						for( var k in hit)
 						{	//for each being hit
 							if( !attitr.vrest[ hit[k].uid ])
-							{
+							{	//if vrest allows
+
 								var citr;
 								if( dat.weapon_strength_list[wpoint.attacking])
 									citr = dat.weapon_strength_list[wpoint.attacking];
 								else
 									citr = ITR[j];
-								hit[k].hit(citr,att,{x:attps.x,y:attps.y,z:attps.z}); //hit you!
-								attitr.vrest[ hit[k].uid ] = GC.default.weapon.vrest;
-								itr.vrest = GC.default.weapon.vrest;
+
+								if( hit[k].hit(citr,att,{x:attps.x,y:attps.y,z:attps.z}))
+								{	//hit you!
+									itr.vrest = citr.vrest;
+									result.hit = hit[k].uid;
+									result.rest = citr.vrest;
+								}
 							}
 						}
 					}
 				}
 			}
 		}
-		if (thrown) return 'thrown';
+		return result;
 	}
+
 	this.drop=function(dvx,dvy)
 	{
 		This.team=0;
+		holder=null;
 		if( dvx) ps.vx=dvx * 0.5;
 		if( dvy) ps.vy=dvy * 0.2;
 		ps.zz=0;
 		trans.frame(999);
+	}
+
+	this.pick=function(att)
+	{
+		if( !holder)
+		{
+			holder=att;
+			return true;
+		}
+		return false;
 	}
 }
 
