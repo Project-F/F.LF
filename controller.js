@@ -2,6 +2,7 @@
 	@description
 	keyboard controller system
 	maintains a table of key states
+	see http://project--f.blogspot.hk/2012/11/keyboard-controller.html for explainations
  */
 
 define(function() //exports a class `controller`
@@ -186,6 +187,7 @@ controller.keyname_to_keycode=function(A)
 				case '.': code=190; break;
 				case '/': code=191; break;
 				case ' ': code=32; break;
+				case 'ctrl': code=17; break;
 			}
 		}
 	}

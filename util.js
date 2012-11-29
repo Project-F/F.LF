@@ -190,7 +190,42 @@ to_text: function (
 	}
 	str+= sep+pretext+ '}';
 	return str;
+},
+
+/** extract properties from an array of object
+	say we have
+	[ {x:x1,y:y1}, {x:x2,y:y2}, {x:x3,y:y3},,,]
+	we want to extract it into
+	{
+	  x:
+		[ x1, x2, x3,,, ],
+	  y:
+		[ y1, y2, y3,,, ]
+	}
+ */
+/** @function
+	@param array
+	@param prop property name OR an array of property name
+ */
+extract_array: function(array, prop)
+{
+	var out={};
+	prop = F.make_array(prop);
+
+	for( var j in prop)
+		out[prop[j]] = [];
+
+	for( var i=0; i<array.length; i++)
+	{
+		for( var k=0; k<prop.length; k++)
+		{
+			var P=prop[k];
+			out[P].push(array[i][P]);
+		}
+	}
+	return out;
 }
+
 };
 
 return F;

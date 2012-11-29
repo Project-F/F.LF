@@ -13,7 +13,7 @@
 	};
 	combo = [
 		{
-			name: 'blast ball',	//combo name
+			name: 'blast',	//combo name
 			seq:  ['def','right','att'], //array of key sequence
 			interrupt: true, //[optional] if true, will prevent other combo extending the current combo
 		},,,
@@ -84,7 +84,7 @@ function combodec (controller, config, combo)
 				var detected=true;
 				for (var j=seq.length-C[i].seq.length, k=0; j<seq.length; j++,k++)
 				{
-					if( C[i].seq[k] != seq[j])
+					if( C[i].seq[k] !== seq[j])
 					{
 						detected=false;
 						break;
