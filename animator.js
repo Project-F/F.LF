@@ -32,6 +32,7 @@ function animator (config)
 	this.config=config;
 	this.target=config.tar;
 	this.I=0;//current frame
+	this.horimirror=false;//horizontal mirror
 	if( !config.borderright)  config.borderright=0;
 	if( !config.borderbottom) config.borderbottom=0;
 	if( !config.borderleft)  config.borderleft=0;
@@ -74,15 +75,35 @@ animator.prototype.set_frame=function(i)
 	this.I=i;
 	this.show_frame(i);
 }
+/**	@function
+	@description
+	set the horizontal mirror mode
+	@param val true: mirrored, false: normal
+*/
+animator.prototype.hmirror=function(val)
+{
+	this.horimirror = val;
+}
 animator.prototype.show_frame=function(i)
 {
 	var c=this.config;
+	var left,top;
+	if( !this.horimirror)
+	{
+		left= -((i%c.gx)*c.w+c.x+c.borderleft);
+		top = -((Math.floor(i/c.gx))*c.h+c.y+c.bordertop);
+	}
+	else
+	{
+		left= -((c.gx-1)*c.w-(i%c.gx)*c.w+c.borderright);
+		top = -((Math.floor(i/c.gx))*c.h+c.y+c.bordertop);
+	}
 	this.target.set_wh({
 		x:  c.w-c.borderleft-c.borderright,
 		y:  c.h-c.bordertop-c.borderbottom
 	});
-	this.target.img[this.target.cur_img].style.left= -((i%c.gx)*c.w+c.x+c.borderleft) +'px';
-	this.target.img[this.target.cur_img].style.top = -((Math.floor(i/c.gx))*c.h+c.y+c.bordertop) +'px';
+	this.target.img[this.target.cur_img].style.left= left+'px';
+	this.target.img[this.target.cur_img].style.top = top+'px';
 	//may also need to set_xy to compensate the border
 }
 animator.prototype.get_at=function(i) //get the content of the graph at frame i

@@ -10,7 +10,7 @@
 	@example
 	config=
 	{
-		canvas: canvas,   //canvas *object*
+		canvas: canvas,   //canvas *DOM node*
 		wh: {x:100,y:100},// width and height
 		img:              //[optional] image list, can call `add_img()` later
 		{
