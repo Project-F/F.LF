@@ -12,7 +12,7 @@ function sprite (bmp, parent)
 	var h = this.h = bmp.file[0].h+1;
 	var ani = this.ani = {length:0};
 	this.dir = 'right';
-	this.cur_img = '0r';
+	this.cur_img = 0;
 
 	var sp_con=
 	{
@@ -54,7 +54,7 @@ function sprite (bmp, parent)
 			borderright: 1,
 			borderbottom: 1
 		};
-		var ani_mirror_con=
+		/* var ani_mirror_con=
 		{
 			x:(bmp.file[i].row-1)*(bmp.file[i].w+1),  y:0,
 			w:-bmp.file[i].w-1, h:bmp.file[i].h+1,
@@ -62,11 +62,9 @@ function sprite (bmp, parent)
 			tar:sp,
 			borderleft: 1,
 			borderbottom: 1
-		};
-		ani.length++; //watch out! ani.length means how many _pairs_
-		ani[i+'r'] = new Fanimator(ani_con);
-		if( sp.img[i+'l']); //some sprites do not need mirror
-			ani[i+'l'] = new Fanimator(ani_mirror_con);
+		}; */
+		ani.length++;
+		ani[i] = new Fanimator(ani_con);
 	}
 }
 
@@ -75,7 +73,7 @@ sprite.prototype.show_pic = function(I)
 	var slot=0;
 	for( var k=0; k<this.ani.length; k++)
 	{
-		var i = I - this.ani[k+'r'].config.gx * this.ani[k+'r'].config.gy;
+		var i = I - this.ani[k].config.gx * this.ani[k].config.gy;
 		if( i >= 0)
 		{
 			I = i;
@@ -84,11 +82,11 @@ sprite.prototype.show_pic = function(I)
 		else
 			break;
 	}
-	this.cur_img = slot + (this.dir==='right' ? 'r':'l');
+	this.cur_img = slot;
+	this.sp.switch_img(this.cur_img + (this.dir==='right' ? 'r':'l'));
+	this.ani[this.cur_img].hmirror(this.dir==='left');
 	this.ani[this.cur_img].set_frame(I);
-	this.sp.switch_img(this.cur_img);
 	this.w = this.ani[this.cur_img].config.w;
-	this.w = this.w > 0 ? this.w:-this.w;
 	this.h = this.ani[this.cur_img].config.h;
 }
 
@@ -96,8 +94,8 @@ sprite.prototype.switch_lr = function(dir) //switch to `dir`
 {
 	var I = this.ani[this.cur_img].I;
 	this.dir=dir;
-	this.cur_img = this.cur_img.slice(0,-1) + (this.dir==='right' ? 'r':'l');
-	this.sp.switch_img(this.cur_img);
+	this.sp.switch_img(this.cur_img + (this.dir==='right' ? 'r':'l'));
+	this.ani[this.cur_img].hmirror(this.dir==='left');
 	this.ani[this.cur_img].set_frame(I);
 }
 
