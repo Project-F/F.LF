@@ -5,7 +5,7 @@
 	{
 		object:
 		{
-			'0': //type 0
+			'character':
 			[ //array
 				{ id, type, data},,,
 			],,,
@@ -19,62 +19,39 @@
 		error if you try to load more than once.
  */
 
-define(function(){
-
-	var gamedata={};
-	var written=false;
+define(['loader_depend'],function(datalist){
 
 	return {
-
 		load: function (name, require, load, config)
 		{
-			if( config.isBuild)
+			var datafile_depend=[];
+
+			for( var i=0; i<datalist.object.length; i++)
 			{
-				load();
-				return;
+				datafile_depend.push(datalist.object[i].file);
 			}
 
-			require( [name], function (datalist)
+			require( datafile_depend, function ()
 			{
-				var datafile_depend=[];
-
+				var gamedata={};
+				gamedata.object={};
 				for( var i=0; i<datalist.object.length; i++)
 				{
-					datafile_depend.push(datalist.object[i].file);
+					var O = datalist.object[i];
+					var obj=
+					{
+						id: O.id,
+						type: O.type,
+						data: arguments[i]
+					};
+
+					if(!gamedata.object[O.type])
+						gamedata.object[O.type]=[];
+					gamedata.object[O.type].push(obj);
 				}
 
-				require( datafile_depend, function ()
-				{
-					gamedata.object={};
-					for( var i=0; i<datalist.object.length; i++)
-					{
-						var O = datalist.object[i];
-						var obj=
-						{
-							id: O.id,
-							type: O.type,
-							data: arguments[i]
-						};
-
-						if(!gamedata.object[O.type])
-							gamedata.object[O.type]=[];
-						gamedata.object[O.type].push(obj);
-					}
-
-					load(gamedata);
-				});
+				load(gamedata);
 			});
-		},
-
-		write: function (pluginName, moduleName, write, config)
-		{
-			if( !written)
-			{
-				console.log('loader-build: write');
-				written=true;
-				var dump='gamedatadump!';
-				write('define("gamedatadump", {'+dump+'});\n');
-			}
 		}
 	}
 });

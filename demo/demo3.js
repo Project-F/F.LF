@@ -2,12 +2,13 @@
 requirejs.config({
 	baseUrl: '../../',
 	paths: {
+		'loader_depend': 'LF/data/data',
 		'data': 'LF/data'
 	}
 });
 
 requirejs(['core/controller',
-'LF/loader!data/data','LF/match'],
+'LF/loader!data','LF/match'],
 function(Fcontroller,
 gamedata,Match){
 

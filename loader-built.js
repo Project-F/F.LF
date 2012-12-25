@@ -9,11 +9,14 @@ define(function() {
 	var gamedata;
 
 	return {
-		load: function (name, require, load, config) {
+		load: function (name, require, load, config) {		
+			if( config.isBuild)
+				console.log('why am I here?');
+				
 			if( !loaded)
 			{
 				loaded=true;
-				require(['gamedatadump'], function(data){
+				require(['loader_gamedata'], function(data){
 					gamedata=data;
 					load(gamedata);
 				});
@@ -21,6 +24,6 @@ define(function() {
 			else
 				load(gamedata);
 		},
-		pluginBuilder: './loader'
+		pluginBuilder: './loader-build'
 	}
 });
