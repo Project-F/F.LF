@@ -3,9 +3,9 @@
 
 define(function() {
 
-	fs = require.nodeRequire('fs');
+	var fs = require.nodeRequire('fs');
 
-	loadfile = function (url, callback) {
+	function loadfile (url, callback) {
 		var file = fs.readFileSync(url, 'utf8');
 		//Remove BOM (Byte Mark Order) from utf8 files if it is there.
 		if (file.indexOf('\uFEFF') === 0) {
@@ -14,7 +14,7 @@ define(function() {
 		callback(file);
 	};
 
-	strip= function (content) {
+	function strip (content) {
 		return content.replace(/[\n]/g," ")
 					.replace(/[\t]/g," ");
 	}
@@ -27,7 +27,7 @@ define(function() {
 		load: function (name, require, load, config) {
 			//console.log('css-build: load: '+name);
 			load(true);
-			loadfile(name,function(F){
+			loadfile(config.baseUrl+name,function(F){
 				filecontent+=strip(F);
 			});
 		},
