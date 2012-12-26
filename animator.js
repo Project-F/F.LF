@@ -10,7 +10,7 @@ define(function() //exports a class `animator`
 		x:0,y:0,     //top left margin of the frames
 		w:100, h:100,//width, height of a frame
 		gx:4,gy:4,   //define a gx*gy grid of frames
-		tar:         //target F_sprite
+		tar:         //target F.sprite
 		ani:         //animation sequence:
 		   null,     //if undefined or null, loop through top left to lower right, row by row
 		   [0,1,2,1,0],//use custom frame sequence
@@ -57,8 +57,8 @@ animator.prototype.next_frame=function()
 	else
 	{
 		var fi=c.ani[this.I];
-		if ( this.I==c.ani.length)
-		{
+		if ( this.I>=c.ani.length || this.I<0)
+		{	//repeat sequence
 			this.I=0; fi=c.ani[0];
 		}
 		this.show_frame(fi);

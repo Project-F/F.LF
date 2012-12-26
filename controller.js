@@ -187,8 +187,18 @@ controller.keyname_to_keycode=function(A)
 				case '.': code=190; break;
 				case '/': code=191; break;
 				case ' ': code=32; break;
-				case 'ctrl': code=17; break;
 			}
+		}
+	}
+	else
+	{
+		switch(A)
+		{
+			case 'ctrl': code=17; break;
+			case 'up': code=38; break; //arrow keys
+			case 'down': code=40; break;
+			case 'left': code=37; break;
+			case 'right': code=39; break;
 		}
 	}
 	return code;
