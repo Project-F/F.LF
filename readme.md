@@ -52,8 +52,9 @@ and point in rectangle test
 ### math
 - some useful vector operations
 
-### in general
-- [requirejs](http://requirejs.org/) compatible
+### web development practices
+- use [requirejs](http://requirejs.org/) for dependency management
+- compile-time optimization
 
 ## License
 Generally has complete freedom except for profit- making. For exact terms see [license](http://project--f.blogspot.hk/2012/05/license.html).
