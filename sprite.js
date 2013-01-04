@@ -19,7 +19,7 @@
 	}
  */
 
-define(['core/css!core/style.css'],function() //exports a class `sprite`
+define(['core/css!core/style.css','core/support'],function(css,support) //exports a class `sprite`
 {
 
 var sp_count=0; //sprite count
@@ -36,7 +36,7 @@ function sprite (config)
 
 	this.el = document.createElement('div');
 	this.el.setAttribute('class','F_sprite');
-	this.el.id='sp'+this.ID;
+	//this.el.id='sp'+this.ID;
 	config.canvas.appendChild(this.el);
 
 	this.img={};
@@ -56,13 +56,27 @@ sprite.prototype.set_wh=function(P)
 	this.el.style.width=P.x+'px';
 	this.el.style.height=P.y+'px';
 }
-/**	@function
-*/
-sprite.prototype.set_xy=function(P)
+
+if( support.css2dtransform)
 {
-	this.el.style.left=P.x+'px';
-	this.el.style.top=P.y+'px';
+	/**	@function
+	*/
+	sprite.prototype.set_xy=function(P)
+	{
+		this.el.style[support.css2dtransform]= 'translate('+P.x+'px,'+P.y+'px)';
+	}
 }
+else
+{
+	/**	@function
+	*/
+	sprite.prototype.set_xy=function(P)
+	{
+		this.el.style.left=P.x+'px';
+		this.el.style.top=P.y+'px';
+	}
+}
+
 /**	set the css zIndex. Great! we do not need to do z-sorting manually
 	@function
 */
@@ -79,6 +93,12 @@ sprite.prototype.add_img=function(imgpath,name)
 	var im = document.createElement('img');
 	im.setAttribute('class','F_sprite_img');
 	im.src=imgpath;
+	im.onload=function()
+	{
+		if( !this.naturalWidth) this.naturalWidth=this.width;
+		if( !this.naturalHeight) this.naturalHeight=this.height;
+		this.onload=null;
+	}
 	this.el.appendChild(im);
 
 	this.img[name]=im;
@@ -90,7 +110,7 @@ sprite.prototype.add_img=function(imgpath,name)
 */
 sprite.prototype.switch_img=function(name)
 {
-	var left,top;
+	var left,top; //store the left, top of the current displayed image
 	for ( var I in this.img)
 	{
 		if( this.img[I].style.visibility=='visible')
@@ -115,6 +135,14 @@ sprite.prototype.switch_img=function(name)
 	}
 	this.cur_img=name;
 }
+/**	@function
+*/
+sprite.prototype.set_img_xy=function(P)
+{
+	this.img[this.cur_img].style.left= P.x+'px';
+	this.img[this.cur_img].style.top= P.y+'px';
+}
+
 /**	remove from DOM
 	@function
 */

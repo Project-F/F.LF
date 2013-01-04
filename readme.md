@@ -10,6 +10,7 @@ F.core is not an engine. F.core is a set of simple systems that can be used to b
 ### sprite
 - display and control sprites on page using `<div>` and `<img>` tag
 - **not** using canvas for sprite animations
+- support CSS 2d transform
 
 ### animator
 - animate sprites

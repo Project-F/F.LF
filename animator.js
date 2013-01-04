@@ -88,22 +88,15 @@ animator.prototype.show_frame=function(i)
 {
 	var c=this.config;
 	var left,top;
-	if( !this.horimirror)
-	{
-		left= -((i%c.gx)*c.w+c.x+c.borderleft);
-		top = -((Math.floor(i/c.gx))*c.h+c.y+c.bordertop);
-	}
-	else
-	{
-		left= -((c.gx-1)*c.w-(i%c.gx)*c.w+c.borderright);
-		top = -((Math.floor(i/c.gx))*c.h+c.y+c.bordertop);
-	}
+	left= -((i%c.gx)*c.w+c.x+c.borderleft);
+	top = -((Math.floor(i/c.gx))*c.h+c.y+c.bordertop);
+	if( this.horimirror)
+		left= -this.target.img[this.target.cur_img].naturalWidth-left+c.w;
 	this.target.set_wh({
-		x:  c.w-c.borderleft-c.borderright,
-		y:  c.h-c.bordertop-c.borderbottom
+		x: c.w-c.borderleft-c.borderright,
+		y: c.h-c.bordertop-c.borderbottom
 	});
-	this.target.img[this.target.cur_img].style.left= left+'px';
-	this.target.img[this.target.cur_img].style.top = top+'px';
+	this.target.set_img_xy({x:left,y:top});
 	//may also need to set_xy to compensate the border
 }
 animator.prototype.get_at=function(i) //get the content of the graph at frame i
