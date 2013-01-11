@@ -27,7 +27,7 @@ F.core is not an engine. F.core is a set of conceptual and functional systems th
 - listen key events and detect combo from a controller
 - maintains a clean sequence of pressed keys and fire events when combo is detected
 - King of Fighter style combos
-- eliminating repeated keys
+- eliminating auto-repeated keys
 
 ### controller-recorder
 - record and playback activity of a controller
