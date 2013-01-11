@@ -20,12 +20,12 @@ F.LF is still in mid-stage development. Check out the latest milestone at [f-lf2
 
 ## Install
 F.LF is built upon [F.core](https://github.com/tyt2y3/F.core). F.LF contains purely source code. Materials from LF2 is converted and contained in [LFrelease](https://github.com/tyt2y3/LFrelease). Place all the repositories side-by-side.
-> ```
-> F
-> |---core
-> |---LF
-> |---LFrelease
-> ```
+```
+ F
+ |---core
+ |---LF
+ |---LFrelease
+```
 
 ## License
 Generally have complete freedom except for profit- making. For exact terms see [license](http://project--f.blogspot.hk/2012/05/license.html).
