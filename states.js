@@ -80,14 +80,19 @@ define(['core/util'],function(F) //exports a class `states`
 
 var state_list=[];
 /**	@constructor
+	@param state_def state machine definition
+	@param init_obj initializer object, content will be copied shallowly to `this`
 */
-function states (state_def)
+function states (state_def,init_obj)
 {
 	//[--constructor
 	//	no private member
 	/** @property this.state can be altered dynamically
 	*/
 	this.state=state_def;
+	if( init_obj)
+		for( var Q in init_obj)
+			this[Q] = init_obj[Q];
 
 	this.state.name='root'; //build an accessible tree
 	this.propagate_down(999,function(state,name,superstate){

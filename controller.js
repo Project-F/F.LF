@@ -52,15 +52,6 @@ var master_controller = (function()
 	{
 		up:'h', down:'n', left:'b', 'control name':'control key',,,
 	}
-	@description
-	on the other hand, there can be other controllers with compatible definition and behavior,
-	(e.g. AI controller, network player controller, record playback controller)
-	-has the member variables `state`, `config`, `child`, `sync`
-	-behavior: call the `key` method of every member of `child` when keys arrive
-	-has the method `clear_states`, `fetch` and `flush`
-	-behavior: if `sync` is true, the controller should buffer key inputs,
-	           and only dispatch to child when `fetch` is called,
-	           and flush the buffer when `flush` is called
  */
 function controller (config)
 {
@@ -151,6 +142,17 @@ function controller (config)
 		this.keycode[I] = controller.keyname_to_keycode(this.config[I]);
 	}
 	//--]
+
+	/** @description
+	on the other hand, there can be other controllers with compatible definition and behavior,
+	(e.g. AI controller, network player controller, record playback controller)
+	-has the member variables `state`, `config`, `child`, `sync`
+	-behavior: call the `key` method of every member of `child` when keys arrive
+	-has the method `clear_states`, `fetch` and `flush`
+	-behavior: if `sync` is true, the controller should buffer key inputs,
+	           and only dispatch to child when `fetch` is called,
+	           and flush the buffer when `flush` is called
+	*/
 }
 
 /**	convert keyname to keycode

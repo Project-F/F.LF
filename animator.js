@@ -91,7 +91,7 @@ animator.prototype.show_frame=function(i)
 	left= -((i%c.gx)*c.w+c.x+c.borderleft);
 	top = -((Math.floor(i/c.gx))*c.h+c.y+c.bordertop);
 	if( this.horimirror)
-		left= -this.target.img[this.target.cur_img].naturalWidth-left+c.w;
+		left= -this.target.img[this.target.cur_img].naturalWidth-left+c.w-c.borderleft-c.borderright;
 	this.target.set_wh({
 		x: c.w-c.borderleft-c.borderright,
 		y: c.h-c.bordertop-c.borderbottom

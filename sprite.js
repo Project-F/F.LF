@@ -2,20 +2,22 @@
 	@description
 	sprite system
 	display and control sprites on page using <div> tag
+		support style left/top and CSS transform
 
-	basically what set_xy does is the HTML4 way (set left, top)
-	we actually have much room for performance enhancement here
-	-use CSS transition (the HTML5 way) instead
-	http://paulirish.com/2011/dom-html5-css3-performance/
 	@example
 	config=
 	{
-		canvas: canvas,   //canvas *DOM node*
+		canvas: canvas,   // canvas *DOM node*
 		wh: {x:100,y:100},// width and height
-		img:              //[optional] image list, can call `add_img()` later
+		img:              // image list
 		{
 			'tag name':'image path',,,  //the first image is visible
-		},
+		}
+	}
+	@example
+	masterconfig
+	{
+		baseUrl: '../sprites' //base url prepended to all image paths
 	}
  */
 
@@ -48,6 +50,24 @@ function sprite (config)
 	{
 		this.add_img(config.img[I], I);
 	}
+
+	if( support.css2dtransform)
+	{
+		this.el.style.left=0+'px';
+		this.el.style.top=0+'px';
+	}
+}
+/**	@function master config
+	getter: call with no parameter
+	setter: call with 1 config object as parameter
+*/
+sprite.prototype._config = {};
+sprite.prototype.config=function(masterconfig)
+{
+	if( masterconfig)
+		sprite.prototype._config = masterconfig;
+	else
+		return sprite.prototype._config;
 }
 /**	@function
 */
@@ -63,7 +83,7 @@ if( support.css2dtransform)
 	*/
 	sprite.prototype.set_xy=function(P)
 	{
-		this.el.style[support.css2dtransform]= 'translate('+P.x+'px,'+P.y+'px)';
+		this.el.style[support.css2dtransform]= 'translate('+P.x+'px,'+P.y+'px) ';
 	}
 }
 else
@@ -77,7 +97,7 @@ else
 	}
 }
 
-/**	set the css zIndex. Great! we do not need to do z-sorting manually
+/**	set the css zIndex.
 	@function
 */
 sprite.prototype.set_z=function(z)
@@ -88,11 +108,15 @@ sprite.prototype.set_z=function(z)
 	@param imgpath
 	@param name
 */
-sprite.prototype.add_img=function(imgpath,name)
+sprite.prototype.add_img=function(imgpath,Name)
 {
+	var pre='';
+	if( sprite.prototype._config.baseUrl)
+	pre=sprite.prototype._config.baseUrl;
+
 	var im = document.createElement('img');
 	im.setAttribute('class','F_sprite_img');
-	im.src=imgpath;
+	im.src = pre+imgpath;
 	im.onload=function()
 	{
 		if( !this.naturalWidth) this.naturalWidth=this.width;
@@ -101,8 +125,8 @@ sprite.prototype.add_img=function(imgpath,name)
 	}
 	this.el.appendChild(im);
 
-	this.img[name]=im;
-	this.switch_img(name);
+	this.img[Name]=im;
+	this.switch_img(Name);
 	return im;
 }
 /**	@function
