@@ -7,6 +7,7 @@ function ( Global, Sprite)
 {
 
 /** effect_set is the set of all kinds of effects
+	this is a big manager. there is only 1 instance of effect_set in a match.
  */
 function effect_set(config,DATA,ID) //DATA and ID are arrays
 {
@@ -19,7 +20,7 @@ function effect_set(config,DATA,ID) //DATA and ID are arrays
 
 /**	@param param
 	@param id object id of the desired effect
-	@param subnum specify the variants of an effect
+	@param subnum specify the variant of an effect
  */
 effect_set.prototype.create=function(param,id,subnum)
 {
@@ -36,7 +37,7 @@ effect_set.prototype.TU=function()
 	}
 }
 
-effect_set.prototype.trans=function()
+effect_set.prototype.transit=function()
 {
 }
 

@@ -47,6 +47,7 @@ factory,Scene,Random)
 		this.randomseed = this.new_randomseed();
 		this.control = this.create_controller(init.control);
 		this.lightweapon=[];
+		this.heavyweapon=[];
 		this.drop_weapons();
 		this.create_timer();
 	}
@@ -82,7 +83,7 @@ factory,Scene,Random)
 
 	match.prototype.TU_trans=function()
 	{
-		this.for_all('trans');
+		this.for_all('transit');
 		this.for_all('TU');
 	}
 
@@ -90,6 +91,7 @@ factory,Scene,Random)
 	{
 		for( var i in this.character) this.character[i][oper]();
 		for( var i in this.lightweapon) this.lightweapon[i][oper]();
+		for( var i in this.heavyweapon) this.heavyweapon[i][oper]();
 		this.effects[oper]();
 	}
 
@@ -138,7 +140,7 @@ factory,Scene,Random)
 	{
 		var effects_config = config ? config :
 		{	//default effects config
-			init_size:10
+			init_size: 20
 		};
 		effects_config.match = this;
 		effects_config.stage = this.stage;
@@ -153,27 +155,30 @@ factory,Scene,Random)
 
 	match.prototype.drop_weapons=function()
 	{
-		this.create_weapon( 100, {x:100,y:-200,z:200});
-		this.create_weapon( 101, {x:500,y:-200,z:200});
+		this.create_weapon( 100, {x:100,y:-800,z:200});
+		this.create_weapon( 101, {x:500,y:-800,z:200});
+		this.create_weapon( 150, {x:400,y:-800,z:250});
 	}
 
 	match.prototype.create_weapon=function(id,pos)
 	{
+		var weapon= id<150 ? 'lightweapon':'heavyweapon';
 		var wea_config=
 		{
 			match: this,
 			stage: this.stage,
-			scene: this.scene
+			scene: this.scene,
+			effects: this.effects
 		};
 		var res=Futil.arr_search(
-			this.data.object.lightweapon,
+			this.data.object[weapon],
 			function (X) { return X.id===id;}
 		);
-		var object = this.data.object.lightweapon[res];
-		var wea = new factory.lightweapon( wea_config, object.data, object.id);
+		var object = this.data.object[weapon][res];
+		var wea = new factory[weapon]( wea_config, object.data, object.id);
 		wea.set_pos(pos.x,pos.y,pos.z);
 
-		this.lightweapon.push(wea);
+		this[weapon].push(wea);
 	}
 
 	match.prototype.periodic_event=function(event)

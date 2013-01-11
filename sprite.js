@@ -32,7 +32,7 @@ function sprite (bmp, parent)
 				imgpath = bmp.file[i][j];
 		}
 		if( imgpath==='')
-			alert( 'cannot find img path in data:\n'+JSON.stringify(bmp.file[i]) );
+			console.log( 'cannot find img path in data:\n'+JSON.stringify(bmp.file[i]) );
 		sp.add_img( imgpath, i+'r');
 		if( bmp.file[i]['mirror']) //extended standard
 		{

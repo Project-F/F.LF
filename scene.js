@@ -4,7 +4,7 @@
 /*	vol= //the volume format
 	{
 		x, y, z, //the reference point
-		vx, vy, vw, vh, //the volume defined with reference to (x,y,z)
+		vx, vy, w, h, //the volume defined with reference to (x,y,z)
 		zwidth	//zwidth spans into the +ve and -ve direction
 	}
  */
@@ -35,22 +35,25 @@ scene.prototype.remove = function(C)
 	@return the all the objects whose volume intersect with a specified volume
 	@param exclude [single Object] or [array of objects]
 	@param where [Object] what to intersect with
-	[default] {body:0} intersect with body
-			{itr:2} intersect with itr kind:2
+	[default] {tag:'body'} intersect with body
+			{tag:'itr:2'} intersect with itr kind:2
 			{type:'character'} with character only
 			{not_team:1} exclude team
+			{filter:function}
 */
 scene.prototype.query = function(volume, exclude, where)
 {
 	var result=[];
-	var tag='body';
-	var tagvalue;
-	exclude=Futil.make_array(exclude);
-	if( where.itr)
+	var tag=where.tag;
+	if(!tag) tag='body';
+	var tagvalue=0;
+	var colon=tag.indexOf(':');
+	if( colon!==-1)
 	{
-		tag='itr';
-		tagvalue=where.itr;
+		tagvalue = tag.slice(colon+1);
+		tag = tag.slice(0,colon);
 	}
+	exclude=Futil.make_array(exclude);
 
 	for ( var i in this.live)
 	{
@@ -72,30 +75,15 @@ scene.prototype.query = function(volume, exclude, where)
 		if( where.type && this.live[i].type !== where.type)
 			continue;
 
-		if( tag==='itr')
+		if( where.filter && !where.filter(this.live[i]))
+			continue;
+
+		if( this.live[i]['vol_'+tag])
 		{
-			if( this.live[i].itr) //not every object has itr
+			var vol = this.live[i]['vol_'+tag](tagvalue);
+			for( var j in vol)
 			{
-				var itr = this.live[i].itr(tagvalue);
-				for( var j in itr)
-				{
-					if( itr[j].kind===tagvalue)
-					{
-						if( this.intersect( volume, itr[j]))
-						{
-							result.push( this.live[i] );
-							break;
-						}
-					}
-				}
-			}
-		}
-		else if( tag==='body')
-		{
-			var bdy = this.live[i].bdy();
-			for( var j in bdy)
-			{
-				if( this.intersect( volume, bdy[j] ))
+				if( this.intersect( volume, vol[j]))
 				{
 					result.push( this.live[i] );
 					break;

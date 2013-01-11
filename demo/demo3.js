@@ -1,16 +1,19 @@
-//load F.core modules
 requirejs.config({
 	baseUrl: '../../',
 	paths: {
-		'loader_depend': 'LF/data/data',
-		'data': 'LF/data'
+		'loader_depend': 'LFrelease/data/data',
+		'data': 'LFrelease/data'
 	}
 });
 
-requirejs(['core/controller',
-'LF/loader!data','LF/match'],
-function(Fcontroller,
-gamedata,Match){
+requirejs(['core/controller','core/sprite',
+'LF/loader!data','LF/match','LF/keychanger'],
+function(Fcontroller,Fsprite,
+gamedata,Match,Keychanger){
+
+	Fsprite.prototype.config({
+		baseUrl: '../../LFrelease/'
+	});
 
 	var control_con1 =
 	{
@@ -24,6 +27,12 @@ gamedata,Match){
 	var control2 = new Fcontroller(control_con2);
 	control1.sync=true;
 	control2.sync=true;
+
+	var keychanger = document.getElementById('keychanger');
+	keychanger.style.display='none';
+	Keychanger(keychanger, [control1, control2]);
+	keychanger.style.backgroundColor='#FFF';
+	keychanger.style.display='';
 
 	var match = new Match
 	({

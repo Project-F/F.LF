@@ -5,49 +5,6 @@ define(function()
 
 var G={};
 
-/** id properties-----------------------------------------------------*/
-G.id={};
-
-/** 0: default*/
-G.id['0']={};
-G.id['30']={}; //bandit
-
-/**	Light Weapons		id from 100~149
- */
-G.id['100']= //stick (baseball bat)
-{
-	mass: 0.35,
-	attackable: true, //can hold this to attack
-	run_throw: true, //can throw while running by forward-attack
-	jump_throw: true, //can throw while jumping by forward-attack
-	dash_throw: false, //can throw while dashing
-	stand_throw: false, //can throw while standing by forward-attack
-	just_throw: false //can throw while standing by just pressing attack
-	//TODO: 039.wav when hitting id: 121
-};
-
-G.id['101']= //hoe
-{
-	mass: 0.65,
-	attackable: true,
-	run_throw: true,
-	jump_throw: true
-};
-
-/**	Effects				id from 300~349 (extended standard)
- */
-G.id['300']=
-{
-	oscillate: 4, //oscillation amplitude
-	cant_move: true,
-	drop_weapon: true
-};
-G.id['301']= //blood
-{
-	cant_move: true,
-	drop_weapon: true
-};
-
 /** controller config-------------------------------------------------*/
 
 G.combo_list = [
@@ -77,6 +34,7 @@ G.detector_config = //combo detector config
 
 
 /** gameplay constants------------------------------------------------*/
+
 G.gameplay={};
 var GC = G.gameplay;
 /** What are the defaults?
@@ -118,7 +76,7 @@ GC.default.machanics={};
 GC.default.machanics.mass= 1; //default mass; weight = mass * gravity
 
 /**  Below are defined constants over the game,
-  it might introduce bugs if these values are tweaked too much (like 1->10)
+  tweak them carefully otherwise it might introduce bugs
  */
 GC.recover={};
 GC.recover.fall= -1; //fall recover constant
@@ -127,12 +85,13 @@ GC.recover.bdefend= -0.5; //bdefend recover constant
 GC.effect={};
 GC.effect.num_to_id= 300; //convert effect num to id
 
-GC.bounceup={};
-GC.bounceup.limit= 200; //defined square of speed to bounce up again
-GC.bounceup.factor={};
-GC.bounceup.factor.x= 0.6; //defined bounce up factor(s)
-GC.bounceup.factor.y= -0.4;
-GC.bounceup.factor.z= 0.6;
+GC.character={};
+GC.character.bounceup={};
+GC.character.bounceup.limit= 14.2; //defined speed to bounce up again
+GC.character.bounceup.factor={};
+GC.character.bounceup.factor.x= 0.6; //defined bounce up factors
+GC.character.bounceup.factor.y= -0.4;
+GC.character.bounceup.factor.z= 0.6;
 
 GC.defend={};
 GC.defend.injury={};
@@ -152,14 +111,28 @@ GC.min_speed= 1; //defined minimum speed
 GC.gravity= 1.7; //defined gravity
 
 GC.weapon={};
-GC.weapon.reverse={};
+GC.weapon.bounceup={}; //when a weapon falls onto ground
+GC.weapon.bounceup.limit= 12.25; //defined limit to bounce up again
+GC.weapon.bounceup.speed={};
+GC.weapon.bounceup.speed.x= 3; //defined bounce up speed
+GC.weapon.bounceup.speed.y= -3.7;
+GC.weapon.bounceup.speed.z= 2;
+//GC.weapon.soft_bounceup.speed.y= -2;
+
+GC.weapon.hit={}; //when a weapon hit others
+GC.weapon.hit.vx= -3; //absolute speed
+GC.weapon.hit.vy= 0;
+
+GC.weapon.gain={}; //when a weapon is being hit at rest
+GC.weapon.gain.factor={}; //gain factor
+GC.weapon.gain.factor.x= 1.1;
+GC.weapon.gain.factor.y= 1.4;
+
+GC.weapon.reverse={}; //when a weapon is being hit while travelling in air
 GC.weapon.reverse.factor={};
-GC.weapon.reverse.factor.vx= -0.4; //defined speed factor when a weapon being hit
+GC.weapon.reverse.factor.vx= -0.4;
 GC.weapon.reverse.factor.vy= -2;
 GC.weapon.reverse.factor.vz= -0.4;
-GC.weapon.hit={};
-GC.weapon.hit.vx= -3; //defined speed when a weapon hit others
-GC.weapon.hit.vy= 0;
 
 GC.unspecified= -842150451; //0xCDCDCDCD, one kind of HEX label
 

@@ -5,15 +5,15 @@
 	this abstraction is to allow addition of new object types.
  */
 
-define(['LF/character','LF/lightweapon','LF/effects'],
-function(character,lightweapon,effects)
+define(['LF/character','LF/weapon','LF/effects'],
+function(character,weapon,effects)
 {
 	/** to manufacture an object a factory receives a config, `id` and `data`
 	*/
 	return {
 		character: character,
-		lightweapon: lightweapon,
-		//heavyweapon: heavyweapon,
+		lightweapon: weapon('lightweapon'),
+		heavyweapon: weapon('heavyweapon'),
 		//specialattack: specialattack,
 		//baseball: baseball,
 		//miscell: miscell,

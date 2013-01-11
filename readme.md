@@ -20,6 +20,11 @@ F.LF is still in mid-stage development. Check out the latest milestone at [f-lf2
 
 # Install
 F.LF is built upon [F.core](https://github.com/tyt2y3/F.core). Place the two repositories side-by-side.
+> ```
+> F/
+> core/
+> LF/
+> ```
 
 # License
 Generally have complete freedom except for profit- making. For exact terms see [license](http://project--f.blogspot.hk/2012/05/license.html).

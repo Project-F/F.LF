@@ -2,79 +2,121 @@
 	mechanical properties that all living objects should have
  */
 
-define(['LF/global'],
-function(Global){
+define(['LF/global','data/specification'],
+function(Global, Spec){
 
-function mech(id,frame,sp)
+var GC=Global.gameplay;
+
+/** @class
+	mech is a state-less helper class
+	that processes most of the mechanics of living objects
+ */
+function mech(parent)
 {
-	if( Global.id[id] && Global.id[id].mass)
-		this.mass=Global.id[id].mass;
+	if( Spec[parent.id] && Spec[parent.id].mass)
+		this.mass=Spec[parent.id].mass;
 	else
 		this.mass=Global.gameplay.default.machanics.mass;
 
-	this.frame=frame;
-	this.sp=sp;
+	this.ps;
+	this.sp=parent.sp;
+	this.frame=parent.frame;
+	this.parent=parent;
 }
 
-mech.prototype.body= function() //return the array of bdy volume of the current frame
+mech.prototype.body= function(obj,filter,offset) //return the array of volume of the current frame
+				//that volume can be bdy,itr or other
 {
 	var ps=this.ps;
 	var sp=this.sp;
-	var fD=this.frame.D;
+	var off=offset;
+	if(!obj)
+		obj=this.frame.D.bdy;
 
-	if( fD.bdy instanceof Array)
+	if( obj instanceof Array)
 	{ //many bdy
-		if( fD.bdy.length === 2)
+		if( !filter && obj.length === 2)
 		{ //unroll the loop
-			return ([this.volume(fD.bdy[0]),
-				this.volume(fD.bdy[1])
+			return ([this.volume(obj[0],off),
+				this.volume(obj[1],off)
 			]);
 		}
-		else if( fD.bdy.length === 3)
+		else if( !filter && obj.length === 3)
 		{ //unroll the loop
-			return ([this.volume(fD.bdy[0]),
-				this.volume(fD.bdy[1]),
-				this.volume(fD.bdy[2])
+			return ([this.volume(obj[0],off),
+				this.volume(obj[1],off),
+				this.volume(obj[2],off)
 			]);
 		}
 		else
 		{
 			var B=[];
-			for( var i in fD.bdy)
+			for( var i in obj)
 			{
-				B.push( this.volume(fD.bdy[i]) );
+				if( !filter || filter(obj[i]))
+					B.push( this.volume(obj[i],off) );
 			}
 			return B;
 		}
 	}
 	else
 	{ //1 bdy only
-		return ([this.volume(fD.bdy)]);
+		if( !filter || filter(obj))
+			return [this.volume(obj,off)];
+		else
+			return [];
 	}
 }
 
-mech.prototype.volume= function(O)
+/** make a `volume` that is compatible with `scene` query
+	param O volume in data
+	param V offset
+ */
+mech.prototype.volume= function(O,V)
 {
 	var ps=this.ps;
 	var sp=this.sp;
 
 	if( !O)
-		return {
-			x:ps.sx, y:ps.sy, z:ps.sz,
-			vx:0, vy:0, w:0, h:0, zwidth:0
-		};
+	{
+		if( !V)
+			return {
+				x:ps.sx, y:ps.sy, z:ps.sz,
+				vx:0, vy:0, w:0, h:0, zwidth:0,
+				data: {}
+			}
+		else
+			return {
+				x:V.x, y:V.y, z:V.z,
+				vx:0, vy:0, w:0, h:0, zwidth:0,
+				data: {}
+			}
+	}
 
 	var vx=O.x;
 	if( ps.dir==='left')
 		vx=sp.w-O.x-O.w;
 
-	return {x:ps.sx, y:ps.sy, z:ps.sz,
-		vx: vx,
-		vy: O.y,
-		w : O.w,
-		h : O.h,
-		zwidth: O.zwidth? O.zwidth:0
-	}
+	if( !V)
+		return {
+			x:ps.sx, y:ps.sy, z:ps.sz,
+			vx: vx,
+			vy: O.y,
+			w : O.w,
+			h : O.h,
+			zwidth: O.zwidth? O.zwidth : GC.default.itr.zwidth,
+			data: O
+		}
+	else
+		return {
+			x:ps.sx+V.x, y:ps.sy+V.y, z:ps.sz+V.z,
+			vx: vx,
+			vy: O.y,
+			w : O.w,
+			h : O.h,
+			zwidth: O.zwidth? O.zwidth : GC.default.itr.zwidth,
+			data: O
+		}
 }
 
 mech.prototype.make_point= function(a)
@@ -167,9 +209,12 @@ mech.prototype.dynamics= function()
 	var fmob=this.frame.mobility;
 	var GC=Global.gameplay;
 
-	ps.x += ps.vx * fmob;
+	if( !this.blocking_xz())
+	{
+		ps.x += ps.vx * fmob;
+		ps.z += ps.vz * fmob;
+	}
 	ps.y += ps.vy * fmob;
-	ps.z += ps.vz * fmob;
 
 	ps.sx = ps.dir==='right'? (ps.x-fD.centerx):(ps.x+fD.centerx-sp.w);
 	ps.sy = ps.y - fD.centery;
@@ -196,12 +241,38 @@ mech.prototype.dynamics= function()
 		ps.vy+= this.mass * GC.gravity;
 }
 
+/** return true if there is a blocking itr:kind:14 ahead
+ */
+mech.prototype.blocking_xz=function()
+{
+	var offset = {
+		x: this.ps.vx * this.frame.mobility,
+		y: 0,
+		z: this.ps.vz * this.frame.mobility
+	}
+
+	var body = this.body(null,null,offset);
+	for( var i in body)
+	{
+		body[i].zwidth=0;
+		var result = this.parent.scene.query( body[i], this.parent, {tag:'itr:14'});
+		if( result.length > 0)
+			return true;
+	}
+}
+
 mech.prototype.project= function()
 {
 	var ps=this.ps;
 	var sp=this.sp;
 	sp.set_xy({x:ps.sx, y:ps.sy+ps.sz}); //projection onto screen
 	sp.set_z(ps.sz+ps.zz);  //z ordering
+}
+
+mech.prototype.speed=function()
+{
+	var ps=this.ps;
+	return Math.sqrt(ps.vx*ps.vx + ps.vy*ps.vy);
 }
 
 return mech;
