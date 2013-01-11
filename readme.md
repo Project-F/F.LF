@@ -3,7 +3,7 @@
 
 ## About
 The core component of Project F used to build browser based fighter games.
-F.core is not an engine. F.core is a set of simple systems that can be used to build an engine.
+F.core is not an engine. F.core is a set of conceptual and functional systems that can be used to build an engine.
 
 ## Components and features
 
@@ -24,7 +24,7 @@ F.core is not an engine. F.core is a set of simple systems that can be used to b
 - never drops keys
 
 ### combodec
-- combo detector
+- listen key events and detect combo from a controller
 - maintains a clean sequence of pressed keys and fire events when combo is detected
 - King of Fighter style combos
 - eliminating repeated keys
