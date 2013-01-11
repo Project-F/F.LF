@@ -10,13 +10,14 @@ I believe the web, open source and fine software will enable anyone, from novice
 ## Compatibilty
 
 ### data files
-F.LF provide a tool to convert xml-like LF2 data files into JSON.
-## sprites
+F.LF provide a [tool](http://tyt2y3.github.com/LFrelease/tools/data_file_converter.html) to convert xml-like LF2 data files into JSON.
+
+### sprites
 LF2 sprite images in 24bit bmp must be converted to 32bit png with transparency.
 F.LF requires XXX.png to be mirrored into XXX_mirror.png.
 
 ## Status
-F.LF is still in mid-stage development. Check out the latest milestone at [f-lf2.blogspot.hk](http://f-lf2.blogspot.hk/search/label/latest-demo).
+F.LF is still in mid-stage development. Check out the latest milestone at [f-lf2.blogspot.hk](http://f-lf2.blogspot.hk/search/label/latest-demo) or at the [release channel](https://github.com/tyt2y3/LFrelease).
 
 ## Install
 F.LF is built upon [F.core](https://github.com/tyt2y3/F.core). F.LF contains purely source code. Materials from LF2 is converted and contained in [LFrelease](https://github.com/tyt2y3/LFrelease). Place all the repositories side-by-side.
