@@ -5,6 +5,12 @@ overflow:hidden;
 width:10px;
 height:10px;
 }
+.F_sprite_inline
+{
+overflow:hidden;
+width:10px;
+height:10px;
+}
 .F_sprite_img
 {
 position:absolute;

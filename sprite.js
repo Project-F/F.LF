@@ -7,12 +7,15 @@
 	@example
 	config=
 	{
-		canvas: canvas,   // canvas *DOM node*
+		canvas: canvas,   //[choice] *DOM node*, create and append a div to canvas
+		div: $('dog'),    //[choice] use this div instead of creating one
+		                  //	must choose either canvas or div option
 		wh: {x:100,y:100},// width and height
 		img:              // image list
 		{
-			'tag name':'image path',,,  //the first image is visible
-		}
+			'tag name':'sprite1.png',,,  //the first image is visible
+		},
+		img: 'sprites.png'//OR simply the image path
 	}
 	@example
 	masterconfig
@@ -36,22 +39,35 @@ function sprite (config)
 	this.ID=sp_count;
 	sp_count++;
 
-	this.el = document.createElement('div');
-	this.el.setAttribute('class','F_sprite');
-	//this.el.id='sp'+this.ID;
-	config.canvas.appendChild(this.el);
+	if( config.div)
+	{
+		this.el = config.div;
+		if( this.el.hasAttribute('class'))
+			this.el.setAttribute('class', this.el.getAttribute('class')+' F_sprite_inline');
+		else
+			this.el.setAttribute('class','F_sprite_inline');
+	}
+	else
+	{
+		this.el = document.createElement('div');
+		this.el.setAttribute('class','F_sprite');
+		config.canvas.appendChild(this.el);
+	}
 
 	this.img={};
 	this.cur_img=null;
 
 	this.set_wh(config.wh);
 	if( config.img)
-	for ( var I in config.img)
 	{
-		this.add_img(config.img[I], I);
+		if( config.img.prototype)
+			for ( var I in config.img)
+				this.add_img(config.img[I], I);
+		else
+			this.add_img(config.img, '0');
 	}
 
-	if( support.css2dtransform)
+	if( support.css2dtransform && !config.div)
 	{
 		this.el.style.left=0+'px';
 		this.el.style.top=0+'px';
@@ -137,7 +153,7 @@ sprite.prototype.switch_img=function(name)
 	var left,top; //store the left, top of the current displayed image
 	for ( var I in this.img)
 	{
-		if( this.img[I].style.visibility=='visible')
+		if( this.img[I].style.display=='')
 		{
 			left=this.img[I].style.left;
 			top =this.img[I].style.top;
@@ -150,11 +166,11 @@ sprite.prototype.switch_img=function(name)
 		{
 			this.img[I].style.left=left;
 			this.img[I].style.top=top;
-			this.img[I].style.visibility='visible';
+			this.img[I].style.display='';
 		}
 		else
 		{
-			this.img[I].style.visibility='hidden';
+			this.img[I].style.display='none';
 		}
 	}
 	this.cur_img=name;

@@ -19,8 +19,8 @@ define(function() {
 					.replace(/[\t]/g," ");
 	}
 
-	var filecontent='';
-	var written=false;
+	var buildMap = {};
+	var writeonce = false;
 
 	var loader =
 	{
@@ -28,17 +28,40 @@ define(function() {
 			//console.log('css-build: load: '+name);
 			load(true);
 			loadfile(config.baseUrl+name,function(F){
-				filecontent+=strip(F);
+				buildMap[name]=strip(F);
 			});
 		},
 
 		write: function (pluginName, moduleName, write, config) {
-			if( !written)
+
+			if( !writeonce)
 			{
-				//console.log('css-build: write');
-				write('define("cssout", { content:\n"'+filecontent+'"});\n');
-				written=true;
+				writeonce=true;
+				write(
+					"define('"+pluginName+"-embed', function()\n{\n"+
+					"\tfunction embed_css(content)\n"+
+					"\t{\n"+
+					"\t\tvar head = document.getElementsByTagName('head')[0],\n"+
+					"\t\tstyle = document.createElement('style'),\n"+
+					"\t\trules = document.createTextNode(content);\n"+
+					"\t\tstyle.type = 'text/css';\n"+
+					"\t\tif(style.styleSheet)\n"+
+					"\t\t\tstyle.styleSheet.cssText = rules.nodeValue;\n"+
+					"\t\telse style.appendChild(rules);\n"+
+					"\t\t\thead.appendChild(style);\n"+
+					"\t}\n"+
+					"\treturn embed_css;\n"+
+					"});\n"
+				);
 			}
+
+			write(
+				"define('"+pluginName+'!'+moduleName+"', ['"+pluginName+"-embed'], \n"+
+				"function(embed)\n{\n"+
+					"\tembed(\n\t'"+buildMap[moduleName]+"'\n\t);\n"+
+					"\treturn true;\n"+
+				"});\n"
+			);
 		},
 
 		writeFile: function (pluginName, moduleName, write)

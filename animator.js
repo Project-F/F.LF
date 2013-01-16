@@ -17,7 +17,7 @@ define(function() //exports a class `animator`
 		graph:       //graph:
 		   [[0,1],   //	a 2d array gx*gy sized
 		    [2,3]],  //		to store custom data for each frame
-		borderright: 1, //trim the right edge pixels away
+		borderright: 1, //[optionals] trim the right edge pixels away
 		borderbottom: 1,
 		borderleft: 1
 		bordertop: 1,

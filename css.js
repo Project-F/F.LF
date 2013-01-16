@@ -18,5 +18,6 @@ define({
 		}
 		inject(config.baseUrl+name);
 		load(true);
-	}
+	},
+	pluginBuilder: './css-build'
 });
