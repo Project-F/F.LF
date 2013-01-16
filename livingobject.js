@@ -236,6 +236,11 @@ function livingobject_template (template)
 		return this.frame.D.state;
 	}
 
+	livingobject.prototype.effect_id=function(num)
+	{
+		return num+GC.effect.num_to_id;
+	}
+
 	livingobject.prototype.effect_create=function(num,duration)
 	{
 		var $=this;

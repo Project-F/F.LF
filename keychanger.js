@@ -55,6 +55,7 @@ function keychanger (append_at, controllers)
 		{
 			add_cell(R,name);
 			var cell=add_cell(R, con.config[name]);
+			cell.style.cursor='pointer';
 			cell.onclick=function()
 			{
 				if( !change_active)

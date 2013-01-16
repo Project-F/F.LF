@@ -1,7 +1,7 @@
 requirejs.config({
 	baseUrl: '../../'
 });
-requirejs(['LF/sprite','LF/data/bandit'],
+requirejs(['LF/sprite','LFrelease/data/bandit'],
 function(sprite,bandit)
 {
 	define();
@@ -12,8 +12,8 @@ function(sprite,bandit)
 		//the complete definition of frame transition sequences
 
 		//bandit
-		bandit.bmp.file[0]["file(0-69)"] = "../sprite/bandit_0.png";
-		bandit.bmp.file[1]["file(70-139)"] = "../sprite/bandit_1.png";
+		bandit.bmp.file[0]["file(0-69)"] = "../../LFrelease/sprite/bandit_0.png";
+		bandit.bmp.file[1]["file(70-139)"] = "../../LFrelease/sprite/bandit_1.png";
 
 		list=
 		[

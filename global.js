@@ -117,7 +117,9 @@ GC.weapon.bounceup.speed={};
 GC.weapon.bounceup.speed.x= 3; //defined bounce up speed
 GC.weapon.bounceup.speed.y= -3.7;
 GC.weapon.bounceup.speed.z= 2;
-//GC.weapon.soft_bounceup.speed.y= -2;
+GC.weapon.soft_bounceup={}; //when heavy weapon being hit by character punch
+GC.weapon.soft_bounceup.speed={};
+GC.weapon.soft_bounceup.speed.y= -2;
 
 GC.weapon.hit={}; //when a weapon hit others
 GC.weapon.hit.vx= -3; //absolute speed

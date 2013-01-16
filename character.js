@@ -342,7 +342,8 @@ function(livingobject_template, Global, Futil)
 			case 'combo':
 				if( K==='att')
 				{
-					if( $.dirh()===($.ps.vx>0?1:-1)) //only if not turning back
+					if( $.proper($.id,'dash_backatt') || //back attack
+						$.dirh()===($.ps.vx>0?1:-1)) //if not turning back
 					{
 						if( $.hold.obj && $.proper($.hold.id,'attackable')) //light weapon attack
 							$.trans.frame(40, 10);
@@ -759,6 +760,7 @@ function(livingobject_template, Global, Futil)
 			$.itr.lasthit=0; accepthit=true;
 			$.effect.dvx = ITR.dvx ? att.dirh()*ITR.dvx:0;
 			$.effect.dvy = ITR.dvy ? ITR.dvy:0;
+			var effectnum = ITR.effect?ITR.effect:GC.default.effect.num;
 
 			if( $.cur_state()===7 &&
 			    (attps.x > $.ps.x)===($.ps.dir==='right')) //attacked in front
@@ -788,7 +790,6 @@ function(livingobject_template, Global, Futil)
 				case 111: vanish=4; break;
 				case 112: vanish=5; break;
 			}
-			var effectnum = ITR.effect?ITR.effect:GC.default.effect.num;
 			$.effect_create( effectnum, vanish);
 			$.visualeffect_create( effectnum, rect, (attps.x < $.ps.x), ($.health.fall>0?1:2));
 
@@ -818,7 +819,7 @@ function(livingobject_template, Global, Futil)
 					$.trans.frame(186, 20); //attacked in back
 
 				if( !ITR.dvy) $.effect.dvy = GC.default.fall.dvy;
-				if( $.proper( $.effect.id,'drop_weapon'))
+				if( $.proper( $.effect_id(effectnum),'drop_weapon'))
 					$.drop_weapon($.effect.dvx, $.effect.dvy);
 			}
 		}
@@ -847,7 +848,11 @@ function(livingobject_template, Global, Futil)
 			case 0: //normal attack
 				for( var t in hit)
 				{
-					if( hit[t].team !== $.team) //only attack other teams
+					var team_allow=true;
+					if( hit[t].type==='character' && hit[t].team===$.team)
+						team_allow=false; //only attack characters of other teams
+
+					if( team_allow)
 					if( $.itr_rest_test( hit[t].uid, ITR))
 					if( hit[t].hit(ITR,$,{x:$.ps.x,y:$.ps.y,z:$.ps.z},vol))
 					{	//hit you!
@@ -867,7 +872,7 @@ function(livingobject_template, Global, Futil)
 			case 1: //catch
 				for( var t in hit)
 				{
-					if( hit[t].team !== $.team) //only attack other teams
+					if( hit[t].team !== $.team) //only catch other teams
 					if( hit[t].type==='character') //only catch characters
 					if( hit[t].cur_state()===16) //you are in dance of pain!
 					if( $.itr_rest_test( hit[t].uid, ITR))
@@ -958,9 +963,9 @@ function(livingobject_template, Global, Futil)
 
 	character.prototype.caught_a=function(ITR, att, attps)
 	{	//this is called when the catcher has an ITR with kind: 1
+		var $=this;
 		if( $.cur_state()===16) //I am in dance of pain
 		{
-			var $=this;
 			if( (attps.x > $.ps.x)===($.ps.dir==='right'))
 				$.trans.frame(ITR.caughtact[0], 20);
 			else

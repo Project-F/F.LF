@@ -181,16 +181,30 @@ function weapon(type)
 			}
 		}
 
+		var fall= ITR.fall? ITR.fall: GC.default.fall.value;
 		if( $.heavy)
 		{
 			accept=true;
-			var asp = att.mech.speed();
-			$.ps.vx= asp* GC.weapon.gain.factor.x * (att.ps.vx>0?1:-1);
-			$.ps.vy= asp* GC.weapon.gain.factor.y;
+			if( att.type==='character')
+			{
+				if( fall<GC.fall.KO)
+					$.ps.vy= GC.weapon.soft_bounceup.speed.y;
+				else
+				{
+					$.ps.vy = GC.weapon.bounceup.speed.y;
+					//$.ps.vx = GC.weapon.bounceup.speed.x * att.dirh();
+					//$.ps.vz = GC.weapon.bounceup.speed.z * att.dirv();
+				}
+			}
+			else
+			{
+				var asp = att.mech.speed();
+				$.ps.vx= asp* GC.weapon.gain.factor.x * (att.ps.vx>0?1:-1);
+				$.ps.vy= asp* GC.weapon.gain.factor.y;
+			}
 		}
-		var fall= ITR.fall? ITR.fall: GC.default.fall.value;
-		$.visualeffect_create( 0, rect, (attps.x < $.ps.x), (fall<GC.fall.KO?1:2));
 		$.team = att.team; //change to the attacker's team
+		$.visualeffect_create( 0, rect, (attps.x < $.ps.x), (fall<GC.fall.KO?1:2));
 		return accept;
 	}
 
