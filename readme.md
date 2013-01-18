@@ -68,27 +68,7 @@ and point in rectangle test
 - [world.html](http://tyt2y3.github.com/F.core/sample/world.html)
 
 ## File list
-- [support.js](http://tyt2y3.github.com/F.core/support.js)
-- [states.js](http://tyt2y3.github.com/F.core/states.js)
-- [world.js](http://tyt2y3.github.com/F.core/world.js)
-- [util.js](http://tyt2y3.github.com/F.core/util.js)
-- [style.css](http://tyt2y3.github.com/F.core/style.css)
-- [states_simple.js](http://tyt2y3.github.com/F.core/states_simple.js)
-- [sprite.js](http://tyt2y3.github.com/F.core/sprite.js)
-- [require.js](http://tyt2y3.github.com/F.core/require.js)
-- [readme.md](http://tyt2y3.github.com/F.core/readme.md)
-- [math.js](http://tyt2y3.github.com/F.core/math.js)
-- [license.html](http://tyt2y3.github.com/F.core/license.html)
-- [graph.js](http://tyt2y3.github.com/F.core/graph.js)
-- [css.js](http://tyt2y3.github.com/F.core/css.js)
-- [css-build.js](http://tyt2y3.github.com/F.core/css-build.js)
-- [controller.js](http://tyt2y3.github.com/F.core/controller.js)
-- [controller-recorder.js](http://tyt2y3.github.com/F.core/controller-recorder.js)
-- [combodec.js](http://tyt2y3.github.com/F.core/combodec.js)
-- [collision.js](http://tyt2y3.github.com/F.core/collision.js)
-- [animator.js](http://tyt2y3.github.com/F.core/animator.js)
-- [.gitattributes](http://tyt2y3.github.com/F.core/.gitattributes)
-- [effects-pool.js](http://tyt2y3.github.com/F.core/effects-pool.js)
+[`support.js`](support.js)	[`states.js`](states.js)	[`world.js`](world.js)	[`util.js`](util.js)	[`style.css`](style.css)	[`states_simple.js`](states_simple.js)	[`sprite.js`](sprite.js)	[`require.js`](require.js)	[`readme.md`](readme.md)	[`math.js`](math.js)	[`license.html`](license.html)	[`graph.js`](graph.js)	[`css.js`](css.js)	[`css-build.js`](css-build.js)	[`controller.js`](controller.js)	[`controller-recorder.js`](controller-recorder.js)	[`combodec.js`](combodec.js)	[`collision.js`](collision.js)	[`animator.js`](animator.js)	[`.gitattributes`](.gitattributes)	[`effects-pool.js`](effects-pool.js)	
 
 ## License
 Generally has complete freedom except for profit- making. For exact terms see [license](http://project--f.blogspot.hk/2012/05/license.html).
