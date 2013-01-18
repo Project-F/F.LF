@@ -10,7 +10,7 @@
    World           View
 */
 
-define(['core/math'],function(math){ //exports a class `world`
+define(['F.core/math'],function(math){ //exports a class `world`
 
 /**	@class
 */

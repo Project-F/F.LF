@@ -4,7 +4,7 @@
 	to record and playback activity of a controller
  */
 
-define(['core/util'],function(F) //exports 2 classes `control_recorder` and `control_player` in an object
+define(['F.core/util'],function(F) //exports 2 classes `control_recorder` and `control_player` in an object
 {
 
 return {
@@ -53,7 +53,7 @@ control_recorder: function(target_controller)
 
 /**	@class
 	control record playback
-	compatible will controller
+	compatible with controller
 	@param control_config the config used for controller
 	@param record
 */

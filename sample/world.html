@@ -1,0 +1,37 @@
+<body>
+<div id='o' style='position:absolute; width:10px; height:10px; background-color:#FFF'>o</div>
+<div id='x' style='position:absolute; width:10px; height:10px; background-color:#FAA'>x</div>
+<div id='y' style='position:absolute; width:10px; height:10px; background-color:#AFA'>y</div>
+<div id='z' style='position:absolute; width:10px; height:10px; background-color:#AAF'>z</div>
+<script data-main="../../" src="../require.js"></script>
+<script>
+requirejs(['F.core/world'], function(world)
+{
+
+Ao = document.getElementById('o');
+Ax = document.getElementById('x');
+Ay = document.getElementById('y');
+Az = document.getElementById('z');
+
+var F_WP = new world();
+F_WP.P.push({x:0,y:0,z:0});
+F_WP.P.push({x:1,y:0,z:0});
+F_WP.P.push({x:0,y:1,z:0});
+F_WP.P.push({x:0,y:0,z:1});
+
+F_WP.project();
+
+set_xy(Ao, F_WP.view(F_WP.pp[0]));
+set_xy(Ax, F_WP.view(F_WP.pp[1]));
+set_xy(Ay, F_WP.view(F_WP.pp[2]));
+set_xy(Az, F_WP.view(F_WP.pp[3]));
+
+function set_xy(el,P)
+{
+	el.style.left=P.x;
+	el.style.top=P.y;
+}
+
+});
+</script>
+</body>

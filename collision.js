@@ -9,7 +9,7 @@
 	- point in rectangle test
  */
 
-define(['core/math'], function(Fm) //exports a set of functions in an object
+define(['F.core/math'], function(Fm) //exports a set of functions in an object
 {
 
 return {

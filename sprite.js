@@ -24,7 +24,7 @@
 	}
  */
 
-define(['core/css!core/style.css','core/support'],function(css,support) //exports a class `sprite`
+define(['F.core/css!F.core/style.css','F.core/support'],function(css,support) //exports a class `sprite`
 {
 
 var sp_count=0; //sprite count
@@ -60,7 +60,7 @@ function sprite (config)
 	this.set_wh(config.wh);
 	if( config.img)
 	{
-		if( config.img.prototype)
+		if( typeof config.img==='object')
 			for ( var I in config.img)
 				this.add_img(config.img[I], I);
 		else
