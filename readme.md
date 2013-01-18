@@ -67,8 +67,6 @@ and point in rectangle test
 - [effects-pool.html](http://tyt2y3.github.com/F.core/sample/effects-pool.html)
 - [world.html](http://tyt2y3.github.com/F.core/sample/world.html)
 
-## File list
-[`support.js`](support.js)	[`states.js`](states.js)	[`world.js`](world.js)	[`util.js`](util.js)	[`style.css`](style.css)	[`states_simple.js`](states_simple.js)	[`sprite.js`](sprite.js)	[`require.js`](require.js)	[`readme.md`](readme.md)	[`math.js`](math.js)	[`license.html`](license.html)	[`graph.js`](graph.js)	[`css.js`](css.js)	[`css-build.js`](css-build.js)	[`controller.js`](controller.js)	[`controller-recorder.js`](controller-recorder.js)	[`combodec.js`](combodec.js)	[`collision.js`](collision.js)	[`animator.js`](animator.js)	[`.gitattributes`](.gitattributes)	[`effects-pool.js`](effects-pool.js)	
 
 ## License
 Generally has complete freedom except for profit- making. For exact terms see [license](http://project--f.blogspot.hk/2012/05/license.html).
