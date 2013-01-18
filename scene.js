@@ -9,7 +9,7 @@
 	}
  */
 
-define(['core/util','core/collision'], function (Futil,Fcollision)
+define(['F.core/util','F.core/collision'], function (Futil,Fcollision)
 {
 var UID=0;
 

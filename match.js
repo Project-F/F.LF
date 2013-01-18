@@ -2,7 +2,7 @@
 	a match is a generalization above game modes (e.g. VSmode, stagemode, battlemode)
  */
 
-define(['core/util','core/controller',
+define(['F.core/util','F.core/controller',
 'LF/factories','LF/scene','LF/third_party/random'],
 function(Futil,Fcontroller,
 factory,Scene,Random)

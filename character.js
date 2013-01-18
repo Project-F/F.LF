@@ -24,7 +24,7 @@
 back dash?
  */
 
-define(['LF/livingobject','LF/global','core/util'],
+define(['LF/livingobject','LF/global','F.core/util'],
 function(livingobject_template, Global, Futil)
 {
 	var GC=Global.gameplay;

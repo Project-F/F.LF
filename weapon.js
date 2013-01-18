@@ -3,7 +3,7 @@
 	this implementation differentiate lightweapon and heavyweapon from a base class weapon
  */
 
-define(['LF/livingobject','LF/global','core/util'],
+define(['LF/livingobject','LF/global','F.core/util'],
 function(livingobject_template, Global, Futil)
 {
 
@@ -213,7 +213,7 @@ function weapon(type)
 		@param wpoint data
 		@param holdpoint data
 	 */
-	typeweapon.prototype.act=function(att,wpoint,holdpoint) 
+	typeweapon.prototype.act=function(att,wpoint,holdpoint)
 	{
 		var $=this;
 		var fD = $.frame.D;

@@ -23,7 +23,7 @@ F.LF is still in mid-stage development. Check out the latest milestone at [f-lf2
 F.LF is built upon [F.core](https://github.com/tyt2y3/F.core). F.LF contains purely source code. Materials from LF2 is converted and contained in [LFrelease](https://github.com/tyt2y3/LFrelease). Place all the repositories side-by-side.
 ```
  F
- |---core
+ |---F.core
  |---LF
  |---LFrelease
 ```

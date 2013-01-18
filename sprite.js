@@ -2,7 +2,7 @@
 //	accept a bmp object (defined in data file) as config
 //	support switching frames between multiple image files
 
-define(['core/sprite','core/animator'], function (Fsprite, Fanimator)
+define(['F.core/sprite','F.core/animator'], function (Fsprite, Fanimator)
 {
 
 function sprite (bmp, parent)

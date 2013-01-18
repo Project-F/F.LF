@@ -1,6 +1,6 @@
 //a key changer utility for LF2
 
-define(['core/controller'], function (Fcontroller)
+define(['F.core/controller'], function (Fcontroller)
 {
 
 change_active=false;

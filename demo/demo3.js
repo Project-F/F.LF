@@ -6,7 +6,7 @@ requirejs.config({
 	}
 });
 
-requirejs(['core/controller','core/sprite',
+requirejs(['F.core/controller','F.core/sprite',
 'LF/loader!data','LF/match','LF/keychanger'],
 function(Fcontroller,Fsprite,
 gamedata,Match,Keychanger){

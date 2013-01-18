@@ -2,8 +2,8 @@
 	like blood, fire, etc
  */
 
-define(['LF/global','LF/sprite'],
-function ( Global, Sprite)
+define(['LF/global','LF/sprite','F.core/effects-pool'],
+function ( Global, Sprite, Feffects_pool)
 {
 
 /** effect_set is the set of all kinds of effects
@@ -14,7 +14,17 @@ function effect_set(config,DATA,ID) //DATA and ID are arrays
 	this.efs={};
 	for( var i=0; i<DATA.length; i++)
 	{
-		this.efs[ID[i]] = new effects(config,DATA[i],ID[i]);
+		var ef_config=
+		{
+			init_size: 5,
+			batch_size: 5,
+			max_size: 30,
+			construct: function()
+			{
+				return new effect(config,DATA[i],ID[i]);
+			}
+		}
+		var efpool = this.efs[ID[i]] = new Feffects_pool(ef_config);
 	}
 }
 
@@ -41,17 +51,16 @@ effect_set.prototype.transit=function()
 {
 }
 
-/** effects is a single object managing a pool of effect instances
-	the pool is circular and is built upon the assumption that each effect
-	instance has the same life time, such that effects that born earlier
-	will always die earlier.
+/** extends Feffects_pool with custom method
  */
-/** config=
-	{
-		init_size,
-		stage
-	}
- */
+Feffects_pool.prototype.TU=function()
+{
+	this.for_each(function(E){
+		E.TU();
+	});
+}
+
+/*
 function effects(config,data,id)
 {
 	this.pool=[]; //let it be a circular pool
@@ -59,6 +68,9 @@ function effects(config,data,id)
 	this.E=0; //end pivot
 	this.type=data.effect_list;
 	this.full=false;
+	this.config=config;
+	this.data=data;
+	this.id=id;
 
 	if( !this.type)
 		this.type={};
@@ -69,21 +81,31 @@ function effects(config,data,id)
 	}
 }
 
-/**	create new effect instance
-	@param P position in {x,y,z}
-	@param N effect sub- number (as defined in effect_list)
- */
 effects.prototype.create=function(P,N)
 {
 	if( this.full)
-		return ; // TODO: expand the pool instead of ignoring
+	{
+		if( this.pool.length + this.config.batch_size <= this.config.max_size)
+		{	//expand the pool
+			var args=[ this.E, 0];
+			for( var i=0; i<this.config.batch_size; i++)
+			{
+				args.push( new effect(this.config,this.data,this.id, this));
+			}
+			this.pool.splice.apply( this.pool, args);
+			this.S += this.config.batch_size;
+			this.full=false;
+		}
+		else
+			return ;
+	}
 
 	if( this.E < this.pool.length)
 		this.E++;
 	else
 		this.E=1;
 
-	if( this.E === this.S)
+	if( this.E === this.S || (this.S===0 && this.E===this.pool.length))
 	{
 		console.log('effects pool satuated');
 		this.full=true;
@@ -129,17 +151,16 @@ effects.prototype.TU=function()
 		for ( var j=this.S; j<this.pool.length; j++)
 			this.pool[j].TU();
 	}
-}
+} */
 
-/**	individual effect instances
-	they are like `standard` living objects but much simplier
-	but with special interface to be controlled explicitly by effects.
-	they are short-lived, `born` as triggered by `effects` and `die` spontaneously
+/**	individual effect
+	they are like other living objects but much simplier.
+	they are short-lived, `born` as triggered by `effects-pool` and `die` spontaneously
  */
-function effect(config,data,id, parent)
+function effect(config,data,id)
 {
-	this.parent=parent;
 	this.dat=data;
+	this.type=data.effect_list;
 	this.id=id;
 	this.sp = new Sprite(this.dat.bmp, config.stage);
 	this.sp.hide();
@@ -161,7 +182,8 @@ effect.prototype.TU=function()
 			this.next=0;
 		else if( this.next===1000)
 		{
-			this.die();
+			this.sp.hide();
+			this.parent.die();
 			return ;
 		}
 
@@ -172,7 +194,7 @@ effect.prototype.TU=function()
 		this.wait--;
 }
 
-effect.prototype.trans=function()
+effect.prototype.transit=function()
 {
 }
 
@@ -182,7 +204,12 @@ effect.prototype.set_pos=function(x,y,z)
 
 effect.prototype.born=function(P,N)
 {
-	this.frame=N;
+	var sf;
+	if( this.type[N] && this.type[N].frame)
+		sf = this.type[N].frame;
+	else
+		sf = 0;
+	this.frame=sf;
 	this.frameD=this.dat.frame[this.frame];
 
 	var x=P.x - this.frameD.centerx;
@@ -192,12 +219,6 @@ effect.prototype.born=function(P,N)
 	this.sp.set_z(z+1);
 	this.sp.show_pic(this.frameD.pic);
 	this.sp.show();
-}
-
-effect.prototype.die=function()
-{
-	this.sp.hide();
-	this.parent.finish();
 }
 
 return effect_set;

@@ -1,4 +1,3 @@
-//load F.core modules
 requirejs.config({
 	baseUrl: '../../'
 });
@@ -12,7 +11,7 @@ requirejs.config({
 		}
 	}); */
 
-requirejs(['core/controller','core/controller-recorder',
+requirejs(['F.core/controller','F.core/controller-recorder',
 'LF/scene','LF/character','LF/lightweapon','LF/keychanger','LF/effects',
 'LF/data/bandit','LF/data/weapon0','LF/data/effect0'],
 function(Fcontroller, Fcr,
