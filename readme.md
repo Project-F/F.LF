@@ -56,5 +56,39 @@ and point in rectangle test
 - use [requirejs](http://requirejs.org/) for dependency management
 - compile-time optimization
 
+## Sample usages
+- [support.html](http://tyt2y3.github.com/F.core/sample/support.html)
+- [states.html](http://tyt2y3.github.com/F.core/sample/states.html)
+- [sprite.html](http://tyt2y3.github.com/F.core/sample/sprite.html)
+- [graph.html](http://tyt2y3.github.com/F.core/sample/graph.html)
+- [controller.html](http://tyt2y3.github.com/F.core/sample/controller.html)
+- [combo.html](http://tyt2y3.github.com/F.core/sample/combo.html)
+- [collision.html](http://tyt2y3.github.com/F.core/sample/collision.html)
+- [effects-pool.html](http://tyt2y3.github.com/F.core/sample/effects-pool.html)
+- [world.html](http://tyt2y3.github.com/F.core/sample/world.html)
+
+## File list
+- [support.js](http://tyt2y3.github.com/F.core/support.js)
+- [states.js](http://tyt2y3.github.com/F.core/states.js)
+- [world.js](http://tyt2y3.github.com/F.core/world.js)
+- [util.js](http://tyt2y3.github.com/F.core/util.js)
+- [style.css](http://tyt2y3.github.com/F.core/style.css)
+- [states_simple.js](http://tyt2y3.github.com/F.core/states_simple.js)
+- [sprite.js](http://tyt2y3.github.com/F.core/sprite.js)
+- [require.js](http://tyt2y3.github.com/F.core/require.js)
+- [readme.md](http://tyt2y3.github.com/F.core/readme.md)
+- [math.js](http://tyt2y3.github.com/F.core/math.js)
+- [license.html](http://tyt2y3.github.com/F.core/license.html)
+- [graph.js](http://tyt2y3.github.com/F.core/graph.js)
+- [css.js](http://tyt2y3.github.com/F.core/css.js)
+- [css-build.js](http://tyt2y3.github.com/F.core/css-build.js)
+- [controller.js](http://tyt2y3.github.com/F.core/controller.js)
+- [controller-recorder.js](http://tyt2y3.github.com/F.core/controller-recorder.js)
+- [combodec.js](http://tyt2y3.github.com/F.core/combodec.js)
+- [collision.js](http://tyt2y3.github.com/F.core/collision.js)
+- [animator.js](http://tyt2y3.github.com/F.core/animator.js)
+- [.gitattributes](http://tyt2y3.github.com/F.core/.gitattributes)
+- [effects-pool.js](http://tyt2y3.github.com/F.core/effects-pool.js)
+
 ## License
 Generally has complete freedom except for profit- making. For exact terms see [license](http://project--f.blogspot.hk/2012/05/license.html).
