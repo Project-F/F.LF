@@ -30,6 +30,7 @@ function efpool(config)
 	this.E=0; //end pivot
 	this.full=false;
 	this.config=config;
+	this.livecount=0;
 
 	if( config.new_arg)
 	{
@@ -56,7 +57,7 @@ efpool.prototype.create=function(/*arg*/) //arguments will be passed through
 	{
 		if( this.pool.length + this.config.batch_size <= this.config.max_size)
 		{	//expand the pool
-			console.log('expanding the pool');
+			//console.log('expanding the pool');
 			var args=[ this.E, 0];
 			for( var i=0; i<this.config.batch_size; i++)
 			{
@@ -79,26 +80,34 @@ efpool.prototype.create=function(/*arg*/) //arguments will be passed through
 
 	if( this.E === this.S || (this.S===0 && this.E===this.pool.length))
 	{
-		console.log('effects pool full');
+		//console.log('effects pool full');
 		this.full=true;
 	}
 
 	if( this.pool[this.E-1].born)
 		this.pool[this.E-1].born.apply ( this.pool[this.E-1], arguments);
+
+	this.livecount++;
 }
 
 // the oldest effect instance dies
 efpool.prototype.die=function(/*arg*/) //arguments will be passed through
 {
-	if( this.pool[this.S].die)
-		this.pool[this.S].die.apply ( this.pool[this.S], arguments);
+	if( this.livecount > 0)
+	{
+		if( this.pool[this.S].die)
+			this.pool[this.S].die.apply ( this.pool[this.S], arguments);
 
-	if( this.S < this.pool.length-1)
-		this.S++;
+		if( this.S < this.pool.length-1)
+			this.S++;
+		else
+			this.S=0;
+
+		this.full = false;
+		this.livecount--;
+	}
 	else
-		this.S=0;
-
-	this.full = false;
+		console.log('die too much!');
 }
 
 // for each active instance

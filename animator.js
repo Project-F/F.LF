@@ -40,6 +40,15 @@ function animator (config)
 }
 /**	@function
 	@description
+	return to the first frame of animation sequence
+*/
+animator.prototype.rewind=function()
+{
+	this.I=-1;
+	this.next_frame();
+}
+/**	@function
+	@description
 	turn to the next frame, return the index of the frame just shown
 */
 animator.prototype.next_frame=function()
