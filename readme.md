@@ -1,5 +1,5 @@
-![Project F logo](http://2.bp.blogspot.com/-k-My1B-YlaU/T8JUBAYpu9I/AAAAAAAAACI/OnCvkzFF5jw/s1600/logo_l1_s.png)
-Project F [http://project--f.blogspot.com/](http://project--f.blogspot.com/)
+# ![Project F logo](http://2.bp.blogspot.com/-k-My1B-YlaU/T8JUBAYpu9I/AAAAAAAAACI/OnCvkzFF5jw/s1600/logo_l1_s.png) Project F
+[http://project--f.blogspot.com/](http://project--f.blogspot.com/)
 
 ## About
 The core component of Project F used to build browser based fighter games.
