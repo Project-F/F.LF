@@ -36,8 +36,7 @@ some [collision](#collision) detection and [math](#math) functions and javascrip
 [css](#css) for loading and optimizing css files and 
 [support](#support) to check for browser support
 
-## Documentation
-on [http://tyt2y3.github.com/F.core/docs/docs.html]
+## [Documentation](http://tyt2y3.github.com/F.core/docs/docs.html)
 
 ## Components and features
 
