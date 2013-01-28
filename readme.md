@@ -10,7 +10,7 @@ so it is not a hard decision like Windows vs Mac when choose to use F.core. you 
 F.core employs requirejs dependency management, and you should too, if you care to build games that has more than 1000 lines of code. requirejs can be clumsy to set up than `<script src="">`, but when a project grows it will pay off.
 
 F.core components can be categorized into:
-
+ 
 <h4>sprites</h4>
 [sprite](#sprite) and [animator](#animator)
 
