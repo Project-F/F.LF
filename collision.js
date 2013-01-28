@@ -1,24 +1,24 @@
-/**	@fileOverview
-	@description
-	collision detection system
-	perform
-	- rectangle-rectangle intersect test
-	- triangle-triangle intersect test
-	- circle-circle intersect test
-	- line-line intersect test
-	- point in rectangle test
- */
+/*\
+ * collision
+ * collision detection function set
+ * 
+ * all functions return `true` if intersect
+ * 
+ * [example](../sample/collision.html)
+\*/
 
-define(['F.core/math'], function(Fm) //exports a set of functions in an object
+define(['F.core/math'], function(Fm)
 {
 
 return {
 
-/**	rectangle-rectangle intersect test
-	@function
-	@param rect1
-	@param rect2 object in form {left,top,right,bottom}
-*/
+/*\
+ * collision.rect
+ * rectangle-rectangle intersect test
+ [ method ]
+ - rect1 (object)
+ - rect2 (object) in form of `{left,top,right,bottom}`
+\*/
 rect: function (rect1,rect2)
 {
 	if(rect1.bottom < rect2.top)	return false;
@@ -44,11 +44,12 @@ normalize_rect: function (rect)
 		return rect;
 },
 
-/**	triangle-triangle intersect test
-	@function
-	@param A
-	@param B array of points in form {x,y}
-*/
+/*\
+ * collision.tri
+ * triangle-triangle intersect test
+ [ method ]
+ - A,B (array) array of points in form `{x,y}`
+\*/
 tri: function (A,B)
 {
 	/*I assume this a fast enough implementation
@@ -109,23 +110,24 @@ tri: function (A,B)
 	//another possible implementation http://jgt.akpeters.com/papers/Moller97/tritri.html
 },
 
-/**	circle-circle intersect test
-	@function
-	@param A
-	@param B circle in form {center,radius}, where center is in form {x,y}, radius is a number
-*/
+/*\
+ * collision.circle
+ * circle-circle intersect test
+ [ method ]
+ - A,B (object) in form `{center,radius}`
+ * where center is in form `{x,y}`, radius is a `number`
+\*/
 circle: function (A,B)
 {
 	return (Fm.distance(A.center,B.center) <= A.radius+B.radius);
 },
 
-/**	line-line intersect test, true if line AB intersects CD
-	@function
-	@param A
-	@param B
-	@param C
-	@param D points in form {x,y}
-*/
+/*\
+ * collision.line
+ * line-line intersect test, true if line AB intersects CD
+ [ method ]
+ - A,B,C,D (object) in form `{x,y}`
+\*/
 line: function (A,B,C,D)
 {
 	var res = (Fm.signed_area(A,B,C)>0 != Fm.signed_area(A,B,D)>0) &&
@@ -133,11 +135,13 @@ line: function (A,B,C,D)
 	return res;
 },
 
-/**	point in rectangle test
-	@function
-	@param P point in form {x,y}
-	@param R object in form {left,top,right,bottom}
-*/
+/*\
+ * collision.point_in_rect
+ * point in rectangle test
+ [ method ]
+ - P (object) in form `{x,y}`
+ - R (object) in form `{left,top,right,bottom}`
+\*/
 point_in_rect: function (P,R)
 {
 	return (Fm.inbetween(P.x,R.left,R.right) && Fm.inbetween(P.y,R.top,R.bottom));

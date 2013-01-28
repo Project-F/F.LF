@@ -1,41 +1,61 @@
-/**	@fileOverview
-	@description
-	sprite system
-	display and control sprites on page using <div> tag
-		support style left/top and CSS transform
-
-	@example
-	config=
-	{
-		canvas: canvas,   //[choice] *DOM node*, create and append a div to canvas
-		div: $('dog'),    //[choice] use this div instead of creating one
-		                  //	must choose either canvas or div option
-		wh: {x:100,y:100},// width and height
-		img:              // image list
-		{
-			'tag name':'sprite1.png',,,  //the first image is visible
-		},
-		img: 'sprites.png'//OR simply the image path
-	}
-	@example
-	masterconfig
-	{
-		baseUrl: '../sprites' //base url prepended to all image paths
-	}
- */
-
-define(['F.core/css!F.core/style.css','F.core/support'],function(css,support) //exports a class `sprite`
+/*\
+ * sprite
+ * features:
+ * - display and control sprites on page using `<div>` and `<img>` tag
+ * - multiple images for one sprite
+ * - **not** using canvas for sprite animations
+ * - support style left/top and CSS transform, depending on browser support
+\*/
+define(['F.core/css!F.core/style.css','F.core/support','module'],
+function(css,support,module)
 {
 
-var sp_count=0; //sprite count
-/**	@class
-*/
-/**	no private member
-	@constructor
-	@param config config is one time only and should be dumped after constructor returns
-*/
+var sp_count = 0; //sprite count
+var sp_masterconfig = module.config();
+/*\
+ * sprite
+ [ class ]
+ - config (object)
+ * {
+ - canvas (object) `div` DOM node to create and append sprites to
+ - div    (object) `div` DOM node, if specified, will use this `div` as sprite instead of creating a new one
+ * you only choose between `canvas` or `div` option
+ - wh     (object) width and height
+ - img    (object) image list
+ *      {
+ -      name (string) image path
+ *      }
+ * or
+ - img    (string) if you have only one image
+ * }
+ * config is one time only and will be dumped, without keeping a reference, after constructor returns
+|	var sp_config=
+|	{
+|		canvas: canvas,    // create and append a div to this node
+|		wh: {x:100,y:100}, // width and height
+|		img: 'test_sprite.png' // image path
+|	}
+|	var sp1 = new sprite(sp_config);
+ * optionally, you can configure globally some options via requirejs
+|	requirejs.config(
+|	{
+|		baseUrl: "../", //be sure to put all requirejs config in one place
+|
+|		config:
+|		{
+|			'F.core/sprite':
+|			{
+|				baseUrl: '../sprites/', //base url prepended to all image paths
+|				disable_css2dtransform: false //[optional], null by default
+|			}
+|		}
+|	});
+ * however, note that requirejs configuration must be done __before__ any module loading,
+ * and if you want to change some of the global options on runtime, you can do so by calling @sprite.masterconfig
+\*/
 function sprite (config)
 {
+	//no private member
 	this.ID=sp_count;
 	sp_count++;
 
@@ -73,27 +93,37 @@ function sprite (config)
 		this.el.style.top=0+'px';
 	}
 }
-/**	@function master config
-	getter: call with no parameter
-	setter: call with 1 config object as parameter
-*/
-sprite.prototype._config = {};
-sprite.prototype.config=function(masterconfig)
+
+/*\
+ * sprite.masterconfig
+ [ method ]
+ * it depends whether these config will take effect, specifically, `baseUrl` will take effect on the next `add_img`,
+ * and `disable_css2dtransform` will not take effect at all because css2dtransform support is built into prototype of sprite during module definition.
+\*/
+sprite.prototype.masterconfig=function(c)
 {
-	if( masterconfig)
-		sprite.prototype._config = masterconfig;
-	else
-		return sprite.prototype._config;
+	sp_masterconfig=c;
 }
-/**	@function
-*/
+
+/*\
+ * sprite.set_wh
+ [ method ]
+ * set width and height
+ - P (object) `{x,y}`
+\*/
 sprite.prototype.set_wh=function(P)
 {
 	this.el.style.width=P.x+'px';
 	this.el.style.height=P.y+'px';
 }
 
-if( support.css2dtransform)
+/*\
+ * sprite.set_xy
+ [ method ]
+ * set x and y
+ - P (object) `{x,y}`
+\*/
+if( support.css2dtransform && !sp_masterconfig.disable_css2dtransform)
 {
 	/**	@function
 	*/
@@ -112,23 +142,30 @@ else
 		this.el.style.top=P.y+'px';
 	}
 }
-
-/**	set the css zIndex.
-	@function
-*/
+/*\
+ * sprite.set_z
+ [ method ]
+ * set z index
+ - z (number) larger index will show on top
+\*/
 sprite.prototype.set_z=function(z)
 {
 	this.el.style.zIndex=Math.round(z);
 }
-/**	@function
-	@param imgpath
-	@param name
-*/
+/*\
+ * sprite.add_img
+ [ method ]
+ * add new image
+ - imgpath (string)
+ - name (string)
+ = (object) newly created DOM `img` element
+ * note that adding images can and should better be done in constructor `config`
+\*/
 sprite.prototype.add_img=function(imgpath,Name)
 {
 	var pre='';
-	if( sprite.prototype._config.baseUrl)
-	pre=sprite.prototype._config.baseUrl;
+	if( sp_masterconfig.baseUrl)
+	pre=sp_masterconfig.baseUrl;
 
 	var im = document.createElement('img');
 	im.setAttribute('class','F_sprite_img');
@@ -145,9 +182,11 @@ sprite.prototype.add_img=function(imgpath,Name)
 	this.switch_img(Name);
 	return im;
 }
-/**	@function
-	@param name
-*/
+/*\
+ * sprite.switch_img
+ [ method ]
+ - name (string) the key you specified in key-value-pair object `config.img`
+\*/
 sprite.prototype.switch_img=function(name)
 {
 	var left,top; //store the left, top of the current displayed image
@@ -175,40 +214,56 @@ sprite.prototype.switch_img=function(name)
 	}
 	this.cur_img=name;
 }
-/**	@function
-*/
+/*\
+ * sprite.set_img_xy
+ * set the position of the image, note that coordinates should be negative to show something
+ [ method ]
+ - P (object) `{x,y}`
+\*/
 sprite.prototype.set_img_xy=function(P)
 {
 	this.img[this.cur_img].style.left= P.x+'px';
 	this.img[this.cur_img].style.top= P.y+'px';
 }
 
-/**	remove from DOM
-	@function
-*/
+/*\
+ * sprite.remove
+ * remove from scene graph
+ [ method ]
+ * the remove/attach pair means a 'strong removal'.
+ * under current implementation, it means remove from DOM
+\*/
 sprite.prototype.remove=function()
 {
 	this.el.parentNode.removeChild(this.el);
 	this.removed=true;
 }
-/**	if previously removed, attach back to DOM
-	@function
-*/
+/*\
+ * sprite.attach
+ * if previously removed, attach back to scene graph
+ [ method ]
+ * an antagonist pair with @sprite.remove
+\*/
 sprite.prototype.attach=function()
 {
 	if( this.removed)
 		config.canvas.appendChild(this.el);
 }
-/**	hide (set display to none) without removing off DOM
-	@function
-*/
+/*\
+ * sprite.hide
+ * temporary being hidden in rendering
+ [ method ]
+ * the hide/show pair is conceptually 'weaker' than remove/attach pair
+\*/
 sprite.prototype.hide=function()
 {
 	this.el.style.display='none';
 }
-/**	show (set display to default)
-	@function
-*/
+/*\
+ * sprite.show
+ * an antagonist pair with @sprite.hide
+ [ method ]
+\*/
 sprite.prototype.show=function()
 {
 	this.el.style.display='';

@@ -1,11 +1,4 @@
-/**	@fileOverview
-	@description
-	keyboard controller system
-	maintains a table of key states
-	see http://project--f.blogspot.hk/2012/11/keyboard-controller.html for explainations
- */
-
-define(function() //exports a class `controller`
+define(function()
 {
 
 function keydown(e)
@@ -38,49 +31,102 @@ var master_controller = (function()
 		if (!e) e = window.event;
 		for (var I in this.child)
 		{
-			if ( this.child[I].key(e,down))
+			if ( this.child[I].key(e.keyCode,down))
 				break;//if one controller catches a key, the next controller will never receive an event
 		}
 	}
 	return mas;
 }());
 
-/**	@class
-	keyboard controller
-	@example
-	config=
-	{
-		up:'h', down:'n', left:'b', 'control name':'control key',,,
-	}
- */
+/*\
+ * controller
+ * keyboard controller
+ * - controllers for multiple players on the same keyboard
+ * - maintains a table of key states
+ * - generate key events for child controllers
+ * - buffered mode: buffer inputs and fetch only once a loop
+ * - never drops keys
+ * see [http://project--f.blogspot.hk/2012/11/keyboard-controller.html](http://project--f.blogspot.hk/2012/11/keyboard-controller.html) for technical explaination
+ [ class ]
+ - config (object)
+|	var con_config=
+|	{
+|		up:'h',down:'n',left:'b',right:'m',def:'v',jump:'f',att:'d'
+|		//,'control name':'control key',,,
+|	}
+|	var con = new controller(con_config);
+\*/
 function controller (config)
 {
+	/*\
+	 * controller.state
+	 [ property ]
+	 - (object)
+	 * table of key states
+	 * 
+	 * note that keys are indexed by their names, i.e. `up`,`down` rather than `w`,`s`
+	 | con.state.down //check if the `down` key is pressed down
+	\*/
 	this.state={};
+	/*\
+	 * controller.config
+	 [ property ]
+	 - (object)
+	 * note that controller still keeps a reference to the config object
+	\*/
 	this.config=config;
+	/*\
+	 * controller.keycode
+	 [ property ]
+	 - (object)
+	 * the keycode for each key
+	\*/
 	this.keycode={};
-	/**	@property controller.child child system that has the method key('control name',down)
-		push a child into this array to listen to key events
-	*/
+	/*\
+	 * controller.child
+	 [ property ]
+	 * child systems that has the method `key(name,down)`
+	 *
+	 * push a child into this array to listen to key events
+	 *
+	 * see @combodec.key
+	\*/
 	this.child=new Array();
-	/**	@property controller.sync controllers can work in 2 modes, sync and async.
-		if sync===false, a key up-down event will be distributed to all child **immediately**.
-		if sync===true, a key up-down event will be buffered, and must be fetch manually.
-	*/
+	/*\
+	 * controller.sync
+	 * controllers can work in 2 modes, sync and async
+	 [ property ]
+	 * if `sync===false`, a key up-down event will be dispatched to all child **immediately**.
+	 * 
+	 * if `sync===true`, a key up-down event will be buffered, and must be `fetch` manually.
+	 * there are very good reasons to architect your game in synchronous mode
+	 * - time-determinism; see @control_recorder.frame
+	 * - never drop keys; see [http://project--f.blogspot.hk/2012/11/keyboard-controller.html](http://project--f.blogspot.hk/2012/11/keyboard-controller.html)
+	\*/
 	this.sync=false;
+	/*\
+	 * controller.buf
+	 [ property ]
+	 - (array)
+	 * the array of keyname of buffered key input
+	\*/
 	this.buf=new Array();
 
-	/**	supply events to controller
-		(master controller will do this automatically)
-		@function
-		@param e event
-		@param down
-	*/
+	/*\
+	 * controller.key
+	 [ method ]
+	 * supply events to controller
+	 * 
+	 * master controller will do this automatically
+	 - e (object) keycode
+	 - down (boolean)
+	\*/
 	this.key=function(e,down) //interface to master_controller------
 	{
 		var caught=0;
 		for(var I in this.config)
 		{
-			if ( this.keycode[I]==e.keyCode)
+			if ( this.keycode[I]==e)
 			{
 				if( this.sync===false)
 				{
@@ -101,18 +147,21 @@ function controller (config)
 	}
 
 	//interface to application--------------------------------------
-	/**	clear the key state table
-		@function
-	*/
+	/*\
+	 * controller.clear_states
+	 * clear the key state table
+	 [ method ]
+	\*/
 	this.clear_states=function()
 	{
 		for(var I in this.config)
 			this.state[I]=0;
 	}
-	/**	fetch for inputs received since the last fetch
-		will flush buffer afterwards
-		@function
-	*/
+	/*\
+	 * controller.fetch
+	 * fetch for inputs received since the last fetch, will flush buffer afterwards
+	 [ method ]
+	\*/
 	this.fetch=function()
 	{
 		for( var i in this.buf)
@@ -126,9 +175,11 @@ function controller (config)
 		}
 		this.buf=[];
 	}
-	/**	flush the buffer manually
-		@function
-	*/
+	/*\
+	 * controller.flush
+	 * flush the buffer manually
+	 [ method ]
+	\*/
 	this.flush=function()
 	{
 		this.buf=[];
@@ -143,21 +194,28 @@ function controller (config)
 	}
 	//--]
 
-	/** @description
-	on the other hand, there can be other controllers with compatible definition and behavior,
-	(e.g. AI controller, network player controller, record playback controller)
-	-has the member variables `state`, `config`, `child`, `sync`
-	-behavior: call the `key` method of every member of `child` when keys arrive
-	-has the method `clear_states`, `fetch` and `flush`
-	-behavior: if `sync` is true, the controller should buffer key inputs,
-	           and only dispatch to child when `fetch` is called,
-	           and flush the buffer when `flush` is called
-	*/
+	/*\
+	 * controller.zppendix
+	 * on the other hand, there can be other controllers with compatible definition and behavior,
+	 * (e.g. AI controller, network player controller, record playback controller)
+	 * - has the properties `state`, `config`, `child`, `sync`
+	 * - behavior: call the `key` method of every member of `child` when keys arrive
+	 * - has the method `clear_states`, `fetch` and `flush`
+	 * - behavior: if `sync` is true, the controller should buffer key inputs,
+	 * and only dispatch to child when `fetch` is called,
+	 * and flush the buffer when `flush` is called
+	\*/
 }
 
-/**	convert keyname to keycode
-	@function
-*/
+/*\
+ * controller.keyname_to_keycode
+ * convert keyname to keycode
+ [ method ]
+ - keyname (string) 
+ = (number) keycode 
+ * note that some keycode is not the same across all browsers, 
+ * for details consult [http://www.quirksmode.org/js/keys.html](http://www.quirksmode.org/js/keys.html)
+\*/
 controller.keyname_to_keycode=function(A)
 {
 	var code;
@@ -201,14 +259,19 @@ controller.keyname_to_keycode=function(A)
 			case 'down': code=40; break;
 			case 'left': code=37; break;
 			case 'right': code=39; break;
+			case 'space': code=32; break;
 		}
 	}
 	return code;
 }
 
-/**	convert keycode back to keyname
-	@function
-*/
+/*\
+ * controller.keycode_to_keyname
+ * convert keycode back to keyname
+ [ method ]
+ - keycode (number) 
+ = (string) keyname 
+\*/
 controller.keycode_to_keyname=function(code)
 {
 	if( (code>='A'.charCodeAt(0) && code<='Z'.charCodeAt(0)) ||
@@ -224,6 +287,5 @@ controller.keycode_to_keyname=function(code)
 
 return controller;
 
-// http://www.quirksmode.org/js/keys.html
 // http://unixpapa.com/js/key.html
 });

@@ -31,17 +31,6 @@ get('switch_mode').onclick=switch_mode;
 get('switch_size').onclick=switch_size;
 get('generate_particles').onclick=generate_particles;
 
-var sp_config=
-{
-	canvas: canvas,
-	wh: {x:pw,y:pw},
-	img:{
-		B0:'circle.png',
-		B1:'circle1.png',
-		S0:'particle.png',
-		S1:'particle1.png'
-	}
-}
 generate_particles();
 
 var graph_config=
@@ -56,6 +45,17 @@ function generate_particles()
 {
 	for( var i=0; i<batch; i++)
 	{
+		var sp_config=
+		{
+			canvas: canvas,
+			wh: {x:pw,y:pw},
+			img:{
+				B0:'circle.png',
+				B1:'circle1.png',
+				S0:'particle.png',
+				S1:'particle1.png'
+			}
+		}
 		var A = new sprite(sp_config);
 		A.switch_img( size+(Math.random()<0.5? 0:1) );
 		var angle = 2*Math.random()*Math.PI;
@@ -89,12 +89,24 @@ function fly()
 		var lP = {x:P[i].x, y:P[i].y};
 		P[i].x += P[i].vx;
 		P[i].y += P[i].vy;
+		P[i].x = round(P[i].x);
+		P[i].y = round(P[i].y);
 		P[i].set_xy(P[i]);
 		var tP = {x:P[i].x, y:P[i].y};
 
 		if( mode===1)
 			graph.move(P[i],lP,tP);
 	}
+}
+
+function round(v,d)
+{
+	if(d===undefined || d===null)
+		d=2;
+	var exp=1;
+	for( var i=0; i<d; i++)
+		exp*=10;
+	return Math.round(v*exp)/exp;
 }
 
 function particle_collision()

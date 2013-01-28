@@ -1,14 +1,12 @@
-/**	@fileOverview
-	@description
-	Project F
-	generic functions
- */
-
-define(function(){ //exports a set of functions in an object
+/*\
+ * util
+ * javascript utilities
+\*/
+define(function(){
 
 var F={
-/** javascript-----------------
-*/
+
+// javascript-----------------
 
 /**	inject a .js file
 	deprecated in favour of the use of head.js, now requirejs
@@ -22,8 +20,12 @@ var F={
 	head.appendChild(script);
 }, */
 
-/**	attach a stylesheed to page
-*/
+/*\
+ * util.css
+ * attach a stylesheet to page
+ [ method ]
+ - filename (string)
+\*/
 css: function (filename)
 {
 	var head = document.getElementsByTagName('head')[0];
@@ -34,11 +36,14 @@ css: function (filename)
 	head.appendChild(link);
 },
 
-/**	@function
-*/
+/**
+ * util.double_delegate
+ * double delegate a function
+ [ method ]
+ * [reference](http://roberthahn.ca/articles/2007/02/02/how-to-use-window-onload-the-right-way/)
+ */
 double_delegate: function (function1, function2)
 {
-	// http://roberthahn.ca/articles/2007/02/02/how-to-use-window-onload-the-right-way/
 	return function() {
 	if (function1)
 		function1.apply(this,Array.prototype.slice.call(arguments));
@@ -47,13 +52,15 @@ double_delegate: function (function1, function2)
 	}
 },
 
-/**	@function
-	@param target
-	@description
-	if target is an array, return target as is.
-	if target is an object, return encapsulated in an array.
-	if target is false (null, undefined or zero), return an empty array.
-*/
+/*\
+ * util.make_array
+ [ method ]
+ - target (any)
+ * if target is:
+ - (array) returns target as is.
+ - (object) returns object encapsulated in an array.
+ - (falsy) (null, undefined or zero), returns an empty array.
+\*/
 make_array: function (target)
 {
 	if( target)
@@ -67,15 +74,18 @@ make_array: function (target)
 		return [];
 },
 
-//
 //data structure------------
-//
-/**	@function
-	@param arr target array to be searched
-	@param fc_criteria function to return true when an accepted element is passed in
-	@param fc_replace [optional] function to return a replacement value when original value is passed in
-	@param search_all [optional] if true, will search through entire array before returning the list of index, otherwise, will return immediately at the first accepted element
-*/
+
+/*\
+ * util.arr_search
+ [ method ]
+ - arr (array) target to be searched
+ - fc_criteria (function) return true when an accepted element is passed in
+ - [fc_replace] (function) to return a replacement value when original value is passed in
+ - [search_all] (boolean) if true, will search through entire array before returning the list of indices, otherwise, will return immediately at the first accepted element
+ = (array) if `search_all` is true
+ = (object) if `search_all` if false
+\*/
 arr_search: function ( arr,
 		fc_criteria,
 		fc_replace,
@@ -104,20 +114,31 @@ arr_search: function ( arr,
 	}
 },
 
-/**	push only if not exists in array
-	@function
-*/
+/*\
+ * util.push_unique
+ * push only if not existed in array
+ [ method ]
+ - array (array)
+ - element (object)
+ = (boolean) true if added
+\*/
 push_unique: function ( array, element)
 {
 	var res = F.arr_search( array, function(E){return E==element} );
-	if (res == -1) array.push(element);
+	if (res == -1)
+	{
+		array.push(element);
+		return true;
+	}
 },
 
-/**	extend obj1 with all members of obj2
-	@function
-	@param obj1
-	@param obj2
-*/
+/*\
+ * util.extend_object
+ * extend obj1 with all members of obj2
+ [ method ]
+ - obj1, obj2 (object)
+ = (object) a modified obj1
+\*/
 extend_object: function (obj1, obj2)
 {
 	for (var p in obj2)
@@ -134,16 +155,37 @@ extend_object: function (obj1, obj2)
 	// http://stackoverflow.com/questions/122102/what-is-the-most-efficient-way-to-clone-a-javascript-object
 },
 
-/**	convert a JSON object to into text
-	@function
-	@param obj2 the object
-	@param name	the object's name
-	@param sep [optional] separator, default as '\n'
-	@param pretext [used in recursion only] set it to null
-	@param filter [optional] a filter function(p,P) passing in name p and object P, return 1 to completely hide the attribute, OR return a string to be shown
-	@param TTL [optional] time-to-live to prevent infinite looping
-	@example usage: F.to_text(obj,'obj');
-*/
+/*\
+ * util.to_text
+ * convert an object into JSON text
+ * 
+ * most of the time you should use built-in `JSON.stringify` instead
+ [ method ]
+ - obj (object)
+ - name (string) the object's name
+ - [sep] (string) separator, default as `\n`
+ - [pretext] (string) used in recursion only, set it to null
+ - [filter] (function) a filter `function(p,P)` passing in name p and object P, return 1 to hide the attribute, OR return a string to be shown
+ - [TTL] (number) time-to-live to prevent infinite looping
+|	var obj={};
+|	obj.a={};
+|	obj.a.x=1;
+|	obj.a.y=1;
+|	obj.b='hello';
+|	obj.c=12;
+|	console.log(util.to_text(obj,'obj'));
+|	//outputs:
+|	obj:
+|	{
+|		a:
+|		{
+|			'x': 1,
+|			'y': 1
+|		},
+|		'b': 'hello',
+|		'c': 12
+|	}
+\*/
 to_text: function (
 	obj2, name,
 	sep,
@@ -192,21 +234,25 @@ to_text: function (
 	return str;
 },
 
-/** extract properties from an array of object
-	say we have
-	[ {x:x1,y:y1}, {x:x2,y:y2}, {x:x3,y:y3},,,]
-	we want to extract it into
-	{
-	  x:
-		[ x1, x2, x3,,, ],
-	  y:
-		[ y1, y2, y3,,, ]
-	}
- */
-/** @function
-	@param array
-	@param prop property name OR an array of property name
- */
+/*\
+ * util.extract_array
+ [ method ]
+ * extract properties from an array of objects
+|	//say we have
+|	[ {x:x1,y:y1}, {x:x2,y:y2}, {x:x3,y:y3},,,]
+|	//we want to extract it into
+|	{
+|	  x:
+|		[ x1, x2, x3,,, ],
+|	  y:
+|		[ y1, y2, y3,,, ]
+|	}
+ - array (array)
+ - prop (string) property name
+ * or
+ - prop (array) array of property name
+ = (array) extracted array
+\*/
 extract_array: function(array, prop)
 {
 	var out={};

@@ -1,5 +1,7 @@
-/**	plugin builder for requirejs optimization
- */
+/*\
+ * css-build
+ * plugin builder for requirejs optimization
+\*/
 
 define(function() {
 

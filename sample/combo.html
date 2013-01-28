@@ -4,12 +4,12 @@
 <body>
 <div id='combo' style='color:red'></div><br>
 <div id='seq'></div><br>
-<div id='info'></div>
+<pre id='info' style='line-height:150%;'></pre>
 
 <script data-main="../../" src="require.js"></script>
 
 <script>
-requirejs(['F.core/util','F.core/controller','F.core/combodec'], function(F,controller,combodec)
+requirejs(['F.core/controller','F.core/combodec'], function(controller,combodec)
 {
 
 var con_fg = {up:'h',down:'n',left:'b',right:'m',def:'v',jump:'f',att:'d'};
@@ -21,7 +21,6 @@ var dec_config =
 	timeout:72, //in a 72 fps key control system, approx. 1s
 	comboout:36,//the max time interval(in frames) between keys to make a combo
 	callback: print,    //callback function when combo detected
-	no_repeat_key: true //eliminate repeated key strokes by browser
 }
 var combo = [
 	{ name:'氣功波', seq:['def','right','att']},
@@ -44,18 +43,18 @@ var com = document.getElementById('combo');
 var TIMER = setInterval(onEnterFrame,1000/72); //72 fps
 function onEnterFrame()
 {
-	dec.frame();
+	dec.frame(); //must supply frame events to detector
 	seq.innerHTML=dec.seq.toString();
 }
 
-function print(combo)
+function print(combo) //callback function when combo detected
 {
 	var str=combo.name+' '+combo.seq.toString()+'<br>';
 	com.innerHTML+=str;
 }
 
-var str=F.to_text(con_fg,'con_fg',' ','');
-str   +='<br>'+F.to_text(combo, 'combo', ' ','');
+var str='controller='+JSON.stringify(con_fg);
+str+='\n'+'combo='+JSON.stringify(combo).replace(/},/g,'},\n').replace('[','[\n').replace('}]','}\n]');
 document.getElementById('info').innerHTML=str;
 
 });

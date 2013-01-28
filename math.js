@@ -1,18 +1,20 @@
-//math related functions
+/*\
+ * math
+ * math related functions
+\*/
 
-define(function(){ //exports a set of functions in an object
+define(function(){
 
 math={
 /**
 math helper functions-----
 */
-/**
-	@function
-	@param x
-	@param L
-	@param R
-	@return true if x is in between L and R
-*/
+/*\
+ * math.inbetween
+ [ method ]
+ - x, L, R (number)
+ = (boolean) true if x is in between L and R
+\*/
 inbetween: function (x,L,R)
 {
 	var l,r;
@@ -26,15 +28,22 @@ inbetween: function (x,L,R)
 	}
 	return x>=l && x<=r;
 },
-/**	round to decimal 2
-	@function
-*/
+/*\
+ * math.round_d2
+ [ method ]
+ - I (number)
+ = (number) round to decimal 2
+\*/
 round_d2: function (I)
 {
 	return Math.round(I*100)/100;
 },
-/**	@function
-*/
+/*\
+ * math.negligible
+ [ method ]
+ - M (number)
+ = (boolean) true if M is very very small, with absolute value smaller than ~0.00000001
+\*/
 negligible: function (M)
 {
 	return -0.00000001 < M && M < 0.00000001;
@@ -43,9 +52,15 @@ negligible: function (M)
 /**
 curves--------------------
 */
-/**	degree 2 bezier
-	@function
-*/
+
+/*\
+ * math.bezier2
+ [ method ]
+ - A, C, B (object) points in `{x,y}`
+ * here `C` means the control point
+ - steps (number)
+ = (object) array of points on curve
+\*/
 bezier2: function (A,C,B,steps)
 {
 	var curve = new Array();
@@ -70,77 +85,120 @@ bezier2_step: function (A,C,B, i,steps)
 },
 
 /**
-vector math--------------
+2d vector math--------------
 */
-/**	A+B
-	@function
-*/
+/*\
+ * math.add
+ [ method ]
+ * A+B
+ - A, B (object) points in `{x,y}`
+ = (object) point in `{x,y}`
+\*/
 add: function (A,B)
 {
 	return {x:A.x+B.x, y:A.y+B.y};
 },
-/**	A-B
-	@function
-*/
+/*\
+ * math.sub
+ * A-B
+ [ method ]
+ - A, B (object) points in `{x,y}`
+ = (object) point in `{x,y}`
+\*/
 sub: function (A,B)
 {
 	return {x:A.x-B.x, y:A.y-B.y};
 },
-/**	scale
-	@function
-*/
+/*\
+ * math.scale
+ * A*t
+ [ method ]
+ - A (object) point
+ - t (number)
+ = (object) point
+\*/
 sca: function (A,t)
 {
 	return {x:A.x*t, y:A.y*t};
 },
-/**	@function
-*/
+/*\
+ * math.length
+ * |A|
+ [ method ]
+ - A (object) point
+ = (number) length
+\*/
 length: function (A)
 {
 	return Math.sqrt( A.x*A.x + A.y*A.y );
 },
-/**	@function
-*/
+/*\
+ * math.distance
+ * |AB|
+ [ method ]
+ - A, B (object) points in `{x,y}`
+ = (number) length
+\*/
 distance: function (p1,p2)
 {
 	return Math.sqrt( (p2.x-p1.x)*(p2.x-p1.x) + (p2.y-p1.y)*(p2.y-p1.y) );
 },
-/**	@function
-*/
+/*\
+ * math.negative
+ * -A
+ [ method ]
+ - A (object) point
+ = (object) point
+\*/
 negative: function (A)
 {
 	return {x:-A.x, y:-A.y};
 },
-/**	@function
-*/
+/*\
+ * math.normalize
+ * A/|A|
+ [ method ]
+ - A (object) point
+ = (object) point
+\*/
 normalize: function (A)
 {
 	return math.sca(A, 1/math.length(A));
 },
-/**	perpendicular: anti-clockwise 90 degrees, assume origin in lower left
-	@function
-*/
+/*\
+ * math.perpen
+ * perpendicular; anti-clockwise 90 degrees, assume origin in lower left
+ [ method ]
+ - A (object) point
+\*/
 perpen: function (A)
 {
 	return {x:-A.y, y:A.x};
 },
-/**	@function
-*/
+/*\
+ * math.signed_area
+ [ method ]
+ - A, B, C (object) points
+ = (number) signed area
+ * the sign indicate clockwise/anti-clockwise points order
+\*/
 signed_area: function (p1,p2,p3)
 {
 	var D = (p2.x-p1.x)*(p3.y-p1.y)-(p3.x-p1.x)*(p2.y-p1.y);
 	return D;
 },
-/**	line-line intersection
-	@function
-	@param P1 line 1
-	@param P2 line 1
-	@param P3 line 2
-	@param P4 line 2
-	@return the intersection point of P1-P2 with P3-P4
-*/
-intersect: function ( P1,P2,
-			P3,P4)
+/*\
+ * math.intersect
+ * line-line intersection
+ [ method ]
+ - P1 (object) point on line 1
+ - P2 (object) point on line 1
+ - P3 (object) point on line 2
+ - P4 (object) point on line 2
+ = (object) return the intersection point of P1-P2 with P3-P4
+ * reference: [http://paulbourke.net/geometry/lineline2d/](http://paulbourke.net/geometry/lineline2d/)
+\*/
+intersect: function ( P1,P2,P3,P4)
 {
 	var mua,mub;
 	var denom,numera,numerb;
@@ -165,7 +223,6 @@ intersect: function ( P1,P2,
 
 	return { x: P1.x + mua * (P2.x - P1.x),
 		y:  P1.y + mua * (P2.y - P1.y) };
-	//http://paulbourke.net/geometry/lineline2d/
 }
 
 };

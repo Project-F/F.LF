@@ -1,31 +1,34 @@
-define(function() //exports a class `animator`
+define(function()
 {
 
-/**	@class
-	@description
-	animate sprites
-	samle config @example
-	config=
-	{
-		x:0,y:0,     //top left margin of the frames
-		w:100, h:100,//width, height of a frame
-		gx:4,gy:4,   //define a gx*gy grid of frames
-		tar:         //target F.sprite
-		ani:         //animation sequence:
-		   null,     //if undefined or null, loop through top left to lower right, row by row
-		   [0,1,2,1,0],//use custom frame sequence
-		graph:       //graph:
-		   [[0,1],   //	a 2d array gx*gy sized
-		    [2,3]],  //		to store custom data for each frame
-		borderright: 1, //[optionals] trim the right edge pixels away
-		borderbottom: 1,
-		borderleft: 1
-		bordertop: 1,
-	}
- */
+/*\
+ * animator
+ [ class ]
+ * - animate sprites
+ * - support multiple animation sequence on the same image
+ - config (object)
+| {
+|		x:0,y:0,     //top left margin of the frames
+|		w:100, h:100,//width, height of a frame
+|		gx:4,gy:4,   //define a gx*gy grid of frames
+|		tar:         //target @sprite
+|		ani:         //animation sequence:
+|			null,    //if undefined, loop through top left to lower right, row by row
+|			[0,1,2,1,0],//use custom frame sequence
+|		borderright: 1, //[optionals] trim the right edge pixels away
+|		borderbottom: 1,
+|		borderleft: 1,
+|		bordertop: 1
+| }
+ * multiple animators reference to the same config, so dont play with it in runtime
+ *
+ * [example](../sample/sprite.html)
+ # <iframe src="../sample/sprite.html" width="400" height="250"></iframe>
+ # <img src="../sample/test_sprite.png" width="300">
+\*/
+
 /**	@constructor
 	no private member
-	@param config multiple animator reference to the same config
 */
 function animator (config)
 {
@@ -38,19 +41,26 @@ function animator (config)
 	if( !config.borderleft)  config.borderleft=0;
 	if( !config.bordertop)   config.bordertop=0;
 }
-/**	@function
-	@description
-	return to the first frame of animation sequence
-*/
+/*\
+ * animator.rewind
+ [ method ]
+ * return to the first frame of animation sequence
+\*/
 animator.prototype.rewind=function()
 {
 	this.I=-1;
 	this.next_frame();
 }
-/**	@function
-	@description
-	turn to the next frame, return the index of the frame just shown
-*/
+/*\
+ * animator.next_frame
+ [ method ]
+ * turn to the next frame
+ *
+ * if `config.ani` exists, will go to the next frame of animation sequence
+ *
+ * otherwise, loop through top left to lower right, row by row
+ = (number) index of the frame just shown
+\*/
 animator.prototype.next_frame=function()
 {
 	var c=this.config;
@@ -74,21 +84,23 @@ animator.prototype.next_frame=function()
 	}
 	return this.I;
 }
-/**	@function
-	@description
-	set to a particular frame
-	@param i
-*/
+/*\
+ * animator.set_frame
+ [ method ]
+ * set to a particular frame
+ - i (number) frame index
+\*/
 animator.prototype.set_frame=function(i)
 {
 	this.I=i;
 	this.show_frame(i);
 }
-/**	@function
-	@description
-	set the horizontal mirror mode
-	@param val true: mirrored, false: normal
-*/
+/*\
+ * animator.hmirror
+ [ method ]
+ * set the horizontal mirror mode
+ - val (boolean) true: mirrored, false: normal
+\*/
 animator.prototype.hmirror=function(val)
 {
 	this.horimirror = val;
@@ -115,30 +127,34 @@ animator.prototype.get_at=function(i) //get the content of the graph at frame i
 	return c.graph[(i%c.gx)][(Math.floor(i/c.gx))];
 }
 
-/**	@function
-	@description
-	a helper function to constructor a set of animators
-	animator set is not a class. do NOT <code>var ani = new animator_set()</code>,
-	instead do <code>var ani = animator_set()</code>
-	@example
-	set_config=
-	{
-		'base': //default parameters, must be specified as base when calling animator_set(set_config,*base*)
-		{
-			x:0,y:0,     //top left margin of the frames
-			w:L, h:L,    //width, height of a frame
-			gx:4,gy:1,   //define a gx*gy grid of frames
-			tar:null,    //target sprite
-		},
-
-		'standing':
-		{	//change only values you want to
-			x:0,y:0,     //top left margin of the frames
-			gx:4,gy:1,   //define a gx*gy grid of frames
-		},,,
-	}
- */
-animator.set=function(set_config, base)
+/*\
+ * animator.prototype.set
+ [ method ]
+ * a helper function to constructor a set of animators
+ *
+ * animator set is a method. do **not** `var ani = new animator_set(..)`
+ - set_config (object)
+ - [base] (string)
+ *
+| set_config=
+| {
+|	'base': //default parameters, must be specified as base when calling animator_set
+|	{
+|		x:0,y:0,     //top left margin of the frames
+|		w:L, h:L,    //width, height of a frame
+|		gx:4,gy:1,   //define a gx*gy grid of frames
+|		tar:null,    //target sprite
+|	},
+|
+|	'standing':
+|	{	//change only values you want to
+|		x:0,y:0,     //top left margin of the frames
+|		gx:4,gy:1    //define a gx*gy grid of frames
+|	} //,,,
+| }
+| var set = animator_set(set_config,'base')
+\*/
+animator.prototype.set=function(set_config, base)
 {
 	if(!set_config)
 		return null;

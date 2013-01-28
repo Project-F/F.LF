@@ -51,7 +51,7 @@
 	consult(event,state)	//call a function without causing state transition
  */
 
-define(['F.core/util'],function(F) //exports a class `states`
+define(['F.core/util'],function(F)
 {
 
 function states (state_config)

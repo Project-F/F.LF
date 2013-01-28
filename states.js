@@ -1,94 +1,104 @@
-/**	@fileOverview
-	@description
-	states: nested state transition system, a Hierarchical State Machine ( HSM )
-	controls state transitions
-	@example
-	state_config =
- 	{
-		event:
-		{
-			entry: 'state1', //define the init state
-			entry: function(), // OR use an init function
-			{
-				return 'state1';
-			}
-		},
+/*\
+ * states
+ * - nested state transition system, a Hierarchical State Machine ( HSM )
+ * - intuitive state machine definition syntax
+ * - simple (not UML compatible) yet powerful enough for interactive gaming
+ * - reduces logical bugs if used as a programming paradigm
+| var state_config =
+| {
+| 	event:
+| 	{
+| 		entry: 'state1', //define the init state
+| 		entry: function(), // OR use an init function
+| 		{
+| 			return 'state1';
+| 		}
+| 	},
+| 
+| 	state1:
+| 	{
+| 		event:
+| 		{
+| 			'event1': 'state2',  //name of target state
+| 			//  on  :   to
+| 
+| 			'event2': function(state, //a reference to the `states` instance
+| 							event,p1,p2) //event and its parameters
+| 			{
+| 				alert(this.name); //gives 'state1'
+|				alert(this.data.data_of_state1); //give 'hello'
+| 				return 'state2'; //the returned state name will cause a transition to that state, nothing will happen if returned null/undefined
+| 			} //,,,
+| 
+| 			entry: function(state,event,prev_state) //called on enter state, passing in previous state
+| 			{
+| 				//some init
+| 			},
+| 
+| 			exit: function, //called on leave state, passing in next state
+| 
+| 			'guard': function(state,event,p1,p2) //if you consult a particular event of a state, you get its return value without causing any state transition
+| 			{
+| 				return allow_transition(p1,p2);
+| 			},
+| 		},
+| 
+| 		data:
+| 		{	//memory associated with each state
+| 			data_of_state1: 'hello'
+| 		},
+| 
+| 		state1_1:
+| 		{
+| 			event:
+| 			{
+| 				'event1':'state1',   //transit to superstate
+| 				'event2':'state1_2', //to other state within a superstate
+| 				'event3':'state2',   //out of the immediate superstate
+| 			},
+| 		},
+| 
+| 		state1_2: 
+| 		{ //,,,
+| 		},
+| 
+| 	},
+| 
+| 	state2:
+| 	{
+| 		//,,,
+| 	} //,,, more states
+| };
+* 
+* The critical feature of hierarchy is:
+* - a state machine in a certain state is also in that state's superstate.
+* - an event/consult is propagated to the superstate of current state until handled.
+* - in a state transition, a machine must entry a state's superstate before entering that state.
+* - in a state transition, a machine must exit the current state before exiting the current state's superstate.
+ * see [sample](../sample/states.html)
+\*/
 
-		state1:
-		{
-			event:
-			{
-				'event1': 'state2',  //name of target state
-				//  on  :   to
-
-				'event2': function(state, //a reference to the `states` instance
-								event,p1,p2) //event and its parameters
-				{
-					alert(this.name); //gives 'state1'
-					alert(this.data.data_of_state1); //give 'hello'
-					return 'state2'; //the returned state name will cause a transition to that state, nothing will happen if returned null/undefined
-				} ,,,
-
-				entry: function(state,event,prev_state) //called on enter state, passing in previous state
-				{
-					//some init
-				},
-
-				exit: function, //called on leave state, passing in next state
-
-				'guard': function(state,event,p1,p2) //if you consult a particular event of a state, you get its return value without causing any state transition
-				{
-					return allow_transition(p1,p2);
-				},
-			},
-
-			data:
-			{	//memory associated with each state
-				data_of_state1: 'hello'
-			},
-
-			state1_1:
-			{
-				event:
-				{
-					'event1':'state1',   //transit to superstate
-					'event2':'state1_2', //to other state within a superstate
-					'event3':'state2',   //out of the immediate superstate
-				},
-			},
-
-			state1_2: { ,,, },
-
-		},
-
-		state2:
-		{
-			,,,
-		} ,,, //more states
-	};
- */
-/**
- The critical feature of hierarchy is:
-   -a state machine in a certain state is also in that state's superstate.
-   -an event/consult is propagated to the superstate of current state until handled.
-   -in a state transition, a machine must entry a state's superstate before entering that state.
-   -in a state transition, a machine must exit the current state before exiting the current state's superstate.
- */
-
-define(['F.core/util'],function(F) //exports a class `states`
+define(['F.core/util'],function(F)
 {
 
 var state_list=[];
-/**	@constructor
-	@param state_def state machine definition
-	@param init_obj initializer object, content will be copied shallowly to `this`
-*/
+/*\
+ * states
+ [ class ]
+ - state_def (object) state machine definition
+ - init_obj (object) initializer object, content will be copied shallowly to `this`
+ * the reason for having an initializer is the state machine is running before the constructor returns
+\*/
 function states (state_def,init_obj)
 {
-	//[--constructor
 	//	no private member
-	/** @property this.state can be altered dynamically
+	/** @property 
 	*/
+	/*\
+	 * states.state
+	 [ property ]
+	 - (object) states tree, can be altered dynamically
+	\*/
 	this.state=state_def;
 	if( init_obj)
 		for( var Q in init_obj)
@@ -100,44 +110,82 @@ function states (state_def,init_obj)
 		state.superstate=superstate;
 	});
 
-	this.evlay=new Array(20); //the array of delayed events
+	/*\
+	 * states.evlay
+	 [ property ]
+	 - (array) array of delayed events
+	\*/
+	this.evlay=new Array(20);
 	for( var i=0; i<this.evlay.length; i++)
 		this.evlay[i]={i:-1};
 
-	/**	@property this.cur defines the path of current state
-		@example
-		       cur=['state1','state1_1','state1_1_1'];
-		represents   state1-> state1_1-> state1_1_1(cur is here)
-	*/
+	/*\
+	 * states.cur
+	 * defines the path to current state
+	 [ property ]
+	 - (array)
+	 |        cur=['state1','state1_1','state1_1_1'];
+	 | represents   state1-> state1_1-> state1_1_1(cur is here)
+	\*/
 	this.cur=[];
+	/*\
+	 * states.cur_name
+	 [ property ]
+	 - (string) name of current state
+	\*/
 	this.cur_name='root';
-	this.cur_state=this.state; //a reference to the current state in state_def
+	/*\
+	 * states.cur_state
+	 [ property ]
+	 - (object) reference to the current state in state_def
+	\*/
+	this.cur_state=this.state;
 	this.chain_event(true,this.cur,1,'entry',true,null);
 
 	state_list.push(this); //the list of state objects
 
-	/** @property this.log_enable not log by default
-	*/
+	/*\
+	 * states.log_enable
+	 [ property ]
+	 - (boolean) not log by default
+	\*/
 	this.log_enable=false;
-	/** @property this.log_filter a function to return true to not log an item
-	*/
+	/*\
+	 * states.log_filter
+	 [ property ]
+	 - (function) a function to return true to not log an item
+	\*/
 	this.log_filter=null;
-	/** @property this.log_size 100 lines by default
-	*/
+	/*\
+	 * states.log_size
+	 [ property ]
+	 - (number) 100 lines by default
+	\*/
 	this.log_size=100;
 	/** @property this.log the JSON object
 	*/
-	this.log=[]; //log state transitions in form of
-		//[
-		// {type:'t', from:path, to:path},
-		// {type:'c', event:event, target:state, return:result},
-		//];
-	//--]
+	/*\
+	 * states.log
+	 [ property ]
+	 - (array)
+	 * log state transitions in form of
+	 | [
+	 |	{type:'t', from:path, to:path}, //transition
+	 |	{type:'c', event:event, target:state, return:result}, //call
+	 | ]
+	\*/
+	this.log=[];
 }
 
-/**	propagate an event from top to down, performing some computation on each node
-	@function
-*/
+/*\
+ * states.propagate_down
+ [ method ]
+ * propagate an event from top to down, performing some computation on each node
+ - level (number) max. no. of levels to go through
+ - fun (function)
+ - [node] (object) reference to a state object, like `state_config.state1.state1_1`,
+ * if unspecified, assume from `root`
+\*/
 states.prototype.propagate_down=function(level,fun,node)
 {
 	if( level<=0)
@@ -156,9 +204,14 @@ states.prototype.propagate_down=function(level,fun,node)
 	}
 }
 
-/**	propagate an event from current node to root, performing some computation on each node
-	@function
-*/
+/*\
+ * states.propagate_up
+ [ method ]
+ * propagate an event from a node to root, performing some computation on each node
+ - level (number) max. no. of levels to go through
+ - fun (function)
+ - [node] (object) optional; if not specified assume from node of current state
+\*/
 states.prototype.propagate_up=function(level,fun,node)
 {
 	if(!node)
@@ -258,9 +311,13 @@ states.prototype.execute_event=function(event,state,arg)
 	return res;
 }
 
-/**	fire an event
-	@function
-*/
+/*\
+ * states.event
+ [ method ]
+ * fire an event
+ - event (string)
+ - [arg] (any) extra args will be passed through to event handler of a state
+\*/
 states.prototype.event=function(event/*,arguments,,,*/)
 {
 	if( this.valid_event(event))
@@ -282,12 +339,15 @@ states.prototype.event=function(event/*,arguments,,,*/)
 	/* TODO: return true if state transition happened*/
 }
 
-/**	fire an event 'event' after 'delay' number of 'frame' events
-	@function
-	@param event
-	@param delay
-	@param frame
-*/
+/*\
+ * states.event_delay
+ [ method ]
+ * fire an event `event` after `delay` number of `frame` events
+ - event (string)
+ - delay (number)
+ - frame (string)
+ - [arg] (any) extra args will be passed through to event handler of a state
+\*/
 states.prototype.event_delay=function(event,delay,frame/*,arguments,,,*/)
 {
 	if( !this.valid_event(event))
@@ -311,12 +371,15 @@ states.prototype.event_delay=function(event,delay,frame/*,arguments,,,*/)
 	}
 }
 
-/**	call an event handler and get its return value, without actually firing an event
-	@function
-*/
-states.prototype.consult=function(consultant,
-			state //[optional] state name
-			/*,arguments,,,*/) //[optional]
+/*\
+ * states.consult
+ * call an event handler and get its return value, without actually causing state transition
+ [ method ]
+ - consult_event (string) event name
+ - [state] (object) optional; if unspecified will assume current state
+ - [arg] (any) extra args will be passed through to event handler of a state
+\*/
+states.prototype.consult=function(consultant, state /*,arguments,,,*/)
 {
 	if( !this.valid_event(consultant))
 		return null;
@@ -329,9 +392,12 @@ states.prototype.consult=function(consultant,
 	return result.result;
 }
 
-/**	return the state object of path array A
-	@function
-*/
+/*\
+ * states.state_at
+ [ method ]
+ = (object) state specified by path A
+ | sta.state_at(['state1','state1_1','state1_1_1']);
+\*/
 states.prototype.state_at=function(A)
 {
 	var obj=this.state;
@@ -342,14 +408,15 @@ states.prototype.state_at=function(A)
 	return obj;
 }
 
-/**	search for the path of state A
-	@function
-	@param A
-	@param node [optional] under a particular node
-	@return an Array representing path
-*/
-states.prototype.search=function(A,
-				node)
+/*\
+ * states.search
+ [ method ]
+ * search for the path of a state
+ - state (object)
+ - [node] (object) only search under this node. if unspecified, assume `root`
+ = (array) representing path
+\*/
+states.prototype.search=function(A,node)
 {
 	var path=new Array();
 	if( node)
@@ -440,16 +507,27 @@ states.prototype.to=function(target_name)
 	this.cur_state=target_state;
 }
 
-/**
-	@function
-	@param filter [optional] return true to hide an item
-*/
-states.prototype.show_log=function(
-	filter)
+/*\
+ * states.show_log
+ * show the log in human readable text
+ [ method ]
+ - [filter] (function) optional; return true to hide an item
+ * sample log
+| (oldest at top)
+| call 'consultant' of A_1_1_1, returning hello
+| call 'go' of A_1_1_1, returning A_2_1
+| call 'exit' of A_1_1_1, returning undefined
+| call 'exit' of A_1_1, returning undefined
+| call 'exit' of A_1, returning undefined
+| transition from A,A_1,A_1_1,A_1_1_1 to A,A_2,A_2_1
+| call 'entry' of A_2, returning undefined
+| call 'entry' of A_2_1, returning undefined
+\*/
+states.prototype.show_log=function(filter)
 {
-	var str='(lastest at top)\n';
+	var str='(oldest at top)\n';
 	var L=this.log;
-	for( var i=L.length-1; i>=0; i--)
+	for( var i=0; i<L.length; i++)
 	{
 		if( filter && filter(L[i]))
 				continue;

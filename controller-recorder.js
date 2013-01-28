@@ -1,39 +1,49 @@
-/**	@fileOverview
-	@description
-	controller recorder and player
-	to record and playback activity of a controller
- */
-
 define(['F.core/util'],function(F) //exports 2 classes `control_recorder` and `control_player` in an object
 {
 
 return {
 
-/**	@class
-	control recorder
-	@param target_controller
-*/
+/*\
+ * control_recorder
+ [ class ]
+ * controller recorder to record activity of a controller
+ - target_controller (object) target @controller
+\*/
 control_recorder: function(target_controller)
 {
 	this.time=0;
 	this.rec= new Array();
-	/**	supply keys to control_recorder
-		@function
-	*/
+	/*\
+	 * control_recorder.key
+	 * supply keys to control_recorder
+	 [ method ]
+	 - k (string) key name
+	 - down (boolean)
+	\*/
 	this.key= function(k,down)
 	{
 		this.rec.push({t:this.time, k:k, d:down});
 	}
-	/**	a tick of time
-		@function
-	*/
+	/*\
+	 * control_recorder.frame
+	 * a tick of time
+	 [ method ]
+	 * the recorder records in discrete time sequence, if your game is not exactly in discrete time,
+	 * i.e. changes take effect __immdiately__ upon receiving key inputs rather than delayed until
+	 * this next time unit, your game is said to be non-time-deterministic, and theoretically
+	 * you cannot record and playback key inputs and receive __exact same__ result,
+	 * but generally speaking if the recording fps is high enough the error will be small
+	\*/
 	this.frame= function()
 	{
 		this.time+=1;
 	}
-	/**	export to JSON
-		@function
-	*/
+	/*\
+	 * control_recorder.export_str
+	 * export to JSON
+	 [ method ]
+	 = (string) JSON
+	\*/
 	this.export_str= function()
 	{
 		var str="";
@@ -51,38 +61,54 @@ control_recorder: function(target_controller)
 	target_controller.child.push(this);
 },
 
-/**	@class
-	control record playback
-	compatible with controller
-	@param control_config the config used for controller
-	@param record
-*/
+/*\
+ * control_player
+ * control player to playback activity of a controller
+ [ class ]
+ * compatible with @controller and please refer to controller for specification
+ - control_config (object) config used for controller
+ - record (array)
+\*/
 control_player: function(control_config, record)
 {
 	var I=0;
 	var time=0;
 	var rec=record;
+	/*\
+	 * control_player.state
+	 - (object)
+	 [ property ]
+	\*/
 	this.state= F.extend_object({},control_config);
 	for ( var j in this.state)
 		this.state[j]=0;
-	/**	@property control_player.child
-	*/
+	/*\
+	 * control_player.child
+	 - (array)
+	 [ property ]
+	\*/
 	this.child=[];
-	/**	@property control_player.sync
-	*/
+	/*\
+	 * control_player.sync
+	 - (boolean)
+	 [ property ]
+	\*/
 	this.sync=false;
-
-	/**	a tick of time
-		@function
-	*/
+	/*\
+	 * control_player.frame
+	 * a tick of time
+	 [ method ]
+	\*/
 	this.frame=function()
 	{
 		time++;
 		if( this.sync===false)
 			this.fetch();
 	}
-	/**	@function
-	*/
+	/*\
+	 * control_player.fetch
+	 [ method ]
+	\*/
 	this.fetch=function()
 	{
 		for (; time===rec[I].t; I++)
@@ -95,11 +121,15 @@ control_player: function(control_config, record)
 				I=0;
 		}
 	}
-	/**	@function
-	*/
+	/*\
+	 * control_player.clear_states
+	 [ method ]
+	\*/
 	this.clear_states=function(){}
-	/**	@function
-	*/
+	/*\
+	 * control_player.flush
+	 [ method ]
+	\*/
 	this.flush=function(){}
 }
 

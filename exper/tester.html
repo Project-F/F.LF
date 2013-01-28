@@ -1,4 +1,6 @@
 <body>
+<textarea id='texter'>
+</textarea>
 <script>
 /** this file is for testing various javascripts tricks
  */
@@ -105,7 +107,7 @@ a.b.c='hi';
 alert(a.b.c);
 */
 
- //differentiated class
+/* //differentiated class
 function master(type)
 {
 	return function(i) //the inner class
@@ -128,7 +130,13 @@ a1.say();
 var a2 = new A(2);
 a2.say();
 var b = new B(0);
-b.say();
+b.say(); */
 
+/* //regex
+var tex = document.getElementById('texter');
+var     rlink = /(^|\s)@([\w\.\_\$]*[\w\_\$])/g,
+        ramp = /&(?!\w+;|#\d+;|#x[\da-f]+;)/gi,
+		rantiwrap = /^<([^>]+)>(.*)<\/\1>$/;
+tex.value = tex.value.replace(rantiwrap, "$2").replace(ramp, '<em class="amp">&amp;</em>').replace(rlink, '$1<a href="#$2" class="dr-link">$2</a>'); */
 </script>
 </body>
