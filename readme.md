@@ -42,9 +42,9 @@ on [http://tyt2y3.github.com/F.core/docs/docs.html]
 ## Components and features
 
 ### sprite
- - display and control sprites on page using <div> and <img> tag
+ - display and control sprites on page using `<div>` and `<img>` tag
  - multiple images for one sprite
- - not using canvas for sprite animations
+ - **not** using canvas for sprite animations
  - support style left/top and CSS transform, depending on browser support
 
 ### animator
