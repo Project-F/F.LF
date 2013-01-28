@@ -36,6 +36,9 @@ some [collision](#collision) detection and [math](#math) functions and javascrip
 [css](#css) for loading and optimizing css files and 
 [support](#support) to check for browser support
 
+## Documentation
+on [http://tyt2y3.github.com/F.core/docs/docs.html]
+
 ## Components and features
 
 ### sprite
@@ -88,9 +91,6 @@ and point in rectangle test
 ### web development practices
 - use [requirejs](http://requirejs.org/) for dependency management
 - compile-time optimization
-
-## Documentation
-on [http://tyt2y3.github.com/F.core/docs/docs.html]
 
 ## Sample usages
 - [support.html](http://tyt2y3.github.com/F.core/sample/support.html)
