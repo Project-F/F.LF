@@ -798,57 +798,190 @@ p {
 
 </style>
 </head>
-<body id="dr-js"><div id="dr"><ol class="dr-toc" id="dr-toc"><li class="dr-lvl0"><a href="#An introduction" class="{clas}"><span>An introduction</span></a></li><li class="dr-lvl0"><a href="#Architecture" class="{clas}"><span>Architecture</span></a></li><li class="dr-lvl0"><a href="#animator" class="dr-class"><span>animator</span></a></li><li class="dr-lvl1"><a href="#animator.hmirror" class="dr-method"><span>animator.hmirror()</span></a></li><li class="dr-lvl1"><a href="#animator.next_frame" class="dr-method"><span>animator.next_frame()</span></a></li><li class="dr-lvl1"><a href="#animator.prototype" class="{clas}"><span>animator.prototype</span></a></li><li class="dr-lvl2"><a href="#animator.prototype.set" class="dr-method"><span>animator.prototype.set()</span></a></li><li class="dr-lvl1"><a href="#animator.rewind" class="dr-method"><span>animator.rewind()</span></a></li><li class="dr-lvl1"><a href="#animator.set_frame" class="dr-method"><span>animator.set_frame()</span></a></li><li class="dr-lvl0"><a href="#collision" class="{clas}"><span>collision</span></a></li><li class="dr-lvl1"><a href="#collision.circle" class="dr-method"><span>collision.circle()</span></a></li><li class="dr-lvl1"><a href="#collision.line" class="dr-method"><span>collision.line()</span></a></li><li class="dr-lvl1"><a href="#collision.point_in_rect" class="dr-method"><span>collision.point_in_rect()</span></a></li><li class="dr-lvl1"><a href="#collision.rect" class="dr-method"><span>collision.rect()</span></a></li><li class="dr-lvl1"><a href="#collision.tri" class="dr-method"><span>collision.tri()</span></a></li><li class="dr-lvl0"><a href="#combo detector" class="{clas}"><span>combo detector</span></a></li><li class="dr-lvl0"><a href="#combodec" class="dr-class"><span>combodec</span></a></li><li class="dr-lvl1"><a href="#combodec.callback" class="dr-property"><span>combodec.callback</span></a></li><li class="dr-lvl1"><a href="#combodec.clear_seq" class="dr-method"><span>combodec.clear_seq()</span></a></li><li class="dr-lvl1"><a href="#combodec.combo" class="dr-property"><span>combodec.combo</span></a></li><li class="dr-lvl1"><a href="#combodec.con" class="dr-property"><span>combodec.con</span></a></li><li class="dr-lvl1"><a href="#combodec.config" class="dr-property"><span>combodec.config</span></a></li><li class="dr-lvl1"><a href="#combodec.frame" class="dr-method"><span>combodec.frame()</span></a></li><li class="dr-lvl1"><a href="#combodec.key" class="dr-method"><span>combodec.key()</span></a></li><li class="dr-lvl1"><a href="#combodec.seq" class="dr-property"><span>combodec.seq</span></a></li><li class="dr-lvl0"><a href="#control_player" class="dr-class"><span>control_player</span></a></li><li class="dr-lvl1"><a href="#control_player.child" class="dr-property"><span>control_player.child</span></a></li><li class="dr-lvl1"><a href="#control_player.clear_states" class="dr-method"><span>control_player.clear_states()</span></a></li><li class="dr-lvl1"><a href="#control_player.fetch" class="dr-method"><span>control_player.fetch()</span></a></li><li class="dr-lvl1"><a href="#control_player.flush" class="dr-method"><span>control_player.flush()</span></a></li><li class="dr-lvl1"><a href="#control_player.frame" class="dr-method"><span>control_player.frame()</span></a></li><li class="dr-lvl1"><a href="#control_player.state" class="dr-property"><span>control_player.state</span></a></li><li class="dr-lvl1"><a href="#control_player.sync" class="dr-property"><span>control_player.sync</span></a></li><li class="dr-lvl0"><a href="#control_recorder" class="dr-class"><span>control_recorder</span></a></li><li class="dr-lvl1"><a href="#control_recorder.export_str" class="dr-method"><span>control_recorder.export_str()</span></a></li><li class="dr-lvl1"><a href="#control_recorder.frame" class="dr-method"><span>control_recorder.frame()</span></a></li><li class="dr-lvl1"><a href="#control_recorder.key" class="dr-method"><span>control_recorder.key()</span></a></li><li class="dr-lvl0"><a href="#controller" class="dr-class"><span>controller</span></a></li><li class="dr-lvl1"><a href="#controller.buf" class="dr-property"><span>controller.buf</span></a></li><li class="dr-lvl1"><a href="#controller.child" class="dr-property"><span>controller.child</span></a></li><li class="dr-lvl1"><a href="#controller.clear_states" class="dr-method"><span>controller.clear_states()</span></a></li><li class="dr-lvl1"><a href="#controller.config" class="dr-property"><span>controller.config</span></a></li><li class="dr-lvl1"><a href="#controller.fetch" class="dr-method"><span>controller.fetch()</span></a></li><li class="dr-lvl1"><a href="#controller.flush" class="dr-method"><span>controller.flush()</span></a></li><li class="dr-lvl1"><a href="#controller.key" class="dr-method"><span>controller.key()</span></a></li><li class="dr-lvl1"><a href="#controller.keycode" class="dr-property"><span>controller.keycode</span></a></li><li class="dr-lvl1"><a href="#controller.keycode_to_keyname" class="dr-method"><span>controller.keycode_to_keyname()</span></a></li><li class="dr-lvl1"><a href="#controller.keyname_to_keycode" class="dr-method"><span>controller.keyname_to_keycode()</span></a></li><li class="dr-lvl1"><a href="#controller.state" class="dr-property"><span>controller.state</span></a></li><li class="dr-lvl1"><a href="#controller.sync" class="dr-property"><span>controller.sync</span></a></li><li class="dr-lvl1"><a href="#controller.zppendix" class="{clas}"><span>controller.zppendix</span></a></li><li class="dr-lvl0"><a href="#css" class="{clas}"><span>css</span></a></li><li class="dr-lvl0"><a href="#css-build" class="{clas}"><span>css-build</span></a></li><li class="dr-lvl0"><a href="#effect_pool" class="dr-class"><span>effect_pool</span></a></li><li class="dr-lvl1"><a href="#effect_pool.call_each" class="dr-method"><span>effect_pool.call_each()</span></a></li><li class="dr-lvl1"><a href="#effect_pool.create" class="dr-method"><span>effect_pool.create()</span></a></li><li class="dr-lvl1"><a href="#effect_pool.die" class="dr-method"><span>effect_pool.die()</span></a></li><li class="dr-lvl1"><a href="#effect_pool.for_each" class="dr-method"><span>effect_pool.for_each()</span></a></li><li class="dr-lvl0"><a href="#graph" class="dr-class"><span>graph</span></a></li><li class="dr-lvl1"><a href="#graph.add" class="dr-method"><span>graph.add()</span></a></li><li class="dr-lvl1"><a href="#graph.at" class="dr-method"><span>graph.at()</span></a></li><li class="dr-lvl1"><a href="#graph.create_graph" class="dr-method"><span>graph.create_graph()</span></a></li><li class="dr-lvl1"><a href="#graph.get" class="dr-method"><span>graph.get()</span></a></li><li class="dr-lvl1"><a href="#graph.move" class="dr-method"><span>graph.move()</span></a></li><li class="dr-lvl1"><a href="#graph.remove" class="dr-method"><span>graph.remove()</span></a></li><li class="dr-lvl0"><a href="#math" class="{clas}"><span>math</span></a></li><li class="dr-lvl1"><a href="#math.add" class="dr-method"><span>math.add()</span></a></li><li class="dr-lvl1"><a href="#math.bezier2" class="dr-method"><span>math.bezier2()</span></a></li><li class="dr-lvl1"><a href="#math.distance" class="dr-method"><span>math.distance()</span></a></li><li class="dr-lvl1"><a href="#math.inbetween" class="dr-method"><span>math.inbetween()</span></a></li><li class="dr-lvl1"><a href="#math.intersect" class="dr-method"><span>math.intersect()</span></a></li><li class="dr-lvl1"><a href="#math.length" class="dr-method"><span>math.length()</span></a></li><li class="dr-lvl1"><a href="#math.negative" class="dr-method"><span>math.negative()</span></a></li><li class="dr-lvl1"><a href="#math.negligible" class="dr-method"><span>math.negligible()</span></a></li><li class="dr-lvl1"><a href="#math.normalize" class="dr-method"><span>math.normalize()</span></a></li><li class="dr-lvl1"><a href="#math.perpen" class="dr-method"><span>math.perpen()</span></a></li><li class="dr-lvl1"><a href="#math.round_d2" class="dr-method"><span>math.round_d2()</span></a></li><li class="dr-lvl1"><a href="#math.scale" class="dr-method"><span>math.scale()</span></a></li><li class="dr-lvl1"><a href="#math.signed_area" class="dr-method"><span>math.signed_area()</span></a></li><li class="dr-lvl1"><a href="#math.sub" class="dr-method"><span>math.sub()</span></a></li><li class="dr-lvl0"><a href="#sprite" class="dr-class"><span>sprite</span></a></li><li class="dr-lvl1"><a href="#sprite.add_img" class="dr-method"><span>sprite.add_img()</span></a></li><li class="dr-lvl1"><a href="#sprite.attach" class="dr-method"><span>sprite.attach()</span></a></li><li class="dr-lvl1"><a href="#sprite.hide" class="dr-method"><span>sprite.hide()</span></a></li><li class="dr-lvl1"><a href="#sprite.masterconfig" class="dr-method"><span>sprite.masterconfig()</span></a></li><li class="dr-lvl1"><a href="#sprite.remove" class="dr-method"><span>sprite.remove()</span></a></li><li class="dr-lvl1"><a href="#sprite.set_img_xy" class="dr-method"><span>sprite.set_img_xy()</span></a></li><li class="dr-lvl1"><a href="#sprite.set_wh" class="dr-method"><span>sprite.set_wh()</span></a></li><li class="dr-lvl1"><a href="#sprite.set_xy" class="dr-method"><span>sprite.set_xy()</span></a></li><li class="dr-lvl1"><a href="#sprite.set_z" class="dr-method"><span>sprite.set_z()</span></a></li><li class="dr-lvl1"><a href="#sprite.show" class="dr-method"><span>sprite.show()</span></a></li><li class="dr-lvl1"><a href="#sprite.switch_img" class="dr-method"><span>sprite.switch_img()</span></a></li><li class="dr-lvl0"><a href="#states" class="dr-class"><span>states</span></a></li><li class="dr-lvl1"><a href="#states.consult" class="dr-method"><span>states.consult()</span></a></li><li class="dr-lvl1"><a href="#states.cur" class="dr-property"><span>states.cur</span></a></li><li class="dr-lvl1"><a href="#states.cur_name" class="dr-property"><span>states.cur_name</span></a></li><li class="dr-lvl1"><a href="#states.cur_state" class="dr-property"><span>states.cur_state</span></a></li><li class="dr-lvl1"><a href="#states.event" class="dr-method"><span>states.event()</span></a></li><li class="dr-lvl1"><a href="#states.event_delay" class="dr-method"><span>states.event_delay()</span></a></li><li class="dr-lvl1"><a href="#states.evlay" class="dr-property"><span>states.evlay</span></a></li><li class="dr-lvl1"><a href="#states.log" class="dr-property"><span>states.log</span></a></li><li class="dr-lvl1"><a href="#states.log_enable" class="dr-property"><span>states.log_enable</span></a></li><li class="dr-lvl1"><a href="#states.log_filter" class="dr-property"><span>states.log_filter</span></a></li><li class="dr-lvl1"><a href="#states.log_size" class="dr-property"><span>states.log_size</span></a></li><li class="dr-lvl1"><a href="#states.propagate_down" class="dr-method"><span>states.propagate_down()</span></a></li><li class="dr-lvl1"><a href="#states.propagate_up" class="dr-method"><span>states.propagate_up()</span></a></li><li class="dr-lvl1"><a href="#states.search" class="dr-method"><span>states.search()</span></a></li><li class="dr-lvl1"><a href="#states.show_log" class="dr-method"><span>states.show_log()</span></a></li><li class="dr-lvl1"><a href="#states.state" class="dr-property"><span>states.state</span></a></li><li class="dr-lvl1"><a href="#states.state_at" class="dr-method"><span>states.state_at()</span></a></li><li class="dr-lvl0"><a href="#support" class="{clas}"><span>support</span></a></li><li class="dr-lvl1"><a href="#support.css2dtransform" class="dr-property"><span>support.css2dtransform</span></a></li><li class="dr-lvl1"><a href="#support.css3dtransform" class="dr-property"><span>support.css3dtransform</span></a></li><li class="dr-lvl1"><a href="#support.mobile" class="dr-property"><span>support.mobile</span></a></li><li class="dr-lvl1"><a href="#support.prefix" class="dr-property"><span>support.prefix</span></a></li><li class="dr-lvl1"><a href="#support.version" class="dr-property"><span>support.version</span></a></li><li class="dr-lvl0"><a href="#util" class="{clas}"><span>util</span></a></li><li class="dr-lvl1"><a href="#util.arr_search" class="dr-method"><span>util.arr_search()</span></a></li><li class="dr-lvl1"><a href="#util.css" class="dr-method"><span>util.css()</span></a></li><li class="dr-lvl1"><a href="#util.extend_object" class="dr-method"><span>util.extend_object()</span></a></li><li class="dr-lvl1"><a href="#util.extract_array" class="dr-method"><span>util.extract_array()</span></a></li><li class="dr-lvl1"><a href="#util.make_array" class="dr-method"><span>util.make_array()</span></a></li><li class="dr-lvl1"><a href="#util.push_unique" class="dr-method"><span>util.push_unique()</span></a></li><li class="dr-lvl1"><a href="#util.to_text" class="dr-method"><span>util.to_text()</span></a></li><li class="dr-lvl0"><a href="#world" class="dr-class"><span>world</span></a></li><li class="dr-lvl1"><a href="#world.P" class="dr-property"><span>world.P</span></a></li><li class="dr-lvl1"><a href="#world.area" class="dr-property"><span>world.area</span></a></li><li class="dr-lvl1"><a href="#world.pan" class="dr-property"><span>world.pan</span></a></li><li class="dr-lvl1"><a href="#world.pp" class="dr-property"><span>world.pp</span></a></li><li class="dr-lvl1"><a href="#world.project" class="dr-method"><span>world.project()</span></a></li><li class="dr-lvl1"><a href="#world.project_all" class="dr-method"><span>world.project_all()</span></a></li><li class="dr-lvl1"><a href="#world.tho" class="dr-property"><span>world.tho</span></a></li><li class="dr-lvl1"><a href="#world.thp" class="dr-property"><span>world.thp</span></a></li><li class="dr-lvl1"><a href="#world.view" class="dr-method"><span>world.view()</span></a></li><li class="dr-lvl1"><a href="#world.view_all" class="dr-method"><span>world.view_all()</span></a></li><li class="dr-lvl1"><a href="#world.zoom" class="dr-property"><span>world.zoom</span></a></li></ol><div class="dr-doc"><h1>F.core Reference</h1><div class="An introduction-section"><h2 id="An introduction" class="undefined"><i class="dr-trixie">&#160;</i>An introduction<a href="#An introduction" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 16 in the source" href="https://github.com/tyt2y3/F.core/blob/master/docs/more.js#L16">&#x27ad;</a></h2>
+<body id="dr-js"><div id="dr"><ol class="dr-toc" id="dr-toc"><li class="dr-lvl0"><a href="#An introduction" class="{clas}"><span>An introduction</span></a></li><li class="dr-lvl0"><a href="#Architecture" class="{clas}"><span>Architecture</span></a></li><li class="dr-lvl0"><a href="#Development condition" class="{clas}"><span>Development condition</span></a></li><li class="dr-lvl0"><a href="#Getting_started" class="{clas}"><span>Getting_started</span></a></li><li class="dr-lvl0"><a href="#License" class="{clas}"><span>License</span></a></li><li class="dr-lvl0"><a href="#Links" class="{clas}"><span>Links</span></a></li><li class="dr-lvl0"><a href="#Optimization" class="{clas}"><span>Optimization</span></a></li><li class="dr-lvl0"><a href="#Sample usages" class="{clas}"><span>Sample usages</span></a></li><li class="dr-lvl0"><a href="#animator" class="dr-class"><span>animator</span></a></li><li class="dr-lvl1"><a href="#animator.I" class="dr-property"><span>animator.I</span></a></li><li class="dr-lvl1"><a href="#animator.horimirror" class="dr-property"><span>animator.horimirror</span></a></li><li class="dr-lvl1"><a href="#animator.next_frame" class="dr-method"><span>animator.next_frame()</span></a></li><li class="dr-lvl1"><a href="#animator.rewind" class="dr-method"><span>animator.rewind()</span></a></li><li class="dr-lvl1"><a href="#animator.seek" class="dr-method"><span>animator.seek()</span></a></li><li class="dr-lvl1"><a href="#animator.set" class="dr-method"><span>animator.set()</span></a></li><li class="dr-lvl1"><a href="#animator.set_frame" class="dr-method"><span>animator.set_frame()</span></a></li><li class="dr-lvl0"><a href="#collision" class="{clas}"><span>collision</span></a></li><li class="dr-lvl1"><a href="#collision.circle" class="dr-method"><span>collision.circle()</span></a></li><li class="dr-lvl1"><a href="#collision.line" class="dr-method"><span>collision.line()</span></a></li><li class="dr-lvl1"><a href="#collision.point_in_rect" class="dr-method"><span>collision.point_in_rect()</span></a></li><li class="dr-lvl1"><a href="#collision.rect" class="dr-method"><span>collision.rect()</span></a></li><li class="dr-lvl1"><a href="#collision.tri" class="dr-method"><span>collision.tri()</span></a></li><li class="dr-lvl0"><a href="#combo detector" class="{clas}"><span>combo detector</span></a></li><li class="dr-lvl0"><a href="#combodec" class="dr-class"><span>combodec</span></a></li><li class="dr-lvl1"><a href="#combodec.callback" class="dr-property"><span>combodec.callback</span></a></li><li class="dr-lvl1"><a href="#combodec.clear_seq" class="dr-method"><span>combodec.clear_seq()</span></a></li><li class="dr-lvl1"><a href="#combodec.combo" class="dr-property"><span>combodec.combo</span></a></li><li class="dr-lvl1"><a href="#combodec.comboout" class="dr-property"><span>combodec.comboout</span></a></li><li class="dr-lvl1"><a href="#combodec.con" class="dr-property"><span>combodec.con</span></a></li><li class="dr-lvl1"><a href="#combodec.config" class="dr-property"><span>combodec.config</span></a></li><li class="dr-lvl1"><a href="#combodec.frame" class="dr-method"><span>combodec.frame()</span></a></li><li class="dr-lvl1"><a href="#combodec.key" class="dr-method"><span>combodec.key()</span></a></li><li class="dr-lvl1"><a href="#combodec.seq" class="dr-property"><span>combodec.seq</span></a></li><li class="dr-lvl1"><a href="#combodec.time" class="dr-property"><span>combodec.time</span></a></li><li class="dr-lvl1"><a href="#combodec.timeout" class="dr-property"><span>combodec.timeout</span></a></li><li class="dr-lvl0"><a href="#control_player" class="dr-class"><span>control_player</span></a></li><li class="dr-lvl1"><a href="#control_player.child" class="dr-property"><span>control_player.child</span></a></li><li class="dr-lvl1"><a href="#control_player.clear_states" class="dr-method"><span>control_player.clear_states()</span></a></li><li class="dr-lvl1"><a href="#control_player.fetch" class="dr-method"><span>control_player.fetch()</span></a></li><li class="dr-lvl1"><a href="#control_player.flush" class="dr-method"><span>control_player.flush()</span></a></li><li class="dr-lvl1"><a href="#control_player.frame" class="dr-method"><span>control_player.frame()</span></a></li><li class="dr-lvl1"><a href="#control_player.state" class="dr-property"><span>control_player.state</span></a></li><li class="dr-lvl1"><a href="#control_player.sync" class="dr-property"><span>control_player.sync</span></a></li><li class="dr-lvl0"><a href="#control_recorder" class="dr-class"><span>control_recorder</span></a></li><li class="dr-lvl1"><a href="#control_recorder.export_str" class="dr-method"><span>control_recorder.export_str()</span></a></li><li class="dr-lvl1"><a href="#control_recorder.frame" class="dr-method"><span>control_recorder.frame()</span></a></li><li class="dr-lvl1"><a href="#control_recorder.key" class="dr-method"><span>control_recorder.key()</span></a></li><li class="dr-lvl0"><a href="#controller" class="dr-class"><span>controller</span></a></li><li class="dr-lvl1"><a href="#controller.buf" class="dr-property"><span>controller.buf</span></a></li><li class="dr-lvl1"><a href="#controller.child" class="dr-property"><span>controller.child</span></a></li><li class="dr-lvl1"><a href="#controller.clear_states" class="dr-method"><span>controller.clear_states()</span></a></li><li class="dr-lvl1"><a href="#controller.config" class="dr-property"><span>controller.config</span></a></li><li class="dr-lvl1"><a href="#controller.fetch" class="dr-method"><span>controller.fetch()</span></a></li><li class="dr-lvl1"><a href="#controller.flush" class="dr-method"><span>controller.flush()</span></a></li><li class="dr-lvl1"><a href="#controller.key" class="dr-method"><span>controller.key()</span></a></li><li class="dr-lvl1"><a href="#controller.keycode" class="dr-property"><span>controller.keycode</span></a></li><li class="dr-lvl1"><a href="#controller.keycode_to_keyname" class="dr-method"><span>controller.keycode_to_keyname()</span></a></li><li class="dr-lvl1"><a href="#controller.keyname_to_keycode" class="dr-method"><span>controller.keyname_to_keycode()</span></a></li><li class="dr-lvl1"><a href="#controller.state" class="dr-property"><span>controller.state</span></a></li><li class="dr-lvl1"><a href="#controller.sync" class="dr-property"><span>controller.sync</span></a></li><li class="dr-lvl1"><a href="#controller.zppendix" class="{clas}"><span>controller.zppendix</span></a></li><li class="dr-lvl0"><a href="#css" class="{clas}"><span>css</span></a></li><li class="dr-lvl0"><a href="#css-build" class="{clas}"><span>css-build</span></a></li><li class="dr-lvl0"><a href="#effect_pool" class="dr-class"><span>effect_pool</span></a></li><li class="dr-lvl1"><a href="#effect_pool.call_each" class="dr-method"><span>effect_pool.call_each()</span></a></li><li class="dr-lvl1"><a href="#effect_pool.create" class="dr-method"><span>effect_pool.create()</span></a></li><li class="dr-lvl1"><a href="#effect_pool.die" class="dr-method"><span>effect_pool.die()</span></a></li><li class="dr-lvl1"><a href="#effect_pool.for_each" class="dr-method"><span>effect_pool.for_each()</span></a></li><li class="dr-lvl0"><a href="#graph" class="dr-class"><span>graph</span></a></li><li class="dr-lvl1"><a href="#graph.add" class="dr-method"><span>graph.add()</span></a></li><li class="dr-lvl1"><a href="#graph.at" class="dr-method"><span>graph.at()</span></a></li><li class="dr-lvl1"><a href="#graph.create_graph" class="dr-method"><span>graph.create_graph()</span></a></li><li class="dr-lvl1"><a href="#graph.get" class="dr-method"><span>graph.get()</span></a></li><li class="dr-lvl1"><a href="#graph.move" class="dr-method"><span>graph.move()</span></a></li><li class="dr-lvl1"><a href="#graph.remove" class="dr-method"><span>graph.remove()</span></a></li><li class="dr-lvl0"><a href="#math" class="{clas}"><span>math</span></a></li><li class="dr-lvl1"><a href="#math.add" class="dr-method"><span>math.add()</span></a></li><li class="dr-lvl1"><a href="#math.bezier2" class="dr-method"><span>math.bezier2()</span></a></li><li class="dr-lvl1"><a href="#math.distance" class="dr-method"><span>math.distance()</span></a></li><li class="dr-lvl1"><a href="#math.inbetween" class="dr-method"><span>math.inbetween()</span></a></li><li class="dr-lvl1"><a href="#math.intersect" class="dr-method"><span>math.intersect()</span></a></li><li class="dr-lvl1"><a href="#math.length" class="dr-method"><span>math.length()</span></a></li><li class="dr-lvl1"><a href="#math.negative" class="dr-method"><span>math.negative()</span></a></li><li class="dr-lvl1"><a href="#math.negligible" class="dr-method"><span>math.negligible()</span></a></li><li class="dr-lvl1"><a href="#math.normalize" class="dr-method"><span>math.normalize()</span></a></li><li class="dr-lvl1"><a href="#math.perpen" class="dr-method"><span>math.perpen()</span></a></li><li class="dr-lvl1"><a href="#math.round_d2" class="dr-method"><span>math.round_d2()</span></a></li><li class="dr-lvl1"><a href="#math.scale" class="dr-method"><span>math.scale()</span></a></li><li class="dr-lvl1"><a href="#math.signed_area" class="dr-method"><span>math.signed_area()</span></a></li><li class="dr-lvl1"><a href="#math.sub" class="dr-method"><span>math.sub()</span></a></li><li class="dr-lvl0"><a href="#sprite" class="dr-class"><span>sprite</span></a></li><li class="dr-lvl1"><a href="#sprite.add_img" class="dr-method"><span>sprite.add_img()</span></a></li><li class="dr-lvl1"><a href="#sprite.attach" class="dr-method"><span>sprite.attach()</span></a></li><li class="dr-lvl1"><a href="#sprite.hide" class="dr-method"><span>sprite.hide()</span></a></li><li class="dr-lvl1"><a href="#sprite.masterconfig" class="dr-method"><span>sprite.masterconfig()</span></a></li><li class="dr-lvl1"><a href="#sprite.remove" class="dr-method"><span>sprite.remove()</span></a></li><li class="dr-lvl1"><a href="#sprite.set_img_xy" class="dr-method"><span>sprite.set_img_xy()</span></a></li><li class="dr-lvl1"><a href="#sprite.set_wh" class="dr-method"><span>sprite.set_wh()</span></a></li><li class="dr-lvl1"><a href="#sprite.set_xy" class="dr-method"><span>sprite.set_xy()</span></a></li><li class="dr-lvl1"><a href="#sprite.set_z" class="dr-method"><span>sprite.set_z()</span></a></li><li class="dr-lvl1"><a href="#sprite.show" class="dr-method"><span>sprite.show()</span></a></li><li class="dr-lvl1"><a href="#sprite.switch_img" class="dr-method"><span>sprite.switch_img()</span></a></li><li class="dr-lvl0"><a href="#states" class="dr-class"><span>states</span></a></li><li class="dr-lvl1"><a href="#states.consult" class="dr-method"><span>states.consult()</span></a></li><li class="dr-lvl1"><a href="#states.cur" class="dr-property"><span>states.cur</span></a></li><li class="dr-lvl1"><a href="#states.cur_name" class="dr-property"><span>states.cur_name</span></a></li><li class="dr-lvl1"><a href="#states.cur_state" class="dr-property"><span>states.cur_state</span></a></li><li class="dr-lvl1"><a href="#states.event" class="dr-method"><span>states.event()</span></a></li><li class="dr-lvl1"><a href="#states.event_delay" class="dr-method"><span>states.event_delay()</span></a></li><li class="dr-lvl1"><a href="#states.evlay" class="dr-property"><span>states.evlay</span></a></li><li class="dr-lvl1"><a href="#states.log" class="dr-property"><span>states.log</span></a></li><li class="dr-lvl1"><a href="#states.log_enable" class="dr-property"><span>states.log_enable</span></a></li><li class="dr-lvl1"><a href="#states.log_filter" class="dr-property"><span>states.log_filter</span></a></li><li class="dr-lvl1"><a href="#states.log_size" class="dr-property"><span>states.log_size</span></a></li><li class="dr-lvl1"><a href="#states.propagate_down" class="dr-method"><span>states.propagate_down()</span></a></li><li class="dr-lvl1"><a href="#states.propagate_up" class="dr-method"><span>states.propagate_up()</span></a></li><li class="dr-lvl1"><a href="#states.search" class="dr-method"><span>states.search()</span></a></li><li class="dr-lvl1"><a href="#states.show_log" class="dr-method"><span>states.show_log()</span></a></li><li class="dr-lvl1"><a href="#states.state" class="dr-property"><span>states.state</span></a></li><li class="dr-lvl1"><a href="#states.state_at" class="dr-method"><span>states.state_at()</span></a></li><li class="dr-lvl0"><a href="#support" class="{clas}"><span>support</span></a></li><li class="dr-lvl1"><a href="#support.css2dtransform" class="dr-property"><span>support.css2dtransform</span></a></li><li class="dr-lvl1"><a href="#support.css3dtransform" class="dr-property"><span>support.css3dtransform</span></a></li><li class="dr-lvl1"><a href="#support.mobile" class="dr-property"><span>support.mobile</span></a></li><li class="dr-lvl1"><a href="#support.prefix" class="dr-property"><span>support.prefix</span></a></li><li class="dr-lvl1"><a href="#support.version" class="dr-property"><span>support.version</span></a></li><li class="dr-lvl0"><a href="#util" class="{clas}"><span>util</span></a></li><li class="dr-lvl1"><a href="#util.arr_search" class="dr-method"><span>util.arr_search()</span></a></li><li class="dr-lvl1"><a href="#util.css" class="dr-method"><span>util.css()</span></a></li><li class="dr-lvl1"><a href="#util.extend_object" class="dr-method"><span>util.extend_object()</span></a></li><li class="dr-lvl1"><a href="#util.extract_array" class="dr-method"><span>util.extract_array()</span></a></li><li class="dr-lvl1"><a href="#util.make_array" class="dr-method"><span>util.make_array()</span></a></li><li class="dr-lvl1"><a href="#util.push_unique" class="dr-method"><span>util.push_unique()</span></a></li><li class="dr-lvl1"><a href="#util.to_text" class="dr-method"><span>util.to_text()</span></a></li><li class="dr-lvl0"><a href="#world" class="dr-class"><span>world</span></a></li><li class="dr-lvl1"><a href="#world.P" class="dr-property"><span>world.P</span></a></li><li class="dr-lvl1"><a href="#world.area" class="dr-property"><span>world.area</span></a></li><li class="dr-lvl1"><a href="#world.pan" class="dr-property"><span>world.pan</span></a></li><li class="dr-lvl1"><a href="#world.pp" class="dr-property"><span>world.pp</span></a></li><li class="dr-lvl1"><a href="#world.project" class="dr-method"><span>world.project()</span></a></li><li class="dr-lvl1"><a href="#world.project_all" class="dr-method"><span>world.project_all()</span></a></li><li class="dr-lvl1"><a href="#world.tho" class="dr-property"><span>world.tho</span></a></li><li class="dr-lvl1"><a href="#world.thp" class="dr-property"><span>world.thp</span></a></li><li class="dr-lvl1"><a href="#world.view" class="dr-method"><span>world.view()</span></a></li><li class="dr-lvl1"><a href="#world.view_all" class="dr-method"><span>world.view_all()</span></a></li><li class="dr-lvl1"><a href="#world.zoom" class="dr-property"><span>world.zoom</span></a></li></ol><div class="dr-doc"><h1>F.core Reference</h1><div class="An introduction-section"><h2 id="An introduction" class="undefined"><i class="dr-trixie">&#160;</i>An introduction<a href="#An introduction" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 15 in the source" href="https://github.com/tyt2y3/F.core/blob/master/docs/more.js#L15">&#x27ad;</a></h2>
 <div class="extra" id="An introduction-extra"></div></div><p><img alt="Project F logo" src="http://2.bp.blogspot.com/-k-My1B-YlaU/T8JUBAYpu9I/AAAAAAAAACI/OnCvkzFF5jw/s1600/logo_l1_s.png"/> Project F
-<a href="http://project--f.blogspot.hk/search/label/about">http://project--f.blogspot.com/</a>
+<a href="http://project--f.blogspot.com/search/label/about">project--f.blogspot.com/</a>
 </p>
 <p>F.core is the core components of Project F used to build browser based fighter games.
 currently, games built on top of F.core include
 </p>
-<p> <a href="http://tyt2y3.github.com/LFrelease/demo/demo3.html">F.LF</a>
-<img alt="F.LF" src="http://tyt2y3.github.com/LFrelease/web/image/mile2013Jan.png"/>
- <a href="http://tyt2y3.github.com/teeth">teeth</a>
+<p></p>
+<p class="header"> <a href="http://tyt2y3.github.com/LFrelease/demo/demo3.html">F.LF</a>
+<p><img alt="F.LF" src="http://tyt2y3.github.com/LFrelease/web/image/mile2013Jan.png"/>
 </p>
+<p class="header"> <a href="http://tyt2y3.github.com/teeth">teeth</a>
 <p><img alt="teeth" src="http://tyt2y3.github.com/teeth/web/images/cap01.png"/>
 </p>
-<div class="Architecture-section"><h2 id="Architecture" class="undefined"><i class="dr-trixie">&#160;</i>Architecture<a href="#Architecture" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 50 in the source" href="https://github.com/tyt2y3/F.core/blob/master/docs/more.js#L50">&#x27ad;</a></h2>
+<div class="Architecture-section"><h2 id="Architecture" class="undefined"><i class="dr-trixie">&#160;</i>Architecture<a href="#Architecture" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 51 in the source" href="https://github.com/tyt2y3/F.core/blob/master/docs/more.js#L51">&#x27ad;</a></h2>
 <div class="extra" id="Architecture-extra"></div></div><p>F.core <strong>is not a game engine</strong>. F.core is a set of conceptual and functional components that can be used to build an engine.
 so it is not a hard decision like Windows vs Mac when choose to use F.core. you find the parts you are interested, pull it out and use it in your game.
 </p>
 <p>F.core employs requirejs dependency management, and you should too, if you care to build games that has more than 1000 lines of code. requirejs can be clumsy to set up than <code>&lt;script src=&quot;&quot;&gt;</code>, but when a project grows it will pay off.
 </p>
+<p>All classes in F.core are prototype classes with <strong>no private member</strong> to make it easy for inheritance. Some properties and methods may not be listed here, but source code is <a href="https://github.com/tyt2y3/F.core">there</a>.
+</p>
 <p>F.core components can be categorized into:
 </p>
 <p></p>
-<h4>sprites</h4>
+<p class="header">sprites
 <p><a href="#sprite" class="dr-link">sprite</a> and <a href="#animator" class="dr-link">animator</a>
 </p>
 <p></p>
-<h4>keyboard controller system</h4>
+<p class="header">keyboard controller system
 <p><a href="#controller" class="dr-link">controller</a>,
 <a href="#combodec" class="dr-link">combodec</a> (combo detector) with
 <a href="#control_recorder" class="dr-link">control_recorder</a> and
 <a href="#control_player" class="dr-link">control_player</a>.
 </p>
 <p></p>
-<h4>math</h4>
+<p class="header">math
 <p>some <a href="#collision" class="dr-link">collision</a> detection and <a href="#math" class="dr-link">math</a> functions and javascript <a href="#util" class="dr-link">util</a>
 </p>
 <p><a href="#world" class="dr-link">world</a> for 3d to 2d projection
 </p>
 <p></p>
-<h4>system programming</h4>
+<p class="header">system programming
 <p><a href="#states" class="dr-link">states</a> oriented programming in hierarchical state machines
 </p>
 <p></p>
-<h4>entities management</h4>
+<p class="header">entities management
 <p><a href="#effect_pool" class="dr-link">effect_pool</a> for managing effects and
 <a href="#graph" class="dr-link">graph</a> for hashing objects
 </p>
 <p></p>
-<h4>web application</h4>
+<p class="header">web application
 <p><a href="#css" class="dr-link">css</a> for loading and optimizing css files and 
 <a href="#support" class="dr-link">support</a> to check for browser support
+</p>
+<div class="Development condition-section"><h2 id="Development condition" class="undefined"><i class="dr-trixie">&#160;</i>Development condition<a href="#Development condition" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 55 in the source" href="https://github.com/tyt2y3/F.core/blob/master/docs/more.js#L55">&#x27ad;</a></h2>
+<div class="extra" id="Development condition-extra"></div></div><p>F.core components are tested, used and are production ready. The feature set is never complete, but the architecture is stabilized and future development will be careful to not break exsiting code.
+</p>
+<div class="Getting_started-section"><h2 id="Getting_started" class="undefined"><i class="dr-trixie">&#160;</i>Getting_started<a href="#Getting_started" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 121 in the source" href="https://github.com/tyt2y3/F.core/blob/master/docs/more.js#L121">&#x27ad;</a></h2>
+<div class="extra" id="Getting_started-extra"></div></div><p>Download the <a href="https://github.com/tyt2y3/F.core/archive/master.zip">package</a>, or browse the <a href="https://github.com/tyt2y3/F.core">source code</a>, and look into the <code>sample</code> directory. <strong>The unzipped folder must be named <code>F.core</code></strong>.
+</p>
+<p>Setup could be tricky, but it is a requirejs issue (haha).
+</p>
+<p>Let go through some scenarios.
+</p>
+<p class="header">1 I do everything in one HTML file and directory looks like
+</p>
+<pre class="javascript code"><code>F.core/
+mygame.html
+</code></pre>
+<p>it is a bad practice, but let&#39;s look into <code>mygame.html</code>
+</p>
+<pre class="javascript code"><code>&lt;body>
+&lt;script data-main=<i>"./"</i> src=<i>"require.js"</i>>&lt;/script>
+&lt;script>
+requirejs([<i>'F.core/sprite'</i>], <b>function</b>(Fsprite)
+{
+	<b>var</b> sp<span class="s"> = </span><b>new</b> Fsprite(..);
+	<span class="c">//everything</span>
+});
+&lt;/script>
+&lt;/body>
+</code></pre>
+<p></p>
+<p>here <code>data-main</code> sets the <code>baseUrl</code> of requirejs, <code>&quot;./&quot;</code> means in the same directory as <code>mygame.html</code>. every require of F.core say <code>module.js</code> is like <code>F.core/module</code>, prefixed with <code>F.core/</code> but without the <code>.js</code> extension, as requirejs naturally assumes every module is a javascript module. the <code>F.core/</code> is a directory <strong>relative to the baseUrl</strong>.
+</p>
+<p></p>
+<p class="header">2 I have 1 HTML file with many .js files
+</p>
+<pre class="javascript code"><code>F.core/
+mygame.html
+mygame.js
+character.js
+</code></pre>
+<p></p>
+<p>this is a good practice because it allows you to do <a href="#Optimization" class="dr-link">Optimization</a>
+</p>
+<p><code>mygame.html</code> should look like
+</p>
+<pre class="javascript code"><code>&lt;body>
+&lt;script data-main=<i>"mygame.js"</i> src=<i>"require.js"</i>>&lt;/script>
+&lt;/body>
+</code></pre>
+<p><code>mygame.js</code> should look like
+</p>
+<pre class="javascript code"><code>requirejs.config(
+{
+	baseUrl: <i>'./'</i>
+});
+requirejs([<i>'character'</i>], <b>function</b>(character)
+{
+	<b>var</b> david<span class="s"> = </span><b>new</b> character(<i>'david'</i>);
+});
+</code></pre>
+<p></p>
+<p>here the <code>baseUrl</code> property is explicitly set.
+<code>character.js</code> may look like
+</p>
+<pre class="javascript code"><code>define([<i>'F.core/sprite'</i>,<i>'F.core/animator'</i>],
+<b>function</b>(Fsprite,Fanimator)
+{
+	<b>function</b> character(name) <span class="c">//my character <b>class</b></span>
+	{
+		<b>this</b>.name=name;
+		<b>this</b>.sprite=<b>new</b> Fsprite(..);
+		<span class="c">//more setup</span>
+	}
+	character.prototype.fight=<b>function</b>()
+	{
+		<span class="c">//something</span>
+	}
+	<b>return</b> character; <span class="c">//you need to <b>return</b> the <b>class</b>!</span>
+});
+</code></pre>
+<p></p>
+<p>what&#39;s happening is <code>mygame.html</code> requires <code>mygame.js</code> and <code>mygame.js</code> requires <code>character.js</code>, making a chain of dependency. requirejs is good at untangling complex depedency tree to free you from <code>load this.js before that.js</code> hassle. that&#39;s all you need to get started.
+</p>
+<div class="License-section"><h2 id="License" class="undefined"><i class="dr-trixie">&#160;</i>License<a href="#License" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 154 in the source" href="https://github.com/tyt2y3/F.core/blob/master/docs/more.js#L154">&#x27ad;</a></h2>
+<div class="extra" id="License-extra"></div></div><p>Generally has complete freedom except for profit- making. For exact terms see <a href="http://project--f.blogspot.com/2012/05/license.html">license</a>.
+</p>
+<div class="Links-section"><h2 id="Links" class="undefined"><i class="dr-trixie">&#160;</i>Links<a href="#Links" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 167 in the source" href="https://github.com/tyt2y3/F.core/blob/master/docs/more.js#L167">&#x27ad;</a></h2>
+<div class="extra" id="Links-extra"></div></div><p class="header">Project F
+<p><li>repo <a href="https://github.com/tyt2y3/F.core">https://github.com/tyt2y3/F.core</a></li>
+<li>official site <a href="http://project--f.blogspot.com/">project--f.blogspot.com/</a></li>
+</p>
+<p class="header">F.LF
+<p><li>repo <a href="https://github.com/tyt2y3/F.LF">https://github.com/tyt2y3/F.LF</a></li>
+<li>official site <a href="http://f-lf2.blogspot.com/">f-lf2.blogspot.com/</a></li>
+<li><a href="http://tyt2y3.github.com/LFrelease/demo/demo3.html">demo</a></li>
+</p>
+<p class="header">teeth
+<p><li>repo <a href="https://github.com/tyt2y3/teeth">https://github.com/tyt2y3/teeth</a></li>
+<li><a href="http://tyt2y3.github.com/teeth">game</a></li>
+</p>
+<div class="Optimization-section"><h2 id="Optimization" class="undefined"><i class="dr-trixie">&#160;</i>Optimization<a href="#Optimization" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 138 in the source" href="https://github.com/tyt2y3/F.core/blob/master/docs/more.js#L138">&#x27ad;</a></h2>
+<div class="extra" id="Optimization-extra"></div></div><p>Assume you have chosen strategy 2 in <a href="#Getting_started" class="dr-link">Getting_started</a>, and you have made a fun and good game, and now you want to optimize all javascripts into one <code>.js</code> file.
+</p>
+<p>Please read <a href="http://requirejs.org/docs/optimization.html">requirejs documentation</a> first. that means you have <a href="http://nodejs.org">node.js</a> installed and <a href="http://requirejs.org/docs/download.html#rjs">r.js</a> in hand.
+</p>
+<p>a <code>build.config</code> then looks
+</p>
+<pre class="javascript code"><code>({
+baseUrl: <i>"./"</i>,
+name: <i>"mygame"</i>,
+out: <i>"mygame-built.js"</i>,
+<span class="c">//,optimize: <i>'none'</i> //uncomment to disable uglifying</span>
+})
+</code></pre>
+<p>run
+</p>
+<pre class="javascript code"><code>node r.js -o build.config
+</code></pre>
+<p>then replace <code>&lt;script data-main=&quot;mygame.js&quot; src=&quot;require.js&quot;&gt;&lt;/script&gt;</code> in <code>mygame.html</code> with <code>&lt;script data-main=&quot;mygame-built.js&quot; src=&quot;require.js&quot;&gt;&lt;/script&gt;</code>
+</p>
+<div class="Sample usages-section"><h2 id="Sample usages" class="undefined"><i class="dr-trixie">&#160;</i>Sample usages<a href="#Sample usages" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 150 in the source" href="https://github.com/tyt2y3/F.core/blob/master/docs/more.js#L150">&#x27ad;</a></h2>
+<div class="extra" id="Sample usages-extra"></div></div><p><li><a href="http://tyt2y3.github.com/F.core/sample/combo.html">combo.html</a></li>
+<li><a href="http://tyt2y3.github.com/F.core/sample/collision.html">collision.html</a></li>
+<li><a href="http://tyt2y3.github.com/F.core/sample/controller.html">controller.html</a></li>
+<li><a href="http://tyt2y3.github.com/F.core/sample/effects-pool.html">effects-pool.html</a></li>
+<li><a href="http://tyt2y3.github.com/F.core/sample/graph.html">graph.html</a></li>
+<li><a href="http://tyt2y3.github.com/F.core/sample/support.html">support.html</a></li>
+<li><a href="http://tyt2y3.github.com/F.core/sample/states.html">states.html</a></li>
+<li><a href="http://tyt2y3.github.com/F.core/sample/sprite.html">sprite.html</a></li>
+<li><a href="http://tyt2y3.github.com/F.core/sample/world.html">world.html</a></li>
 </p>
 <div class="animator-section"><h2 id="animator" class="dr-class"><i class="dr-trixie">&#160;</i>animator(config)<a href="#animator" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 29 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/animator.js#L29">&#x27ad;</a></h2>
 <div class="extra" id="animator-extra"></div></div><div class="dr-class"><p><li>animate sprites</li>
@@ -865,7 +998,7 @@ so it is not a hard decision like Windows vs Mac when choose to use F.core. you 
 	tar:         <span class="c">//target @sprite</span>
 	ani:         <span class="c">//animation sequence:</span>
 		<b>null</b>,    <span class="c">//<b>if</b> <b>undefined</b>, loop through top left to lower right, row by row</span>
-		[<span class="d">0</span>,<span class="d">1</span>,<span class="d">2</span>,<span class="d">1</span>,<span class="d">0</span>],<span class="c">//use custom frame sequence</span>
+		[<span class="d">0</span>,<span class="d">1</span>,<span class="d">2</span>,<span class="d">1</span>,<span class="d">0</span>],<span class="c">//use custom animation sequence</span>
 	borderright: <span class="d">1</span>, <span class="c">//[optionals] trim the right edge pixels away</span>
 	borderbottom: <span class="d">1</span>,
 	borderleft: <span class="d">1</span>,
@@ -878,24 +1011,40 @@ so it is not a hard decision like Windows vs Mac when choose to use F.core. you 
 </p>
 <iframe src="../sample/sprite.html" width="400" height="250"></iframe>
 <img src="../sample/test_sprite.png" width="300">
-</div><div class="animator-hmirror-section"><h3 id="animator.hmirror" class="dr-method"><i class="dr-trixie">&#160;</i>animator.hmirror(val)<a href="#animator.hmirror" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 104 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/animator.js#L104">&#x27ad;</a></h3>
-<div class="extra" id="animator.hmirror-extra"></div></div><div class="dr-method"><p>set the horizontal mirror mode
+</div><div class="animator-I-section"><h3 id="animator.I" class="dr-property"><i class="dr-trixie">&#160;</i>animator.I<a href="#animator.I" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 39 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/animator.js#L39">&#x27ad;</a></h3>
+<div class="extra" id="animator.I-extra"></div></div><p>current frame
 </p>
-<dl class="dr-parameters"><dt class="dr-param">val</dt>
+<div class="dr-property"><p>if <code>config.ani</code> exists, <code>I</code> is the index to this array. otherwise it is the frame number
+</p>
+</div><div class="animator-horimirror-section"><h3 id="animator.horimirror" class="dr-property"><i class="dr-trixie">&#160;</i>animator.horimirror<a href="#animator.horimirror" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 46 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/animator.js#L46">&#x27ad;</a></h3>
+<div class="extra" id="animator.horimirror-extra"></div></div><div class="dr-property"><dl class="dr-parameters"><dt class="dr-param"></dt>
 <dd class="dr-type"><em class="dr-type-boolean">boolean</em></dd>
 <dd class="dr-description">true: mirrored, false: normal</dd>
 </dl>
-</div><div class="animator-next_frame-section"><h3 id="animator.next_frame" class="dr-method"><i class="dr-trixie">&#160;</i>animator.next_frame()<a href="#animator.next_frame" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 64 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/animator.js#L64">&#x27ad;</a></h3>
-<div class="extra" id="animator.next_frame-extra"></div></div><div class="dr-method"><p>turn to the next frame
+<p>usually a sprite character is drawn to face right and mirrored to face left. hmirror mode works with sprites that is flipped horizontally <strong>as a whole image</strong>.
 </p>
-<p>if <code>config.ani</code> exists, will go to the next frame of animation sequence
+</div><div class="animator-next_frame-section"><h3 id="animator.next_frame" class="dr-method"><i class="dr-trixie">&#160;</i>animator.next_frame()<a href="#animator.next_frame" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 62 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/animator.js#L62">&#x27ad;</a></h3>
+<div class="extra" id="animator.next_frame-extra"></div></div><p>turn to the next frame
+</p>
+<div class="dr-method"><p>if <code>config.ani</code> exists, will go to the next frame of animation sequence
 </p>
 <p>otherwise, loop through top left to lower right, row by row
 </p>
-<p class="dr-returns"><strong class="dr-title">Returns:</strong> <em class="dr-type-number">number</em> <span class="dr-description">index of the frame just shown</span></p>
-</div><div class="animator-prototype-section"><h3 id="animator.prototype" class="undefined"><i class="dr-trixie">&#160;</i>animator.prototype<a href="#animator.prototype" title="Link to this section" class="dr-hash">&#x2693;</a></h3>
-<div class="extra" id="animator.prototype-extra"></div></div><div class="animator-prototype-set-section"><h4 id="animator.prototype.set" class="dr-method"><i class="dr-trixie">&#160;</i>animator.prototype.set(set_config, [base])<a href="#animator.prototype.set" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 157 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/animator.js#L157">&#x27ad;</a></h4>
-<div class="extra" id="animator.prototype.set-extra"></div></div><div class="dr-method"><p>a helper function to constructor a set of animators
+<p class="dr-returns"><strong class="dr-title">Returns:</strong> <em class="dr-type-number">number</em> <span class="dr-description">the frame just shown</span></p>
+<p>remarks: if you want to check whether the animation is <strong>ended</strong>, test it against 0. when <code>animator.I</code> equals &#39;max frame index&#39;, the last frame is <em>just</em> being shown. when <code>animator.I</code> equals 0, the last frame had finished the whole duration of a frame and is <em>just</em> ended.
+</p>
+</div><div class="animator-rewind-section"><h3 id="animator.rewind" class="dr-method"><i class="dr-trixie">&#160;</i>animator.rewind()<a href="#animator.rewind" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 107 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/animator.js#L107">&#x27ad;</a></h3>
+<div class="extra" id="animator.rewind-extra"></div></div><div class="dr-method"><p>return to the first frame of animation sequence
+</p>
+</div><div class="animator-seek-section"><h3 id="animator.seek" class="dr-method"><i class="dr-trixie">&#160;</i>animator.seek(I)<a href="#animator.seek" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 91 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/animator.js#L91">&#x27ad;</a></h3>
+<div class="extra" id="animator.seek-extra"></div></div><p>seek to a particular index on animation sequence
+</p>
+<div class="dr-method"><dl class="dr-parameters"><dt class="dr-param">I</dt>
+<dd class="dr-type"><em class="dr-type-number">number</em></dd>
+<dd class="dr-description">sequence index</dd>
+</dl>
+</div><div class="animator-set-section"><h3 id="animator.set" class="dr-method"><i class="dr-trixie">&#160;</i>animator.set(set_config, [base])<a href="#animator.set" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 178 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/animator.js#L178">&#x27ad;</a></h3>
+<div class="extra" id="animator.set-extra"></div></div><div class="dr-method"><p>a helper function to constructor a set of animators
 </p>
 <p>animator set is a method. do <strong>not</strong> <code>var ani = new animator_set(..)</code>
 </p>
@@ -924,18 +1073,18 @@ so it is not a hard decision like Windows vs Mac when choose to use F.core. you 
 	gx:<span class="d">4</span>,gy:<span class="d">1</span>    <span class="c">//define a gx*gy grid of frames</span>
 } <span class="c">//,,,</span>
 }
-<b>var</b> set<span class="s"> = </span>animator_set(set_config,<i>'base'</i>)
+<b>var</b> set<span class="s"> = </span>animator.set(set_config,<i>'base'</i>)
 </code></pre>
-</div><div class="animator-rewind-section"><h3 id="animator.rewind" class="dr-method"><i class="dr-trixie">&#160;</i>animator.rewind()<a href="#animator.rewind" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 49 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/animator.js#L49">&#x27ad;</a></h3>
-<div class="extra" id="animator.rewind-extra"></div></div><div class="dr-method"><p>return to the first frame of animation sequence
-</p>
-</div><div class="animator-set_frame-section"><h3 id="animator.set_frame" class="dr-method"><i class="dr-trixie">&#160;</i>animator.set_frame(i)<a href="#animator.set_frame" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 93 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/animator.js#L93">&#x27ad;</a></h3>
+<p class="dr-returns"><strong class="dr-title">Returns:</strong> <em class="dr-type-object">object</em> <span class="dr-description">animator set</span></p>
+</div><div class="animator-set_frame-section"><h3 id="animator.set_frame" class="dr-method"><i class="dr-trixie">&#160;</i>animator.set_frame(i)<a href="#animator.set_frame" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 119 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/animator.js#L119">&#x27ad;</a></h3>
 <div class="extra" id="animator.set_frame-extra"></div></div><div class="dr-method"><p>set to a particular frame
 </p>
 <dl class="dr-parameters"><dt class="dr-param">i</dt>
 <dd class="dr-type"><em class="dr-type-number">number</em></dd>
-<dd class="dr-description">frame index</dd>
+<dd class="dr-description">frame number on image</dd>
 </dl>
+<p>the top-left frame is 0
+</p>
 </div><div class="collision-section"><h2 id="collision" class="undefined"><i class="dr-trixie">&#160;</i>collision<a href="#collision" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 9 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/collision.js#L9">&#x27ad;</a></h2>
 <div class="extra" id="collision-extra"></div></div><p>collision detection function set
 </p>
@@ -989,10 +1138,10 @@ so it is not a hard decision like Windows vs Mac when choose to use F.core. you 
 </div><div class="combo detector-section"><h2 id="combo detector" class="undefined"><i class="dr-trixie">&#160;</i>combo detector<a href="#combo detector" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 8 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/combodec.js#L8">&#x27ad;</a></h2>
 <div class="extra" id="combo detector-extra"></div></div><p><li>listen key events and detect combo from a controller</li>
 <li>maintains a clean sequence of pressed keys and fire events when combo is detected</li>
-<li>King of Fighter style combos</li>
+<li>LF2, KOF style combos</li>
 <li>eliminating auto-repeated keys</li>
 </p>
-<div class="combodec-section"><h2 id="combodec" class="dr-class"><i class="dr-trixie">&#160;</i>combodec(controller, config, combo)<a href="#combodec" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 41 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/combodec.js#L41">&#x27ad;</a></h2>
+<div class="combodec-section"><h2 id="combodec" class="dr-class"><i class="dr-trixie">&#160;</i>combodec(controller, config, combo)<a href="#combodec" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 46 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/combodec.js#L46">&#x27ad;</a></h2>
 <div class="extra" id="combodec-extra"></div></div><div class="dr-class"><dl class="dr-parameters"><dt class="dr-param">controller</dt>
 <dd class="dr-type"><em class="dr-type-object">object</em></dd>
 <dd class="dr-description">a reference to <a href="#controller" class="dr-link">controller</a></dd>
@@ -1000,7 +1149,7 @@ so it is not a hard decision like Windows vs Mac when choose to use F.core. you 
 <dd class="dr-type"><em class="dr-type-object">object</em></dd>
 <dd class="dr-description">&#160;</dd>
 <dt class="dr-param">combo</dt>
-<dd class="dr-type"><em class="dr-type-object">object</em></dd>
+<dd class="dr-type"><em class="dr-type-array">array</em></dd>
 <dd class="dr-description">combo definition</dd>
 </dl>
 <pre class="javascript code"><code><b>var</b> con_config=
@@ -1011,10 +1160,11 @@ so it is not a hard decision like Windows vs Mac when choose to use F.core. you 
 <b>var</b> con<span class="s"> = </span><b>new</b> controller(con_config);
 <b>var</b> dec_config=
 {
-	rp:     <span class="c">//[optional] max repeat count of each key, unlimited <b>if</b> not stated</span>
-	timeout:<span class="c">//time before clearing the sequence buffer <b>in</b> terms of frames</span>
-	comboout: <span class="c">//the max time interval between keys to make a combo</span>
-	callback: <span class="c">//callback <b>function</b> when combo detected</span>
+	timeout: <span class="d">30</span>,  <span class="c">//time before clearing the sequence buffer <b>in</b> terms of frames</span>
+	comboout: <span class="d">15</span>, <span class="c">//the max time interval between keys to make a combo</span>
+	callback: dec_callback <span class="c">//callback <b>function</b> when combo detected</span>
+	rp: {up:<span class="d">1</span>,down:<span class="d">1</span>,left:<span class="d">2</span>,right:<span class="d">2</span>,def:<span class="d">3</span>,jump:<span class="d">1</span>,att:<span class="d">5</span>}
+		<span class="c">//[optional] max repeat count of each key, unlimited <b>if</b> not stated</span>
 };
 <b>var</b> combo<span class="s"> = </span>[
 {
@@ -1024,39 +1174,48 @@ so it is not a hard decision like Windows vs Mac when choose to use F.core. you 
 } <span class="c">//,,,</span>
 ];
 <b>var</b> dec<span class="s"> = </span><b>new</b> combodec ( con, dec_config, combo);
+<b>function</b> dec_callback(combo)
+{
+	alert(combo);
+}
 </code></pre>
 <p><a href="../sample/combo.html">example</a>
 </p>
 <iframe src="../sample/combo.html" width="800" height="500"></iframe>
-</div><div class="combodec-callback-section"><h3 id="combodec.callback" class="dr-property"><i class="dr-trixie">&#160;</i>combodec.callback<a href="#combodec.callback" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 72 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/combodec.js#L72">&#x27ad;</a></h3>
+</div><div class="combodec-callback-section"><h3 id="combodec.callback" class="dr-property"><i class="dr-trixie">&#160;</i>combodec.callback<a href="#combodec.callback" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 92 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/combodec.js#L92">&#x27ad;</a></h3>
 <div class="extra" id="combodec.callback-extra"></div></div><dl class="dr-parameters"><dt class="dr-param"></dt>
 <dd class="dr-type"><em class="dr-type-function">function</em></dd>
 <dd class="dr-description">&#160;</dd>
 </dl>
-<div class="dr-property"></div><div class="combodec-clear_seq-section"><h3 id="combodec.clear_seq" class="dr-method"><i class="dr-trixie">&#160;</i>combodec.clear_seq()<a href="#combodec.clear_seq" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 145 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/combodec.js#L145">&#x27ad;</a></h3>
+<div class="dr-property"></div><div class="combodec-clear_seq-section"><h3 id="combodec.clear_seq" class="dr-method"><i class="dr-trixie">&#160;</i>combodec.clear_seq()<a href="#combodec.clear_seq" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 166 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/combodec.js#L166">&#x27ad;</a></h3>
 <div class="extra" id="combodec.clear_seq-extra"></div></div><p>clear the key sequence
 </p>
 <div class="dr-method"><p>normally you would not need to call this manually
 </p>
-</div><div class="combodec-combo-section"><h3 id="combodec.combo" class="dr-property"><i class="dr-trixie">&#160;</i>combodec.combo<a href="#combodec.combo" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 78 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/combodec.js#L78">&#x27ad;</a></h3>
+</div><div class="combodec-combo-section"><h3 id="combodec.combo" class="dr-property"><i class="dr-trixie">&#160;</i>combodec.combo<a href="#combodec.combo" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 98 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/combodec.js#L98">&#x27ad;</a></h3>
 <div class="extra" id="combodec.combo-extra"></div></div><dl class="dr-parameters"><dt class="dr-param"></dt>
 <dd class="dr-type"><em class="dr-type-array">array</em></dd>
 <dd class="dr-description">combo list</dd>
 </dl>
-<div class="dr-property"></div><div class="combodec-con-section"><h3 id="combodec.con" class="dr-property"><i class="dr-trixie">&#160;</i>combodec.con<a href="#combodec.con" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 51 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/combodec.js#L51">&#x27ad;</a></h3>
+<div class="dr-property"></div><div class="combodec-comboout-section"><h3 id="combodec.comboout" class="dr-property"><i class="dr-trixie">&#160;</i>combodec.comboout<a href="#combodec.comboout" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 65 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/combodec.js#L65">&#x27ad;</a></h3>
+<div class="extra" id="combodec.comboout-extra"></div></div><dl class="dr-parameters"><dt class="dr-param"></dt>
+<dd class="dr-type"><em class="dr-type-number">number</em></dd>
+<dd class="dr-description">when to interrupt the current combo</dd>
+</dl>
+<div class="dr-property"></div><div class="combodec-con-section"><h3 id="combodec.con" class="dr-property"><i class="dr-trixie">&#160;</i>combodec.con<a href="#combodec.con" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 71 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/combodec.js#L71">&#x27ad;</a></h3>
 <div class="extra" id="combodec.con-extra"></div></div><dl class="dr-parameters"><dt class="dr-param"></dt>
 <dd class="dr-type"><em class="dr-type-object">object</em></dd>
 <dd class="dr-description">parent controller</dd>
 </dl>
-<div class="dr-property"></div><div class="combodec-config-section"><h3 id="combodec.config" class="dr-property"><i class="dr-trixie">&#160;</i>combodec.config<a href="#combodec.config" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 66 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/combodec.js#L66">&#x27ad;</a></h3>
+<div class="dr-property"></div><div class="combodec-config-section"><h3 id="combodec.config" class="dr-property"><i class="dr-trixie">&#160;</i>combodec.config<a href="#combodec.config" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 86 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/combodec.js#L86">&#x27ad;</a></h3>
 <div class="extra" id="combodec.config-extra"></div></div><dl class="dr-parameters"><dt class="dr-param"></dt>
 <dd class="dr-type"><em class="dr-type-object">object</em></dd>
 <dd class="dr-description">&#160;</dd>
 </dl>
-<div class="dr-property"></div><div class="combodec-frame-section"><h3 id="combodec.frame" class="dr-method"><i class="dr-trixie">&#160;</i>combodec.frame()<a href="#combodec.frame" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 155 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/combodec.js#L155">&#x27ad;</a></h3>
+<div class="dr-property"></div><div class="combodec-frame-section"><h3 id="combodec.frame" class="dr-method"><i class="dr-trixie">&#160;</i>combodec.frame()<a href="#combodec.frame" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 176 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/combodec.js#L176">&#x27ad;</a></h3>
 <div class="extra" id="combodec.frame-extra"></div></div><p>a tick of time
 </p>
-<div class="dr-method"></div><div class="combodec-key-section"><h3 id="combodec.key" class="dr-method"><i class="dr-trixie">&#160;</i>combodec.key(k, down)<a href="#combodec.key" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 89 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/combodec.js#L89">&#x27ad;</a></h3>
+<div class="dr-method"></div><div class="combodec-key-section"><h3 id="combodec.key" class="dr-method"><i class="dr-trixie">&#160;</i>combodec.key(k, down)<a href="#combodec.key" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 110 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/combodec.js#L110">&#x27ad;</a></h3>
 <div class="extra" id="combodec.key-extra"></div></div><p>supply keys to combodec
 </p>
 <div class="dr-method"><dl class="dr-parameters"><dt class="dr-param">k</dt>
@@ -1068,7 +1227,7 @@ so it is not a hard decision like Windows vs Mac when choose to use F.core. you 
 </dl>
 <p>note that it receives key name, i.e. <code>up</code>,<code>down</code> rather than <code>w</code>,<code>s</code>
 </p>
-</div><div class="combodec-seq-section"><h3 id="combodec.seq" class="dr-property"><i class="dr-trixie">&#160;</i>combodec.seq<a href="#combodec.seq" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 60 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/combodec.js#L60">&#x27ad;</a></h3>
+</div><div class="combodec-seq-section"><h3 id="combodec.seq" class="dr-property"><i class="dr-trixie">&#160;</i>combodec.seq<a href="#combodec.seq" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 80 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/combodec.js#L80">&#x27ad;</a></h3>
 <div class="extra" id="combodec.seq-extra"></div></div><dl class="dr-parameters"><dt class="dr-param"></dt>
 <dd class="dr-type"><em class="dr-type-array">array</em></dd>
 <dd class="dr-description">the key input sequence. note that combodec logs key names rather than key stroke,</dd>
@@ -1077,7 +1236,17 @@ so it is not a hard decision like Windows vs Mac when choose to use F.core. you 
 </p>
 <p>will be cleared regularly as defined by <code>config.timeout</code>
 </p>
-<div class="dr-property"></div><div class="control_player-section"><h2 id="control_player" class="dr-class"><i class="dr-trixie">&#160;</i>control_player(control_config, record)<a href="#control_player" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 72 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/controller-recorder.js#L72">&#x27ad;</a></h2>
+<div class="dr-property"></div><div class="combodec-time-section"><h3 id="combodec.time" class="dr-property"><i class="dr-trixie">&#160;</i>combodec.time<a href="#combodec.time" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 53 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/combodec.js#L53">&#x27ad;</a></h3>
+<div class="extra" id="combodec.time-extra"></div></div><dl class="dr-parameters"><dt class="dr-param"></dt>
+<dd class="dr-type"><em class="dr-type-number">number</em></dd>
+<dd class="dr-description">current time</dd>
+</dl>
+<div class="dr-property"></div><div class="combodec-timeout-section"><h3 id="combodec.timeout" class="dr-property"><i class="dr-trixie">&#160;</i>combodec.timeout<a href="#combodec.timeout" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 59 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/combodec.js#L59">&#x27ad;</a></h3>
+<div class="extra" id="combodec.timeout-extra"></div></div><dl class="dr-parameters"><dt class="dr-param"></dt>
+<dd class="dr-type"><em class="dr-type-number">number</em></dd>
+<dd class="dr-description">when to clear the sequence buffer</dd>
+</dl>
+<div class="dr-property"></div><div class="control_player-section"><h2 id="control_player" class="dr-class"><i class="dr-trixie">&#160;</i>control_player(control_config, record)<a href="#control_player" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 77 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/controller-recorder.js#L77">&#x27ad;</a></h2>
 <div class="extra" id="control_player-extra"></div></div><p>control player to playback activity of a controller
 </p>
 <div class="dr-class"><p>compatible with <a href="#controller" class="dr-link">controller</a> and please refer to controller for specification
@@ -1089,39 +1258,48 @@ so it is not a hard decision like Windows vs Mac when choose to use F.core. you 
 <dd class="dr-type"><em class="dr-type-array">array</em></dd>
 <dd class="dr-description">&#160;</dd>
 </dl>
-</div><div class="control_player-child-section"><h3 id="control_player.child" class="dr-property"><i class="dr-trixie">&#160;</i>control_player.child<a href="#control_player.child" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 90 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/controller-recorder.js#L90">&#x27ad;</a></h3>
+<p><a href="http://tyt2y3.github.com/LFrelease/demo/milestone/2012June-min.html">example</a>
+</p>
+</div><div class="control_player-child-section"><h3 id="control_player.child" class="dr-property"><i class="dr-trixie">&#160;</i>control_player.child<a href="#control_player.child" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 95 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/controller-recorder.js#L95">&#x27ad;</a></h3>
 <div class="extra" id="control_player.child-extra"></div></div><dl class="dr-parameters"><dt class="dr-param"></dt>
 <dd class="dr-type"><em class="dr-type-array">array</em></dd>
 <dd class="dr-description">&#160;</dd>
 </dl>
-<div class="dr-property"></div><div class="control_player-clear_states-section"><h3 id="control_player.clear_states" class="dr-method"><i class="dr-trixie">&#160;</i>control_player.clear_states()<a href="#control_player.clear_states" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 128 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/controller-recorder.js#L128">&#x27ad;</a></h3>
-<div class="extra" id="control_player.clear_states-extra"></div></div><div class="dr-method"></div><div class="control_player-fetch-section"><h3 id="control_player.fetch" class="dr-method"><i class="dr-trixie">&#160;</i>control_player.fetch()<a href="#control_player.fetch" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 112 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/controller-recorder.js#L112">&#x27ad;</a></h3>
-<div class="extra" id="control_player.fetch-extra"></div></div><div class="dr-method"></div><div class="control_player-flush-section"><h3 id="control_player.flush" class="dr-method"><i class="dr-trixie">&#160;</i>control_player.flush()<a href="#control_player.flush" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 133 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/controller-recorder.js#L133">&#x27ad;</a></h3>
-<div class="extra" id="control_player.flush-extra"></div></div><div class="dr-method"></div><div class="control_player-frame-section"><h3 id="control_player.frame" class="dr-method"><i class="dr-trixie">&#160;</i>control_player.frame()<a href="#control_player.frame" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 102 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/controller-recorder.js#L102">&#x27ad;</a></h3>
+<div class="dr-property"></div><div class="control_player-clear_states-section"><h3 id="control_player.clear_states" class="dr-method"><i class="dr-trixie">&#160;</i>control_player.clear_states()<a href="#control_player.clear_states" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 138 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/controller-recorder.js#L138">&#x27ad;</a></h3>
+<div class="extra" id="control_player.clear_states-extra"></div></div><div class="dr-method"></div><div class="control_player-fetch-section"><h3 id="control_player.fetch" class="dr-method"><i class="dr-trixie">&#160;</i>control_player.fetch()<a href="#control_player.fetch" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 119 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/controller-recorder.js#L119">&#x27ad;</a></h3>
+<div class="extra" id="control_player.fetch-extra"></div></div><div class="dr-method"></div><div class="control_player-flush-section"><h3 id="control_player.flush" class="dr-method"><i class="dr-trixie">&#160;</i>control_player.flush()<a href="#control_player.flush" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 143 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/controller-recorder.js#L143">&#x27ad;</a></h3>
+<div class="extra" id="control_player.flush-extra"></div></div><div class="dr-method"></div><div class="control_player-frame-section"><h3 id="control_player.frame" class="dr-method"><i class="dr-trixie">&#160;</i>control_player.frame()<a href="#control_player.frame" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 109 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/controller-recorder.js#L109">&#x27ad;</a></h3>
 <div class="extra" id="control_player.frame-extra"></div></div><p>a tick of time
 </p>
-<div class="dr-method"></div><div class="control_player-state-section"><h3 id="control_player.state" class="dr-property"><i class="dr-trixie">&#160;</i>control_player.state<a href="#control_player.state" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 82 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/controller-recorder.js#L82">&#x27ad;</a></h3>
+<div class="dr-method"></div><div class="control_player-state-section"><h3 id="control_player.state" class="dr-property"><i class="dr-trixie">&#160;</i>control_player.state<a href="#control_player.state" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 87 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/controller-recorder.js#L87">&#x27ad;</a></h3>
 <div class="extra" id="control_player.state-extra"></div></div><dl class="dr-parameters"><dt class="dr-param"></dt>
 <dd class="dr-type"><em class="dr-type-object">object</em></dd>
 <dd class="dr-description">&#160;</dd>
 </dl>
-<div class="dr-property"></div><div class="control_player-sync-section"><h3 id="control_player.sync" class="dr-property"><i class="dr-trixie">&#160;</i>control_player.sync<a href="#control_player.sync" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 96 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/controller-recorder.js#L96">&#x27ad;</a></h3>
+<div class="dr-property"></div><div class="control_player-sync-section"><h3 id="control_player.sync" class="dr-property"><i class="dr-trixie">&#160;</i>control_player.sync<a href="#control_player.sync" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 101 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/controller-recorder.js#L101">&#x27ad;</a></h3>
 <div class="extra" id="control_player.sync-extra"></div></div><dl class="dr-parameters"><dt class="dr-param"></dt>
 <dd class="dr-type"><em class="dr-type-boolean">boolean</em></dd>
 <dd class="dr-description">&#160;</dd>
 </dl>
-<div class="dr-property"></div><div class="control_recorder-section"><h2 id="control_recorder" class="dr-class"><i class="dr-trixie">&#160;</i>control_recorder(target_controller)<a href="#control_recorder" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 12 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/controller-recorder.js#L12">&#x27ad;</a></h2>
+<div class="dr-property"></div><div class="control_recorder-section"><h2 id="control_recorder" class="dr-class"><i class="dr-trixie">&#160;</i>control_recorder(target_controller)<a href="#control_recorder" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 15 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/controller-recorder.js#L15">&#x27ad;</a></h2>
 <div class="extra" id="control_recorder-extra"></div></div><div class="dr-class"><p>controller recorder to record activity of a controller
 </p>
 <dl class="dr-parameters"><dt class="dr-param">target_controller</dt>
 <dd class="dr-type"><em class="dr-type-object">object</em></dd>
 <dd class="dr-description">target <a href="#controller" class="dr-link">controller</a></dd>
 </dl>
-</div><div class="control_recorder-export_str-section"><h3 id="control_recorder.export_str" class="dr-method"><i class="dr-trixie">&#160;</i>control_recorder.export_str()<a href="#control_recorder.export_str" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 47 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/controller-recorder.js#L47">&#x27ad;</a></h3>
+<p>record format is:
+</p>
+<pre class="javascript code"><code>[
+<span class="c">//   { time,    key,    down }</span>
+     {<i>"t"</i>:<span class="d">13</span>,<i>"k"</i>:<i>"left"</i>,<i>"d"</i>:<span class="d">1</span>} <span class="c">//,,,</span>
+]
+</code></pre>
+</div><div class="control_recorder-export_str-section"><h3 id="control_recorder.export_str" class="dr-method"><i class="dr-trixie">&#160;</i>control_recorder.export_str()<a href="#control_recorder.export_str" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 53 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/controller-recorder.js#L53">&#x27ad;</a></h3>
 <div class="extra" id="control_recorder.export_str-extra"></div></div><p>export to JSON
 </p>
 <div class="dr-method"><p class="dr-returns"><strong class="dr-title">Returns:</strong> <em class="dr-type-string">string</em> <span class="dr-description">JSON</span></p>
-</div><div class="control_recorder-frame-section"><h3 id="control_recorder.frame" class="dr-method"><i class="dr-trixie">&#160;</i>control_recorder.frame()<a href="#control_recorder.frame" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 37 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/controller-recorder.js#L37">&#x27ad;</a></h3>
+</div><div class="control_recorder-frame-section"><h3 id="control_recorder.frame" class="dr-method"><i class="dr-trixie">&#160;</i>control_recorder.frame()<a href="#control_recorder.frame" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 43 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/controller-recorder.js#L43">&#x27ad;</a></h3>
 <div class="extra" id="control_recorder.frame-extra"></div></div><p>a tick of time
 </p>
 <div class="dr-method"><p>the recorder records in discrete time sequence, if your game is not exactly in discrete time,
@@ -1130,7 +1308,7 @@ this next time unit, your game is said to be non-time-deterministic, and theoret
 you cannot record and playback key inputs and receive <strong>exact same</strong> result,
 but generally speaking if the recording fps is high enough the error will be small
 </p>
-</div><div class="control_recorder-key-section"><h3 id="control_recorder.key" class="dr-method"><i class="dr-trixie">&#160;</i>control_recorder.key(k, down)<a href="#control_recorder.key" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 23 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/controller-recorder.js#L23">&#x27ad;</a></h3>
+</div><div class="control_recorder-key-section"><h3 id="control_recorder.key" class="dr-method"><i class="dr-trixie">&#160;</i>control_recorder.key(k, down)<a href="#control_recorder.key" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 29 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/controller-recorder.js#L29">&#x27ad;</a></h3>
 <div class="extra" id="control_recorder.key-extra"></div></div><p>supply keys to control_recorder
 </p>
 <div class="dr-method"><dl class="dr-parameters"><dt class="dr-param">k</dt>
@@ -1174,7 +1352,7 @@ see <a href="http://project--f.blogspot.hk/2012/11/keyboard-controller.html">htt
 </p>
 <p>see <a href="#combodec.key" class="dr-link">combodec.key</a>
 </p>
-</div><div class="controller-clear_states-section"><h3 id="controller.clear_states" class="dr-method"><i class="dr-trixie">&#160;</i>controller.clear_states()<a href="#controller.clear_states" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 155 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/controller.js#L155">&#x27ad;</a></h3>
+</div><div class="controller-clear_states-section"><h3 id="controller.clear_states" class="dr-method"><i class="dr-trixie">&#160;</i>controller.clear_states()<a href="#controller.clear_states" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 177 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/controller.js#L177">&#x27ad;</a></h3>
 <div class="extra" id="controller.clear_states-extra"></div></div><p>clear the key state table
 </p>
 <div class="dr-method"></div><div class="controller-config-section"><h3 id="controller.config" class="dr-property"><i class="dr-trixie">&#160;</i>controller.config<a href="#controller.config" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 77 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/controller.js#L77">&#x27ad;</a></h3>
@@ -1184,13 +1362,13 @@ see <a href="http://project--f.blogspot.hk/2012/11/keyboard-controller.html">htt
 </dl>
 <p>note that controller still keeps a reference to the config object
 </p>
-</div><div class="controller-fetch-section"><h3 id="controller.fetch" class="dr-method"><i class="dr-trixie">&#160;</i>controller.fetch()<a href="#controller.fetch" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 165 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/controller.js#L165">&#x27ad;</a></h3>
+</div><div class="controller-fetch-section"><h3 id="controller.fetch" class="dr-method"><i class="dr-trixie">&#160;</i>controller.fetch()<a href="#controller.fetch" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 187 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/controller.js#L187">&#x27ad;</a></h3>
 <div class="extra" id="controller.fetch-extra"></div></div><p>fetch for inputs received since the last fetch, will flush buffer afterwards
 </p>
-<div class="dr-method"></div><div class="controller-flush-section"><h3 id="controller.flush" class="dr-method"><i class="dr-trixie">&#160;</i>controller.flush()<a href="#controller.flush" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 183 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/controller.js#L183">&#x27ad;</a></h3>
+<div class="dr-method"></div><div class="controller-flush-section"><h3 id="controller.flush" class="dr-method"><i class="dr-trixie">&#160;</i>controller.flush()<a href="#controller.flush" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 205 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/controller.js#L205">&#x27ad;</a></h3>
 <div class="extra" id="controller.flush-extra"></div></div><p>flush the buffer manually
 </p>
-<div class="dr-method"></div><div class="controller-key-section"><h3 id="controller.key" class="dr-method"><i class="dr-trixie">&#160;</i>controller.key(e, down)<a href="#controller.key" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 124 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/controller.js#L124">&#x27ad;</a></h3>
+<div class="dr-method"></div><div class="controller-key-section"><h3 id="controller.key" class="dr-method"><i class="dr-trixie">&#160;</i>controller.key(e, down)<a href="#controller.key" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 147 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/controller.js#L147">&#x27ad;</a></h3>
 <div class="extra" id="controller.key-extra"></div></div><div class="dr-method"><p>supply events to controller
 </p>
 <p>master controller will do this automatically
@@ -1209,14 +1387,14 @@ see <a href="http://project--f.blogspot.hk/2012/11/keyboard-controller.html">htt
 </dl>
 <p>the keycode for each key
 </p>
-</div><div class="controller-keycode_to_keyname-section"><h3 id="controller.keycode_to_keyname" class="dr-method"><i class="dr-trixie">&#160;</i>controller.keycode_to_keyname(keycode)<a href="#controller.keycode_to_keyname" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 275 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/controller.js#L275">&#x27ad;</a></h3>
+</div><div class="controller-keycode_to_keyname-section"><h3 id="controller.keycode_to_keyname" class="dr-method"><i class="dr-trixie">&#160;</i>controller.keycode_to_keyname(keycode)<a href="#controller.keycode_to_keyname" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 277 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/controller.js#L277">&#x27ad;</a></h3>
 <div class="extra" id="controller.keycode_to_keyname-extra"></div></div><p>convert keycode back to keyname
 </p>
 <div class="dr-method"><dl class="dr-parameters"><dt class="dr-param">keycode</dt>
 <dd class="dr-type"><em class="dr-type-number">number</em></dd>
 <dd class="dr-description">&#160;</dd>
 </dl>
-<p class="dr-returns"><strong class="dr-title">Returns:</strong> <em class="dr-type-string">string</em> <span class="dr-description">keyname </span></p>
+<p class="dr-returns"><strong class="dr-title">Returns:</strong> <em class="dr-type-string">string</em> <span class="dr-description">keyname</span></p>
 </div><div class="controller-keyname_to_keycode-section"><h3 id="controller.keyname_to_keycode" class="dr-method"><i class="dr-trixie">&#160;</i>controller.keyname_to_keycode(keyname)<a href="#controller.keyname_to_keycode" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 219 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/controller.js#L219">&#x27ad;</a></h3>
 <div class="extra" id="controller.keyname_to_keycode-extra"></div></div><p>convert keyname to keycode
 </p>
@@ -1249,7 +1427,7 @@ there are very good reasons to architect your game in synchronous mode
 <li>time-determinism; see <a href="#control_recorder.frame" class="dr-link">control_recorder.frame</a></li>
 <li>never drop keys; see <a href="http://project--f.blogspot.hk/2012/11/keyboard-controller.html">http://project--f.blogspot.hk/2012/11/keyboard-controller.html</a></li>
 </p>
-</div><div class="controller-zppendix-section"><h3 id="controller.zppendix" class="undefined"><i class="dr-trixie">&#160;</i>controller.zppendix<a href="#controller.zppendix" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 208 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/controller.js#L208">&#x27ad;</a></h3>
+</div><div class="controller-zppendix-section"><h3 id="controller.zppendix" class="undefined"><i class="dr-trixie">&#160;</i>controller.zppendix<a href="#controller.zppendix" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 135 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/controller.js#L135">&#x27ad;</a></h3>
 <div class="extra" id="controller.zppendix-extra"></div></div><p>on the other hand, there can be other controllers with compatible definition and behavior,
 (e.g. AI controller, network player controller, record playback controller)
 <li>has the properties <code>state</code>, <code>config</code>, <code>child</code>, <code>sync</code></li>
@@ -1398,7 +1576,7 @@ you never know until I experiment on this, see <a href="../sample/graph.html">ex
 	celly: cy <span class="c">//   each cell is cx*cy</span>
 }
 </code></pre>
-</div><div class="graph-add-section"><h3 id="graph.add" class="dr-method"><i class="dr-trixie">&#160;</i>graph.add(i, P)<a href="#graph.add" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 107 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/graph.js#L107">&#x27ad;</a></h3>
+</div><div class="graph-add-section"><h3 id="graph.add" class="dr-method"><i class="dr-trixie">&#160;</i>graph.add(i, P)<a href="#graph.add" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 104 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/graph.js#L104">&#x27ad;</a></h3>
 <div class="extra" id="graph.add-extra"></div></div><p>add an object <code>i</code> at point <code>P</code>
 </p>
 <div class="dr-method"><dl class="dr-parameters"><dt class="dr-param">i</dt>
@@ -1408,7 +1586,7 @@ you never know until I experiment on this, see <a href="../sample/graph.html">ex
 <dd class="dr-type"><em class="dr-type-object">object</em></dd>
 <dd class="dr-description"><code>{x,y}</code> point in world space</dd>
 </dl>
-</div><div class="graph-at-section"><h3 id="graph.at" class="dr-method"><i class="dr-trixie">&#160;</i>graph.at(P)<a href="#graph.at" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 70 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/graph.js#L70">&#x27ad;</a></h3>
+</div><div class="graph-at-section"><h3 id="graph.at" class="dr-method"><i class="dr-trixie">&#160;</i>graph.at(P)<a href="#graph.at" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 67 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/graph.js#L67">&#x27ad;</a></h3>
 <div class="extra" id="graph.at-extra"></div></div><p>convert P from world space to grid space
 </p>
 <div class="dr-method"><dl class="dr-parameters"><dt class="dr-param">P</dt>
@@ -1416,10 +1594,10 @@ you never know until I experiment on this, see <a href="../sample/graph.html">ex
 <dd class="dr-description"><code>{x,y}</code> point in world space</dd>
 </dl>
 <p class="dr-returns"><strong class="dr-title">Returns:</strong> <em class="dr-type-object">object</em> <span class="dr-description"><code>{x,y}</code> index in grid space</span></p>
-</div><div class="graph-create_graph-section"><h3 id="graph.create_graph" class="dr-method"><i class="dr-trixie">&#160;</i>graph.create_graph()<a href="#graph.create_graph" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 51 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/graph.js#L51">&#x27ad;</a></h3>
+</div><div class="graph-create_graph-section"><h3 id="graph.create_graph" class="dr-method"><i class="dr-trixie">&#160;</i>graph.create_graph()<a href="#graph.create_graph" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 48 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/graph.js#L48">&#x27ad;</a></h3>
 <div class="extra" id="graph.create_graph-extra"></div></div><p>create a 3D array
 </p>
-<div class="dr-method"></div><div class="graph-get-section"><h3 id="graph.get" class="dr-method"><i class="dr-trixie">&#160;</i>graph.get(P)<a href="#graph.get" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 95 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/graph.js#L95">&#x27ad;</a></h3>
+<div class="dr-method"></div><div class="graph-get-section"><h3 id="graph.get" class="dr-method"><i class="dr-trixie">&#160;</i>graph.get(P)<a href="#graph.get" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 92 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/graph.js#L92">&#x27ad;</a></h3>
 <div class="extra" id="graph.get-extra"></div></div><p>return array of object(&#39;s index) present at a particular point
 </p>
 <div class="dr-method"><dl class="dr-parameters"><dt class="dr-param">P</dt>
@@ -1427,7 +1605,7 @@ you never know until I experiment on this, see <a href="../sample/graph.html">ex
 <dd class="dr-description"><code>{x,y}</code> index in grid space</dd>
 </dl>
 <p class="dr-returns"><strong class="dr-title">Returns:</strong> <em class="dr-type-array">array</em> <span class="dr-description">array of objects in this cell</span></p>
-</div><div class="graph-move-section"><h3 id="graph.move" class="dr-method"><i class="dr-trixie">&#160;</i>graph.move(i, A,B)<a href="#graph.move" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 133 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/graph.js#L133">&#x27ad;</a></h3>
+</div><div class="graph-move-section"><h3 id="graph.move" class="dr-method"><i class="dr-trixie">&#160;</i>graph.move(i, A,B)<a href="#graph.move" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 130 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/graph.js#L130">&#x27ad;</a></h3>
 <div class="extra" id="graph.move-extra"></div></div><p>an object i moves from A to B
 </p>
 <div class="dr-method"><dl class="dr-parameters"><dt class="dr-param">i</dt>
@@ -1437,7 +1615,7 @@ you never know until I experiment on this, see <a href="../sample/graph.html">ex
 <dd class="dr-type"><em class="dr-type-object">object</em></dd>
 <dd class="dr-description"><code>{x,y}</code> point in world space</dd>
 </dl>
-</div><div class="graph-remove-section"><h3 id="graph.remove" class="dr-method"><i class="dr-trixie">&#160;</i>graph.remove(i, P)<a href="#graph.remove" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 119 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/graph.js#L119">&#x27ad;</a></h3>
+</div><div class="graph-remove-section"><h3 id="graph.remove" class="dr-method"><i class="dr-trixie">&#160;</i>graph.remove(i, P)<a href="#graph.remove" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 116 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/graph.js#L116">&#x27ad;</a></h3>
 <div class="extra" id="graph.remove-extra"></div></div><p>remove object i at P
 </p>
 <div class="dr-method"><dl class="dr-parameters"><dt class="dr-param">i</dt>
@@ -1645,7 +1823,7 @@ config is one time only and will be dumped, without keeping a reference, after c
 <p>however, note that requirejs configuration must be done <strong>before</strong> any module loading,
 and if you want to change some of the global options on runtime, you can do so by calling <a href="#sprite.masterconfig" class="dr-link">sprite.masterconfig</a>
 </p>
-</div><div class="sprite-add_img-section"><h3 id="sprite.add_img" class="dr-method"><i class="dr-trixie">&#160;</i>sprite.add_img(imgpath, name)<a href="#sprite.add_img" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 164 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/sprite.js#L164">&#x27ad;</a></h3>
+</div><div class="sprite-add_img-section"><h3 id="sprite.add_img" class="dr-method"><i class="dr-trixie">&#160;</i>sprite.add_img(imgpath, name)<a href="#sprite.add_img" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 165 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/sprite.js#L165">&#x27ad;</a></h3>
 <div class="extra" id="sprite.add_img-extra"></div></div><div class="dr-method"><p>add new image
 </p>
 <dl class="dr-parameters"><dt class="dr-param">imgpath</dt>
@@ -1658,58 +1836,58 @@ and if you want to change some of the global options on runtime, you can do so b
 <p class="dr-returns"><strong class="dr-title">Returns:</strong> <em class="dr-type-object">object</em> <span class="dr-description">newly created DOM <code>img</code> element</span></p>
 <p>note that adding images can and should better be done in constructor <code>config</code>
 </p>
-</div><div class="sprite-attach-section"><h3 id="sprite.attach" class="dr-method"><i class="dr-trixie">&#160;</i>sprite.attach()<a href="#sprite.attach" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 247 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/sprite.js#L247">&#x27ad;</a></h3>
+</div><div class="sprite-attach-section"><h3 id="sprite.attach" class="dr-method"><i class="dr-trixie">&#160;</i>sprite.attach()<a href="#sprite.attach" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 248 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/sprite.js#L248">&#x27ad;</a></h3>
 <div class="extra" id="sprite.attach-extra"></div></div><p>if previously removed, attach back to scene graph
 </p>
 <div class="dr-method"><p>an antagonist pair with <a href="#sprite.remove" class="dr-link">sprite.remove</a>
 </p>
-</div><div class="sprite-hide-section"><h3 id="sprite.hide" class="dr-method"><i class="dr-trixie">&#160;</i>sprite.hide()<a href="#sprite.hide" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 258 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/sprite.js#L258">&#x27ad;</a></h3>
+</div><div class="sprite-hide-section"><h3 id="sprite.hide" class="dr-method"><i class="dr-trixie">&#160;</i>sprite.hide()<a href="#sprite.hide" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 259 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/sprite.js#L259">&#x27ad;</a></h3>
 <div class="extra" id="sprite.hide-extra"></div></div><p>temporary being hidden in rendering
 </p>
 <div class="dr-method"><p>the hide/show pair is conceptually &#39;weaker&#39; than remove/attach pair
 </p>
-</div><div class="sprite-masterconfig-section"><h3 id="sprite.masterconfig" class="dr-method"><i class="dr-trixie">&#160;</i>sprite.masterconfig()<a href="#sprite.masterconfig" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 103 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/sprite.js#L103">&#x27ad;</a></h3>
+</div><div class="sprite-masterconfig-section"><h3 id="sprite.masterconfig" class="dr-method"><i class="dr-trixie">&#160;</i>sprite.masterconfig()<a href="#sprite.masterconfig" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 102 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/sprite.js#L102">&#x27ad;</a></h3>
 <div class="extra" id="sprite.masterconfig-extra"></div></div><div class="dr-method"><p>it depends whether these config will take effect, specifically, <code>baseUrl</code> will take effect on the next <code>add_img</code>,
 and <code>disable_css2dtransform</code> will not take effect at all because css2dtransform support is built into prototype of sprite during module definition.
 </p>
-</div><div class="sprite-remove-section"><h3 id="sprite.remove" class="dr-method"><i class="dr-trixie">&#160;</i>sprite.remove()<a href="#sprite.remove" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 236 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/sprite.js#L236">&#x27ad;</a></h3>
+</div><div class="sprite-remove-section"><h3 id="sprite.remove" class="dr-method"><i class="dr-trixie">&#160;</i>sprite.remove()<a href="#sprite.remove" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 237 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/sprite.js#L237">&#x27ad;</a></h3>
 <div class="extra" id="sprite.remove-extra"></div></div><p>remove from scene graph
 </p>
 <div class="dr-method"><p>the remove/attach pair means a &#39;strong removal&#39;.
 under current implementation, it means remove from DOM
 </p>
-</div><div class="sprite-set_img_xy-section"><h3 id="sprite.set_img_xy" class="dr-method"><i class="dr-trixie">&#160;</i>sprite.set_img_xy(P)<a href="#sprite.set_img_xy" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 223 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/sprite.js#L223">&#x27ad;</a></h3>
+</div><div class="sprite-set_img_xy-section"><h3 id="sprite.set_img_xy" class="dr-method"><i class="dr-trixie">&#160;</i>sprite.set_img_xy(P)<a href="#sprite.set_img_xy" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 224 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/sprite.js#L224">&#x27ad;</a></h3>
 <div class="extra" id="sprite.set_img_xy-extra"></div></div><p>set the position of the image, note that coordinates should be negative to show something
 </p>
 <div class="dr-method"><dl class="dr-parameters"><dt class="dr-param">P</dt>
 <dd class="dr-type"><em class="dr-type-object">object</em></dd>
 <dd class="dr-description"><code>{x,y}</code></dd>
 </dl>
-</div><div class="sprite-set_wh-section"><h3 id="sprite.set_wh" class="dr-method"><i class="dr-trixie">&#160;</i>sprite.set_wh(P)<a href="#sprite.set_wh" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 114 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/sprite.js#L114">&#x27ad;</a></h3>
+</div><div class="sprite-set_wh-section"><h3 id="sprite.set_wh" class="dr-method"><i class="dr-trixie">&#160;</i>sprite.set_wh(P)<a href="#sprite.set_wh" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 115 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/sprite.js#L115">&#x27ad;</a></h3>
 <div class="extra" id="sprite.set_wh-extra"></div></div><div class="dr-method"><p>set width and height
 </p>
 <dl class="dr-parameters"><dt class="dr-param">P</dt>
 <dd class="dr-type"><em class="dr-type-object">object</em></dd>
 <dd class="dr-description"><code>{x,y}</code></dd>
 </dl>
-</div><div class="sprite-set_xy-section"><h3 id="sprite.set_xy" class="dr-method"><i class="dr-trixie">&#160;</i>sprite.set_xy(P)<a href="#sprite.set_xy" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 126 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/sprite.js#L126">&#x27ad;</a></h3>
+</div><div class="sprite-set_xy-section"><h3 id="sprite.set_xy" class="dr-method"><i class="dr-trixie">&#160;</i>sprite.set_xy(P)<a href="#sprite.set_xy" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 127 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/sprite.js#L127">&#x27ad;</a></h3>
 <div class="extra" id="sprite.set_xy-extra"></div></div><div class="dr-method"><p>set x and y
 </p>
 <dl class="dr-parameters"><dt class="dr-param">P</dt>
 <dd class="dr-type"><em class="dr-type-object">object</em></dd>
 <dd class="dr-description"><code>{x,y}</code></dd>
 </dl>
-</div><div class="sprite-set_z-section"><h3 id="sprite.set_z" class="dr-method"><i class="dr-trixie">&#160;</i>sprite.set_z(z)<a href="#sprite.set_z" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 151 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/sprite.js#L151">&#x27ad;</a></h3>
+</div><div class="sprite-set_z-section"><h3 id="sprite.set_z" class="dr-method"><i class="dr-trixie">&#160;</i>sprite.set_z(z)<a href="#sprite.set_z" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 152 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/sprite.js#L152">&#x27ad;</a></h3>
 <div class="extra" id="sprite.set_z-extra"></div></div><div class="dr-method"><p>set z index
 </p>
 <dl class="dr-parameters"><dt class="dr-param">z</dt>
 <dd class="dr-type"><em class="dr-type-number">number</em></dd>
 <dd class="dr-description">larger index will show on top</dd>
 </dl>
-</div><div class="sprite-show-section"><h3 id="sprite.show" class="dr-method"><i class="dr-trixie">&#160;</i>sprite.show()<a href="#sprite.show" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 267 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/sprite.js#L267">&#x27ad;</a></h3>
+</div><div class="sprite-show-section"><h3 id="sprite.show" class="dr-method"><i class="dr-trixie">&#160;</i>sprite.show()<a href="#sprite.show" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 268 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/sprite.js#L268">&#x27ad;</a></h3>
 <div class="extra" id="sprite.show-extra"></div></div><p>an antagonist pair with <a href="#sprite.hide" class="dr-link">sprite.hide</a>
 </p>
-<div class="dr-method"></div><div class="sprite-switch_img-section"><h3 id="sprite.switch_img" class="dr-method"><i class="dr-trixie">&#160;</i>sprite.switch_img(name)<a href="#sprite.switch_img" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 190 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/sprite.js#L190">&#x27ad;</a></h3>
+<div class="dr-method"></div><div class="sprite-switch_img-section"><h3 id="sprite.switch_img" class="dr-method"><i class="dr-trixie">&#160;</i>sprite.switch_img(name)<a href="#sprite.switch_img" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 191 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/sprite.js#L191">&#x27ad;</a></h3>
 <div class="extra" id="sprite.switch_img-extra"></div></div><div class="dr-method"><dl class="dr-parameters"><dt class="dr-param">name</dt>
 <dd class="dr-type"><em class="dr-type-string">string</em></dd>
 <dd class="dr-description">the key you specified in key-value-pair object <code>config.img</code></dd>
@@ -1803,7 +1981,7 @@ see <a href="../sample/states.html">sample</a>
 </dl>
 <p>the reason for having an initializer is the state machine is running before the constructor returns
 </p>
-</div><div class="states-consult-section"><h3 id="states.consult" class="dr-method"><i class="dr-trixie">&#160;</i>states.consult(consult_event, [state], [arg])<a href="#states.consult" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 382 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/states.js#L382">&#x27ad;</a></h3>
+</div><div class="states-consult-section"><h3 id="states.consult" class="dr-method"><i class="dr-trixie">&#160;</i>states.consult(consult_event, [state], [arg])<a href="#states.consult" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 380 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/states.js#L380">&#x27ad;</a></h3>
 <div class="extra" id="states.consult-extra"></div></div><p>call an event handler and get its return value, without actually causing state transition
 </p>
 <div class="dr-method"><dl class="dr-parameters"><dt class="dr-param">consult_event</dt>
@@ -1816,7 +1994,7 @@ see <a href="../sample/states.html">sample</a>
 <dd class="dr-type"><em class="dr-type-any">any</em></dd>
 <dd class="dr-description">extra args will be passed through to event handler of a state</dd>
 </dl>
-</div><div class="states-cur-section"><h3 id="states.cur" class="dr-property"><i class="dr-trixie">&#160;</i>states.cur<a href="#states.cur" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 130 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/states.js#L130">&#x27ad;</a></h3>
+</div><div class="states-cur-section"><h3 id="states.cur" class="dr-property"><i class="dr-trixie">&#160;</i>states.cur<a href="#states.cur" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 128 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/states.js#L128">&#x27ad;</a></h3>
 <div class="extra" id="states.cur-extra"></div></div><p>defines the path to current state
 </p>
 <div class="dr-property"><dl class="dr-parameters"><dt class="dr-param"></dt>
@@ -1826,17 +2004,17 @@ see <a href="../sample/states.html">sample</a>
 <pre class="javascript code"><code>       cur=[<i>'state1'</i>,<i>'state1_1'</i>,<i>'state1_1_1'</i>];
 represents   state1-> state1_1-> state1_1_1(cur is here)
 </code></pre>
-</div><div class="states-cur_name-section"><h3 id="states.cur_name" class="dr-property"><i class="dr-trixie">&#160;</i>states.cur_name<a href="#states.cur_name" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 136 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/states.js#L136">&#x27ad;</a></h3>
+</div><div class="states-cur_name-section"><h3 id="states.cur_name" class="dr-property"><i class="dr-trixie">&#160;</i>states.cur_name<a href="#states.cur_name" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 134 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/states.js#L134">&#x27ad;</a></h3>
 <div class="extra" id="states.cur_name-extra"></div></div><div class="dr-property"><dl class="dr-parameters"><dt class="dr-param"></dt>
 <dd class="dr-type"><em class="dr-type-string">string</em></dd>
 <dd class="dr-description">name of current state</dd>
 </dl>
-</div><div class="states-cur_state-section"><h3 id="states.cur_state" class="dr-property"><i class="dr-trixie">&#160;</i>states.cur_state<a href="#states.cur_state" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 142 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/states.js#L142">&#x27ad;</a></h3>
+</div><div class="states-cur_state-section"><h3 id="states.cur_state" class="dr-property"><i class="dr-trixie">&#160;</i>states.cur_state<a href="#states.cur_state" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 140 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/states.js#L140">&#x27ad;</a></h3>
 <div class="extra" id="states.cur_state-extra"></div></div><div class="dr-property"><dl class="dr-parameters"><dt class="dr-param"></dt>
 <dd class="dr-type"><em class="dr-type-object">object</em></dd>
 <dd class="dr-description">reference to the current state in state_def</dd>
 </dl>
-</div><div class="states-event-section"><h3 id="states.event" class="dr-method"><i class="dr-trixie">&#160;</i>states.event(event, [arg])<a href="#states.event" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 321 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/states.js#L321">&#x27ad;</a></h3>
+</div><div class="states-event-section"><h3 id="states.event" class="dr-method"><i class="dr-trixie">&#160;</i>states.event(event, [arg])<a href="#states.event" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 319 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/states.js#L319">&#x27ad;</a></h3>
 <div class="extra" id="states.event-extra"></div></div><div class="dr-method"><p>fire an event
 </p>
 <dl class="dr-parameters"><dt class="dr-param">event</dt>
@@ -1846,7 +2024,7 @@ represents   state1-> state1_1-> state1_1_1(cur is here)
 <dd class="dr-type"><em class="dr-type-any">any</em></dd>
 <dd class="dr-description">extra args will be passed through to event handler of a state</dd>
 </dl>
-</div><div class="states-event_delay-section"><h3 id="states.event_delay" class="dr-method"><i class="dr-trixie">&#160;</i>states.event_delay(event, delay, frame, [arg])<a href="#states.event_delay" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 351 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/states.js#L351">&#x27ad;</a></h3>
+</div><div class="states-event_delay-section"><h3 id="states.event_delay" class="dr-method"><i class="dr-trixie">&#160;</i>states.event_delay(event, delay, frame, [arg])<a href="#states.event_delay" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 349 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/states.js#L349">&#x27ad;</a></h3>
 <div class="extra" id="states.event_delay-extra"></div></div><div class="dr-method"><p>fire an event <code>event</code> after <code>delay</code> number of <code>frame</code> events
 </p>
 <dl class="dr-parameters"><dt class="dr-param">event</dt>
@@ -1862,12 +2040,12 @@ represents   state1-> state1_1-> state1_1_1(cur is here)
 <dd class="dr-type"><em class="dr-type-any">any</em></dd>
 <dd class="dr-description">extra args will be passed through to event handler of a state</dd>
 </dl>
-</div><div class="states-evlay-section"><h3 id="states.evlay" class="dr-property"><i class="dr-trixie">&#160;</i>states.evlay<a href="#states.evlay" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 118 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/states.js#L118">&#x27ad;</a></h3>
+</div><div class="states-evlay-section"><h3 id="states.evlay" class="dr-property"><i class="dr-trixie">&#160;</i>states.evlay<a href="#states.evlay" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 116 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/states.js#L116">&#x27ad;</a></h3>
 <div class="extra" id="states.evlay-extra"></div></div><div class="dr-property"><dl class="dr-parameters"><dt class="dr-param"></dt>
 <dd class="dr-type"><em class="dr-type-array">array</em></dd>
 <dd class="dr-description">array of delayed events</dd>
 </dl>
-</div><div class="states-log-section"><h3 id="states.log" class="dr-property"><i class="dr-trixie">&#160;</i>states.log<a href="#states.log" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 177 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/states.js#L177">&#x27ad;</a></h3>
+</div><div class="states-log-section"><h3 id="states.log" class="dr-property"><i class="dr-trixie">&#160;</i>states.log<a href="#states.log" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 175 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/states.js#L175">&#x27ad;</a></h3>
 <div class="extra" id="states.log-extra"></div></div><div class="dr-property"><dl class="dr-parameters"><dt class="dr-param"></dt>
 <dd class="dr-type"><em class="dr-type-array">array</em></dd>
 <dd class="dr-description">&#160;</dd>
@@ -1879,22 +2057,22 @@ represents   state1-> state1_1-> state1_1_1(cur is here)
 {type:<i>'c'</i>, event:event, target:state, <b>return</b>:result}, <span class="c">//call</span>
 ]
 </code></pre>
-</div><div class="states-log_enable-section"><h3 id="states.log_enable" class="dr-property"><i class="dr-trixie">&#160;</i>states.log_enable<a href="#states.log_enable" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 152 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/states.js#L152">&#x27ad;</a></h3>
+</div><div class="states-log_enable-section"><h3 id="states.log_enable" class="dr-property"><i class="dr-trixie">&#160;</i>states.log_enable<a href="#states.log_enable" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 150 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/states.js#L150">&#x27ad;</a></h3>
 <div class="extra" id="states.log_enable-extra"></div></div><div class="dr-property"><dl class="dr-parameters"><dt class="dr-param"></dt>
 <dd class="dr-type"><em class="dr-type-boolean">boolean</em></dd>
 <dd class="dr-description">not log by default</dd>
 </dl>
-</div><div class="states-log_filter-section"><h3 id="states.log_filter" class="dr-property"><i class="dr-trixie">&#160;</i>states.log_filter<a href="#states.log_filter" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 158 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/states.js#L158">&#x27ad;</a></h3>
+</div><div class="states-log_filter-section"><h3 id="states.log_filter" class="dr-property"><i class="dr-trixie">&#160;</i>states.log_filter<a href="#states.log_filter" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 156 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/states.js#L156">&#x27ad;</a></h3>
 <div class="extra" id="states.log_filter-extra"></div></div><div class="dr-property"><dl class="dr-parameters"><dt class="dr-param"></dt>
 <dd class="dr-type"><em class="dr-type-function">function</em></dd>
 <dd class="dr-description">a function to return true to not log an item</dd>
 </dl>
-</div><div class="states-log_size-section"><h3 id="states.log_size" class="dr-property"><i class="dr-trixie">&#160;</i>states.log_size<a href="#states.log_size" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 164 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/states.js#L164">&#x27ad;</a></h3>
+</div><div class="states-log_size-section"><h3 id="states.log_size" class="dr-property"><i class="dr-trixie">&#160;</i>states.log_size<a href="#states.log_size" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 162 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/states.js#L162">&#x27ad;</a></h3>
 <div class="extra" id="states.log_size-extra"></div></div><div class="dr-property"><dl class="dr-parameters"><dt class="dr-param"></dt>
 <dd class="dr-type"><em class="dr-type-number">number</em></dd>
 <dd class="dr-description">100 lines by default</dd>
 </dl>
-</div><div class="states-propagate_down-section"><h3 id="states.propagate_down" class="dr-method"><i class="dr-trixie">&#160;</i>states.propagate_down(level, fun, [node])<a href="#states.propagate_down" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 189 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/states.js#L189">&#x27ad;</a></h3>
+</div><div class="states-propagate_down-section"><h3 id="states.propagate_down" class="dr-method"><i class="dr-trixie">&#160;</i>states.propagate_down(level, fun, [node])<a href="#states.propagate_down" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 187 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/states.js#L187">&#x27ad;</a></h3>
 <div class="extra" id="states.propagate_down-extra"></div></div><div class="dr-method"><p>propagate an event from top to down, performing some computation on each node
 </p>
 <dl class="dr-parameters"><dt class="dr-param">level</dt>
@@ -1909,7 +2087,7 @@ represents   state1-> state1_1-> state1_1_1(cur is here)
 </dl>
 <p>if unspecified, assume from <code>root</code>
 </p>
-</div><div class="states-propagate_up-section"><h3 id="states.propagate_up" class="dr-method"><i class="dr-trixie">&#160;</i>states.propagate_up(level, fun, [node])<a href="#states.propagate_up" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 215 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/states.js#L215">&#x27ad;</a></h3>
+</div><div class="states-propagate_up-section"><h3 id="states.propagate_up" class="dr-method"><i class="dr-trixie">&#160;</i>states.propagate_up(level, fun, [node])<a href="#states.propagate_up" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 213 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/states.js#L213">&#x27ad;</a></h3>
 <div class="extra" id="states.propagate_up-extra"></div></div><div class="dr-method"><p>propagate an event from a node to root, performing some computation on each node
 </p>
 <dl class="dr-parameters"><dt class="dr-param">level</dt>
@@ -1922,7 +2100,7 @@ represents   state1-> state1_1-> state1_1_1(cur is here)
 <dd class="dr-type"><em class="dr-type-object">object</em></dd>
 <dd class="dr-description">optional; if not specified assume from node of current state</dd>
 </dl>
-</div><div class="states-search-section"><h3 id="states.search" class="dr-method"><i class="dr-trixie">&#160;</i>states.search(state, [node])<a href="#states.search" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 419 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/states.js#L419">&#x27ad;</a></h3>
+</div><div class="states-search-section"><h3 id="states.search" class="dr-method"><i class="dr-trixie">&#160;</i>states.search(state, [node])<a href="#states.search" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 417 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/states.js#L417">&#x27ad;</a></h3>
 <div class="extra" id="states.search-extra"></div></div><div class="dr-method"><p>search for the path of a state
 </p>
 <dl class="dr-parameters"><dt class="dr-param">state</dt>
@@ -1933,7 +2111,7 @@ represents   state1-> state1_1-> state1_1_1(cur is here)
 <dd class="dr-description">only search under this node. if unspecified, assume <code>root</code></dd>
 </dl>
 <p class="dr-returns"><strong class="dr-title">Returns:</strong> <em class="dr-type-array">array</em> <span class="dr-description">representing path</span></p>
-</div><div class="states-show_log-section"><h3 id="states.show_log" class="dr-method"><i class="dr-trixie">&#160;</i>states.show_log([filter])<a href="#states.show_log" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 526 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/states.js#L526">&#x27ad;</a></h3>
+</div><div class="states-show_log-section"><h3 id="states.show_log" class="dr-method"><i class="dr-trixie">&#160;</i>states.show_log([filter])<a href="#states.show_log" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 524 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/states.js#L524">&#x27ad;</a></h3>
 <div class="extra" id="states.show_log-extra"></div></div><p>show the log in human readable text
 </p>
 <div class="dr-method"><dl class="dr-parameters"><dt class="dr-param">[filter]</dt>
@@ -1952,12 +2130,12 @@ transition from A,A_1,A_1_1,A_1_1_1 to A,A_2,A_2_1
 call <i>'entry'</i> of A_2, returning <b>undefined</b>
 call <i>'entry'</i> of A_2_1, returning <b>undefined</b>
 </code></pre>
-</div><div class="states-state-section"><h3 id="states.state" class="dr-property"><i class="dr-trixie">&#160;</i>states.state<a href="#states.state" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 102 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/states.js#L102">&#x27ad;</a></h3>
+</div><div class="states-state-section"><h3 id="states.state" class="dr-property"><i class="dr-trixie">&#160;</i>states.state<a href="#states.state" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 100 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/states.js#L100">&#x27ad;</a></h3>
 <div class="extra" id="states.state-extra"></div></div><div class="dr-property"><dl class="dr-parameters"><dt class="dr-param"></dt>
 <dd class="dr-type"><em class="dr-type-object">object</em></dd>
 <dd class="dr-description">states tree, can be altered dynamically</dd>
 </dl>
-</div><div class="states-state_at-section"><h3 id="states.state_at" class="dr-method"><i class="dr-trixie">&#160;</i>states.state_at()<a href="#states.state_at" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 401 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/states.js#L401">&#x27ad;</a></h3>
+</div><div class="states-state_at-section"><h3 id="states.state_at" class="dr-method"><i class="dr-trixie">&#160;</i>states.state_at()<a href="#states.state_at" title="Link to this section" class="dr-hash">&#x2693;</a><a class="dr-sourceline" title="Go to line 399 in the source" href="https:/github.com/tyt2y3/F.core/blob/master/states.js#L399">&#x27ad;</a></h3>
 <div class="extra" id="states.state_at-extra"></div></div><div class="dr-method"><p class="dr-returns"><strong class="dr-title">Returns:</strong> <em class="dr-type-object">object</em> <span class="dr-description">state specified by path A</span></p>
 <pre class="javascript code"><code>sta.state_at([<i>'state1'</i>,<i>'state1_1'</i>,<i>'state1_1_1'</i>]);
 </code></pre>

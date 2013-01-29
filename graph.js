@@ -26,8 +26,6 @@ define(['F.core/util'],function(F)
 \*/
 function graph (config)
 {
-	//[--constructor
-	//	no private member
 	if( !config.cellx)
 	{
 		config.cellx=config.width/config.gridx;
@@ -40,7 +38,6 @@ function graph (config)
 	}
 	this.config=config;
 	this.create_graph(config.gridx, config.gridy);
-	//--]
 }
 
 /*\

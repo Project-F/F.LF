@@ -1,5 +1,5 @@
 # ![Project F logo](http://2.bp.blogspot.com/-k-My1B-YlaU/T8JUBAYpu9I/AAAAAAAAACI/OnCvkzFF5jw/s1600/logo_l1_s.png) Project F
-[http://project--f.blogspot.com/](http://project--f.blogspot.com/)
+[project--f.blogspot.com/](http://project--f.blogspot.com/search/label/about)
 
 F.core is the core components of Project F used to build browser based fighter games.
 
@@ -17,8 +17,8 @@ F.core components can be categorized into:
 <h4>keyboard controller system</h4>
 [controller](#controller),
 [combodec](#combodec) (combo detector) with
-[control_recorder](#control_recorder) and
-[control_player](#control_player).
+[control_recorder](#controller-recorder) and
+[control_player](#controller-recorder).
 
 <h4>math</h4>
 some [collision](#collision) detection and [math](#math) functions and javascript [util](#util)
@@ -60,7 +60,7 @@ some [collision](#collision) detection and [math](#math) functions and javascrip
 ### combodec
  - listen key events and detect combo from a controller
  - maintains a clean sequence of pressed keys and fire events when combo is detected
- - King of Fighter style combos
+ - LF2, KOF style combos
  - eliminating auto-repeated keys
 
 ### controller-recorder
@@ -92,15 +92,15 @@ and point in rectangle test
 - compile-time optimization
 
 ## Sample usages
+- [combo.html](http://tyt2y3.github.com/F.core/sample/combo.html)
+- [collision.html](http://tyt2y3.github.com/F.core/sample/collision.html)
+- [controller.html](http://tyt2y3.github.com/F.core/sample/controller.html)
+- [effects-pool.html](http://tyt2y3.github.com/F.core/sample/effects-pool.html)
+- [graph.html](http://tyt2y3.github.com/F.core/sample/graph.html)
 - [support.html](http://tyt2y3.github.com/F.core/sample/support.html)
 - [states.html](http://tyt2y3.github.com/F.core/sample/states.html)
 - [sprite.html](http://tyt2y3.github.com/F.core/sample/sprite.html)
-- [graph.html](http://tyt2y3.github.com/F.core/sample/graph.html)
-- [controller.html](http://tyt2y3.github.com/F.core/sample/controller.html)
-- [combo.html](http://tyt2y3.github.com/F.core/sample/combo.html)
-- [collision.html](http://tyt2y3.github.com/F.core/sample/collision.html)
-- [effects-pool.html](http://tyt2y3.github.com/F.core/sample/effects-pool.html)
 - [world.html](http://tyt2y3.github.com/F.core/sample/world.html)
 
 ## License
-Generally has complete freedom except for profit- making. For exact terms see [license](http://project--f.blogspot.hk/2012/05/license.html).
+Generally has complete freedom except for profit- making. For exact terms see [license](http://project--f.blogspot.com/2012/05/license.html).

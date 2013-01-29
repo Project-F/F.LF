@@ -2,22 +2,27 @@
 <meta http-equiv='content-type' content='text/html; charset=UTF-8'>
 </head>
 <body>
-<div class='canvas' id='canvas'></div>
+<button id='mirror'>mirror</button>
+<div id='canvas'></div>
 
 <script data-main="../../" src="require.js"></script>
 <script>
 requirejs(['F.core/sprite','F.core/animator'], function(sprite,animator)
 {
 
-var canvas = document.getElementById('canvas');
 var sp1_config=
 {
-	canvas: canvas,
+	canvas: document.getElementById('canvas'),
 	wh: {x:100,y:100},
-	img: 'test_sprite.png'
+	img: 
+	{
+		'0': 'test_sprite.png',
+		'1': 'test_sprite_mirror.png'
+	}
 }
 sp1 = new sprite(sp1_config);
 sp1.set_xy({x:150, y:100});
+sp1.switch_img('0');
 
 var sp1_an_config=
 {
@@ -33,6 +38,15 @@ TIMER = setInterval(onEnterFrame,1000/4); //4 fps
 function onEnterFrame()
 {
 	sp1_an.next_frame();
+}
+
+document.getElementById('mirror').onclick=function()
+{
+	sp1_an.horimirror = !sp1_an.horimirror;
+	if( sp1_an.horimirror===false)
+		sp1.switch_img('0');
+	else
+		sp1.switch_img('1');
 }
 
 });

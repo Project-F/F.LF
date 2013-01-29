@@ -91,9 +91,7 @@ var state_list=[];
 \*/
 function states (state_def,init_obj)
 {
-	//	no private member
-	/** @property 
-	*/
+	// no private member
 	/*\
 	 * states.state
 	 [ property ]

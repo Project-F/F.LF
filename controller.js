@@ -112,79 +112,6 @@ function controller (config)
 	\*/
 	this.buf=new Array();
 
-	/*\
-	 * controller.key
-	 [ method ]
-	 * supply events to controller
-	 * 
-	 * master controller will do this automatically
-	 - e (object) keycode
-	 - down (boolean)
-	\*/
-	this.key=function(e,down) //interface to master_controller------
-	{
-		var caught=0;
-		for(var I in this.config)
-		{
-			if ( this.keycode[I]==e)
-			{
-				if( this.sync===false)
-				{
-					if( this.child)
-						for(var J in this.child)
-							this.child[J].key(I,down);
-					this.state[I]=down;
-				}
-				else
-				{
-					this.buf.push([I,down]);
-				}
-				caught=1;
-				break;
-			}
-		}
-		return caught;
-	}
-
-	//interface to application--------------------------------------
-	/*\
-	 * controller.clear_states
-	 * clear the key state table
-	 [ method ]
-	\*/
-	this.clear_states=function()
-	{
-		for(var I in this.config)
-			this.state[I]=0;
-	}
-	/*\
-	 * controller.fetch
-	 * fetch for inputs received since the last fetch, will flush buffer afterwards
-	 [ method ]
-	\*/
-	this.fetch=function()
-	{
-		for( var i in this.buf)
-		{
-			var I=this.buf[i][0];
-			var down=this.buf[i][1];
-			if( this.child)
-				for(var J in this.child)
-					this.child[J].key(I,down);
-			this.state[I]=down;
-		}
-		this.buf=[];
-	}
-	/*\
-	 * controller.flush
-	 * flush the buffer manually
-	 [ method ]
-	\*/
-	this.flush=function()
-	{
-		this.buf=[];
-	}
-
 	//[--constructor
 	master_controller.child.push(this);
 	this.clear_states();
@@ -207,6 +134,79 @@ function controller (config)
 	\*/
 }
 
+
+/*\
+ * controller.key
+ [ method ]
+ * supply events to controller
+ * 
+ * master controller will do this automatically
+ - e (object) keycode
+ - down (boolean)
+\*/
+controller.prototype.key=function(e,down) //interface to master_controller
+{
+	var caught=0;
+	for(var I in this.config)
+	{
+		if ( this.keycode[I]==e)
+		{
+			if( this.sync===false)
+			{
+				if( this.child)
+					for(var J in this.child)
+						this.child[J].key(I,down);
+				this.state[I]=down;
+			}
+			else
+			{
+				this.buf.push([I,down]);
+			}
+			caught=1;
+			break;
+		}
+	}
+	return caught;
+}
+
+/*\
+ * controller.clear_states
+ * clear the key state table
+ [ method ]
+\*/
+controller.prototype.clear_states=function()
+{
+	for(var I in this.config)
+		this.state[I]=0;
+}
+/*\
+ * controller.fetch
+ * fetch for inputs received since the last fetch, will flush buffer afterwards
+ [ method ]
+\*/
+controller.prototype.fetch=function()
+{
+	for( var i in this.buf)
+	{
+		var I=this.buf[i][0];
+		var down=this.buf[i][1];
+		if( this.child)
+			for(var J in this.child)
+				this.child[J].key(I,down);
+		this.state[I]=down;
+	}
+	this.buf=[];
+}
+/*\
+ * controller.flush
+ * flush the buffer manually
+ [ method ]
+\*/
+controller.prototype.flush=function()
+{
+	this.buf=[];
+}
+
 /*\
  * controller.keyname_to_keycode
  * convert keyname to keycode
@@ -216,7 +216,9 @@ function controller (config)
  * note that some keycode is not the same across all browsers, 
  * for details consult [http://www.quirksmode.org/js/keys.html](http://www.quirksmode.org/js/keys.html)
 \*/
-controller.keyname_to_keycode=function(A)
+controller.keyname_to_keycode=
+controller.prototype.keyname_to_keycode=
+function(A)
 {
 	var code;
 	if( A.length==1)
@@ -270,9 +272,11 @@ controller.keyname_to_keycode=function(A)
  * convert keycode back to keyname
  [ method ]
  - keycode (number) 
- = (string) keyname 
+ = (string) keyname
 \*/
-controller.keycode_to_keyname=function(code)
+controller.keycode_to_keyname=
+controller.prototype.keycode_to_keyname=
+function(code)
 {
 	if( (code>='A'.charCodeAt(0) && code<='Z'.charCodeAt(0)) ||
 	    (code>='0'.charCodeAt(0) && code<='9'.charCodeAt(0)) )

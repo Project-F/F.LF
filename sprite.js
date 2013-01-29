@@ -55,7 +55,6 @@ var sp_masterconfig = module.config();
 \*/
 function sprite (config)
 {
-	//no private member
 	this.ID=sp_count;
 	sp_count++;
 
@@ -100,7 +99,9 @@ function sprite (config)
  * it depends whether these config will take effect, specifically, `baseUrl` will take effect on the next `add_img`,
  * and `disable_css2dtransform` will not take effect at all because css2dtransform support is built into prototype of sprite during module definition.
 \*/
-sprite.prototype.masterconfig=function(c)
+sprite.masterconfig=
+sprite.prototype.masterconfig=
+function(c)
 {
 	sp_masterconfig=c;
 }

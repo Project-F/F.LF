@@ -14,7 +14,7 @@ define(function()
 |		tar:         //target @sprite
 |		ani:         //animation sequence:
 |			null,    //if undefined, loop through top left to lower right, row by row
-|			[0,1,2,1,0],//use custom frame sequence
+|			[0,1,2,1,0],//use custom animation sequence
 |		borderright: 1, //[optionals] trim the right edge pixels away
 |		borderbottom: 1,
 |		borderleft: 1,
@@ -26,20 +26,78 @@ define(function()
  # <iframe src="../sample/sprite.html" width="400" height="250"></iframe>
  # <img src="../sample/test_sprite.png" width="300">
 \*/
-
-/**	@constructor
-	no private member
-*/
 function animator (config)
 {
 	this.config=config;
 	this.target=config.tar;
-	this.I=0;//current frame
-	this.horimirror=false;//horizontal mirror
+	/*\
+	 * animator.I
+	 * current frame
+	 [ property ]
+	 * if `config.ani` exists, `I` is the index to this array. otherwise it is the frame number
+	\*/
+	this.I=0;
+	/*\
+	 * animator.horimirror
+	 [ property ]
+	 - (boolean) true: mirrored, false: normal
+	 * usually a sprite character is drawn to face right and mirrored to face left. hmirror mode works with sprites that is flipped horizontally __as a whole image__.
+	\*/
+	this.horimirror=false; //horizontal mirror
 	if( !config.borderright)  config.borderright=0;
 	if( !config.borderbottom) config.borderbottom=0;
 	if( !config.borderleft)  config.borderleft=0;
 	if( !config.bordertop)   config.bordertop=0;
+}
+/*\
+ * animator.next_frame
+ * turn to the next frame
+ [ method ]
+ * if `config.ani` exists, will go to the next frame of animation sequence
+ *
+ * otherwise, loop through top left to lower right, row by row
+ = (number) the frame just shown
+ * remarks: if you want to check whether the animation is __ended__, test it against 0. when `animator.I` equals 'max frame index', the last frame is _just_ being shown. when `animator.I` equals 0, the last frame had finished the whole duration of a frame and is _just_ ended.
+\*/
+animator.prototype.next_frame=function()
+{
+	var c=this.config;
+	this.I++;
+	if (!c.ani)
+	{
+		if ( this.I==c.gx*c.gy)
+		{
+			this.I=0; //repeat sequence
+		}
+		this.show_frame(this.I);
+	}
+	else
+	{
+		var fi=c.ani[this.I];
+		if ( this.I>=c.ani.length || this.I<0)
+		{
+			this.I=0; fi=c.ani[0]; //repeat sequence
+		}
+		this.show_frame(fi);
+	}
+	return this.I;
+}
+/*\
+ * animator.seek
+ * seek to a particular index on animation sequence
+ [ method ]
+ - I (number) sequence index
+\*/
+animator.prototype.seek=function(I)
+{
+	var c=this.config;
+	if( c.ani)
+	if( I>=0 && I<c.ani.length)
+	{
+		this.I=I;
+		var fi=c.ani[this.I];
+		this.show_frame(fi);
+	}
 }
 /*\
  * animator.rewind
@@ -52,56 +110,18 @@ animator.prototype.rewind=function()
 	this.next_frame();
 }
 /*\
- * animator.next_frame
- [ method ]
- * turn to the next frame
- *
- * if `config.ani` exists, will go to the next frame of animation sequence
- *
- * otherwise, loop through top left to lower right, row by row
- = (number) index of the frame just shown
-\*/
-animator.prototype.next_frame=function()
-{
-	var c=this.config;
-	this.I++;
-	if (!c.ani)
-	{
-		if ( this.I==c.gx*c.gy)
-		{
-			this.I=0;
-		}
-		this.show_frame(this.I);
-	}
-	else
-	{
-		var fi=c.ani[this.I];
-		if ( this.I>=c.ani.length || this.I<0)
-		{	//repeat sequence
-			this.I=0; fi=c.ani[0];
-		}
-		this.show_frame(fi);
-	}
-	return this.I;
-}
-/*\
  * animator.set_frame
  [ method ]
  * set to a particular frame
- - i (number) frame index
+ - i (number) frame number on image
+ * the top-left frame is 0
 \*/
 animator.prototype.set_frame=function(i)
 {
 	this.I=i;
 	this.show_frame(i);
 }
-/*\
- * animator.hmirror
- [ method ]
- * set the horizontal mirror mode
- - val (boolean) true: mirrored, false: normal
-\*/
-animator.prototype.hmirror=function(val)
+animator.prototype.hmirror=function(val) //legacy
 {
 	this.horimirror = val;
 }
@@ -128,7 +148,7 @@ animator.prototype.get_at=function(i) //get the content of the graph at frame i
 }
 
 /*\
- * animator.prototype.set
+ * animator.set
  [ method ]
  * a helper function to constructor a set of animators
  *
@@ -152,9 +172,10 @@ animator.prototype.get_at=function(i) //get the content of the graph at frame i
 |		gx:4,gy:1    //define a gx*gy grid of frames
 |	} //,,,
 | }
-| var set = animator_set(set_config,'base')
+| var set = animator.set(set_config,'base')
+ = (object) animator set
 \*/
-animator.prototype.set=function(set_config, base)
+animator.set=function(set_config, base)
 {
 	if(!set_config)
 		return null;
