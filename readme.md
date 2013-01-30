@@ -98,7 +98,7 @@ and point in rectangle test
 - [world.html](http://tyt2y3.github.com/F.core/sample/world.html)
 
 ## Project F
-![Project F logo](http://2.bp.blogspot.com/-k-My1B-YlaU/T8JUBAYpu9I/AAAAAAAAACI/OnCvkzFF5jw/s1600/logo_l1_s.png)
+<img src="http://2.bp.blogspot.com/-k-My1B-YlaU/T8JUBAYpu9I/AAAAAAAAACI/OnCvkzFF5jw/s1600/logo_l1_s.png" height="80"/>
 F.core is the programming library that powered Project F games.
 
 ## License

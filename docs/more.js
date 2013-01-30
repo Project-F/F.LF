@@ -1,8 +1,8 @@
 /**these are sections to add into the reference*/
 /*\
  * An introduction
- * # ![Project F logo](http://2.bp.blogspot.com/-k-My1B-YlaU/T8JUBAYpu9I/AAAAAAAAACI/OnCvkzFF5jw/s1600/logo_l1_s.png) Project F
- * [project--f.blogspot.com/](http://project--f.blogspot.com/search/label/about)
+ # <img src="http://2.bp.blogspot.com/-k-My1B-YlaU/T8JUBAYpu9I/AAAAAAAAACI/OnCvkzFF5jw/s1600/logo_l1_s.png"/>
+ * Project F [project--f.blogspot.com/](http://project--f.blogspot.com/search/label/about)
  * 
  * F.core is the programming library that powered Project F games.
  * currently, games built on top of F.core include
