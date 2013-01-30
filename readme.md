@@ -1,5 +1,5 @@
 ## Architecture
-F.core is __not__ a game engine. F.core is a set of conceptual and functional components that can be used to _build_ an engine.
+F.core is __not__ a game engine. F.core is a set of conceptual and functional components that can be used to ___build___ an engine.
 so it is not a hard decision like Windows vs Mac when choose to use F.core. you find the parts you are interested, pull it out and use it in your game.
 
 F.core employs requirejs dependency management, and you should too, if you care to build games that has more than 1000 lines of code. requirejs can be clumsy to set up than `<script src="">`, but when a project grows it will pay off.
