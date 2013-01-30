@@ -22,7 +22,7 @@ define({
 			link.type = 'text/css';
 			head.appendChild(link);
 		}
-		inject(config.baseUrl+name);
+		inject(requirejs.toUrl(name));
 		load(true);
 	},
 	pluginBuilder: './css-build'
