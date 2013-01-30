@@ -1,6 +1,7 @@
 {
     "title": "F.core",
     "output": "docs.html",
+    "scripts": [ "analytics.js" ],
 	"files":
 	[{
 		"path": "more.js",
