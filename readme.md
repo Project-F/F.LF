@@ -1,10 +1,5 @@
-# ![Project F logo](http://2.bp.blogspot.com/-k-My1B-YlaU/T8JUBAYpu9I/AAAAAAAAACI/OnCvkzFF5jw/s1600/logo_l1_s.png)
-
-### Project F 
-F.core is part of Project F [project--f.blogspot.com/](http://project--f.blogspot.com/search/label/about)
-
 ## Architecture
-F.core __is not a game engine__. F.core is a set of conceptual and functional components that can be used to build an engine.
+F.core is __not__ a game engine. F.core is a set of conceptual and functional components that can be used to _build_ an engine.
 so it is not a hard decision like Windows vs Mac when choose to use F.core. you find the parts you are interested, pull it out and use it in your game.
 
 F.core employs requirejs dependency management, and you should too, if you care to build games that has more than 1000 lines of code. requirejs can be clumsy to set up than `<script src="">`, but when a project grows it will pay off.
@@ -101,6 +96,10 @@ and point in rectangle test
 - [states.html](http://tyt2y3.github.com/F.core/sample/states.html)
 - [sprite.html](http://tyt2y3.github.com/F.core/sample/sprite.html)
 - [world.html](http://tyt2y3.github.com/F.core/sample/world.html)
+
+## Project F
+![Project F logo](http://2.bp.blogspot.com/-k-My1B-YlaU/T8JUBAYpu9I/AAAAAAAAACI/OnCvkzFF5jw/s1600/logo_l1_s.png)
+F.core is the programming library that powered Project F games.
 
 ## License
 Generally has complete freedom except for profit- making. For exact terms see [license](http://project--f.blogspot.com/2012/05/license.html).

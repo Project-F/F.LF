@@ -3,10 +3,10 @@
  * An introduction
  * # ![Project F logo](http://2.bp.blogspot.com/-k-My1B-YlaU/T8JUBAYpu9I/AAAAAAAAACI/OnCvkzFF5jw/s1600/logo_l1_s.png) Project F
  * [project--f.blogspot.com/](http://project--f.blogspot.com/search/label/about)
- *
- * F.core is the core components of Project F used to build browser based fighter games.
+ * 
+ * F.core is the programming library that powered Project F games.
  * currently, games built on top of F.core include
- *
+ * 
  >  [F.LF](http://tyt2y3.github.com/LFrelease/demo/demo3.html)
  * ![F.LF](http://tyt2y3.github.com/LFrelease/web/image/mile2013Jan.png)
  >  [teeth](http://tyt2y3.github.com/teeth)
