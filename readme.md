@@ -1,7 +1,7 @@
-# ![Project F logo](http://2.bp.blogspot.com/-k-My1B-YlaU/T8JUBAYpu9I/AAAAAAAAACI/OnCvkzFF5jw/s1600/logo_l1_s.png) Project F
-[project--f.blogspot.com/](http://project--f.blogspot.com/search/label/about)
+# ![Project F logo](http://2.bp.blogspot.com/-k-My1B-YlaU/T8JUBAYpu9I/AAAAAAAAACI/OnCvkzFF5jw/s1600/logo_l1_s.png)
 
-F.core is the core components of Project F used to build browser based fighter games.
+### Project F 
+F.core is part of Project F [project--f.blogspot.com/](http://project--f.blogspot.com/search/label/about)
 
 ## Architecture
 F.core __is not a game engine__. F.core is a set of conceptual and functional components that can be used to build an engine.
