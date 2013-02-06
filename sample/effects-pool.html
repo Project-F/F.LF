@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <head>
 <style>
 .box
@@ -24,7 +25,7 @@ requirejs(['F.core/effects-pool'], function(Effects_pool)
 	{
 		//constructor
 		var box = this.box = document.createElement('div');
-		box.setAttribute('class','box');
+		box.className = 'box';
 		document.getElementById('holder').appendChild(box);
 		this.speed=speed;
 		this.die();

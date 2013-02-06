@@ -7,13 +7,13 @@ define(function() {
 
 	var fs = require.nodeRequire('fs');
 
-	function loadfile (url, callback) {
+	function loadfile (url) {
 		var file = fs.readFileSync(url, 'utf8');
 		//Remove BOM (Byte Mark Order) from utf8 files if it is there.
 		if (file.indexOf('\uFEFF') === 0) {
 			file = file.substring(1);
 		}
-		callback(file);
+		return file;
 	};
 
 	function strip (content) {
@@ -29,9 +29,7 @@ define(function() {
 		load: function (name, require, load, config) {
 			//console.log('css-build: load: '+name);
 			load(true);
-			loadfile(config.baseUrl+name,function(F){
-				buildMap[name]=strip(F);
-			});
+			buildMap[name]=strip( loadfile(requirejs.toUrl(name)));
 		},
 
 		write: function (pluginName, moduleName, write, config) {

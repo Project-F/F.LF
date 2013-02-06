@@ -154,7 +154,7 @@ efpool.prototype.die=function(/*arg*/) //arguments will be passed through
  * effect_pool.for_each
  [ method ]
  * iterate through all active instances, in the order of oldest to youngest
- - fun (function)
+ - fun (function) iterator function, if return value is 'break', will break the loop
 | efpool.for_each(function(e)
 | {
 |		e.hi();
@@ -162,7 +162,7 @@ efpool.prototype.die=function(/*arg*/) //arguments will be passed through
 \*/
 efpool.prototype.for_each=function(fun)
 {
-	if( !this.full && this.S === this.E)
+	if( this.livecount===0)
 	{
 		//completely empty
 	}
@@ -171,16 +171,19 @@ efpool.prototype.for_each=function(fun)
 		//  _ _S_ _E_
 		// |_|_|*|*|_|
 		for ( var i=this.S; i<this.E; i++)
-			fun( this.pool[i]);
+			if( fun( this.pool[i])==='break')
+				break;
 	}
 	else
 	{
 		//  _ _E_ _S_
 		// |*|*|_|_|*|
 		for ( var j=this.S; j<this.pool.length; j++)
-			fun( this.pool[j]);
+			if( fun( this.pool[j])==='break')
+				return ;
 		for ( var i=0; i<this.E; i++)
-			fun( this.pool[i]);
+			if( fun( this.pool[i])==='break')
+				return ;
 	}
 }
 
@@ -191,7 +194,7 @@ efpool.prototype.for_each=function(fun)
  - fun_name (string) method name
  - arg (any) extra args will be passed through
 \*/
-efpool.prototype.call_each=function(fun_name /*, arg*/) //arguments will be passed through
+efpool.prototype.call_each=function(fun_name /*, arg*/)
 {
 	if( this.pool[0][fun_name])
 	{

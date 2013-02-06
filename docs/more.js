@@ -17,10 +17,6 @@
  * F.core __is not a game engine__. F.core is a set of conceptual and functional components that can be used to build an engine.
  * so it is not a hard decision like Windows vs Mac when choose to use F.core. you find the parts you are interested, pull it out and use it in your game.
  * 
- * F.core employs requirejs dependency management, and you should too, if you care to build games that has more than 1000 lines of code. requirejs can be clumsy to set up than `<script src="">`, but when a project grows it will pay off.
- * 
- * All classes in F.core are prototype classes with __no private member__ to make it easy for inheritance. Some properties and methods may not be listed here, but source code is [there](https://github.com/tyt2y3/F.core).
- * 
  * F.core components can be categorized into:
  * 
  > sprites
@@ -47,6 +43,11 @@
  > web application
  * @css for loading and optimizing css files and 
  * @support to check for browser support
+ * 
+ * F.core employs requirejs dependency management, and you should too, if you care to build games that has more than 1000 lines of code. requirejs can be clumsy to set up than `<script src="">`, but when a project grows it will pay off.
+ * 
+ * All classes in F.core are prototype classes with __no private member__ to make it easy for inheritance. Some properties and methods may not be listed here, but source code is [there](https://github.com/tyt2y3/F.core).
+ * Configurations to classes is done by passing a `config` object to constructor. Except `sprite` and `controller`, other classes keep refering to the `config` object and to some degree these config options can be altered dynamically. A `config` object can be shared among multiple instances of a class, but sometimes this can happen unintendedly and thus lead to strange results.
 \*/
 /*\
  * Development condition

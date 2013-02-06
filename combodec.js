@@ -85,12 +85,6 @@ function combodec (controller, config, combo)
 	\*/
 	this.config=config;
 	/*\
-	 * combodec.callback
-	 - (function)
-	 [ property ]
-	\*/
-	this.callback=config.callback;
-	/*\
 	 * combodec.combo
 	 - (array) combo list
 	 [ property ]
@@ -149,7 +143,7 @@ combodec.prototype.key=function(K, down)
 			}
 			if( detected)
 			{
-				this.callback(C[i]);
+				this.config.callback(C[i]);
 				if( C[i].interrupt)
 					this.seq.push('_');
 			}

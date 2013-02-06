@@ -51,7 +51,9 @@ var sp_masterconfig = module.config();
 |		}
 |	});
  * however, note that requirejs configuration must be done __before__ any module loading,
- * and if you want to change some of the global options on runtime, you can do so by calling @sprite.masterconfig
+ * and if you want to change some of the global options in runtime, you can do so by calling @sprite.masterconfig
+ *
+ * more on `config.div` option. if it is specified, will `adopt` this `div` instead of creating a new one. and if that `div` contains `img` elements, will also adopt them if they have a `name` attribute. frankly speaking, `<div><img name="0" src="sprite.png"/></div>` is equivalent to `img: { '0':'sprite.png' }` in a `config` object.
 \*/
 function sprite (config)
 {
@@ -61,15 +63,22 @@ function sprite (config)
 	if( config.div)
 	{
 		this.el = config.div;
-		if( this.el.hasAttribute('class'))
+		/* if( this.el.hasAttribute('class'))
 			this.el.setAttribute('class', this.el.getAttribute('class')+' F_sprite_inline');
 		else
-			this.el.setAttribute('class','F_sprite_inline');
+			this.el.setAttribute('class','F_sprite_inline'); */
+		if( this.el.className)
+			this.el.className += ' F_sprite_inline';
+		else
+			this.el.className = 'F_sprite_inline';
+		if( window.getComputedStyle(this.el).getPropertyValue('position')==='static')
+			this.el.style.position='relative';
 	}
 	else
 	{
 		this.el = document.createElement('div');
-		this.el.setAttribute('class','F_sprite');
+		//this.el.setAttribute('class','F_sprite');
+		this.el.className = 'F_sprite';
 		config.canvas.appendChild(this.el);
 	}
 
@@ -78,12 +87,22 @@ function sprite (config)
 
 	this.set_wh(config.wh);
 	if( config.img)
-	{
+	{	//add the images in config list
 		if( typeof config.img==='object')
 			for ( var I in config.img)
 				this.add_img(config.img[I], I);
 		else
 			this.add_img(config.img, '0');
+	}
+	if( config.div)
+	{	//adopt images in `div`
+		var img = config.div.getElementsByTagName('img');
+		for( var i=0; i<img.length; i++)
+		{
+			var Name=img[i].getAttribute('name');
+			if( Name)
+				this.adopt_img(img[i]);
+		}
 	}
 
 	if( support.css2dtransform && !config.div)
@@ -159,7 +178,7 @@ sprite.prototype.set_z=function(z)
  * add new image
  - imgpath (string)
  - name (string)
- = (object) newly created DOM `img` element
+ = (object) newly created `img` element
  * note that adding images can and should better be done in constructor `config`
 \*/
 sprite.prototype.add_img=function(imgpath,Name)
@@ -170,18 +189,43 @@ sprite.prototype.add_img=function(imgpath,Name)
 
 	var im = document.createElement('img');
 	im.setAttribute('class','F_sprite_img');
-	im.src = pre+imgpath;
 	im.onload=function()
 	{
 		if( !this.naturalWidth) this.naturalWidth=this.width;
 		if( !this.naturalHeight) this.naturalHeight=this.height;
 		this.onload=null;
 	}
+	im.src = pre+imgpath;
 	this.el.appendChild(im);
 
 	this.img[Name]=im;
 	this.switch_img(Name);
 	return im;
+}
+/**
+ * sprite.adopt_img
+ * adopt an `img` element that already exists
+ [ method ]
+ - im (object) `img` element
+ */
+sprite.prototype.adopt_img=function(im)
+{
+	var Name=im.getAttribute('name');
+	if( im.hasAttribute('class'))
+		im.setAttribute('class', im.getAttribute('class')+' F_sprite_img');
+	else
+		im.setAttribute('class','F_sprite_img');
+	if( !im.naturalWidth) im.naturalWidth=im.width;
+	if( !im.naturalHeight) im.naturalHeight=im.height;
+	if( !im.naturalWidth && !im.naturalHeight)
+		im.onload=function()
+		{
+			if( !this.naturalWidth) this.naturalWidth=this.width;
+			if( !this.naturalHeight) this.naturalHeight=this.height;
+			this.onload=null;
+		}
+	this.img[Name]=im;
+	this.switch_img(Name);
 }
 /*\
  * sprite.switch_img
