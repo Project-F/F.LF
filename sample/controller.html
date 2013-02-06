@@ -9,19 +9,19 @@
 requirejs(['F.core/controller'], function(controller)
 {
 
-sp1 = document.getElementById('sp1');
-sp2 = document.getElementById('sp2');
-states = document.getElementById('states');
-SPD = 4;
+var sp1 = document.getElementById('sp1');
+var sp2 = document.getElementById('sp2');
+var states = document.getElementById('states');
+var SPD = 4;
 
 var con1_fg = {up:'h',down:'n',left:'b',right:'m'};
 var con2_fg = {up:'s',down:'x',left:'z',right:'c'};
-con1 = new controller(con1_fg);
-con2 = new controller(con2_fg);
+var con1 = new controller(con1_fg);
+var con2 = new controller(con2_fg);
 
 //--
 
-TIMER = setInterval(onEnterFrame,1000/72); //72 fps
+var TIMER = setInterval(onEnterFrame,1000/72); //72 fps
 function onEnterFrame()
 {
 	list = [ {con:con1,sp:sp1}, {con:con2,sp:sp2} ];
