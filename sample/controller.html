@@ -31,13 +31,13 @@ function onEnterFrame()
 		var sp =list[I].sp;
 
 		if(con.state.up)
-			sp.style.top=parseInt(sp.style.top)-SPD;
+			sp.style.top=parseInt(sp.style.top)-SPD+'px';
 		if(con.state.down)
-			sp.style.top=parseInt(sp.style.top)+SPD;
+			sp.style.top=parseInt(sp.style.top)+SPD+'px';
 		if(con.state.left)
-			sp.style.left=parseInt(sp.style.left)-SPD;
+			sp.style.left=parseInt(sp.style.left)-SPD+'px';
 		if(con.state.right)
-			sp.style.left=parseInt(sp.style.left)+SPD;
+			sp.style.left=parseInt(sp.style.left)+SPD+'px';
 	}
 	states.innerHTML='controller1: up:'+con1.state.up+' down:'+con1.state.down+' left:'+con1.state.left+' right:'+
 	con1.state.right+'<br>controller2: up:'+con2.state.up+' down:'+con2.state.down+' left:'+con2.state.left+' right:'+
