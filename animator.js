@@ -12,7 +12,7 @@ define(function()
 |		w:100, h:100,//width, height of a frame
 |		gx:4,gy:4,   //define a gx*gy grid of frames
 |		tar:         //target @sprite
-|		ani:         //animation sequence:
+|		ani:         //[optional] animation sequence:
 |			null,    //if undefined, loop through top left to lower right, row by row
 |			[0,1,2,1,0],//use custom animation sequence
 |		borderright: 1, //[optionals] trim the right edge pixels away
