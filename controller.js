@@ -285,7 +285,16 @@ function(code)
 	}
 	else
 	{
-		return ''+code;
+		var nam = code;
+		switch(code)
+		{
+			case 38: nam='up'; break;
+			case 40: nam='down'; break;
+			case 37: nam='left'; break;
+			case 39: nam='right'; break;
+			case 32: nam='space'; break;
+		}
+		return nam;
 	}
 }
 
