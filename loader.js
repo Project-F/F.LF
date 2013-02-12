@@ -24,6 +24,12 @@ define(['loader_depend'],function(datalist){
 	return {
 		load: function (name, require, load, config)
 		{
+			if( config.isBuild)
+			{
+				load();
+				return ;
+			}
+
 			var datafile_depend=[];
 
 			for( var i=0; i<datalist.object.length; i++)

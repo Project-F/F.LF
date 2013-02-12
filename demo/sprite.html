@@ -8,14 +8,27 @@
 <script src="../third_party/require.js"></script>
 <script>
 requirejs.config({
-	baseUrl: '../../'
+	baseUrl: '../../',
+	config:
+	{
+		'F.core/sprite':
+		{
+			baseUrl: '../../LFrelease/'
+		}
+	}
 });
-requirejs(['LF/sprite','LF/data/bandit'], function(sprite,data_bandit)
+requirejs(['LF/sprite','LFrelease/data/bandit'], function(sprite,data_bandit)
 {
-	bandit=data_bandit;
+	var bandit=data_bandit;
 	var sp = new sprite(bandit.bmp,document.getElementById('canvas'));
-	sp.show_pic(71);
-	sp.switch_lr('left');
+	var i = 70;
+	sp.switch_lr('right');
+	setInterval(function()
+	{
+		sp.show_pic(i++);
+		if( i>77)
+			i=70;
+	}, 1000/7);
 });
 </script>
 </div>

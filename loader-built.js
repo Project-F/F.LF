@@ -9,10 +9,7 @@ define(function() {
 	var gamedata;
 
 	return {
-		load: function (name, require, load, config) {		
-			if( config.isBuild)
-				console.log('why am I here?');
-				
+		load: function (name, require, load, config) {
 			if( !loaded)
 			{
 				loaded=true;

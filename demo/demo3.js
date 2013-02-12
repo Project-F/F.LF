@@ -1,19 +1,24 @@
-requirejs.config({
+requirejs.config(
+{
 	baseUrl: '../../',
-	paths: {
+	paths:
+	{
 		'loader_depend': 'LFrelease/data/data',
 		'data': 'LFrelease/data'
+	},
+	config:
+	{
+		'F.core/sprite':
+		{
+			baseUrl: '../../LFrelease/'
+		}
 	}
 });
 
-requirejs(['F.core/controller','F.core/sprite',
+requirejs(['F.core/controller',
 'LF/loader!data','LF/match','LF/keychanger'],
-function(Fcontroller,Fsprite,
+function(Fcontroller,
 gamedata,Match,Keychanger){
-
-	Fsprite.prototype.config({
-		baseUrl: '../../LFrelease/'
-	});
 
 	var control_con1 =
 	{
