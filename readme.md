@@ -20,7 +20,7 @@ F.LF requires XXX.png to be mirrored into XXX_mirror.png.
 F.LF is still in mid-stage development. Check out the latest milestone at [f-lf2.blogspot.hk](http://f-lf2.blogspot.hk/search/label/latest-demo) or at the [release channel](https://github.com/tyt2y3/LFrelease).
 
 ## Install
-F.LF is built upon [F.core](https://github.com/tyt2y3/F.core). F.LF contains purely source code. Materials from LF2 is converted and contained in [LFrelease](https://github.com/tyt2y3/LFrelease). Place all the repositories side-by-side.
+F.LF is built upon [F.core](https://github.com/tyt2y3/F.core). F.LF contains purely source code. Materials from LF2 is converted and contained in [LFrelease](https://github.com/tyt2y3/LFrelease). These repositories must be named and placed as below:
 ```
  F
  |---F.core
