@@ -166,4 +166,7 @@
  > teeth
  * - repo [https://github.com/tyt2y3/teeth](https://github.com/tyt2y3/teeth)
  * - [game](http://tyt2y3.github.com/teeth)
+ > celebrate
+ * - repo [https://github.com/tyt2y3/celebrate](https://github.com/tyt2y3/celebrate)
+ * - [game](http://tyt2y3.github.com/celebrate)
 \*/
