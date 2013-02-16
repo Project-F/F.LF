@@ -99,7 +99,7 @@ and point in rectangle test
 
 ## Project F
 <img src="http://2.bp.blogspot.com/-k-My1B-YlaU/T8JUBAYpu9I/AAAAAAAAACI/OnCvkzFF5jw/s1600/logo_l1_s.png" height="80"/>
-F.core is the programming library that powered Project F games.
+F.core is the programming library that powered [Project F games](http://project--f.blogspot.com/2013/02/games.html).
 
 ## License
 Generally has complete freedom except for profit- making. For exact terms see [license](http://project--f.blogspot.com/2012/05/license.html).
