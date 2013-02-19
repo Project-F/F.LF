@@ -25,8 +25,7 @@
 17. obstacle
 	- issue: characters sometimes trapped in obstacle
 
-## B) interactions
-#### the `itr` tag
+## B) interactions: the `itr` tag
 
 ### i) attributes
 - [`kind`](#itrkind)
@@ -116,7 +115,6 @@ living objects with this itr acts as obstacle to characters
 kind 15,16 are for special attacks
 
 ### volume
-![](https://docs.google.com/drawings/d/1F1biPJanHJPjDXk0ymoKaOxirDMKw17HVOquqO5rbQc/pub?w=669&h=680)
 for details consult [volume specification](http://f-lf2.blogspot.hk/2013/01/scenejs-volume.html).
 
 ### effect
