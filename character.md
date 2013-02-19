@@ -29,13 +29,13 @@
 
 ### i) attributes
 - [`kind`](#itrkind)
-- [`x`, `y`, `w`, `h`, `zwidth`](#volume)
-- [`dvx`, `dvy`](#effect)
+- [`x`, `y`, `w`, `h`, `zwidth`](#itrvolume)
+- [`dvx`, `dvy`](#itreffect)
 - `arest`, `vrest`
 - `fall`
 - `bdefend`
 - `injury`
-- [`effect`](#effect)
+- [`effect`](#itreffect)
 
 ### itr:kind
 
@@ -114,10 +114,10 @@ living objects with this itr acts as obstacle to characters
 #### itr:kind:15,16
 kind 15,16 are for special attacks
 
-### volume
+### itr:volume
 for details consult [volume specification](http://f-lf2.blogspot.hk/2013/01/scenejs-volume.html).
 
-### effect
+### itr:effect
 with this attribute, an effect will be created when itr:kind:0 occurs.
 effects can be purely visual, but most effects include behaviours that affect characters being hit.
 effects apply `dvx`,`dvy` as velocity to characters being hit.
