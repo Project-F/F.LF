@@ -159,8 +159,8 @@ function livingobject_template (template)
 		}
 		else if( $.effect.timeout===-1)
 		{
-			$.ps.vx += $.effect.dvx;
-			$.ps.vy += $.effect.dvy;
+			$.ps.vx = $.effect.dvx;
+			$.ps.vy = $.effect.dvy;
 			$.effect.dvx=0;
 			$.effect.dvy=0;
 		}
