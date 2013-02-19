@@ -122,15 +122,15 @@ function weapon(type)
 						itr_rest=GC.default.weapon;
 					if( itr_rest.arest) itr_rest.arest+=20;
 					//
-					console.log('I='+$.uid+', he='+hit[k].uid+
+					/*console.log('I='+$.uid+', he='+hit[k].uid+
 						', arest='+itr_rest.arest+
 						', vrest='+itr_rest.vrest+
 						', itr.arest='+$.itr.arest+
-						', itr.vrest='+$.itr.vrest[hit[k].uid]);
+						', itr.vrest='+$.itr.vrest[hit[k].uid]);*/
 					if( $.itr_rest_test( hit[k].uid, itr_rest))
 					if( hit[k].hit(ITR[j],$,{x:$.ps.x,y:$.ps.y,z:$.ps.z},vol))
 					{	//hit you!
-						console.log('hit'+'$.state='+$.cur_state());
+						//console.log('hit'+'$.state='+$.cur_state());
 						var ps=$.ps;
 						var vx=(ps.vx===0?0:(ps.vx>0?1:-1));
 						if( $.light)

@@ -1,28 +1,5 @@
 /**	a LF2 character
  */
-/** unit tests to pass
-1) standing
-2) walking in all directions and diagonally
-3) running in all directions and diagonally
-4) stop running
-5) running + row
-6) running + dash
-7) running + attack
-8) jump in all directions and diagonally
-9) jump + row
-10) jump + dash
-11) jump + attack
-12) dash attack
-13) dash + turning back
-14) interact: A punch B
-15) interact: superpunch
-16) interact: catch & +throw
- */
-
-/** issues:
-13) has 1 frame of glitch
-back dash?
- */
 
 define(['LF/livingobject','LF/global','F.core/util'],
 function(livingobject_template, Global, Futil)
@@ -870,11 +847,13 @@ function(livingobject_template, Global, Futil)
 			break;
 
 			case 1: //catch
+			case 3: //super catch
 				for( var t in hit)
 				{
 					if( hit[t].team !== $.team) //only catch other teams
 					if( hit[t].type==='character') //only catch characters
-					if( hit[t].cur_state()===16) //you are in dance of pain!
+					if( (ITR.kind===2 && hit[t].cur_state()===16) //you are in dance of pain
+					 || (ITR.kind===3)) //super catch
 					if( $.itr_rest_test( hit[t].uid, ITR))
 					{
 						var dir = hit[t].caught_a(ITR,$,{x:$.ps.x,y:$.ps.y,z:$.ps.z});
@@ -892,6 +871,9 @@ function(livingobject_template, Global, Futil)
 				}
 			break;
 
+			case 7: //pick weapon easy
+				if( !$.con.state.att)
+					break; //only if att key is down
 			case 2: //pick weapon
 				for( var t in hit)
 				{
@@ -899,10 +881,13 @@ function(livingobject_template, Global, Futil)
 					if( hit[t].pick($))
 					{
 						$.itr_rest_update( hit[t].uid, ITR);
-						if( hit[t].type==='lightweapon')
-							$.trans.frame(115, 10);
-						else if( hit[t].type==='heavyweapon')
-							$.trans.frame(116, 10);
+						if( ITR.kind===2)
+						{
+							if( hit[t].type==='lightweapon')
+								$.trans.frame(115, 10);
+							else if( hit[t].type==='heavyweapon')
+								$.trans.frame(116, 10);
+						}
 						$.hold.obj = hit[t];
 						$.hold.obj.team = $.team;
 						$.hold.id= $.hold.obj.id;
