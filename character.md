@@ -39,7 +39,7 @@
 
 ### kind
 
-#### 0
+#### itr:kind:0
 normal attack
 - `active`
 	- trigger an event by intersecting with others
@@ -47,7 +47,7 @@ normal attack
 	- only attacks characters of other teams
 	- `team neutral` to other object types
 
-#### 1
+#### itr:kind:1
 characters with this itr can catch characters that are in state:16 (Dance of Pain).
 - `active`
 - `team exclusive`
@@ -64,19 +64,19 @@ catcher transits to frame A if catcher approaches the one being caught from the 
 ```
 the one being caught transits to frame A if catcher approaches the one being caught from the front, otherwiser to frame B
 
-#### 2
+#### itr:kind:2
 characters with this itr can pick up weapons
 - `active`
 - only interact with pickable items
 
-#### 3
+#### itr:kind:3
 characters with this itr can catch characters
 - `active`
 - `team exclusive`
 
 other properties same as kind 1
 
-#### 4
+#### itr:kind:4
 (unimplemented) characters with this itr can hit others as if he is a heavyweapon.
 normally this itr appears in falling frames of a character
 - `active`
@@ -84,29 +84,29 @@ normally this itr appears in falling frames of a character
 	- can hit any team
 	- cannot hit the character that initially threw him
 
-#### 5
+#### itr:kind:5
 kind 5 is for weapons
 
-#### 6
+#### itr:kind:6
 when a character initiats a punch, he checks if his itr volume intersects with another itr volume of kind:6, if this is true he will transit to frame 70 instead of 60 or 65.
 - `passive`
 	- other characters trigger an event by intersecting with this itr
 - `team exclusive`
 
-#### 7
+#### itr:kind:7
 characters with this itr can pick up weapons without causing a frame transition
 - `active`
 - `key press`
 	- require holding down the attack key
 - only interact with pickable items
 
-#### 8,9,10,11
+#### itr:kind:8,9,10,11
 kind 8,9,10,11 are for special attacks
 
-#### 14
+#### itr:kind:14
 living objects with this itr acts as obstacle to characters
 - `passive`
 - only interact with characters
 
-#### 15,16
+#### itr:kind:15,16
 kind 15,16 are for special attacks
