@@ -60,7 +60,7 @@ Feffects_pool.prototype.TU=function()
 	});
 }
 
-/*
+/* //code migrated to F.core/effects-pool
 function effects(config,data,id)
 {
 	this.pool=[]; //let it be a circular pool
