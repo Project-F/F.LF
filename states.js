@@ -85,11 +85,16 @@ var state_list=[];
 /*\
  * states
  [ class ]
- - state_def (object) state machine definition
- - init_obj (object) initializer object, content will be copied shallowly to `this`
- * the reason for having an initializer is the state machine is running before the constructor returns
+ - states (object) state machine definition
+ * or
+ - config (object)
+ * {
+ - states (object) state machine definition
+ - init (object) initializer object, content will be copied shallowly to `this` states
+ * initialization is done before the state machine is setup and running
+ * }
 \*/
-function states (state_def,init_obj)
+function states (config)
 {
 	// no private member
 	/*\
@@ -97,10 +102,14 @@ function states (state_def,init_obj)
 	 [ property ]
 	 - (object) states tree, can be altered dynamically
 	\*/
-	this.state=state_def;
-	if( init_obj)
-		for( var Q in init_obj)
-			this[Q] = init_obj[Q];
+	if( config.states)
+		this.state=config.states;
+	else
+		this.state=config;
+
+	if( config.init)
+		for( var Q in config.init)
+			this[Q] = config.init[Q];
 
 	this.state.name='root'; //build an accessible tree
 	this.propagate_down(999,function(state,name,superstate){
@@ -135,7 +144,7 @@ function states (state_def,init_obj)
 	/*\
 	 * states.cur_state
 	 [ property ]
-	 - (object) reference to the current state in state_def
+	 - (object) reference to the current state
 	\*/
 	this.cur_state=this.state;
 	this.chain_event(true,this.cur,1,'entry',true,null);
