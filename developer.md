@@ -1,4 +1,4 @@
-This is intended to be a guideline to developers who want to do development on F.LF
+This is intended to be a guideline for developers who want to do development on F.LF
 
 # Architecture
 Let's have a top-down walk through the modules.
@@ -15,3 +15,10 @@ Let's have a top-down walk through the modules.
 			- `mechanics.js` is a state-less helper class to process all mechanics of `livingobject`.
 	- `effects.js` handles all the visual effects.
 	- `scene.js` maintains a graph of all livingobjects in the scene. collision detection is done by a scene query where livingobject query for intersection with other objects on the scene.
+
+### Considerations
+Project F games are to be hackable. The architecture answer yes to the following questions:
+- can I customize behavior by changing only few parameters in a single place?
+- can I extend functionality by wrapping over existing code?
+- can I append a new component by adding an entry to a list?
+- can I replace a module by implementing one with same interface?
