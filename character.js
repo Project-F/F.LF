@@ -404,7 +404,7 @@ function(livingobject_template, Global, Futil)
 					if( $.frame.D.cpoint.injury)
 					{
 						$.catching.hit( $.frame.D.cpoint, $, {x:$.ps.x,y:$.ps.y,z:$.ps.z}, null);
-						$.trans.inc_wait(1, 10, 99);
+						$.trans.inc_wait(1, 10, 99); //lock until frame transition
 					}
 					//cover
 					var cover = GC.default.cpoint.cover;
@@ -474,7 +474,7 @@ function(livingobject_template, Global, Futil)
 			case 'frame':
 				$.state10={};
 				$.state10.frameTU=true;
-				$.trans.set_wait(99, 10, 99);
+				$.trans.set_wait(99, 10, 99); //lock until frame transition
 				$.frame.mobility=0; //never moves
 			break;
 
@@ -540,7 +540,7 @@ function(livingobject_template, Global, Futil)
 				switch($.frame.N)
 				{
 					case 220: case 222: case 224: case 226:
-						$.trans.inc_wait(2, 20, 99);
+						$.trans.inc_wait(2, 20, 99); //lock until frame transition
 						$.frame.mobility=0; //cannot move
 					break;
 				}
@@ -640,7 +640,7 @@ function(livingobject_template, Global, Futil)
 						}
 						else
 						{
-							$.trans.inc_wait(2, 10, 99);
+							$.trans.inc_wait(2, 10, 99); //lock until frame transition
 							$.trans.set_next(210, 10);
 						}
 					}
@@ -946,6 +946,9 @@ function(livingobject_template, Global, Futil)
 			return [];
 	}
 
+	/** inter-living objects protocol: catch & throw
+		for details see http://f-lf2.blogspot.hk/2013/01/inter-living-object-interactions.html
+	 */
 	character.prototype.caught_a=function(ITR, att, attps)
 	{	//this is called when the catcher has an ITR with kind: 1
 		var $=this;
