@@ -25,9 +25,9 @@
 17. obstacle
 	- issue: characters sometimes trapped in obstacle
 
-## B) interactions: the `itr` tag
+## B) interactions: `itr`
 
-### i) attributes
+### attributes
 - [`kind`](#itrkind)
 - [`x`, `y`, `w`, `h`, `zwidth`](#itrvolume)
 - [`dvx`, `dvy`](#itreffect)
@@ -121,3 +121,28 @@ for details consult [volume specification](http://f-lf2.blogspot.hk/2013/01/scen
 with this attribute, an effect will be created when itr:kind:0 occurs.
 effects can be purely visual, but most effects include behaviours that affect characters being hit.
 effects apply `dvx`,`dvy` as velocity to characters being hit.
+
+## C) attachment points: `point`
+
+### wpoint
+#### attributes
+- kind
+- x, y
+- weaponact
+- attacking
+- cover
+- dvx, dvy, dvz
+
+### opoint
+#### attributes
+- kind
+- x, y
+- action
+- dvx, dvy
+- oid
+- facing
+
+### cpoint
+
+### bpoint
+(unimplemented)
