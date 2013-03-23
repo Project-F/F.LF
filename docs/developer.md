@@ -7,7 +7,7 @@ Let's have a top-down walk through the modules.
 - `loader.js`, `loader-build.js`, `loader-built.js` is to load data packages as defined by `data.js` using different schemes, one-by-one or in-a-batch.
 - `match.js` is a generalization above game modes (e.g. VSmode, stagemode, battlemode)
 	the life time of a `match` object represents the course of a match, from start when weapon drops to end all opponents killed.
-	- `factories.js` / `match` does not have a direct view to all livingobject classes, and `factories` is responsible to list all available classes.
+	- `factories.js` is responsible to list all available classes to `match` as `match` does not depend on object classes directly.
 	- `character.js` is a generalization of all LF2 characters. `LFrelease/data/specification.js` specifies the exact property of a character
 	- `weapon.js` is a generalization of `heavyweapon` and `lightweapon`.
 		- `livingobject.js` is a template class. `character` and `weapon` each supply a template to `livingobject` and obtain a baked class. properties and methods are then appended to the class to obtain a fully functional `character` or `weapon` class.
@@ -17,7 +17,7 @@ Let's have a top-down walk through the modules.
 	- `scene.js` maintains a graph of all livingobjects in the scene. collision detection is done by a scene query where livingobject query for intersection with other objects on the scene.
 
 ### Considerations
-Project F games are to be hackable. The architecture answer yes to the following questions:
+F.LF is to be hackable. The architecture answer yes to the following questions:
 - can I customize behavior by changing only few parameters in a single place?
 - can I extend functionality by wrapping over existing code?
 - can I append a new component by adding an entry to a list?
