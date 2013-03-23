@@ -76,9 +76,21 @@ function(livingobject_template, Global, Futil)
 						$.trans.frame(9, 10);
 				break;
 				case 'def':
+					if( $.hold.obj && $.hold.obj.type==='heavyweapon')
+						return ;
 					$.trans.frame(110, 10);
 				break;
 				case 'jump':
+					if( $.hold.obj && $.hold.obj.type==='heavyweapon')
+					{
+						if( !$.proper('heavy_weapon_jump'))
+							return ;
+						else
+						{
+							$.trans.frame($.proper('heavy_weapon_jump'), 10);
+							return ;
+						}
+					}
 					$.trans.frame(210, 10);
 				break;
 				case 'att':
@@ -223,10 +235,22 @@ function(livingobject_template, Global, Futil)
 				break;
 
 				case 'def':
+					if( $.hold.obj && $.hold.obj.type==='heavyweapon')
+						return ;
 					$.trans.frame(102, 10);
 				break;
 
 				case 'jump':
+					if( $.hold.obj && $.hold.obj.type==='heavyweapon')
+					{
+						if( !$.proper('heavy_weapon_dash'))
+							return ;
+						else
+						{
+							$.trans.frame($.proper('heavy_weapon_dash'), 10);
+							return ;
+						}
+					}
 					$.trans.frame(213, 10);
 				break;
 
@@ -319,7 +343,7 @@ function(livingobject_template, Global, Futil)
 			case 'combo':
 				if( K==='att')
 				{
-					if( $.proper($.id,'dash_backatt') || //back attack
+					if( $.proper('dash_backattack') || //back attack
 						$.dirh()===($.ps.vx>0?1:-1)) //if not turning back
 					{
 						if( $.hold.obj && $.proper($.hold.id,'attackable')) //light weapon attack
@@ -852,7 +876,7 @@ function(livingobject_template, Global, Futil)
 				{
 					if( hit[t].team !== $.team) //only catch other teams
 					if( hit[t].type==='character') //only catch characters
-					if( (ITR.kind===2 && hit[t].cur_state()===16) //you are in dance of pain
+					if( (ITR.kind===1 && hit[t].cur_state()===16) //you are in dance of pain
 					 || (ITR.kind===3)) //super catch
 					if( $.itr_rest_test( hit[t].uid, ITR))
 					{
