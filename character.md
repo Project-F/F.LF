@@ -9,6 +9,7 @@ This specification is based on information by LF-EMPIRE. [http://lf-empire.de/en
 - `file(xx-yy)`
 - `w`, `h`, `row`, `col`
 	- `row` is actually number of columns, or, correctly, number of pictures in one row
+
 example:
 ```
 file: [
@@ -209,21 +210,21 @@ effects apply `dvx`,`dvy` as velocity to characters being hit.
 
 ### wpoint
 #### attributes
-- kind
-- x, y
-- weaponact
-- attacking
-- cover
-- dvx, dvy, dvz
+- `kind`
+- `x`, `y`
+- `weaponact`
+- `attacking`
+- `cover`
+- `dvx`, `dvy`, `dvz`
 
 ### opoint
 #### attributes
-- kind
-- x, y
-- action
-- dvx, dvy
-- oid
-- facing
+- `kind`
+- `x`, `y`
+- `action`
+- `dvx`, `dvy`
+- `oid`
+- `facing`
 
 ### cpoint
 
@@ -231,3 +232,10 @@ effects apply `dvx`,`dvy` as velocity to characters being hit.
 (unimplemented)
 
 ## body: `bdy`
+#### attributes
+- `kind`
+	- bdy:kind:0
+	- other kind is (unimplemented)
+- `x`, `y`, `w`, `h`
+
+for details consult [volume specification](http://f-lf2.blogspot.hk/2013/01/scenejs-volume.html).
