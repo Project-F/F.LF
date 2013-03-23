@@ -174,8 +174,8 @@ function(sprite,bandit)
 					add_cell(rstate, cur_frame.state);
 					var pic = add_cell(rpic, '');
 					pic.style.position = 'relative';
-					pic.style.width = data.bmp.file[0].w+1;
-					pic.style.height = data.bmp.file[0].h+1;
+					pic.style.width = data.bmp.file[0].w+1+'px';
+					pic.style.height = data.bmp.file[0].h+1+'px';
 
 					var sp = new sprite(data.bmp, pic);
 					sp.show_pic(cur_frame.pic);
