@@ -1,31 +1,114 @@
 # character.js
 ### Specification and implementation status
+This specification is based on information by LF-EMPIRE. [http://lf-empire.de/en/lf2-empire/data-changing/types/167-type-0-characters](http://lf-empire.de/en/lf2-empire/data-changing/types/167-type-0-characters).
 
-## A) actions
-### i)
-1. standing
-2. walking in all directions and diagonally
-3. running in all directions and diagonally
-4. stop running
-5. running + row
-6. running + dash
-7. running + attack
-8. jump in all directions and diagonally
-9. jump + row
-10. jump + dash
-11. jump + attack
-12. dash attack
-13. dash + turning back
-	- issue: has 1 frame of glitch when performing back dash
+# bmp
+### file
+`array` of file elements
+#### file element attributes
+- `file(xx-yy)`
+- `w`, `h`, `row`, `col`
+	- `row` is actually number of columns, or, correctly, number of pictures in one row
+example:
+```
+file: [
+  {
+    "file(0-69)": "sprite/bandit_0.png", w: 79, h: 79, row: 10, col: 7
+  },
+  {
+    "file(70-139)": "sprite/bandit_1.png", w: 79, h: 79, row: 10, col: 7
+  }
+],
+name: "Bandit",
+head: "sprite/bandit_f.png",
+small: "sprite/bandit_s.png",
+walking_frame_rate: 3,
+walking_speed: 4,
+walking_speedz: 2,
+running_frame_rate: 3,
+running_speed: 8,
+running_speedz: 1.3,
+heavy_walking_speed: 3,
+heavy_walking_speedz: 1.5,
+heavy_running_speed: 5,
+heavy_running_speedz: 0.8,
+jump_height: -16.299999,
+jump_distance: 8,
+jump_distancez: 3,
+dash_height: -11,
+dash_distance: 15,
+dash_distancez: 3.75,
+rowing_height: -2,
+rowing_distance: 5
+```
 
-### ii) interactive actions
-14. A punch B
-15. trigger superpunch
-16. catch & +throw
-17. obstacle
-	- issue: characters sometimes trapped in obstacle
+# frames
 
-## B) interactions: `itr`
+```
+000 - 003: standing
+005 - 008: walking
+009 - 011: running
+012 - 015: heavy_obj_walk
+016 - 018: heavy_obj_run
+019      : heavy_stop_run
+020 - 028: normal_weapon_atck
+030 - 033: jump_weapon_atck
+035 - 037: run_weapon_atck
+040 - 043: dash_weapon_atck
+045 - 047: light_weapon_thw
+050 - 051: heavy_weapon_thw
+052 - 054: sky_lgt_wp_thw
+055 - 058: weapon_drink (unimplemented)
+060 - 068: punch
+070 - 073: super_punch
+080 - 081: jump_attack
+085 - 087: run_attack
+090 - 091: dash_attack
+095      : dash_defend
+100 - 101: rowing (from falling-frames) (unimplemented)
+102 - 109: rowing (rolling)
+110 - 111: defend (111, if char is being hit)
+112 - 114: broken_defend
+115      : picking_light
+116 - 117: picking_heavy
+120 - 121: catching
+122 - 123: catching (punch)
+130 - 144: picked_caught
+180 - 191: falling (180-185 foward, 186-191 backward)
+200 - 202: ice (unimplemented)
+203 - 206: fire (203/4 & 205/6) (unimplemented)
+207      : tired (unimplemented)
+210 - 212: jump
+213      : dash
+214      : dash (turned back)
+   issue : has 1 frame of glitch when performing back dash
+215      : crouch
+216      : dash
+217      : dash (turned back)
+218      : stop_running
+219      : crouch2 (out of lying)
+220 - 229: injured
+230 - 231: lying (0=stomach 1=back)
+232 - 234: throw_lying_man
+```
+
+- issue: characters sometimes trapped in obstacle
+
+## attributes
+- `pic`
+- `state`
+- `wait`
+- `next`
+- `dvx`, `dvy`, `dvz`
+- `centerx`, `centery`
+- `hit_a`, `hit_d`, `hit_j`
+- `hit_Fa`, `hit_Fj`, `hit_Ua`, `hit_Uj`, `hit_Da`, `hit_Dj`, `hit_ja`
+- `mp`
+- `sound`
+
+# frame elements
+
+## interactions: `itr`
 
 ### attributes
 - [`kind`](#itrkind)
@@ -54,7 +137,7 @@ characters with this itr can catch characters that are in state:16 (Dance of Pai
 	- only interacts with other teams
 - only interact with characters at state 16
 
-extra tags:
+extra attributes:
 ```
 "catchingact": [A,B]
 ```
@@ -122,7 +205,7 @@ with this attribute, an effect will be created when itr:kind:0 occurs.
 effects can be purely visual, but most effects include behaviours that affect characters being hit.
 effects apply `dvx`,`dvy` as velocity to characters being hit.
 
-## C) attachment points: `point`
+## attachment points: `xpoint`
 
 ### wpoint
 #### attributes
@@ -146,3 +229,5 @@ effects apply `dvx`,`dvy` as velocity to characters being hit.
 
 ### bpoint
 (unimplemented)
+
+## body: `bdy`
