@@ -1,4 +1,4 @@
-/** a template of a living object
+/** a template class of a living object
  */
 define(['LF/global','data/specification','LF/sprite','LF/mechanics','F.core/combodec'],
 function ( Global, Spec, Sprite, Mech, Fcombodec)

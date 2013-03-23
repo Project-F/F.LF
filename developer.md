@@ -22,3 +22,55 @@ Project F games are to be hackable. The architecture answer yes to the following
 - can I extend functionality by wrapping over existing code?
 - can I append a new component by adding an entry to a list?
 - can I replace a module by implementing one with same interface?
+
+# roadmap
+
+### the LF2 standard
+compliance up to LF2 1.451
+- characters
+	- opoint
+	- health and mana system
+- weapons
+- specialattack
+- drinks
+- baseball
+- miscell (Criminal, etc, broken_weapon)
+- effects (blood,fire)
+- background
+
+### engine components
+- AI
+- networking
+	- networking architecture
+		- protocol
+		- technology (webSocket?)
+	- server implementation
+- sound
+- record & playback
+	- data format
+	- standalone player
+
+### application
+- game modes
+	- VS mode
+		- health panel
+		- F1~F10 function keys
+	- stage mode
+	- (extended) story mode
+- interface
+	- mimic original LF2 interface
+- content pack
+	- a meta package
+		- characters, weapons and other objects
+		- backgrounds
+		- sounds
+		- stages
+		- custom interface
+	- data format
+	- distribution
+	- automated packaging tool
+	- note: in future development, we should pack the original LF2 contents into a package and treat it as one of the many available packages
+
+### documentation
+- the LF2 standard
+- hands on F.LF

@@ -12,6 +12,7 @@ This specification is based on information by LF-EMPIRE. [http://lf-empire.de/en
 
 example:
 ```
+bmp: {
 file: [
   {
     "file(0-69)": "sprite/bandit_0.png", w: 79, h: 79, row: 10, col: 7
@@ -41,6 +42,7 @@ dash_distance: 15,
 dash_distancez: 3.75,
 rowing_height: -2,
 rowing_distance: 5
+}
 ```
 
 # frames
@@ -95,7 +97,7 @@ rowing_distance: 5
 
 - issue: characters sometimes trapped in obstacle
 
-## attributes
+### attributes
 - `pic`
 - `state`
 - `wait`
