@@ -1,4 +1,4 @@
-## the LF standard - concepts and mechanisms
+## the LF2 standard - concepts and mechanisms
 
 - living objects
 	- properties
