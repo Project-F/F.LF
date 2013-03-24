@@ -4,7 +4,7 @@ This is intended to be a guideline for developers who want to do development on 
 Let's have a top-down walk through the modules.
 - `global.js` defines the global parameters
 - `keychanger.js` is a small utility to change keys of a controller
-- `loader.js`, `loader-build.js`, `loader-built.js` is to load data packages as defined by `data.js` using different schemes, one-by-one or in-a-batch.
+- `loader.js` is to load all data files as defined by `data.js` during startup.
 - `match.js` is a generalization above game modes (e.g. VSmode, stagemode, battlemode)
 	the life time of a `match` object represents the course of a match, from start when weapon drops to end all opponents killed.
 	- `factories.js` is responsible to list all available classes to `match` as `match` does not depend on object classes directly.
