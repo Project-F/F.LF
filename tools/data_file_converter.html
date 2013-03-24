@@ -1847,6 +1847,8 @@ function convert()
 	if( V.indexOf('<')===-1)
 	{
 		parse_background();
+		if( O.name)
+			O.name=O.name.replace(/_/g,' ');
 	}
 	else
 	for( var prsi=0; prsi<9; prsi++)

@@ -33,8 +33,7 @@ compliance up to LF2 1.451
 - weapons
 - specialattack
 - drinks
-- baseball
-- miscell (Criminal, etc, broken_weapon)
+- baseball, miscell (Criminal, etc, broken_weapon)
 - effects (blood,fire)
 - background
 
@@ -70,6 +69,10 @@ compliance up to LF2 1.451
 	- distribution
 	- automated packaging tool
 	- note: in future development, we should pack the original LF2 contents into a package and treat it as one of the many available packages
+- content loader
+	- currently, we use a requirejs plugin to load data files all at once during startup.
+	- however, this will increase startup time and waste bandwidth
+	- we would like to have a content loader which load resources on demand (lazy loading), at the start of a match.
 
 ### documentation
 - the LF2 standard
