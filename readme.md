@@ -11,11 +11,11 @@ I believe the web, open source and fine software will enable anyone, from novice
 The open LF2 project is divided into three repositories, [F.core](https://github.com/tyt2y3/F.core), F.LF and [LFrelease](https://github.com/tyt2y3/LFrelease). F.LF is the game engine which implements ___the LF2 standard___ and provides gaming functionalities. F.core provides the engine components to build a HTML5 game. While F.LF _could_ be platform independent, current implementation does depend a lot on the browser environment. LFrelease contains material (sprites,data,sound,etc) converted from original LF2. Such division is to ensure that F.LF is 100% original work containing no third party copyrighted material.
 
 ## Compatibility
-F.LF thrives for 99% compatibility with LF2. the currently reference is LF2 1.451.
+F.LF thrives for 99% compatibility with LF2. the current reference is LF2 1.451.
 - data
 	- F.LF provide a [tool](http://tyt2y3.github.com/LFrelease/tools/data_file_converter.html) to convert xml-like LF2 data files into JSON.
 - sprite
-	- LF2 sprite images are in 24bit bmp and must be converted to 32bit png with transparency. in addition, F.LF requires XXX.png to be mirrored into XXX_mirror.png.
+	- LF2 sprite images are in 24bit bmp and must be converted to 24bit png with defined transparent index (or 32bit png with transparency). in addition, F.LF requires XXX.png to be mirrored into XXX_mirror.png.
 - sound
 	- LF2 sounds are in wav and must be converted to ogg and mp3 for use with HTML5 audio.
 - in general, materials should be compressed and converted to a format suitable for distribution and consumption on the web.
