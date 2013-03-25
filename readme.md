@@ -8,7 +8,7 @@ F.LF will leverage web technologies as much as it can to make games "native to b
 I believe the web, open source and fine software will enable anyone, from novices to experts, to create great interactive contents and bring them to any other one.
 
 ## Architecture
-The open LF2 project is divided into three repositories, [F.core](https://github.com/tyt2y3/F.core), F.LF and [LFrelease](https://github.com/tyt2y3/LFrelease). F.LF is the game engine which implements _the LF2 standard_ and provides gaming functionalities. F.core provides the engine components to build a HTML5 game. While F.LF __could__ be platform independent, current implementation does depend a lot on the browser environment. LFrelease contains material (sprites,data,sound,etc) converted from original LF2. Such division is to ensure that F.LF is 100% original work containing no third party copyrighted material.
+The open LF2 project is divided into three repositories, [F.core](https://github.com/tyt2y3/F.core), F.LF and [LFrelease](https://github.com/tyt2y3/LFrelease). F.LF is the game engine which implements ___the LF2 standard___ and provides gaming functionalities. F.core provides the engine components to build a HTML5 game. While F.LF _could_ be platform independent, current implementation does depend a lot on the browser environment. LFrelease contains material (sprites,data,sound,etc) converted from original LF2. Such division is to ensure that F.LF is 100% original work containing no third party copyrighted material.
 
 ## Compatibility
 F.LF thrives for 99% compatibility with LF2. the currently reference is LF2 1.451.
@@ -24,8 +24,11 @@ F.LF thrives for 99% compatibility with LF2. the currently reference is LF2 1.45
 ## Development
 F.LF is still in mid-stage development. Check out the latest demo at the [release channel](https://github.com/tyt2y3/LFrelease) or latest milestone at [f-lf2.blogspot.hk](http://f-lf2.blogspot.hk/search/label/latest-demo). For details read the [roadmap](https://github.com/tyt2y3/F.LF/blob/master/docs/developer.md#roadmap).
 
-### call for contributors
+### Call for contributors
 F.LF has been a personal project for one year. Much of the foundational work has been done. May I now call for programmers and testers or any one who love and know LF2 to involve in this project to accelerate development and bring F.LF to production quality.
+
+### Test
+[nightly build](http://tyt2y3.github.com/LFrelease/demo/demo3.html)
 
 ### Install
 The three repositories must be named and placed as below:
