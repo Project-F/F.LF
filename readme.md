@@ -1,6 +1,6 @@
 # F.LF - the open source LF2
 [http://f-lf2.blogspot.com](http://f-lf2.blogspot.com)
-F.LF is the show casting game for F.core. Where F.LF attempts a clean room implementation of the famous fighter game [LF2](http://lf2.net).
+F.LF attempts a clean room implementation of the famous fighter game [LF2](http://lf2.net). The F stands for [Project F](http://project--f.blogspot.hk).
 
 ## Philosophy
 F.LF attempts to re- create LF2 in a web browser, and be an open source clean room implementation. F.LF respects original LF2 in every detail, that data file compatibilty and program behavior will be regarded carefully.
