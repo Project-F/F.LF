@@ -7,20 +7,28 @@ F.LF attempts to re- create LF2 in a web browser, and be an open source clean ro
 F.LF will leverage web technologies as much as it can to make games "native to browsers".
 I believe the web, open source and fine software will enable anyone, from novices to experts, to create great interactive contents and bring them to any other one.
 
-## Compatibilty
+## Architecture
+The open LF2 project is divided into three repositories, [F.core](https://github.com/tyt2y3/F.core), F.LF and [LFrelease](https://github.com/tyt2y3/LFrelease). F.LF is the game engine which implements _the LF2 standard_ and provides gaming functionalities. F.core provides the engine components to build a HTML5 game. While F.LF __could__ be platform independent, current implementation does depend a lot on the browser environment. LFrelease contains material (sprites,data,sound,etc) converted from original LF2. Such division is to ensure that F.LF is 100% original work containing no third party copyrighted material.
 
-### data files
-F.LF provide a [tool](http://tyt2y3.github.com/LFrelease/tools/data_file_converter.html) to convert xml-like LF2 data files into JSON.
+## Compatibility
+F.LF thrives for 99% compatibility with LF2. the currently reference is LF2 1.451.
+- data
+	- F.LF provide a [tool](http://tyt2y3.github.com/LFrelease/tools/data_file_converter.html) to convert xml-like LF2 data files into JSON.
+- sprite
+	- LF2 sprite images are in 24bit bmp and must be converted to 32bit png with transparency. in addition, F.LF requires XXX.png to be mirrored into XXX_mirror.png.
+- sound
+	- LF2 sounds are in wav and must be converted to ogg and mp3 for use with HTML5 audio.
+- in general, materials should be compressed and converted to a format suitable for distribution and consumption on the web.
+- there is however plan to develop an automated build tool to convert entire package of all materials.
 
-### sprites
-LF2 sprite images in 24bit bmp must be converted to 32bit png with transparency.
-F.LF requires XXX.png to be mirrored into XXX_mirror.png.
+## Development
+F.LF is still in mid-stage development. Check out the latest demo at the [release channel](https://github.com/tyt2y3/LFrelease) or latest milestone at [f-lf2.blogspot.hk](http://f-lf2.blogspot.hk/search/label/latest-demo). For details read the [roadmap](https://github.com/tyt2y3/F.LF/blob/master/docs/developer.md#roadmap).
 
-## Status
-F.LF is still in mid-stage development. Check out the latest milestone at [f-lf2.blogspot.hk](http://f-lf2.blogspot.hk/search/label/latest-demo) or at the [release channel](https://github.com/tyt2y3/LFrelease).
+### call for contributors
+F.LF has been a personal project for one year. Much of the foundational work has been done. May I now call for programmers and testers or any one who love and know LF2 to involve in this project to accelerate development and bring F.LF to production quality.
 
-## Install
-F.LF is built upon [F.core](https://github.com/tyt2y3/F.core). F.LF contains purely source code. Materials from LF2 is converted and contained in [LFrelease](https://github.com/tyt2y3/LFrelease). These repositories must be named and placed as below:
+### Install
+The three repositories must be named and placed as below:
 ```
  F
  |---F.core

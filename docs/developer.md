@@ -25,16 +25,21 @@ F.LF is to be hackable. The architecture answer yes to the following questions:
 
 # roadmap
 
+here lists the unimplemented features.
+
 ### the LF2 standard
 compliance up to LF2 1.451
 - characters
+	- mostly implemented, except
 	- opoint
 	- health and mana system
 - weapons
+	- stick,hoe and stone implemented
 - specialattack
 - drinks
 - baseball, miscell (Criminal, etc, broken_weapon)
-- effects (blood,fire)
+- effects (blood,fire,etc)
+	- effect type 0,1 implemented
 - background
 
 ### engine components
