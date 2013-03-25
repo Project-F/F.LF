@@ -25,7 +25,7 @@ F.LF thrives for 99% compatibility with LF2. the current reference is LF2 1.451.
 F.LF is still in mid-stage development. Check out the latest demo at the [release channel](https://github.com/tyt2y3/LFrelease) or latest milestone at [f-lf2.blogspot.hk](http://f-lf2.blogspot.hk/search/label/latest-demo). For details read the [roadmap](https://github.com/tyt2y3/F.LF/blob/master/docs/developer.md#roadmap).
 
 ### Call for contributors
-F.LF has been a personal project for one year. Much of the foundational work has been done. May I now call for programmers and testers or any one who love and know LF2 to involve in this project to accelerate development and bring F.LF to production quality.
+F.LF has been a personal project for one year. Much of the foundational work has been done. May I now call for any one who love and know LF2 to involve in this project as programmer or tester to accelerate development and bring F.LF to production quality.
 
 ### Test
 [nightly build](http://tyt2y3.github.com/LFrelease/demo/demo3.html)
