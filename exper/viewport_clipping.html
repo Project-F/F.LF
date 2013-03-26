@@ -1,0 +1,98 @@
+<body>
+<style>
+.tile
+{
+	display: block;
+	float: left;
+}
+#container
+{
+	position: absolute;
+	width: 1800px;
+}
+#wnd
+{
+	position: relative;
+	width: 400px;
+	height: 400px;
+	overflow: scroll;
+	resize: both;
+}
+</style>
+This is strange but it shows how a browser optimizes viewport clipping.<br>
+Try resizing the clipping window, in my test (chromium), performance drops drastically when the window size is small and content is scrolled horizontally.<br>
+<input id='fps'>
+<button onclick="switch_dir()">switch x/y</button>
+<button onclick="switch_mode()">switch scroll/left-top</button>
+<div id='wnd'>
+	<div id='container'>
+	<img class='tile' src='photo0012.jpg' width=600>
+	<img class='tile' src='photo0012.jpg' width=600>
+	<img class='tile' src='photo0012.jpg' width=600>
+	<img class='tile' src='photo0012.jpg' width=600>
+	<img class='tile' src='photo0012.jpg' width=600>
+	<img class='tile' src='photo0012.jpg' width=600>
+	<img class='tile' src='photo0012.jpg' width=600>
+	<img class='tile' src='photo0012.jpg' width=600>
+	<img class='tile' src='photo0012.jpg' width=600>
+	<img class='tile' src='photo0012.jpg' width=600>
+	<img class='tile' src='photo0012.jpg' width=600>
+	<img class='tile' src='photo0012.jpg' width=600>
+	<img class='tile' src='photo0012.jpg' width=600>
+	<img class='tile' src='photo0012.jpg' width=600>
+	<img class='tile' src='photo0012.jpg' width=600>
+	</div>
+</div>
+<script>
+var P={x:0,y:0};
+var dir='x';
+var mode='scroll';
+setInterval(function()
+{
+	if( mode==='scroll')
+		scroll(dir);
+	else if( mode==='left-top')
+		move(dir);
+
+	P[dir]+=100;
+	if( P[dir]>1200)
+		P[dir]=0;
+
+	//fps
+	var ot=this.time;
+	this.time = new Date().getTime();
+	var diff = this.time-ot;
+	$('fps').value = Math.round(1000/diff)+'fps';
+}, 1000/60);
+function scroll(e)
+{
+	$('wnd')[e==='x'?'scrollLeft':'scrollTop']=P[e];
+}
+function move(e)
+{
+	$('container').style[e==='x'?'left':'top']=(-P[e]+'px');
+}
+function switch_mode()
+{
+	if( mode==='scroll')
+	{
+		mode='left-top';
+		$('wnd').style.overflow='hidden';
+	}
+	else if( mode==='left-top')
+	{
+		mode='scroll';
+		$('container').style[dir==='x'?'left':'top']=('0px');
+		$('wnd').style.overflow='scroll';
+	}
+}
+function switch_dir()
+{
+	dir=(dir==='x'?'y':'x');
+}
+function $(e)
+{
+	return document.getElementById(e);
+}
+</script>
+</body>
