@@ -2,11 +2,13 @@
 [http://f-lf2.blogspot.com](http://f-lf2.blogspot.com)
 F.LF attempts a clean room implementation of the famous fighter game [LF2](http://lf2.net). The F stands for [Project F](http://project--f.blogspot.hk).
 
-## Motivation & Philosophy
+## Motivation
 
 Little Fighter 2 has received significant recognition and popularity since its initial release. Being the most sophisticated fighter game ever built, LF2 is also extremely customizable with its data file architecture. Over the years, numerous modifications have been made, ranged from spriting, data changing to exe editing. A vast amount of related work, including comics, animations and novels, have been created by thousands of people from all over the world, creating a strong and truly amazing community.
 
 It is very limiting of what we can do with a compiled executable even with techniques like exe editing. But development of LF2 has been dormant for some years while the author has no plan to open source it. To move forward, the community has to own a code base and have right and ability to develop on it. Let us take this first step to the continuity of LF2.
+
+## Philosophy
 
 F.LF attempts to re-create LF2 in a web browser, and be an open source clean room implementation. F.LF respects original LF2 in every detail, that data file compatibilty and program behavior will be regarded carefully. F.LF will leverage web technologies as much as it can to make games native to browsers.
 
