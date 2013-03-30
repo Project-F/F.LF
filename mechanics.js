@@ -231,8 +231,8 @@ mech.prototype.dynamics= function()
 
 	if( ps.y===0) //only when on the ground
 	{	//viscous friction
-		ps.vx *= GC.friction.factor;
-		ps.vz *= GC.friction.factor;
+		ps.vx -= GC.friction.factor.degree1*ps.vx + GC.friction.factor.degree2*ps.vx*ps.vx*(ps.vx>=0?1:-1);
+		ps.vz -= GC.friction.factor.degree1*ps.vz + GC.friction.factor.degree2*ps.vz*ps.vz*(ps.vz>=0?1:-1);
 		if( ps.vx!==0 && ps.vx>-GC.min_speed && ps.vx<GC.min_speed) ps.vx=0; //defined minimum speed
 		if( ps.vz!==0 && ps.vz>-GC.min_speed && ps.vz<GC.min_speed) ps.vz=0;
 	}

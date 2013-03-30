@@ -102,9 +102,12 @@ GC.fall={};
 GC.fall.KO= 60; //defined KO
 
 GC.friction={};
-GC.friction.factor= 0.74; //defined factor of friction when on the ground
+GC.friction.factor={}; //defined factor of friction when on the ground
+// friction is computed as: v -= |v|*degree1 + v*v*degree2
+GC.friction.factor.degree1= 0.26;
+GC.friction.factor.degree2= 0.02;
 GC.friction.fell={};
-GC.friction.fell.factor= 0.34; //defined friction at the moment of falling onto ground
+GC.friction.fell.factor= 0.76; //previously 0.34; defined friction at the moment of falling onto ground
 
 GC.min_speed= 1; //defined minimum speed
 
