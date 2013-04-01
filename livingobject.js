@@ -1,10 +1,7 @@
-/** a template class of a living object
+/** a base class for livingobjects
  */
 define(['LF/global','data/specification','LF/sprite','LF/mechanics','F.core/combodec'],
 function ( Global, Spec, Sprite, Mech, Fcombodec)
-{
-
-function livingobject_template (template)
 {
 	var GC=Global.gameplay;
 
@@ -21,19 +18,20 @@ function livingobject_template (template)
 	 */
 	function livingobject(config,data,thisID)
 	{
+		if( !config)
+			return;
+
 		var $=this;
 
 		//identity
-		$.type=template.type;
+		$.type='livingobject';
 		$.name=data.bmp.name;
 		$.uid=-1; //unique id, set by scene
 		$.id=thisID; //character id, specify tactical behavior. accept values from 0~99
 		$.data=data;
 		$.team=config.team;
-
-		//apply template
-		$.states = template.states;
-		$.states_switch_dir = template.states_switch_dir;
+		$.states = null;
+		$.states_switch_dir = null;
 
 		//construction
 		$.match=config.match;
@@ -106,8 +104,12 @@ function livingobject_template (template)
 						$.switch_dir_fun(K);
 			}
 		}
+	}
 
-		//before returning
+	//setup for a match
+	livingobject.prototype.setup = function()
+	{
+		var $=this;
 		$.state_update('setup');
 		$.scene.add($);
 	}
@@ -302,18 +304,22 @@ function livingobject_template (template)
 	livingobject.prototype.itr_rest_update=function(uid,ITR)
 	{
 		var $=this;
+		var newrest;
 		//rest: cannot interact again for some time
 		if( ITR.arest)
-			$.itr.vrest[uid] = ITR.arest;
+			newrest = ITR.arest;
 		else if( ITR.vrest)
-			$.itr.vrest[uid] = ITR.vrest;
+			newrest = ITR.vrest;
 		else
-			$.itr.vrest[uid] = GC.default.character.arest;
+			newrest = GC.default.character.arest;
+		$.itr.vrest[uid] = newrest;
+		//console.log('update vrest['+uid+'] of '+$.id+' to '+newrest);
 	}
 
 	livingobject.prototype.itr_rest_test=function(uid,ITR)
 	{
 		var $=this;
+		//console.log('vrest['+uid+'] of '+$.id+' is '+$.itr.vrest[uid]);
 		if( !$.itr.vrest[uid])
 			return true;
 	}
@@ -516,8 +522,4 @@ function livingobject_template (template)
 	} // frame_transistor
 
 	return livingobject;
-
-} // livingobject_template
-
-return livingobject_template;
 });

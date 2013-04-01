@@ -2,7 +2,7 @@
  */
 
 define(['LF/livingobject','LF/global','F.core/util'],
-function(livingobject_template, Global, Futil)
+function(livingobject, Global, Futil)
 {
 	var GC=Global.gameplay;
 
@@ -21,15 +21,20 @@ function(livingobject_template, Global, Futil)
 				var ps=$.ps;
 				if( ps.y===0 && ps.vy>0) //fell onto ground
 				{
-					ps.vy=0; //set to zero
-					ps.vx *= GC.friction.fell.factor;
-					ps.vz *= GC.friction.fell.factor;
+					var result = $.state_update('fell_onto_ground');
+					if( result)
+						$.trans.frame(result, 15);
+					else
+					{
+						ps.vy=0; //set to zero
+						ps.vx *= GC.friction.fell.factor;
+						ps.vz *= GC.friction.fell.factor;
+					}
 				}
 				else if( ps.y+ps.vy>=0 && ps.vy>0) //predict falling onto the ground
 				{
 					var result = $.state_update('fall_onto_ground');
-
-					if( result !== undefined && result !== null)
+					if( result)
 						$.trans.frame(result, 15);
 					else
 					{
@@ -289,7 +294,7 @@ function(livingobject_template, Global, Futil)
 		{	var $=this;
 			switch (event) {
 			case 'frame':
-				if( $.frame.N===81 || $.frame.N===33) //jump_attack or jump_weapon_atck
+				if( $.frame.D.next===999 && $.ps.y<0)
 					$.trans.set_next(212); //back to jump
 			break;
 		}},
@@ -297,6 +302,12 @@ function(livingobject_template, Global, Futil)
 		'4':function(event,K) //jump
 		{	var $=this;
 			switch (event) {
+			case 'state_entry':
+				if( $.frame.N===210)
+					$.state4={}; //memory for state:4
+				//memory is cleared every `state_entry` of frame 210
+			break;
+
 			case 'frame':
 				if( $.frame.N===212 && $.frame.PN===211)
 				{	//start jumping
@@ -310,23 +321,34 @@ function(livingobject_template, Global, Futil)
 			break;
 
 			case 'TU':
-				if( $.frame.N===212) //is jumping
+				if( $.frame.N===212 && $.state4.pending_attack)
 				{
-					if( $.con.state.att)
+					if( $.hold.obj)
 					{
-						if( $.hold.obj)
-						{
-							var dx = 0;
-							if( $.con.state.left)  dx-= 1;
-							if( $.con.state.right) dx+= 1;
-							if( dx && $.proper($.hold.id,'jump_throw'))
-								$.trans.frame(52, 10); //sky light weapon throw
-							else if( $.proper($.hold.id,'attackable'))
-								$.trans.frame(30, 10); //light weapon attack
-						}
-						else
-							$.trans.frame(80, 10); //jump attack
+						var dx = 0;
+						if( $.con.state.left)  dx-= 1;
+						if( $.con.state.right) dx+= 1;
+						if( dx && $.proper($.hold.id,'jump_throw'))
+							$.trans.frame(52, 10); //sky light weapon throw
+						else if( $.proper($.hold.id,'attackable'))
+							$.trans.frame(30, 10); //light weapon attack
 					}
+					else
+						$.trans.frame(80, 10); //jump attack
+					//
+					$.state4.pending_attack = false;
+				}
+			break;
+
+			case 'combo':
+				if( K==='att')
+				{
+					/** $.state4.pending_attack:
+					a transition to jump_attack can only happen after entering frame 212.
+					if an 'att' key event arrives while in frame 210 or 211,
+					the jump attack event should be pended and be performed on 212
+					 */
+					$.state4.pending_attack = true;
 				}
 			break;
 		}},
@@ -407,7 +429,7 @@ function(livingobject_template, Global, Futil)
 			break;
 
 			case 'frame':
-				$.state9={};
+				$.state9={}; //memory for state:9
 				$.state9.frameTU=true;
 				$.catching.caught_b(
 						$.mech.make_point($.frame.D.cpoint),
@@ -575,6 +597,7 @@ function(livingobject_template, Global, Futil)
 		{	var $=this;
 			switch (event) {
 			case 'frame':
+				if( $.effect.dvy <= 0)
 				switch ($.frame.N)
 				{
 					case 180:
@@ -597,11 +620,23 @@ function(livingobject_template, Global, Futil)
 						$.trans.set_next(189);
 						break;
 				}
+				else
+				switch ($.frame.N)
+				{
+					case 180:
+						$.trans.set_next(185);
+						break;
+					case 186:
+						$.trans.set_next(191);
+						break;
+				}
 			break;
 
+			case 'fell_onto_ground':
 			case 'fall_onto_ground':
 				var ps=$.ps;
-				if( this.mech.speed() > GC.character.bounceup.limit)
+				if( $.mech.speed() > GC.character.bounceup.limit.xy ||
+					ps.vy > GC.character.bounceup.limit.y)
 				{
 					ps.vy *= GC.character.bounceup.factor.y;
 					ps.vx *= GC.character.bounceup.factor.x;
@@ -704,16 +739,19 @@ function(livingobject_template, Global, Futil)
 		'16':false
 	};
 
-	var character_template=
+	//inherit livingobject
+	function character(config,data,thisID)
 	{
-		type: 'character',
-		states: states,
-		states_switch_dir: states_switch_dir
-	};
-
-	var character = livingobject_template(character_template);
-
-	//extends the character class
+		var $=this;
+		// chain constructor
+		livingobject.call(this,config,data,thisID);
+		$.type = 'character';
+		$.states = states;
+		$.states_switch_dir = states_switch_dir;
+		$.setup();
+	}
+	character.prototype = new livingobject();
+	character.prototype.constructor = character;
 
 	/** @protocol caller hits callee
 		@param ITR the itr object in data
@@ -813,13 +851,16 @@ function(livingobject_template, Global, Futil)
 
 			function falldown()
 			{
-				$.health.fall=0;
-				if( (attps.x > $.ps.x)===($.ps.dir==='right')) //attacked in front
-					$.trans.frame(180, 20);
-				else
-					$.trans.frame(186, 20); //attacked in back
-
 				if( !ITR.dvy) $.effect.dvy = GC.default.fall.dvy;
+				$.health.fall=0;
+				var front = (attps.x > $.ps.x)===($.ps.dir==='right'); //attacked in front
+					 if( front && ITR.dvx < 0 && ITR.bdefend>=60)
+					$.trans.frame(186, 20);
+				else if( front)
+					$.trans.frame(180, 20);
+				else if(!front)
+					$.trans.frame(186, 20);
+
 				if( $.proper( $.effect_id(effectnum),'drop_weapon'))
 					$.drop_weapon($.effect.dvx, $.effect.dvy);
 			}

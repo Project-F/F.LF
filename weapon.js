@@ -4,9 +4,8 @@
  */
 
 define(['LF/livingobject','LF/global','F.core/util'],
-function(livingobject_template, Global, Futil)
+function(livingobject, Global, Futil)
 {
-
 var GC=Global.gameplay;
 
 function weapon(type)
@@ -88,14 +87,18 @@ function weapon(type)
 		}}
 	};
 
-	var weapon_template=
+	//inherit livingobject
+	function typeweapon(config,data,thisID)
 	{
-		type: type,
-		states: states,
-		states_switch_dir: null
+		var $=this;
+		// chain constructor
+		livingobject.call(this,config,data,thisID);
+		$.type = type;
+		$.states = states;
+		$.setup();
 	}
-	var typeweapon = livingobject_template(weapon_template);
-
+	typeweapon.prototype = new livingobject();
+	typeweapon.prototype.constructor = typeweapon;
 	typeweapon.prototype.light = type==='lightweapon';
 	typeweapon.prototype.heavy = type==='heavyweapon';
 
@@ -351,5 +354,5 @@ function weapon(type)
 	return typeweapon;
 
 } //outer class weapon
-return weapon; //return your class to get it defined
+return weapon;
 });

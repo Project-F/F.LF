@@ -87,7 +87,9 @@ GC.effect.num_to_id= 300; //convert effect num to id
 
 GC.character={};
 GC.character.bounceup={};
-GC.character.bounceup.limit= 14.2; //defined speed to bounce up again
+GC.character.bounceup.limit={};
+GC.character.bounceup.limit.xy= 14.2; //defined speed threshold to bounce up again
+GC.character.bounceup.limit.y= 11; //y threshold; will bounce if any one of xy,y is overed
 GC.character.bounceup.factor={};
 GC.character.bounceup.factor.x= 0.6; //defined bounce up factors
 GC.character.bounceup.factor.y= -0.4;
