@@ -454,7 +454,7 @@ function(livingobject, Global, Futil)
 					}
 					//cover
 					var cover = GC.default.cpoint.cover;
-					if( $.frame.D.cpoint.cover) cover=$.frame.D.cpoint.cover;
+					if( $.frame.D.cpoint.cover!==undefined) cover=$.frame.D.cpoint.cover;
 					if( cover===0 || cover===10 )
 						$.ps.zz=1;
 					else
@@ -781,10 +781,12 @@ function(livingobject, Global, Futil)
 				$.health.hp -= Math.abs(ITR.injury);
 				if( ITR.injury>0)
 				{
-					$.effect_create(0, GC.default.effect.duration);
-					var tar=(attps.x > $.ps.x)===($.ps.dir==='right') ? $.frame.D.cpoint.fronthurtact : $.frame.D.cpoint.backhurtact;
+					$.effect_create(0, GC.effect.duration);
+					var tar;
 					if( ITR.vaction)
 						tar=ITR.vaction;
+					else
+						tar=(attps.x > $.ps.x)===($.ps.dir==='right') ? $.frame.D.cpoint.fronthurtact : $.frame.D.cpoint.backhurtact;
 					$.trans.frame(tar, 20);
 				}
 			}
@@ -799,7 +801,7 @@ function(livingobject, Global, Futil)
 			$.itr.lasthit=0; accepthit=true;
 			$.effect.dvx = ITR.dvx ? att.dirh()*ITR.dvx:0;
 			$.effect.dvy = ITR.dvy ? ITR.dvy:0;
-			var effectnum = ITR.effect?ITR.effect:GC.default.effect.num;
+			var effectnum = ITR.effect!==undefined?ITR.effect:GC.default.effect.num;
 
 			if( $.cur_state()===7 &&
 			    (attps.x > $.ps.x)===($.ps.dir==='right')) //attacked in front
@@ -823,7 +825,7 @@ function(livingobject, Global, Futil)
 			}
 
 			//effect
-			var vanish = GC.default.effect.duration;
+			var vanish = GC.effect.duration;
 			switch( $.trans.next())
 			{
 				case 111: vanish=4; break;
@@ -834,7 +836,7 @@ function(livingobject, Global, Futil)
 
 			function fall()
 			{
-				if( ITR.fall)	$.health.fall += ITR.fall;
+				if( ITR.fall!==undefined)	$.health.fall += ITR.fall;
 					else	$.health.fall += GC.default.fall.value;
 				var fall=$.health.fall;
 				if ( 0<fall && fall<=20)
@@ -851,7 +853,7 @@ function(livingobject, Global, Futil)
 
 			function falldown()
 			{
-				if( !ITR.dvy) $.effect.dvy = GC.default.fall.dvy;
+				if( ITR.dvy===undefined) $.effect.dvy = GC.default.fall.dvy;
 				$.health.fall=0;
 				var front = (attps.x > $.ps.x)===($.ps.dir==='right'); //attacked in front
 					 if( front && ITR.dvx < 0 && ITR.bdefend>=60)
@@ -903,7 +905,7 @@ function(livingobject, Global, Futil)
 						if( $.frame.N===72)
 							$.trans.inc_wait(4, 10);
 						else
-							$.trans.inc_wait(GC.default.itr.hit_stall, 10);
+							$.trans.inc_wait(GC.itr.hit_stall, 10);
 
 						//attack one enemy only
 						if( ITR.arest) break;
@@ -980,7 +982,7 @@ function(livingobject, Global, Futil)
 			{
 				$.itr_rest_update( act.hit, act);
 				//stalls
-				$.trans.inc_wait(GC.default.itr.hit_stall, 10);
+				$.trans.inc_wait(GC.itr.hit_stall, 10);
 			}
 		}
 	}
@@ -1045,18 +1047,18 @@ function(livingobject, Global, Futil)
 	character.prototype.caught_cpointhurtable=function()
 	{
 		var $=this;
-		if( $.frame.D.cpoint && $.frame.D.cpoint.hurtable)
+		if( $.frame.D.cpoint && $.frame.D.cpoint.hurtable!==undefined)
 			return $.frame.D.cpoint.hurtable;
 		else
-			return GC.default.hurtable;
+			return GC.default.cpoint.hurtable;
 	}
 	character.prototype.caught_throw=function(cpoint,throwz)
 	{	//I am being thrown
 		var $=this;
-		if( cpoint.vaction)
+		if( cpoint.vaction!==undefined)
 			$.trans.frame(cpoint.vaction, 20);
 		else
-			$.trans.frame(GC.default.throw.frame, 20);
+			$.trans.frame(GC.default.cpoint.vaction, 20);
 		$.caught_throwinjury=cpoint.throwinjury;
 		$.caught_throwz=throwz;
 	}

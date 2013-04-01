@@ -37,7 +37,7 @@ gamedata,Match,Keychanger){
 	keychanger.style.display='none';
 	Keychanger(keychanger, [control1, control2]);
 	keychanger.style.backgroundColor='#FFF';
-	keychanger.style.display='';
+	//keychanger.style.display='';
 
 	var match = new Match
 	({
@@ -59,8 +59,8 @@ gamedata,Match,Keychanger){
 			},
 			{
 				controller: control2,
-				data: gamedata.object.character[0].data,
-				id: gamedata.object.character[0].id,
+				data: gamedata.object.character[1].data,
+				id: gamedata.object.character[1].id,
 				team: 2
 			}
 		],

@@ -119,7 +119,7 @@ function weapon(type)
 				for( var k in hit)
 				{	//for each being hit
 					var itr_rest;
-					if( ITR[j].arest || ITR[j].vrest)
+					if( ITR[j].arest!==undefined || ITR[j].vrest!==undefined)
 						itr_rest=ITR[j];
 					else
 						itr_rest=GC.default.weapon;
@@ -184,7 +184,7 @@ function weapon(type)
 			}
 		}
 
-		var fall= ITR.fall? ITR.fall: GC.default.fall.value;
+		var fall= ITR.fall!==undefined? ITR.fall: GC.default.fall.value;
 		if( $.heavy)
 		{
 			accept=true;
@@ -260,10 +260,11 @@ function weapon(type)
 
 			if( !result.thrown)
 			{
-				if( wpoint.cover && wpoint.cover===1)
+				var wpoint_cover = wpoint.cover!==undefined?wpoint.cover:GC.default.wpoint.cover;
+				if( wpoint_cover===1)
 					$.ps.zz = -1;
 				else
-					$.ps.zz = GC.default.wpoint.cover;
+					$.ps.zz = 0;
 
 				$.switch_dir_fun(att.ps.dir);
 				$.ps.sz = $.ps.z = att.ps.z;

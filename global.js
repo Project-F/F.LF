@@ -46,25 +46,21 @@ GC.default={};
 
 GC.default.itr={};
 GC.default.itr.zwidth= 12; //default itr zwidth
-GC.default.itr.hit_stall= 3; //default stall when hit somebody
 
 GC.default.cpoint={};
 GC.default.cpoint.hurtable= 0; //default cpoint hurtable
-GC.default.cpoint.cover= 0; //[not modifiable] default cpoint cover
+GC.default.cpoint.cover= 0; //default cpoint cover
+GC.default.cpoint.vaction= 135; //default frame being thrown
 
 GC.default.wpoint={};
 GC.default.wpoint.cover= 0;
 
 GC.default.effect={};
 GC.default.effect.num= 0; //default effect num
-GC.default.effect.duration= 3; //default effect lasting duration
 
 GC.default.fall={};
 GC.default.fall.value= 20; //default fall
 GC.default.fall.dvy= -6.9; //default dvy when falling
-
-GC.default.throw={};
-GC.default.throw.frame= 135; //default frame being thrown
 
 GC.default.weapon={};
 GC.default.weapon.vrest= 9; //default weapon vrest
@@ -78,12 +74,16 @@ GC.default.machanics.mass= 1; //default mass; weight = mass * gravity
 /**  Below are defined constants over the game,
   tweak them carefully otherwise it might introduce bugs
  */
+GC.itr={};
+GC.itr.hit_stall= 3; //default stall when hit somebody
+
 GC.recover={};
 GC.recover.fall= -1; //fall recover constant
 GC.recover.bdefend= -0.5; //bdefend recover constant
 
 GC.effect={};
 GC.effect.num_to_id= 300; //convert effect num to id
+GC.effect.duration= 3; //default effect lasting duration
 
 GC.character={};
 GC.character.bounceup={};
