@@ -171,7 +171,7 @@ mech.prototype.create_metric= function()
 {
 	this.ps = {
 		sx:0,sy:0,sz:0, //sprite origin, read-only
-		x:0, y:0, z:0, //center of mass as in centerx,centery
+		x:0, y:0, z:0, //feet position as in centerx,centery
 		vx:0,vy:0,vz:0, //velocity
 		zz:0,  //z order deviation
 		dir:'right'  //direction
@@ -190,7 +190,7 @@ mech.prototype.reset= function()
 }
 
 mech.prototype.set_pos= function(x,y,z)
-{	//place the center of mass of the object at x,y,z
+{	//place the feet position of the object at x,y,z
 	var ps=this.ps;
 	var sp=this.sp;
 	var fD=this.frame.D;

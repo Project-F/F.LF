@@ -115,6 +115,21 @@ function(sprite,bandit)
 			{	name: 'being thrown',
 				frame: [130,135,181,182,183,185,230],
 				remark:['','8 TU',"5 TU. already left catcher's hand",'4 TU','3 TU','6 TU. bounced up on the 3rd TU','from leaving hand to touching ground: 19 TU']
+			},
+			{
+				name: "being hit by Deep's super punch, fall down on first hit",
+				frame: [186,191,191,231],
+				remark:['4 TU. oscillates for 3 TU','','bounce up. 5 TU']
+			},
+			{
+				name: "being hit by Deep's run attack",
+				frame: [220,221,180,185,185,230],
+				remark:['5 TU. oscillates for 3 TU','2 TU','4 TU. oscillates for 3 TU','','bounce up. 5 TU']
+			},
+			{
+				name: "being hit by Deep's dash attack",
+				frame: [180,185,185,230],
+				remark:['4 TU. oscillates for 3 TU','','bounce up. 5 TU']
 			}
 			]
 		}
