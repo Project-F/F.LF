@@ -1,9 +1,11 @@
-/**	object factories
-	in data.js, you define a set of data files, they are actually like product designs.
-	in here factories.js, you define the factories used to manufacture each type of object,
-		living or dead.
-	this abstraction is to allow addition of new object types.
- */
+/*\
+ * factory.js
+ * 
+ * object factories
+ * in data.js, you define a set of data files, they are actually like product designs.
+ * in here factories.js, you define the factories used to manufacture each type of object, living or dead.
+ * this abstraction is to allow addition of new object types.
+\*/
 
 define(['LF/character','LF/weapon','LF/effects'],
 function(character,weapon,effects)

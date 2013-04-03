@@ -10,7 +10,7 @@ Let's have a top-down walk through the modules.
 	- `factories.js` is responsible to list all available classes to `match` as `match` does not depend on object classes directly.
 	- `character.js` is a generalization of all LF2 characters. `LFrelease/data/specification.js` specifies the exact property of a character
 	- `weapon.js` is a generalization of `heavyweapon` and `lightweapon`.
-		- `livingobject.js` is a template class. `character` and `weapon` each supply a template to `livingobject` and obtain a baked class. properties and methods are then appended to the class to obtain a fully functional `character` or `weapon` class.
+		- `livingobject.js` is a base class. `character` and `weapon` each derive from `livingobject`, adding their specialized properties and methods.
 			- `sprite.js` is a class to handle sprite animation needs in LF2.
 			- `mechanics.js` is a state-less helper class to process all mechanics of `livingobject`.
 	- `effects.js` handles all the visual effects.
@@ -28,7 +28,6 @@ F.LF is to be hackable. The architecture answer yes to the following questions:
 here lists the unimplemented features.
 
 ### the LF2 standard
-compliance up to LF2 1.451
 - characters
 	- mostly implemented, except
 	- opoint

@@ -1,10 +1,17 @@
-//sprite-animator for LF2
-//	accept a bmp object (defined in data file) as config
-//	support switching frames between multiple image files
-
+/*\
+ * sprite
+ * 
+ * sprite-animator for LF2
+\*/
 define(['F.core/sprite','F.core/animator'], function (Fsprite, Fanimator)
 {
 
+/*\
+ * sprite
+ [ class ]
+ - bmp (object) as defined in data files
+ - parent (DOM node) to append the new sprite
+\*/
 function sprite (bmp, parent)
 {
 	var num_of_images = this.num_of_images = bmp.file.length;

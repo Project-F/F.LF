@@ -1,16 +1,19 @@
-/**	mechanics
-	mechanical properties that all living objects should have
- */
+/*\
+ * mechanics
+ * 
+ * mechanical properties that all living objects should have
+\*/
 
 define(['LF/global','data/specification'],
 function(Global, Spec){
 
 var GC=Global.gameplay;
 
-/** @class
-	mech is a state-less helper class
-	that processes most of the mechanics of living objects
- */
+/*\
+ * mech
+ [ class ]
+ * mech is a state-less helper class that processes most of the mechanics of living objects
+\*/
 function mech(parent)
 {
 	if( Spec[parent.id] && Spec[parent.id].mass)
@@ -24,8 +27,8 @@ function mech(parent)
 	this.parent=parent;
 }
 
-mech.prototype.body= function(obj,filter,offset) //return the array of volume of the current frame
-				//that volume can be bdy,itr or other
+//return the array of volume of the current frame, that volume can be bdy,itr or other
+mech.prototype.body= function(obj,filter,offset)
 {
 	var ps=this.ps;
 	var sp=this.sp;
@@ -138,9 +141,9 @@ mech.prototype.make_point= function(a)
 	}
 }
 
+//move myself *along xz* to coincide point a with point b such that point b is a point of myself
 mech.prototype.coincideXZ= function(a,b)
-{	//move myself *along xz* to coincide point a with point b
-	//  such that point b is a point of myself
+{
 	var ps=this.ps;
 	var sp=this.sp;
 	var fD=this.frame.D;
@@ -152,9 +155,9 @@ mech.prototype.coincideXZ= function(a,b)
 	ps.sx = ps.dir==='right'? (ps.x-fD.centerx):(ps.x+fD.centerx-sp.w);
 }
 
+//move myself *along xy* to coincide point a with point b such that point b is a point of myself
 mech.prototype.coincideXY= function(a,b)
-{	//move myself *along xy* to coincide point a with point b
-	//  such that point b is a point of myself
+{
 	var ps=this.ps;
 	var sp=this.sp;
 	var fD=this.frame.D;
@@ -189,8 +192,9 @@ mech.prototype.reset= function()
 	ps.dir='right';
 }
 
+//place the feet position of the object at x,y,z
 mech.prototype.set_pos= function(x,y,z)
-{	//place the feet position of the object at x,y,z
+{
 	var ps=this.ps;
 	var sp=this.sp;
 	var fD=this.frame.D;
@@ -241,8 +245,7 @@ mech.prototype.dynamics= function()
 		ps.vy+= this.mass * GC.gravity;
 }
 
-/** return true if there is a blocking itr:kind:14 ahead
- */
+//return true if there is a blocking itr:kind:14 ahead
 mech.prototype.blocking_xz=function()
 {
 	var offset = {

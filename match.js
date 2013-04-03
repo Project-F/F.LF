@@ -1,19 +1,25 @@
-/**	a match hosts a game
-	a match is a generalization above game modes (e.g. VSmode, stagemode, battlemode)
- */
+/*\
+ * match
+ * a match hosts a game.
+ * a match is a generalization above game modes (e.g. VSmode, stagemode, battlemode)
+\*/
 
 define(['F.core/util','F.core/controller',
 'LF/factories','LF/scene','LF/third_party/random'],
 function(Futil,Fcontroller,
 factory,Scene,Random)
 {
-	/** config =
-	{
-		stage,  //the XZ plane to place all living objects
-		state,  //the state machine handling various events in a match
-		config, //default config for each object type
-		data	//the gamedata dump
-	} */
+	/*\
+	 * match
+	 [ class ]
+	 |	config =
+	 |	{
+	 |	stage,  //the XZ plane to place all living objects
+	 |	state,  //the state machine handling various events in a match
+	 |	config, //default config for each object type
+	 |	data	//the gamedata dump
+	 |	}
+	\*/
 
 	function match(config)
 	{

@@ -1,13 +1,14 @@
-//scene in F.LF
-//	keeps a list a characters and items
-//	scrolling across the background
-/*	vol= //the volume format
-	{
-		x, y, z, //the reference point
-		vx, vy, w, h, //the volume defined with reference to (x,y,z)
-		zwidth	//zwidth spans into the +ve and -ve direction
-	}
- */
+/*\
+ * scene
+ * 
+ * scene in F.LF; keeps a list a characters and items
+ | vol= //the volume format
+ | {
+ | 	x, y, z, //the reference point
+ | 	vx, vy, w, h, //the volume defined with reference to (x,y,z)
+ | 	zwidth	//zwidth spans into the +ve and -ve direction
+ | }
+\*/
 
 define(['F.core/util','F.core/collision'], function (Futil,Fcollision)
 {
@@ -31,16 +32,19 @@ scene.prototype.remove = function(C)
 	C.uid=-1;
 }
 
-/**	@function
-	@return the all the objects whose volume intersect with a specified volume
-	@param exclude [single Object] or [array of objects]
-	@param where [Object] what to intersect with
-	[default] {tag:'body'} intersect with body
-			{tag:'itr:2'} intersect with itr kind:2
-			{type:'character'} with character only
-			{not_team:1} exclude team
-			{filter:function}
-*/
+/*\
+ * scene.query
+ [ method ]
+ - exclude (object) or (array of objects)
+ - where (object) what to intersect with
+ * examples, can mixin the following properties
+ | {tag:'body'} intersect with body
+ | {tag:'itr:2'} intersect with itr kind:2
+ | {type:'character'} with character only
+ | {not_team:1} exclude team
+ | {filter:function}
+ = (array) all the objects whose volume intersect with the specified volume
+\*/
 scene.prototype.query = function(volume, exclude, where)
 {
 	var result=[];
@@ -94,7 +98,8 @@ scene.prototype.query = function(volume, exclude, where)
 	return result;
 }
 
-scene.prototype.intersect = function(A,B) //return true if volume A and B intersect
+//return true if volume A and B intersect
+scene.prototype.intersect = function(A,B)
 {
 	var AV={ left:A.x+A.vx, top:A.y+A.vy, right:A.x+A.vx+A.w, bottom:A.y+A.vy+A.h };
 	var BV={ left:B.x+B.vx, top:B.y+B.vy, right:B.x+B.vx+B.w, bottom:B.y+B.vy+B.h };
@@ -105,7 +110,8 @@ scene.prototype.intersect = function(A,B) //return true if volume A and B inters
 	));
 }
 
-scene.prototype.distance=function(A,B) //return the distance between object A and B, as measured at center points
+//return the distance between object A and B, as measured at center points
+scene.prototype.distance=function(A,B)
 {
 	var dx= (A.x+A.centerx) - (B.x+B.centerx);
 	var dy= A.y - B.y;

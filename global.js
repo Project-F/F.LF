@@ -1,12 +1,21 @@
-/** global constants of a game
-*/
+/*\
+ * global.js
+ * 
+ * global constants of a game
+ * 
+ * note to data changers: tweak entries in this file very carefully. do not add or delete entries.
+\*/
 define(function()
 {
 
 var G={};
 
-/** controller config-------------------------------------------------*/
-
+/*\
+ * global.combo_list
+ [ property ]
+ * list of combos
+ | { name:'DvA', seq:['def','down','att']} //example
+\*/
 G.combo_list = [
 	{ name:'left', seq:['left']},
 	{ name:'right', seq:['right']},
@@ -25,23 +34,35 @@ G.combo_list = [
 	{ name:'D^J', seq:['def','up','jump']},
 	{ name:'DJA', seq:['def','jump','att']}
 ];
-G.detector_config = //combo detector config
+/*\
+ * global.detector_config
+ [ property ]
+ * combo detector config
+ * 
+ * {
+ - timeout (number) time to clear buffer (approx. 1s in 30fps)
+ - comboout (number) the max time interval(in frames) between keys to make a combo
+ - no_repeat_key (number) eliminate repeated key strokes by browser
+ * }
+\*/
+G.detector_config =
 {
-	timeout:30, //time to clear buffer (approx. 1s in 30fps)
-	comboout:8, //the max time interval(in frames) between keys to make a combo
-	no_repeat_key: true //eliminate repeated key strokes by browser
+	timeout:30,
+	comboout:8,
+	no_repeat_key: true
 };
-
-
-/** gameplay constants------------------------------------------------*/
 
 G.gameplay={};
 var GC = G.gameplay;
-/** What are the defaults?
-default means `otherwise specified`. all defaults get overrided, and
-  (mostly) you can set the specific property in data files.
-  so it might not be meaningful to change default values
- */
+
+/*\
+ * global.gameplay.default
+ [ property ]
+ * What are the defaults?
+ * 
+ * default means `otherwise specified`. all defaults get overridden, and (mostly) you can set the specific property in data files. so it might not be meaningful to change default values.
+ * if any of them cannot be overridden, please move them out of default.
+\*/
 GC.default={};
 
 GC.default.itr={};
@@ -71,9 +92,13 @@ GC.default.character.arest= 7; //default character arest
 GC.default.machanics={};
 GC.default.machanics.mass= 1; //default mass; weight = mass * gravity
 
-/**  Below are defined constants over the game,
-  tweak them carefully otherwise it might introduce bugs
- */
+/*\
+ * global.gameplay
+ [ property ]
+ * gameplay constants
+ * 
+ * these are defined constants over the game, tweak them carefully otherwise it might introduce bugs
+\*/
 GC.itr={};
 GC.itr.hit_stall= 3; //default stall when hit somebody
 

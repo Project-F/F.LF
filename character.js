@@ -403,7 +403,7 @@ function(livingobject, Global, Futil)
 		{	var $=this;
 			switch (event) {
 			case 'frame':
-				$.frame.mobility=0.2;
+				$.frame.mobility=0.6;
 				if( $.frame.N===111)
 					$.trans.inc_wait(4);
 			break;
@@ -413,7 +413,7 @@ function(livingobject, Global, Futil)
 		{	var $=this;
 			switch (event) {
 			case 'frame':
-				$.frame.mobility=0.1;
+				$.frame.mobility=0.3;
 				if( $.frame.N===112)
 					$.trans.inc_wait(4);
 			break;
@@ -833,39 +833,38 @@ function(livingobject, Global, Futil)
 			}
 			$.effect_create( effectnum, vanish);
 			$.visualeffect_create( effectnum, rect, (attps.x < $.ps.x), ($.health.fall>0?1:2));
+		}
 
-			function fall()
-			{
-				if( ITR.fall!==undefined)	$.health.fall += ITR.fall;
-					else	$.health.fall += GC.default.fall.value;
-				var fall=$.health.fall;
-				if ( 0<fall && fall<=20)
-					$.trans.frame(220, 20);
-				else if (20<fall && fall<=40 && $.ps.y<0)
-					falldown();
-				else if (20<fall && fall<=40)
-					$.trans.frame($.match.random()<0.5? 222:224, 20);
-				else if (40<fall && fall<=60)
-					$.trans.frame(226, 20);
-				else if (GC.fall.KO<fall)
-					falldown();
-			}
+		function fall()
+		{
+			if( ITR.fall!==undefined)	$.health.fall += ITR.fall;
+				else	$.health.fall += GC.default.fall.value;
+			var fall=$.health.fall;
+			if ( 0<fall && fall<=20)
+				$.trans.frame(220, 20);
+			else if (20<fall && fall<=40 && $.ps.y<0)
+				falldown();
+			else if (20<fall && fall<=40)
+				$.trans.frame($.match.random()<0.5? 222:224, 20);
+			else if (40<fall && fall<=60)
+				$.trans.frame(226, 20);
+			else if (GC.fall.KO<fall)
+				falldown();
+		}
+		function falldown()
+		{
+			if( ITR.dvy===undefined) $.effect.dvy = GC.default.fall.dvy;
+			$.health.fall=0;
+			var front = (attps.x > $.ps.x)===($.ps.dir==='right'); //attacked in front
+				 if( front && ITR.dvx < 0 && ITR.bdefend>=60)
+				$.trans.frame(186, 20);
+			else if( front)
+				$.trans.frame(180, 20);
+			else if(!front)
+				$.trans.frame(186, 20);
 
-			function falldown()
-			{
-				if( ITR.dvy===undefined) $.effect.dvy = GC.default.fall.dvy;
-				$.health.fall=0;
-				var front = (attps.x > $.ps.x)===($.ps.dir==='right'); //attacked in front
-					 if( front && ITR.dvx < 0 && ITR.bdefend>=60)
-					$.trans.frame(186, 20);
-				else if( front)
-					$.trans.frame(180, 20);
-				else if(!front)
-					$.trans.frame(186, 20);
-
-				if( $.proper( $.effect_id(effectnum),'drop_weapon'))
-					$.drop_weapon($.effect.dvx, $.effect.dvy);
-			}
+			if( $.proper( $.effect_id(effectnum),'drop_weapon'))
+				$.drop_weapon($.effect.dvx, $.effect.dvy);
 		}
 		return accepthit;
 	}

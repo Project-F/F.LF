@@ -1,21 +1,26 @@
-/** a base class for livingobjects
- */
+/*\
+ * livingobject
+ * 
+ * a base class for all living objects
+\*/
 define(['LF/global','data/specification','LF/sprite','LF/mechanics','F.core/combodec'],
 function ( Global, Spec, Sprite, Mech, Fcombodec)
 {
 	var GC=Global.gameplay;
 
-	/**	a living object
-		config=
-		{
-			controller, (characters only)
-			match,
-			stage,
-			scene,
-			effects,
-			team
-		}
-	 */
+	/*\
+	 * livingobject
+	 [ class ]
+	 | config=
+	 | {
+	 | controller, (characters only)
+	 | match,
+	 | stage,
+	 | scene,
+	 | effects,
+	 | team
+	 | }
+	\*/
 	function livingobject(config,data,thisID)
 	{
 		if( !config)
@@ -84,14 +89,6 @@ function ( Global, Spec, Sprite, Mech, Fcombodec)
 		$.con = config.controller;
 		if( $.con)
 		{
-			var dec_con = //combo detector
-			{
-				timeout: Global.detector_config.timeout,
-				comboout: Global.detector_config.comboout,
-				no_repeat_key: Global.detector_config.no_repeat_key,
-				callback: combo_event //callback function when combo detected
-			}
-			$.combodec = new Fcombodec($.con, dec_con, Global.combo_list);
 			function combo_event(kobj)
 			{
 				var K=kobj.name;
@@ -103,6 +100,14 @@ function ( Global, Spec, Sprite, Mech, Fcombodec)
 					if( $.switch_dir)
 						$.switch_dir_fun(K);
 			}
+			var dec_con = //combo detector
+			{
+				timeout: Global.detector_config.timeout,
+				comboout: Global.detector_config.comboout,
+				no_repeat_key: Global.detector_config.no_repeat_key,
+				callback: combo_event //callback function when combo detected
+			}
+			$.combodec = new Fcombodec($.con, dec_con, Global.combo_list);
 		}
 	}
 
@@ -226,12 +231,12 @@ function ( Global, Spec, Sprite, Mech, Fcombodec)
 		this.mech.set_pos(x,y,z);
 	}
 
-	livingobject.prototype.vol_body=function() //return the body volume for collision detection
+	//return the body volume for collision detection
+	//  all other volumes e.g. itr should start with prefix vol_
+	livingobject.prototype.vol_body=function() 
 	{
 		return this.mech.body();
 	}
-
-	//all other volumes e.g. itr should start with prefix vol_
 
 	livingobject.prototype.cur_state=function()
 	{
@@ -270,7 +275,7 @@ function ( Global, Spec, Sprite, Mech, Fcombodec)
 		$.visualeffect.create(pos,efid,variant);
 	}
 
-	// animate back and forth between frame a and b
+	//animate back and forth between frame a and b
 	livingobject.prototype.frame_ani_oscillate=function(a,b)
 	{
 		var $=this;

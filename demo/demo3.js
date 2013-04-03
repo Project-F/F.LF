@@ -37,7 +37,7 @@ gamedata,Match,Keychanger){
 	keychanger.style.display='none';
 	Keychanger(keychanger, [control1, control2]);
 	keychanger.style.backgroundColor='#FFF';
-	//keychanger.style.display='';
+	keychanger.style.display='';
 
 	var match = new Match
 	({

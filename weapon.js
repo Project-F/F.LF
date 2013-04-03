@@ -1,13 +1,21 @@
-/** light and heavy weapons
-	the two classes share similar construct.
-	this implementation differentiate lightweapon and heavyweapon from a base class weapon
- */
+/*\
+ * weapon
+ * 
+ * generalization over light and heavy weapons
+\*/
 
 define(['LF/livingobject','LF/global','F.core/util'],
 function(livingobject, Global, Futil)
 {
 var GC=Global.gameplay;
 
+/*\
+ * weapon
+ [ class ]
+ * note that this is a template class
+ | var lightweapon = weapon('lightweapon');
+ | var heavyweapon = weapon('heavyweapon');
+\*/
 function weapon(type)
 {
 	var states=

@@ -1,23 +1,25 @@
-/** loader is a requirejs plugin
-		that loads all the data files as defined by data.js,
-		and create a gamedata object in the following structure:
-	var gamedata =
-	{
-		object:
-		{
-			'character':
-			[ //array
-				{ id, type, data},,,
-			],,,
-		},
-
-		background:
-		[
-		]
-	}
-	be aware that game data is loaded once only, and loader will have
-		error if you try to load more than once.
- */
+/*\
+ * loader.js
+ * 
+ * loader is a requirejs plugin
+ * that loads all the data files as defined by data.js,
+ * and create a gamedata object in the following structure:
+ |	var gamedata =
+ |	{
+ |		object:
+ |		{
+ |			'character':
+ |			[ //array
+ |				{ id, type, data},,,
+ |			],,,
+ |		},
+ |
+ |		background:
+ |		[
+ |		]
+ |	}
+ * be aware that game data is loaded once only, and loader will have error if you try to load more than once.
+\*/
 
 define(['loader_depend'],function(datalist){
 
