@@ -16,9 +16,11 @@ requirejs.config(
 });
 
 requirejs(['F.core/controller',
-'LF/loader!data','LF/match','LF/keychanger'],
+'LF/loader!data','LF/match','LF/keychanger',
+'./buildinfo.js'],
 function(Fcontroller,
-gamedata,Match,Keychanger){
+gamedata,Match,Keychanger,
+buildinfo){
 
 	var control_con1 =
 	{
@@ -38,6 +40,9 @@ gamedata,Match,Keychanger){
 	Keychanger(keychanger, [control1, control2]);
 	keychanger.style.backgroundColor='#FFF';
 	keychanger.style.display='';
+
+	document.getElementById('footnote').innerHTML+=
+		'; '+(buildinfo.timestamp==='unbuilt'?'unbuilt demo':'built on: '+buildinfo.timestamp);
 
 	var match = new Match
 	({
