@@ -1,10 +1,13 @@
 This is intended to be a guideline for developers who want to do development on F.LF
 
 # Architecture
+
+The open LF2 project is divided into three repositories, [F.core](https://github.com/tyt2y3/F.core), F.LF and [LFrelease](https://github.com/tyt2y3/LFrelease). F.LF is the game engine which implements ___the LF2 standard___ and provides gaming functionalities. F.core provides the engine components to build a HTML5 game. While F.LF _could_ be platform independent, current implementation does depend a lot on the browser environment. LFrelease contains material (sprites,data,sound,etc) converted from original LF2. Such division is to ensure that F.LF is 100% original work containing no third party copyrighted material.
+
 Let's have a top-down walk through the modules.
 - `global.js` defines the global parameters
 - `keychanger.js` is a small utility to change keys of a controller
-- `loader.js` is to load all data files as defined by `data.js` during startup.
+- `loader.js` is to load data files in a content package.
 - `match.js` is a generalization above game modes (e.g. VSmode, stagemode, battlemode)
 	the life time of a `match` object represents the course of a match, from start when weapon drops to end all opponents killed.
 	- `factories.js` is responsible to list all available classes to `match` as `match` does not depend on object classes directly.
@@ -62,7 +65,7 @@ here lists the unimplemented features.
 	- (extended) story mode
 - interface
 	- mimic original LF2 interface
-- content pack
+- content pack (done)
 	- a meta package
 		- characters, weapons and other objects
 		- backgrounds
