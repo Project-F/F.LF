@@ -1,7 +1,7 @@
 /*\
  * resourcemap
  * 
- * a resourcemap allows mapping from a canonical resource name (shoter and understandable) to the actual url (long and ugly)
+ * a resourcemap allows mapping from a canonical resource name (shorter and understandable) to the actual url (long and ugly)
 \*/
 define(['F.core/util'],function(Futil){
 
