@@ -7,16 +7,16 @@ Gaming content must be packed into a package. A content package contains:
 - stages
 - custom interface
 
-### distribution
+## distribution
 #### on the web
 A package can be deployed on a different domain than the main application is deployed. This allows third parties to distribute game content without hassles on fixes and updates of the game program.
 #### offline use
 A package can also be zipped and be distributed as a single file, and unzipped when use.
 
-### package format
+## package format
 A package is a directory on the web or a folder on disk. Content files must be placed under the package directory, with no more than 4 levels of subdirectories (currently, these restrictions are not enforced programmatically though).
 
-At the root of the package, there must be a file named `manifest.js`, containing a strict JSON structure surrounded by a `define`, like:
+At the root of the package, there must be a file named `manifest.js`, containing a strict JSON structure surrounded by a `define()`, like:
 ```
 define({
 	...JSON data...
@@ -55,3 +55,6 @@ sprite/
 manifest.js
 resourcemap.js
 ```
+
+### example
+it is always easier to learn from examples. check out the package `LF2_19` in the [release channel](https://github.com/tyt2y3/LFrelease/tree/master/LF2_19).
