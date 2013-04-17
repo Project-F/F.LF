@@ -17,7 +17,7 @@ factory,Scene,Random)
 	 |	stage,  //the XZ plane to place all living objects
 	 |	state,  //the state machine handling various events in a match
 	 |	config, //default config for each object type
-	 |	data	//the gamedata dump
+	 |	package	//the content package
 	 |	}
 	\*/
 
@@ -25,17 +25,19 @@ factory,Scene,Random)
 	{
 		this.stage = config.stage;
 		this.state = config.state;
-		this.data = config.data;
+		this.data = config.package.data;
+		this.spec = config.package.specification;
+		this.grouped_object = Futil.group_elements(this.data.object,'type');
 		this.config = config.config;
 		if( !this.config)
 			this.config = {};
 		this.time;
 	}
 
-	match.prototype.start=function(init)
+	match.prototype.create=function(setting)
 	{
 		/**
-		init =
+		setting =
 		{
 			player:
 			[
@@ -49,9 +51,9 @@ factory,Scene,Random)
 		 */
 		this.scene = new Scene();
 		this.effects = this.create_effects(this.config.effects);
-		this.character = this.create_characters(init.player);
+		this.character = this.create_characters(setting.player);
 		this.randomseed = this.new_randomseed();
-		this.control = this.create_controller(init.control);
+		this.control = this.create_controller(setting.control);
 		this.lightweapon=[];
 		this.heavyweapon=[];
 		this.drop_weapons();
@@ -123,12 +125,13 @@ factory,Scene,Random)
 		var array=[];
 		var char_config =
 		{
+			spec: this.spec,
+			controller: null,
 			match: this,
 			stage: this.stage,
 			scene: this.scene,
 			effects: this.effects,
-			team: 0,
-			controller: null
+			team: 0
 		};
 		for( var i=0; i<players.length; i++)
 		{
@@ -151,7 +154,7 @@ factory,Scene,Random)
 		effects_config.match = this;
 		effects_config.stage = this.stage;
 
-		var param = Futil.extract_array( this.data.object.effects, ['data','id']);
+		var param = Futil.extract_array( this.grouped_object.effects, ['data','id']);
 		return new factory.effects ( effects_config, param.data, param.id);
 	}
 
@@ -171,16 +174,17 @@ factory,Scene,Random)
 		var weapon= id<150 ? 'lightweapon':'heavyweapon';
 		var wea_config=
 		{
+			spec: this.spec,
 			match: this,
 			stage: this.stage,
 			scene: this.scene,
 			effects: this.effects
 		};
 		var res=Futil.arr_search(
-			this.data.object[weapon],
+			this.grouped_object[weapon],
 			function (X) { return X.id===id;}
 		);
-		var object = this.data.object[weapon][res];
+		var object = this.grouped_object[weapon][res];
 		var wea = new factory[weapon]( wea_config, object.data, object.id);
 		wea.set_pos(pos.x,pos.y,pos.z);
 

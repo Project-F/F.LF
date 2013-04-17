@@ -57,12 +57,9 @@ function(livingobject, Global, Futil)
 		{	var $=this;
 			switch (event) {
 			case 'TU':
-				var dx=0, dz=0; //to resolve key conflicts
-				if( $.con.state.up)   dz -=1;
-				if( $.con.state.down) dz +=1;
-				if( $.con.state.left) dx -=1;
-				if( $.con.state.right)dx +=1;
-				if( dx || dz)
+				var dx = $.con.state.left !== $.con.state.right,
+					dz = $.con.state.up   !== $.con.state.down;
+				if( dx || dz) //to resolve key conflicts
 					$.trans.frame(5);
 			break;
 
@@ -101,10 +98,7 @@ function(livingobject, Global, Futil)
 				case 'att':
 					if( $.hold.obj)
 					{
-						var dx = 0;
-						if( $.con.state.left)  dx-= 1;
-						if( $.con.state.right) dx+= 1;
-
+						var dx = $.con.state.left !== $.con.state.right;
 						if( $.hold.obj.type==='heavyweapon')
 						{
 							$.trans.frame(50, 10); //throw heavy weapon
@@ -150,31 +144,24 @@ function(livingobject, Global, Futil)
 		{	var $=this;
 			switch (event) {
 			case 'TU':
-				var dx=0;
-				if( $.con.state.left) dx -=1;
-				if( $.con.state.right)dx +=1;
-
+				var dx = $.con.state.left !== $.con.state.right;
 				if( $.hold.obj && $.hold.obj.type==='heavyweapon')
 				{
-					if( dx!==0)
+					if( dx)
 						$.ps.vx=$.dirh()*($.data.bmp.heavy_walking_speed);
 					$.ps.vz=$.dirv()*($.data.bmp.heavy_walking_speedz);
 				}
 				else
 				{
-					if( dx!==0)
+					if( dx)
 						$.ps.vx=$.dirh()*($.data.bmp.walking_speed);
 					$.ps.vz=$.dirv()*($.data.bmp.walking_speedz);
 				}
 			break;
 
 			case 'frame':
-				var dx=0, dz=0; //to resolve key conflicts
-				if( $.con.state.up)   dz -=1;
-				if( $.con.state.down) dz +=1;
-				if( $.con.state.left) dx -=1;
-				if( $.con.state.right)dx +=1;
-				//
+				var dx = $.con.state.left !== $.con.state.right,
+					dz = $.con.state.up   !== $.con.state.down;
 				if( $.hold.obj && $.hold.obj.type==='heavyweapon')
 				{
 					if( dx || dz)
@@ -269,9 +256,7 @@ function(livingobject, Global, Futil)
 						}
 						else
 						{
-							var dx = 0;
-							if( $.con.state.left)  dx-= 1;
-							if( $.con.state.right) dx+= 1;
+							var dx = $.con.state.left !== $.con.state.right;
 							if( dx && $.proper($.hold.id,'run_throw'))
 							{
 								$.trans.frame(45, 10); //throw light weapon
@@ -311,9 +296,9 @@ function(livingobject, Global, Futil)
 			case 'frame':
 				if( $.frame.N===212 && $.frame.PN===211)
 				{	//start jumping
-					var dx = 0;
-					if( $.con.state.left)  dx-= 1;
-					if( $.con.state.right) dx+= 1;
+					var dx=0;
+					if($.con.state.left)  dx-=1;
+					if($.con.state.right) dx+=1;
 					$.ps.vx= dx * $.data.bmp.jump_distance;
 					$.ps.vz= $.dirv() * $.data.bmp.jump_distancez;
 					$.ps.vy= $.data.bmp.jump_height; //upward force
@@ -325,9 +310,7 @@ function(livingobject, Global, Futil)
 				{
 					if( $.hold.obj)
 					{
-						var dx = 0;
-						if( $.con.state.left)  dx-= 1;
-						if( $.con.state.right) dx+= 1;
+						var dx = $.con.state.left !== $.con.state.right;
 						if( dx && $.proper($.hold.id,'jump_throw'))
 							$.trans.frame(52, 10); //sky light weapon throw
 						else if( $.proper($.hold.id,'attackable'))
@@ -478,9 +461,7 @@ function(livingobject, Global, Futil)
 			switch(K)
 			{
 				case 'att':
-					var dx = 0;
-					if( $.con.state.left)  dx-= 1;
-					if( $.con.state.right) dx+= 1;
+					var dx = $.con.state.left !== $.con.state.right;
 					if( dx && $.frame.D.cpoint.taction)
 					{
 						var tac = $.frame.D.cpoint.taction;
@@ -689,9 +670,9 @@ function(livingobject, Global, Futil)
 					}
 					if( K==='jump')
 					{
-						var dx = 0;
-						if( $.con.state.left)  dx-= 1;
-						if( $.con.state.right) dx+= 1;
+						var dx=0;
+						if($.con.state.left)  dx-=1;
+						if($.con.state.right) dx+=1;
 						if( dx)
 						{
 							$.trans.frame(213, 10);

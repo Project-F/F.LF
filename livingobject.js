@@ -3,8 +3,8 @@
  * 
  * a base class for all living objects
 \*/
-define(['LF/global','data/specification','LF/sprite','LF/mechanics','F.core/combodec'],
-function ( Global, Spec, Sprite, Mech, Fcombodec)
+define(['LF/global','LF/sprite','LF/mechanics','F.core/combodec'],
+function ( Global, Sprite, Mech, Fcombodec)
 {
 	var GC=Global.gameplay;
 
@@ -13,6 +13,7 @@ function ( Global, Spec, Sprite, Mech, Fcombodec)
 	 [ class ]
 	 | config=
 	 | {
+	 | spec,
 	 | controller, (characters only)
 	 | match,
 	 | stage,
@@ -34,6 +35,7 @@ function ( Global, Spec, Sprite, Mech, Fcombodec)
 		$.uid=-1; //unique id, set by scene
 		$.id=thisID; //character id, specify tactical behavior. accept values from 0~99
 		$.data=data;
+		$.spec=config.spec;
 		$.team=config.team;
 		$.states = null;
 		$.states_switch_dir = null;
@@ -370,8 +372,8 @@ function ( Global, Spec, Sprite, Mech, Fcombodec)
 			prop=id;
 			id=$.id;
 		}
-		if( Spec[id])
-			return Spec[id][prop];
+		if( $.spec[id])
+			return $.spec[id][prop];
 		return null;
 	}
 

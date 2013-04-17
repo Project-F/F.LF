@@ -40,14 +40,14 @@ G.combo_list = [
  * combo detector config
  * 
  * {
- - timeout (number) time to clear buffer (approx. 1s in 30fps)
+ - timeout (number) time to clear buffer
  - comboout (number) the max time interval(in frames) between keys to make a combo
  - no_repeat_key (number) eliminate repeated key strokes by browser
  * }
 \*/
 G.detector_config =
 {
-	timeout:30,
+	timeout:30, //(approx. 1s in 30fps)
 	comboout:8,
 	no_repeat_key: true
 };

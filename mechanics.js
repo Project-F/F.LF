@@ -4,8 +4,8 @@
  * mechanical properties that all living objects should have
 \*/
 
-define(['LF/global','data/specification'],
-function(Global, Spec){
+define(['LF/global'],
+function(Global){
 
 var GC=Global.gameplay;
 
@@ -16,8 +16,9 @@ var GC=Global.gameplay;
 \*/
 function mech(parent)
 {
-	if( Spec[parent.id] && Spec[parent.id].mass)
-		this.mass=Spec[parent.id].mass;
+	var spec=parent.spec;
+	if( spec[parent.id] && spec[parent.id].mass)
+		this.mass=spec[parent.id].mass;
 	else
 		this.mass=Global.gameplay.default.machanics.mass;
 

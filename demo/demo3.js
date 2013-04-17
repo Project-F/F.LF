@@ -3,24 +3,34 @@ requirejs.config(
 	baseUrl: '../../',
 	paths:
 	{
-		'loader_depend': 'LFrelease/data/data',
-		'data': 'LFrelease/data'
 	},
 	config:
 	{
-		'F.core/sprite':
-		{
-			baseUrl: '../../LFrelease/'
-		}
 	}
 });
 
-requirejs(['F.core/controller',
-'LF/loader!data','LF/match','LF/keychanger',
+requirejs(['F.core/controller','F.core/sprite',
+'LF/loader!packages','LF/match','LF/keychanger',
 './buildinfo.js'],
-function(Fcontroller,
-gamedata,Match,Keychanger,
+function(Fcontroller,Fsprite,
+package,Match,Keychanger,
 buildinfo){
+
+	if( package.resourcemap)
+	{
+		var resmap = [
+			package.resourcemap, //package-defined resourcemap
+			{	//default resourcemap
+				get: function(res)
+				{
+					return package.location+res;
+				}
+			}
+		];
+		Fsprite.masterconfig_set('resourcemap',resmap);
+	}
+	else
+		Fsprite.masterconfig_set('baseUrl',package.location);
 
 	var control_con1 =
 	{
@@ -49,23 +59,23 @@ buildinfo){
 		stage: document.getElementById('stage'),
 		state: null,
 		config: null,
-		data: gamedata
+		package: package
 	});
 
-	match.start
+	match.create
 	({
 		player:
 		[
 			{
 				controller: control1,
-				data: gamedata.object.character[0].data,
-				id: gamedata.object.character[0].id,
+				data: package.data.object[0].data,
+				id: package.data.object[0].id,
 				team: 1
 			},
 			{
 				controller: control2,
-				data: gamedata.object.character[1].data,
-				id: gamedata.object.character[1].id,
+				data: package.data.object[1].data,
+				id: package.data.object[1].id,
 				team: 2
 			}
 		],

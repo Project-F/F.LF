@@ -95,8 +95,6 @@ rowing_distance: 5
 232 - 234: throw_lying_man
 ```
 
-- issue: characters sometimes trapped in obstacle
-
 ### attributes
 - `pic`
 - `state`
