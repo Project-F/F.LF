@@ -39,7 +39,7 @@ the JSON data in `manifest.js` is in the following schema:
 the entries are:
 - `data` is the url to the file `data.js`, corresponds to `data.txt` as found in LF2
 - `specification` is the url to the file `specification.js`, its format and usage is defined by __F.LF (extended standard)__
-- `resourcemap` is the url to the file `resourcemap.js`, its format and usage is defined by __F.core__. a resourcemap allows mapping from a canonical resource name (shorter and understandable) to the actual url (long and ugly), for example, consider an entry:
+- `resourcemap` is the url to the file `resourcemap.js`, its format and usage is defined by [__F.core__](http://tyt2y3.github.io/F.core/docs/docs.html#resourcemap). a resourcemap allows mapping from a canonical resource name (shorter and understandable) to the actual url (long and ugly), for example, consider an entry:
 `'squirrel.png':'http://imagehost.com/FtvJG6rAG2mdB8aHrEa8qXj8GtbYRpqrQs9F8X8.png'`
 
 > these files can be arbitrarily named, but must have `.js` as extension.
