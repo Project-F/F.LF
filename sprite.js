@@ -6,12 +6,13 @@
  * - **not** using canvas for sprite animations
  * - support style left/top and CSS transform, depending on browser support
 \*/
-define(['F.core/css!F.core/style.css','F.core/support','module'],
-function(css,support,module)
+define(['F.core/css!F.core/style.css','F.core/support','F.core/resourcemap','module'],
+function(css,support,resourcemap,module)
 {
 
 var sp_count = 0; //sprite count
-var sp_masterconfig = module.config();
+var sp_masterconfig = module.config() || {};
+
 /*\
  * sprite
  [ class ]
@@ -36,23 +37,7 @@ var sp_masterconfig = module.config();
 |		img: 'test_sprite.png' // image path
 |	}
 |	var sp1 = new sprite(sp_config);
- * optionally, you can configure globally some options via requirejs
-|	requirejs.config(
-|	{
-|		baseUrl: "../", //be sure to put all requirejs config in one place
-|
-|		config:
-|		{
-|			'F.core/sprite':
-|			{
-|				baseUrl: '../sprites/', //base url prepended to all image paths
-|				disable_css2dtransform: false //[optional], null by default
-|			}
-|		}
-|	});
- * however, note that requirejs configuration must be done __before__ any module loading,
- * and if you want to change some of the global options in runtime, you can do so by calling @sprite.masterconfig
- *
+ * 
  * more on `config.div` option. if it is specified, will `adopt` this `div` instead of creating a new one. and if that `div` contains `img` elements, will also adopt them if they have a `name` attribute. frankly speaking, `<div><img name="0" src="sprite.png"/></div>` is equivalent to `img: { '0':'sprite.png' }` in a `config` object.
 \*/
 function sprite (config)
@@ -115,14 +100,88 @@ function sprite (config)
 /*\
  * sprite.masterconfig
  [ method ]
- * it depends whether these config will take effect, specifically, `baseUrl` will take effect on the next `add_img`,
- * and `disable_css2dtransform` will not take effect at all because css2dtransform support is built into prototype of sprite during module definition.
+ * set or get masterconfig. this is entirely optional
+ o static method
+ - config (object) if set
+ - no parameter (undefined) if get
+ = config (object) if get
+ * the schema is:
+ * {
+ - baseUrl (string) base url prepended to all image paths
+ - resourcemap (object) a @resourcemap definition
+ * }
+ * choose only one of `baseUrl` or `resourcemap`, they are two schemes of resource url resolution. `baseUrl` simply prepend a string before every url, while `resourcemap` is a general solution. if set, this option will take effect on the next `add_img` or `sprite` creation.
+ * 
+ * because css2dtransform support is built into prototype of `sprite` during module definition, `disable_css2dtransform` can only be set using requirejs.config __before any__ module loading
+ * example:
+|	requirejs.config(
+|	{
+|		baseUrl: "../", //be sure to put all requirejs config in one place
+|
+|		config:
+|		{
+|			'F.core/sprite':
+|			{
+|				baseUrl: '../sprites/',
+|				resourcemap: map_def,
+|				disable_css2dtransform: true //null by default
+|			}
+|		}
+|	});
 \*/
 sprite.masterconfig=
 sprite.prototype.masterconfig=
 function(c)
 {
-	sp_masterconfig=c;
+	if( c)
+	{
+		sp_masterconfig=c;
+		sprite.masterconfig_update();
+	}
+	else
+		return sp_masterconfig;
+}
+
+/*\
+ * sprite.masterconfig_set
+ [ method ]
+ o static method
+ * sets a key-value pair to masterconfig
+ - key (string)
+ - value (any)
+\*/
+sprite.masterconfig_set=
+sprite.prototype.masterconfig_set=
+function(key,value)
+{
+	if( key && value)
+	{
+		sp_masterconfig[key] = value;
+		sprite.masterconfig_update();
+	}
+}
+
+/**undocumented private*/
+sprite.masterconfig_update=function()
+{
+	if( sp_masterconfig.resourcemap)
+		if( !(sp_masterconfig.resourcemap instanceof resourcemap))
+			sp_masterconfig.resourcemap = new resourcemap(sp_masterconfig.resourcemap);
+}
+
+/**undocumented private
+ * sprite.resolve_resource
+ [ method ]
+ o static method
+ - res (string)
+ = (string)
+*/
+sprite.resolve_resource=function(res)
+{
+	if( sp_masterconfig.resourcemap)
+		return sp_masterconfig.resourcemap.get(res);
+	if( sp_masterconfig.baseUrl)
+		return sp_masterconfig.baseUrl + res;
 }
 
 /*\
@@ -145,8 +204,6 @@ sprite.prototype.set_wh=function(P)
 \*/
 if( support.css2dtransform && !sp_masterconfig.disable_css2dtransform)
 {
-	/**	@function
-	*/
 	sprite.prototype.set_xy=function(P)
 	{
 		this.el.style[support.css2dtransform]= 'translate('+P.x+'px,'+P.y+'px) ';
@@ -154,8 +211,6 @@ if( support.css2dtransform && !sp_masterconfig.disable_css2dtransform)
 }
 else
 {
-	/**	@function
-	*/
 	sprite.prototype.set_xy=function(P)
 	{
 		this.el.style.left=P.x+'px';
@@ -183,10 +238,6 @@ sprite.prototype.set_z=function(z)
 \*/
 sprite.prototype.add_img=function(imgpath,Name)
 {
-	var pre='';
-	if( sp_masterconfig.baseUrl)
-	pre=sp_masterconfig.baseUrl;
-
 	var im = document.createElement('img');
 	im.setAttribute('class','F_sprite_img');
 	im.onload=function()
@@ -195,19 +246,19 @@ sprite.prototype.add_img=function(imgpath,Name)
 		if( !this.naturalHeight) this.naturalHeight=this.height;
 		this.onload=null;
 	}
-	im.src = pre+imgpath;
+	im.src = sprite.resolve_resource(imgpath);
 	this.el.appendChild(im);
 
 	this.img[Name]=im;
 	this.switch_img(Name);
 	return im;
 }
-/**
+/**undocumented private
  * sprite.adopt_img
  * adopt an `img` element that already exists
  [ method ]
  - im (object) `img` element
- */
+*/
 sprite.prototype.adopt_img=function(im)
 {
 	var Name=im.getAttribute('name');

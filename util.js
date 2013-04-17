@@ -77,7 +77,7 @@ make_array: function (target)
 //data structure------------
 
 /*\
- * util.arr_search
+ * util.search_array
  [ method ]
  - arr (array) target to be searched
  - fc_criteria (function) return true when an accepted element is passed in
@@ -86,10 +86,7 @@ make_array: function (target)
  = (array) if `search_all` is true
  = (object) if `search_all` if false
 \*/
-arr_search: function ( arr,
-		fc_criteria,
-		fc_replace,
-		search_all)
+search_array: function (arr, fc_criteria, fc_replace, search_all)
 {
 	var found_list=new Array();
 	//for ( var i=0; i<arr.length; i++)
@@ -112,6 +109,10 @@ arr_search: function ( arr,
 	} else {
 		return -1;
 	}
+},
+arr_search: function (A,B,C,D)
+{
+	return F.search_array(A,B,C,D);
 },
 
 /*\
@@ -270,6 +271,53 @@ extract_array: function(array, prop)
 		}
 	}
 	return out;
+},
+
+/**proposed method*/
+group_elements: function(arr,key)
+{
+	var group={};
+	for( var i=0; i<arr.length; i++)
+	{
+		var gp=arr[i][key];
+		if( !group[gp])
+			group[gp]=[];
+		group[gp].push(arr[i]);
+	}
+	return group;
+},
+
+/**proposed method*/
+for_each: function(arr,callback)
+{
+	if( arr instanceof Array)
+	{
+		for( var i=0; i<arr.length; i++)
+			callback(arr[i],i);
+	}
+	else if( arr)
+	{
+		for( var I in arr)
+			callback(arr[I]);
+	}
+},
+
+/**proposed method*/
+call_each: function(arr,method /*,arg*/)
+{
+	var arg = Array.prototype.slice.call(arguments,2);
+	if( arr instanceof Array)
+	{
+		for( var i=0; i<arr.length; i++)
+			if( typeof arr[i][method]==='function')
+				arr[i].apply(this, arg);
+	}
+	else if( arr)
+	{
+		for( var i in arr)
+			if( typeof arr[i][method]==='function')
+				arr[i].apply(this, arg);
+	}
 }
 
 };
