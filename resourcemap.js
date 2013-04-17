@@ -9,14 +9,16 @@ define(['F.core/util'],function(Futil){
 	 * resourcemap
 	 [ class ]
 	 - map (object)
-	 or
+	 * or
 	 - map (array) of maps
 	 * schema
+	 * 
 	 * {
 	 - condition (function) return true to enable this map. this is only evaluated once in constructor. you can force re-evaluate by calling `update_condition`. if this property is undefined, it is assumed to be __true__.
 	 - resource (object) of name-url pairs. this is optional if a `get()` method is specified.
 	 - get (function) given the resource name, return the url. this is optional if a `resource` object is specified.
 	 * }
+	 * 
 	 * example
 	 | map =
 	 | {
@@ -30,10 +32,10 @@ define(['F.core/util'],function(Futil){
 	 |		'squirrel.png':'http://imagehost.com/FtvJG6rAG2mdB8aHrEa8qXj8GtbYRpqrQs9F8X8.png'
 	 |	},
 	 |	get: function(res)
-	 |  {
+	 |	{
 	 |		var url='http://imagehost.com/'+res;
 	 |		return url;
-	 |  }
+	 |	}
 	 | }
 	\*/
 	function mapper(map)

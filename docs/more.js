@@ -43,8 +43,10 @@
  * @graph for hashing objects
  * 
  > web application
- * @css for loading and optimizing css files and 
+ * @css for loading and optimizing css files and
  * @support to check for browser support
+ * 
+ * @resourcemap to map resource name to resource url
  * 
  * F.core employs requirejs dependency management, and you should too, if you care to build games that has more than 1000 lines of code. requirejs can be clumsy to set up than `<script src="">`, but when a project grows it will pay off.
  * 

@@ -182,6 +182,7 @@ sprite.resolve_resource=function(res)
 		return sp_masterconfig.resourcemap.get(res);
 	if( sp_masterconfig.baseUrl)
 		return sp_masterconfig.baseUrl + res;
+	return res;
 }
 
 /*\

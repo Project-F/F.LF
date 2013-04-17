@@ -31,6 +31,8 @@ some [collision](#collision) detection and [math](#math) functions and javascrip
 [css](#css) for loading and optimizing css files and 
 [support](#support) to check for browser support
 
+[resourcemap](#resourcemap) to map resource name to resource url
+
 ## [Documentation](http://tyt2y3.github.com/F.core/docs/docs.html)
 
 ## Components and features
