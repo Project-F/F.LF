@@ -52,6 +52,7 @@ function weapon(type)
 					}
 					else
 					{
+						$.team=0;
 						ps.vy=0; //set to zero
 						if( $.light)
 							$.trans.frame(70); //just_on_ground
@@ -116,7 +117,7 @@ function weapon(type)
 		var ITR=Futil.make_array($.frame.D.itr);
 
 		if( $.team!==0)
-		if( $.heavy ||
+		if(($.heavy) ||
 		   ($.light && $.cur_state()===1002))
 		for( var j in ITR)
 		{	//for each itr tag
@@ -149,7 +150,7 @@ function weapon(type)
 							ps.vx = vx * GC.weapon.hit.vx;
 							ps.vy = GC.weapon.hit.vy;
 						}
-						$.itr_rest_update( hit[k].uid, itr_rest);
+						$.itr_rest_update( hit[k], hit[k].uid, itr_rest);
 						//create an effect
 						$.effect.timeout=2;
 						$.effect.stuck=true;
@@ -195,27 +196,44 @@ function weapon(type)
 		var fall= ITR.fall!==undefined? ITR.fall: GC.default.fall.value;
 		if( $.heavy)
 		{
-			accept=true;
-			if( att.type==='character')
+			if( $.cur_state()===2004)
 			{
-				if( fall<GC.fall.KO)
-					$.ps.vy= GC.weapon.soft_bounceup.speed.y;
+				accept=true;
+				if( att.type==='character')
+				{
+					if( fall<GC.fall.KO)
+						$.ps.vy= GC.weapon.soft_bounceup.speed.y;
+					else
+					{
+						$.ps.vy = GC.weapon.bounceup.speed.y;
+						//$.ps.vx = GC.weapon.bounceup.speed.x * att.dirh();
+						//$.ps.vz = GC.weapon.bounceup.speed.z * att.dirv();
+					}
+				}
 				else
 				{
-					$.ps.vy = GC.weapon.bounceup.speed.y;
-					//$.ps.vx = GC.weapon.bounceup.speed.x * att.dirh();
-					//$.ps.vz = GC.weapon.bounceup.speed.z * att.dirv();
+					var asp = att.mech.speed();
+					$.ps.vx= asp* GC.weapon.gain.factor.x * (att.ps.vx>0?1:-1);
+					$.ps.vy= asp* GC.weapon.gain.factor.y;
 				}
 			}
-			else
+			else if( $.cur_state()===2000)
 			{
-				var asp = att.mech.speed();
-				$.ps.vx= asp* GC.weapon.gain.factor.x * (att.ps.vx>0?1:-1);
-				$.ps.vy= asp* GC.weapon.gain.factor.y;
+				if( fall>=GC.fall.KO)
+				{
+					accept=true;
+					if( (att.dirh()>0)!==($.ps.vx>0)) //head-on collision
+						$.ps.vx *= GC.weapon.reverse.factor.vx;
+					$.ps.vy *= GC.weapon.reverse.factor.vy;
+					$.ps.vz *= GC.weapon.reverse.factor.vz;
+				}
 			}
 		}
-		$.team = att.team; //change to the attacker's team
-		$.visualeffect_create( 0, rect, (attps.x < $.ps.x), (fall<GC.fall.KO?1:2));
+		if( accept)
+		{
+			$.team = att.team; //change to the attacker's team
+			$.visualeffect_create( 0, rect, (attps.x < $.ps.x), (fall<GC.fall.KO?1:2));
+		}
 		return accept;
 	}
 
@@ -297,7 +315,7 @@ function weapon(type)
 								if( $.itr_rest_test( hit[k].uid, ITR[j]) &&
 								  att.itr_rest_test( hit[k].uid, ITR[j]) )
 								{	//if rest allows
-									$.itr_rest_update( hit[k].uid, ITR[j]);
+									$.itr_rest_update( hit[k], hit[k].uid, ITR[j]);
 									var citr;
 									if( $.data.weapon_strength_list &&
 										$.data.weapon_strength_list[wpoint.attacking])
@@ -340,9 +358,25 @@ function weapon(type)
 		if( !$.holder)
 		{
 			$.holder=att;
+			$.team=att.team;
 			return true;
 		}
 		return false;
+	}
+
+	typeweapon.prototype.itr_rest_update=function(obj,uid,ITR) //override livingobject.itr_rest_update
+	{
+		var $=this;
+		var newrest;
+		if( ITR.arest)
+			newrest = ITR.arest;
+		else if( ITR.vrest)
+			newrest = ITR.vrest;
+		else
+			newrest = GC.default.weapon.vrest;
+		if( obj.type==='heavyweapon' || obj.type==='lightweapon')
+			newrest *= 2; //double the rest time for weapon-weapon hit
+		$.itr.vrest[uid] = newrest;
 	}
 
 	typeweapon.prototype.vol_itr=function(kind)

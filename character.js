@@ -380,13 +380,16 @@ function(livingobject, Global, Futil)
 		'6':function(event,K) //rowing
 		{	var $=this;
 			switch (event) {
+			case 'frame':
+				$.frame.mobility=1.4; //magic number
+			break;
 		}},
 
 		'7':function(event,K) //defending
 		{	var $=this;
 			switch (event) {
 			case 'frame':
-				$.frame.mobility=0.6;
+				$.frame.mobility=0.6; //magic number
 				if( $.frame.N===111)
 					$.trans.inc_wait(4);
 			break;
@@ -396,7 +399,7 @@ function(livingobject, Global, Futil)
 		{	var $=this;
 			switch (event) {
 			case 'frame':
-				$.frame.mobility=0.3;
+				$.frame.mobility=0.3; //magic number
 				if( $.frame.N===112)
 					$.trans.inc_wait(4);
 			break;
@@ -502,7 +505,7 @@ function(livingobject, Global, Futil)
 				$.state10={};
 				$.state10.frameTU=true;
 				$.trans.set_wait(99, 10, 99); //lock until frame transition
-				$.frame.mobility=0; //never moves
+				$.frame.mobility=0; //never moves //magic number
 			break;
 
 			case 'TU':
@@ -568,7 +571,7 @@ function(livingobject, Global, Futil)
 				{
 					case 220: case 222: case 224: case 226:
 						$.trans.inc_wait(2, 20, 99); //lock until frame transition
-						$.frame.mobility=0; //cannot move
+						$.frame.mobility=0; //cannot move //magic number
 					break;
 				}
 			break;
@@ -800,6 +803,8 @@ function(livingobject, Global, Futil)
 			}
 			else
 			{
+				if( $.hold.obj && $.hold.obj.type==='heavyweapon')
+					$.drop_weapon(0,0);
 				if( ITR.injury)	$.health.hp -= ITR.injury; //injury
 				$.health.bdefend = 45; //lose defend ability immediately
 				fall();
@@ -936,7 +941,6 @@ function(livingobject, Global, Futil)
 								$.trans.frame(116, 10);
 						}
 						$.hold.obj = hit[t];
-						$.hold.obj.team = $.team;
 						$.hold.id= $.hold.obj.id;
 						break;
 					}

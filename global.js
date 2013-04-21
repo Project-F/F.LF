@@ -142,7 +142,7 @@ GC.gravity= 1.7; //defined gravity
 
 GC.weapon={};
 GC.weapon.bounceup={}; //when a weapon falls onto ground
-GC.weapon.bounceup.limit= 12.25; //defined limit to bounce up again
+GC.weapon.bounceup.limit= 8; //defined limit to bounce up again
 GC.weapon.bounceup.speed={};
 GC.weapon.bounceup.speed.x= 3; //defined bounce up speed
 GC.weapon.bounceup.speed.y= -3.7;
@@ -158,7 +158,7 @@ GC.weapon.hit.vy= 0;
 GC.weapon.gain={}; //when a weapon is being hit at rest
 GC.weapon.gain.factor={}; //gain factor
 GC.weapon.gain.factor.x= 1.1;
-GC.weapon.gain.factor.y= 1.4;
+GC.weapon.gain.factor.y= 1.8;
 
 GC.weapon.reverse={}; //when a weapon is being hit while travelling in air
 GC.weapon.reverse.factor={};
