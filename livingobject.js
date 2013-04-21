@@ -168,8 +168,8 @@ function ( Global, Sprite, Mech, Fcombodec)
 		}
 		else if( $.effect.timeout===-1)
 		{
-			$.ps.vx = $.effect.dvx;
-			$.ps.vy = $.effect.dvy;
+			if( $.effect.dvx) $.ps.vx = $.effect.dvx;
+			if( $.effect.dvy) $.ps.vy = $.effect.dvy;
 			$.effect.dvx=0;
 			$.effect.dvy=0;
 		}

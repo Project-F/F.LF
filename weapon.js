@@ -47,8 +47,8 @@ function weapon(type)
 					if( $.heavy && this.mech.speed() > GC.weapon.bounceup.limit)
 					{	//bounceup
 						ps.vy = GC.weapon.bounceup.speed.y;
-						ps.vx = GC.weapon.bounceup.speed.x * (ps.vx===0?0:(ps.vx>0?1:-1));
-						ps.vz = GC.weapon.bounceup.speed.z * (ps.vz===0?0:(ps.vz>0?1:-1));
+						ps.vx *= GC.weapon.bounceup.factor.x;
+						ps.vz *= GC.weapon.bounceup.factor.z;
 					}
 					else
 					{
@@ -152,7 +152,10 @@ function weapon(type)
 						}
 						$.itr_rest_update( hit[k], hit[k].uid, itr_rest);
 						//create an effect
-						$.effect.timeout=2;
+						if( $.light) $.effect.timeout=2;
+						if( $.heavy) $.effect.timeout=4;
+						$.effect.dvx=0;
+						$.effect.dvy=0;
 						$.effect.stuck=true;
 					}
 				}
@@ -206,8 +209,6 @@ function weapon(type)
 					else
 					{
 						$.ps.vy = GC.weapon.bounceup.speed.y;
-						//$.ps.vx = GC.weapon.bounceup.speed.x * att.dirh();
-						//$.ps.vz = GC.weapon.bounceup.speed.z * att.dirv();
 					}
 				}
 				else
