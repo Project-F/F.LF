@@ -82,7 +82,9 @@ F.LF attempts a clean room implementation of LF2.
 
 A quote from [Wikipedia](http://en.wikipedia.org/wiki/Clean_room_design)
 > Clean room design is the method of copying a design by reverse engineering and then recreating it without infringing any of the copyrights and trade secrets associated with the original design. Clean room design is useful as a defense against copyright and trade secret infringement because it relies on independent invention.
+
 > Typically, a clean room design is done by having someone examine the system to be reimplemented and having this person write a specification. This specification is then reviewed by a lawyer to ensure that no copyrighted material is included. The specification is then implemented by a team with no connection to the original examiners.
+
 Also read these [answers](http://ask.slashdot.org/story/00/06/09/0136236/what-is-a-clean-room-implementation).
 
 Ideally the one who examine LF2 and produce the specification should be a different person from the one who implement it. But we are short of programmers that sometimes they may be the same person.
