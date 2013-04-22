@@ -102,4 +102,4 @@ The top-down engineering process starts from playing LF2, observing its behaviou
 
 The bottom-up engineering process starts implementing a system, and observe the behavioural difference from LF2, and improve the implementation. If everything is okay, then write a specification.
 
-Both processes produce a specification and an implementation as the end product. A task is said to be finished only if both the specification and implementation is finished and comply to LF2 behavior to a high degree.
+Both processes produce a pair of specification and implementation as the end product. A task is said to be finished only if the specification and implementation comply to each other and they both comply to LF2 behavior to a high degree.
