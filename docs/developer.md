@@ -71,6 +71,33 @@ here lists the unimplemented features.
 	- however, this will increase startup time and waste bandwidth
 	- we would like to have a content loader which load resources on demand (lazy loading), at the start of a match.
 
-### documentation
+### documentation compilation
 - the LF2 standard
 - hands on F.LF
+
+# engineering process
+
+F.LF attempts a clean room implementation of LF2.
+### Clean room implementation
+
+A quote from [Wikipedia](http://en.wikipedia.org/wiki/Clean_room_design)
+> Clean room design is the method of copying a design by reverse engineering and then recreating it without infringing any of the copyrights and trade secrets associated with the original design. Clean room design is useful as a defense against copyright and trade secret infringement because it relies on independent invention.
+> Typically, a clean room design is done by having someone examine the system to be reimplemented and having this person write a specification. This specification is then reviewed by a lawyer to ensure that no copyrighted material is included. The specification is then implemented by a team with no connection to the original examiners.
+Also read these [answers](http://ask.slashdot.org/story/00/06/09/0136236/what-is-a-clean-room-implementation).
+
+Ideally the one who examine LF2 and produce the specification should be a different person from the one who implement it. But we are short of programmers that sometimes they may be the same person.
+
+The aim of Project F is to produce a completely free code base for the community. It is critical to maintain the cleanliness of the F.LF repository. Though, the publishing of F.LF in bundle with LF2 materials could be copyright infringement.
+
+The bottom line is, no trade secret or proprietary source code can enter the F.LF repository. the following rules are extremely important, and have to be beared in mind.
+
+#### do not state the long form of LF2. it could be Loyal Fighter 2 or anything
+#### do not look into the disassembly of LF2.
+
+### engineering process
+
+The top-down engineering process starts from playing LF2, observing its behaviour, and write a specification. The specification is then implemented.
+
+The bottom-up engineering process starts implementing a system, and observe the behavioural difference from LF2, and improve the implementation. If everything is okay, then write a specification.
+
+Both processes produce a specification and an implementation as the end product. A task is said to be finished only if both the specification and implementation is finished and comply to LF2 behavior to a high degree.
