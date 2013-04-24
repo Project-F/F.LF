@@ -40,7 +40,7 @@ define(['LF/packages'],function(packages){
 				{
 					require( [path+mani.data], load_data);
 					manifest=mani;
-					load_something('specification');
+					load_something('properties');
 					load_something('resourcemap');
 				});
 			}
@@ -100,7 +100,7 @@ define(['LF/packages'],function(packages){
 				var content_schema=
 				{
 					data:'object',
-					specification:'object',
+					properties:'object',
 					resourcemap:'object!optional',
 					location:'string'
 				}

@@ -9,16 +9,45 @@ define(['F.core/sprite','F.core/animator'], function (Fsprite, Fanimator)
 /*\
  * sprite
  [ class ]
- - bmp (object) as defined in data files
- - parent (DOM node) to append the new sprite
+ - bmp (object) data structure as defined in data files
+ - parent (DOM node) where to append the new sprite
 \*/
 function sprite (bmp, parent)
 {
+	/*\
+	 * sprite.num_of_images
+	 [ property ]
+	\*/
 	var num_of_images = this.num_of_images = bmp.file.length;
+	/*\
+	 * sprite.w
+	 [ property ]
+	 * width
+	\*/
+	/*\
+	 * sprite.h
+	 [ property ]
+	 * height
+	\*/
 	var w = this.w = bmp.file[0].w+1;
 	var h = this.h = bmp.file[0].h+1;
+	/*\
+	 * sprite.ani
+	 [ property ]
+	 - Fanimator (object)
+	\*/
 	var ani = this.ani = {length:0};
+	/*\
+	 * sprite.dir
+	 [ property ]
+	 * `'left'` or `'right'`
+	\*/
 	this.dir = 'right';
+	/*\
+	 * sprite.cur_img
+	 [ property ]
+	 * current image index
+	\*/
 	this.cur_img = 0;
 
 	var sp_con=
@@ -27,6 +56,11 @@ function sprite (bmp, parent)
 		wh: {x:w,y:h},
 		img:{}
 	}
+	/*\
+	 * sprite.sp
+	 [ property ]
+	 - Fsprite (object)
+	\*/
 	var sp = this.sp = new Fsprite(sp_con);
 
 	for( var i=0; i<bmp.file.length; i++)
@@ -74,7 +108,11 @@ function sprite (bmp, parent)
 		ani[i] = new Fanimator(ani_con);
 	}
 }
-
+/*\
+ * sprite.show_pic
+ [ method ]
+ - I (number) picture index to show
+\*/
 sprite.prototype.show_pic = function(I)
 {
 	var slot=0;
@@ -96,7 +134,12 @@ sprite.prototype.show_pic = function(I)
 	this.w = this.ani[this.cur_img].config.w;
 	this.h = this.ani[this.cur_img].config.h;
 }
-
+/*\
+ * sprite.switch_lr
+ [ method ]
+ * switch sprite direction
+ - dir (string) `'left'` or `'right'`
+\*/
 sprite.prototype.switch_lr = function(dir) //switch to `dir`
 {
 	var I = this.ani[this.cur_img].I;
@@ -105,20 +148,36 @@ sprite.prototype.switch_lr = function(dir) //switch to `dir`
 	this.ani[this.cur_img].hmirror(this.dir==='left');
 	this.ani[this.cur_img].set_frame(I);
 }
-
+/*\
+ * sprite.set_xy
+ [ method ]
+ - P (object) `{x,y}`
+\*/
 sprite.prototype.set_xy = function(P)
 {
 	this.sp.set_xy(P);
 }
+/*\
+ * sprite.set_z
+ [ method ]
+ - Z (number)
+\*/
 sprite.prototype.set_z = function(Z)
 {
 	this.sp.set_z(Z);
 }
-
+/*\
+ * sprite.show
+ [ method ]
+\*/
 sprite.prototype.show = function()
 {
 	this.sp.show();
 }
+/*\
+ * sprite.hide
+ [ method ]
+\*/
 sprite.prototype.hide = function()
 {
 	this.sp.hide();

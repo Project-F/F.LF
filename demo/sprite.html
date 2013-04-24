@@ -7,17 +7,18 @@
 <div id='canvas' class='canvas'></div>
 <script src="../third_party/require.js"></script>
 <script>
+//sample usage of sprite.js
 requirejs.config({
 	baseUrl: '../../',
 	config:
 	{
 		'F.core/sprite':
 		{
-			baseUrl: '../../LFrelease/'
+			baseUrl: '../../LFrelease/LF2_19/'
 		}
 	}
 });
-requirejs(['LF/sprite','LFrelease/data/bandit'], function(sprite,data_bandit)
+requirejs(['LF/sprite','LFrelease/LF2_19/data/bandit'], function(sprite,data_bandit)
 {
 	var bandit=data_bandit;
 	var sp = new sprite(bandit.bmp,document.getElementById('canvas'));

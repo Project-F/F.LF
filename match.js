@@ -26,7 +26,7 @@ factory,Scene,Random)
 		this.stage = config.stage;
 		this.state = config.state;
 		this.data = config.package.data;
-		this.spec = config.package.specification;
+		this.spec = config.package.properties;
 		this.grouped_object = Futil.group_elements(this.data.object,'type');
 		this.config = config.config;
 		if( !this.config)

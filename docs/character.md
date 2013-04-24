@@ -8,7 +8,7 @@ This specification is based on information by LF-EMPIRE. [http://lf-empire.de/en
 #### file element attributes
 - `file(xx-yy)`
 - `w`, `h`, `row`, `col`
-	- `row` is actually number of columns, or, correctly, number of pictures in one row
+	- `row` is actually number of columns, or, correctly, number of frames in one row
 
 example:
 ```
@@ -45,7 +45,7 @@ rowing_distance: 5
 }
 ```
 
-# frames
+# frame sequences
 
 ```
 000 - 003: standing
