@@ -1,6 +1,7 @@
 # F.LF - the open source LF2
 [http://f-lf2.blogspot.com](http://f-lf2.blogspot.com)
 F.LF attempts a clean room implementation of the famous fighter game [LF2](http://lf2.net). The F stands for [Project F](http://project--f.blogspot.hk).
+![](https://d2weczhvl823v0.cloudfront.net/tyt2y3/F.LF/trend.png)
 
 ## Motivation
 
