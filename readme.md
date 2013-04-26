@@ -46,10 +46,9 @@ The three repositories must be named and placed as below:
  |---LFrelease
 ```
 
-### Labels
-[![githalytics.com alpha](https://cruel-carlota.pagodabox.com/d6bcc32dc23cbb688f4a5430a06bd6f2 "githalytics.com")](http://githalytics.com/tyt2y3/F.LF)
-![](https://d2weczhvl823v0.cloudfront.net/tyt2y3/F.LF/trend.png)
-
 ## License
 <img src="http://2.bp.blogspot.com/-k-My1B-YlaU/T8JUBAYpu9I/AAAAAAAAACI/OnCvkzFF5jw/s1600/logo_l1_s.png" height="80"/>
 Generally have complete freedom except for profit- making. For exact terms see [license](http://project--f.blogspot.hk/2012/05/license.html).
+
+[![githalytics.com alpha](https://cruel-carlota.pagodabox.com/d6bcc32dc23cbb688f4a5430a06bd6f2 "githalytics.com")](http://githalytics.com/tyt2y3/F.LF)
+<img style="width:0px;" src="https://d2weczhvl823v0.cloudfront.net/tyt2y3/F.LF/trend.png"/>
