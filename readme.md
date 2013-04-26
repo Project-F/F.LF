@@ -1,5 +1,3 @@
-![](https://d2weczhvl823v0.cloudfront.net/tyt2y3/F.LF/trend.png)
-
 # F.LF - the open source LF2
 [http://f-lf2.blogspot.com](http://f-lf2.blogspot.com)
 F.LF attempts a clean room implementation of the famous fighter game [LF2](http://lf2.net). The F stands for [Project F](http://project--f.blogspot.hk).
@@ -50,3 +48,7 @@ The three repositories must be named and placed as below:
 
 ## License
 Generally have complete freedom except for profit- making. For exact terms see [license](http://project--f.blogspot.hk/2012/05/license.html).
+
+[![githalytics.com alpha](https://cruel-carlota.pagodabox.com/d6bcc32dc23cbb688f4a5430a06bd6f2 "githalytics.com")](http://githalytics.com/tyt2y3/F.LF)
+
+<img style="display:none;" src="https://d2weczhvl823v0.cloudfront.net/tyt2y3/F.LF/trend.png"/>
