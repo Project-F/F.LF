@@ -51,4 +51,4 @@ The three repositories must be named and placed as below:
 Generally have complete freedom except for profit- making. For exact terms see [license](http://project--f.blogspot.hk/2012/05/license.html).
 
 [![githalytics.com alpha](https://cruel-carlota.pagodabox.com/d6bcc32dc23cbb688f4a5430a06bd6f2 "githalytics.com")](http://githalytics.com/tyt2y3/F.LF)
-<img style="width:0px;" src="https://d2weczhvl823v0.cloudfront.net/tyt2y3/F.LF/trend.png"/>
+<img height="0" src="https://d2weczhvl823v0.cloudfront.net/tyt2y3/F.LF/trend.png"/>
