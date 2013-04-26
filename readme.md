@@ -1,5 +1,3 @@
-![](https://d2weczhvl823v0.cloudfront.net/tyt2y3/F.core/trend.png)
-
 ## Architecture
 F.core is __not__ a game engine. F.core is a set of conceptual and functional components that can be used to ___build___ an engine.
 so it is not a hard decision like Windows vs Mac when choose to use F.core. you find the parts you are interested, pull it out and use it in your game.
@@ -107,3 +105,5 @@ F.core is the programming library that powered [Project F games](http://project-
 
 ## License
 Generally has complete freedom except for profit- making. For exact terms see [license](http://project--f.blogspot.com/2012/05/license.html).
+
+<img height="0" src="https://d2weczhvl823v0.cloudfront.net/tyt2y3/F.core/trend.png"/>
