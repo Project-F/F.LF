@@ -49,6 +49,21 @@ function(livingobject, Global, Futil)
 					}
 				}
 			break;
+			case 'combo':
+				switch(K)
+				{
+				case 'left': case 'right':
+				case 'def': case 'jump': case 'att':
+				case 'run':
+				break;
+				default:
+					if( $.frame.D[K])
+					{
+						$.trans.frame($.frame.D[K], 11);
+						return 1;
+					}
+				}
+			break;
 		}},
 
 		//state specific processing to different events
@@ -76,25 +91,25 @@ function(livingobject, Global, Futil)
 						$.trans.frame(16, 10);
 					else
 						$.trans.frame(9, 10);
-				break;
+				return 1;
 				case 'def':
 					if( $.hold.obj && $.hold.obj.type==='heavyweapon')
-						return ;
+						return 1;
 					$.trans.frame(110, 10);
-				break;
+				return 1;
 				case 'jump':
 					if( $.hold.obj && $.hold.obj.type==='heavyweapon')
 					{
 						if( !$.proper('heavy_weapon_jump'))
-							return ;
+							return 1;
 						else
 						{
 							$.trans.frame($.proper('heavy_weapon_jump'), 10);
-							return ;
+							return 1;
 						}
 					}
 					$.trans.frame(210, 10);
-				break;
+				return 1;
 				case 'att':
 					if( $.hold.obj)
 					{
@@ -102,22 +117,22 @@ function(livingobject, Global, Futil)
 						if( $.hold.obj.type==='heavyweapon')
 						{
 							$.trans.frame(50, 10); //throw heavy weapon
-							return ;
+							return 1;
 						}
 						else if( $.proper($.hold.id,'just_throw'))
 						{
 							$.trans.frame(45, 10); //throw light weapon
-							return ;
+							return 1;
 						}
 						else if ( dx && $.proper($.hold.id,'stand_throw'))
 						{
 							$.trans.frame(45, 10); //throw weapon
-							return ;
+							return 1;
 						}
 						else if( $.proper($.hold.id,'attackable')) //light weapon attack
 						{
 							$.trans.frame($.match.random()<0.5? 20:25, 10);
-							return ;
+							return 1;
 						}
 					}
 					//
@@ -130,12 +145,12 @@ function(livingobject, Global, Futil)
 						{
 							$.trans.frame(70, 10); //I 'll use super punch!
 							$.itr_rest_update( hit[t].uid, hit_itr);
-							return;
+							return 1;
 						}
 					}
 					//
 					$.trans.frame($.match.random()<0.5? 60:65, 10);
-				break;
+				return 1;
 				}
 			break;
 		}},
@@ -184,7 +199,7 @@ function(livingobject, Global, Futil)
 
 			case 'combo':
 				//walking same as standing
-				$.states['0'].call($,event,K);
+				return $.states['0'].call($,event,K);
 			break;
 		}},
 
@@ -223,28 +238,29 @@ function(livingobject, Global, Futil)
 							$.trans.frame(19, 10);
 						else
 							$.trans.frame(218, 10);
+						return true;
 					}
 				break;
 
 				case 'def':
 					if( $.hold.obj && $.hold.obj.type==='heavyweapon')
-						return ;
+						return 1;
 					$.trans.frame(102, 10);
-				break;
+				return true;
 
 				case 'jump':
 					if( $.hold.obj && $.hold.obj.type==='heavyweapon')
 					{
 						if( !$.proper('heavy_weapon_dash'))
-							return ;
+							return 1;
 						else
 						{
 							$.trans.frame($.proper('heavy_weapon_dash'), 10);
-							return ;
+							return 1;
 						}
 					}
 					$.trans.frame(213, 10);
-				break;
+				return true;
 
 				case 'att':
 					if( $.hold.obj)
@@ -252,7 +268,7 @@ function(livingobject, Global, Futil)
 						if( $.hold.obj.type==='heavyweapon')
 						{
 							$.trans.frame(50, 10); //throw heavy weapon
-							return ;
+							return 1;
 						}
 						else
 						{
@@ -260,17 +276,17 @@ function(livingobject, Global, Futil)
 							if( dx && $.proper($.hold.id,'run_throw'))
 							{
 								$.trans.frame(45, 10); //throw light weapon
-								return ;
+								return 1;
 							}
 							else if( $.proper($.hold.id,'attackable'))
 							{
 								$.trans.frame(35, 10); //light weapon attack
-								return ;
+								return 1;
 							}
 						}
 					}
 					$.trans.frame(85, 10);
-				break;
+				return 1;
 				}
 			break;
 		}},
@@ -332,6 +348,7 @@ function(livingobject, Global, Futil)
 					the jump attack event should be pended and be performed on 212
 					 */
 					$.state4.pending_attack = true;
+					return 1;
 				}
 			break;
 		}},
@@ -356,6 +373,7 @@ function(livingobject, Global, Futil)
 						else
 							$.trans.frame(90, 10);
 						$.switch_dir=false;
+						return 1;
 					}
 				}
 				if( K==='left' || K==='right')
@@ -372,6 +390,7 @@ function(livingobject, Global, Futil)
 							if( $.frame.N===214) $.trans.frame(213, 0);
 							if( $.frame.N===217) $.trans.frame(216, 0);
 						}
+						return 1;
 					}
 				}
 			break;
@@ -484,10 +503,13 @@ function(livingobject, Global, Futil)
 						$.trans.frame($.frame.D.cpoint.aaction, 10);
 					else
 						$.trans.frame(122, 10);
-				break;
+				return 1;
 				case 'jump':
 					if($.frame.D.cpoint.jaction)
+					{
 						$.trans.frame($.frame.D.cpoint.jaction, 10);
+						return 1;
+					}
 				break;
 			}
 			break;
@@ -670,6 +692,7 @@ function(livingobject, Global, Futil)
 					if( K==='def')
 					{
 						$.trans.frame(102, 10);
+						return 1;
 					}
 					if( K==='jump')
 					{
@@ -686,6 +709,7 @@ function(livingobject, Global, Futil)
 							$.trans.inc_wait(2, 10, 99); //lock until frame transition
 							$.trans.set_next(210, 10);
 						}
+						return 1;
 					}
 				}
 			break;

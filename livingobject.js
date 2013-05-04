@@ -94,9 +94,14 @@ function ( Global, Sprite, Mech, Fcombodec)
 			function combo_event(kobj)
 			{
 				var K=kobj.name;
-				//combo event
-				var tar=$.states[$.frame.D.state];
-				if( tar) tar.call($,'combo',K);
+				/**	different from `state_update`, current state receive the combo event first,
+					and only if it returned falsy result, the combo event is passed to the generic state
+				 */
+				var tar1=$.states[$.frame.D.state];
+				if( tar1) var res1=tar1.call($,'combo',K);
+				var tar2=$.states['generic'];
+				if(!res1)
+				if( tar2) var res2=tar2.call($,'combo',K);
 
 				if( K==='left' || K==='right')
 					if( $.switch_dir)
@@ -109,7 +114,16 @@ function ( Global, Sprite, Mech, Fcombodec)
 				no_repeat_key: Global.detector_config.no_repeat_key,
 				callback: combo_event //callback function when combo detected
 			}
-			$.combodec = new Fcombodec($.con, dec_con, Global.combo_list);
+			var combo_list = [
+				{ name:'left', seq:['left']},
+				{ name:'right', seq:['right']},
+				{ name:'def', seq:['def']},
+				{ name:'jump', seq:['jump']},
+				{ name:'att', seq:['att']},
+				{ name:'run', seq:['right','right']},
+				{ name:'run', seq:['left','left']}
+			];
+			$.combodec = new Fcombodec($.con, dec_con, combo_list.concat(Global.combo_list));
 		}
 	}
 
@@ -392,6 +406,7 @@ function ( Global, Sprite, Mech, Fcombodec)
 		//0-9: natural
 		//     0: natural
 		// 10: move,defend,jump,punch,catching,caught
+		// 11: special moves
 		// 15: environmental interactions
 		// 2x: interactions
 		//    20: being punch

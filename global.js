@@ -17,22 +17,15 @@ var G={};
  | { name:'DvA', seq:['def','down','att']} //example
 \*/
 G.combo_list = [
-	{ name:'left', seq:['left']},
-	{ name:'right', seq:['right']},
-	{ name:'def', seq:['def']},
-	{ name:'jump', seq:['jump']},
-	{ name:'att', seq:['att']},
-	{ name:'run', seq:['right','right']},
-	{ name:'run', seq:['left','left']},
-	{ name:'DvA', seq:['def','down','att']},
-	{ name:'D<A', seq:['def','left','att']},
-	{ name:'D>A', seq:['def','right','att']},
-	{ name:'D^A', seq:['def','up','att']},
-	{ name:'DvJ', seq:['def','down','jump']},
-	{ name:'D<J', seq:['def','left','jump']},
-	{ name:'D>J', seq:['def','right','jump']},
-	{ name:'D^J', seq:['def','up','jump']},
-	{ name:'DJA', seq:['def','jump','att']}
+	{ name:'hit_Fa', seq:['def','left','att']},
+	{ name:'hit_Fa', seq:['def','right','att']},
+	{ name:'hit_Da', seq:['def','down','att']},
+	{ name:'hit_Ua', seq:['def','up','att']},
+	{ name:'hit_Dj', seq:['def','down','jump']},
+	{ name:'hit_Uj', seq:['def','up','jump']},
+	{ name:'hit_Fj', seq:['def','left','jump']},
+	{ name:'hit_Fj', seq:['def','right','jump']},
+	{ name:'hit_ja', seq:['def','jump','att']}
 ];
 /*\
  * global.detector_config
