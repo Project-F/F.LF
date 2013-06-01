@@ -22,9 +22,11 @@ define( function(){
 |	var con = new controller(con_config);
 |	var dec_config=
 |	{
-|		timeout: 30,  //time before clearing the sequence buffer in terms of frames
-|		comboout: 15, //the max time interval between keys to make a combo
-|		callback: dec_callback //callback function when combo detected
+|		timeout: 30,  //[optional] time before clearing the sequence buffer in terms of frames
+|		comboout: 15, //[optional] the max time interval between keys to make a combo,
+|			//an interrupt is inserted when comboout expires
+|		clear_on_combo: true, //[optional] if true, will clear the sequence buffer when a combo occur
+|		callback: dec_callback, //callback function when combo detected
 |		rp: {up:1,down:1,left:2,right:2,def:3,jump:1,att:5}
 |			//[optional] max repeat count of each key, unlimited if not stated
 |	};
@@ -32,7 +34,7 @@ define( function(){
 |	{
 |		name: 'blast',	//combo name
 |		seq:  ['def','right','att'], //array of key sequence
-|		interrupt: true //[optional] if true, will prevent other combo extending the current combo
+|		maxtime: 10 //[optional] the max allowed time difference between the first and last key input
 |	} //,,,
 |	];
 |	var dec = new combodec ( con, dec_config, combo);
@@ -73,8 +75,9 @@ function combodec (controller, config, combo)
 	 * combodec.seq
 	 - (array) the key input sequence. note that combodec logs key names rather than key stroke,
 	 * i.e. `up`,`down` rather than `w`,`s`
+	 - (object) each is `{k:key,t:time}`
 	 * 
-	 * will be cleared regularly as defined by `config.timeout`
+	 * will be cleared regularly as defined by `config.timeout` or `config.clear_on_combo`
 	 [ property ]
 	\*/
 	this.seq=new Array();
@@ -121,11 +124,13 @@ combodec.prototype.key=function(K, down)
 		push=false;
 	//  remarks: opera linux has a strange behavior that repeating keys **do** fire keyup events
 
-	this.timeout=this.time+this.config.timeout;
-	this.comboout=this.time+this.config.comboout;
+	if( this.config.timeout)
+		this.timeout=this.time+this.config.timeout;
+	if( this.config.comboout)
+		this.comboout=this.time+this.config.comboout;
 
 	if( push)
-		seq.push(K);
+		seq.push({k:K,t:this.time});
 
 	if ( this.combo && push)
 	{	//detect combo
@@ -133,9 +138,12 @@ combodec.prototype.key=function(K, down)
 		for (var i in C)
 		{
 			var detected=true;
-			for (var j=seq.length-C[i].seq.length, k=0; j<seq.length; j++,k++)
+			var j=seq.length-C[i].seq.length;
+			if( j<0) detected=false;
+			else for (var k=0; j<seq.length; j++,k++)
 			{
-				if( C[i].seq[k] !== seq[j])
+				if( C[i].seq[k] !== seq[j].k ||
+					(C[i].maxtime && seq[seq.length-1].t-seq[j].t>C[i].maxtime))
 				{
 					detected=false;
 					break;
@@ -144,8 +152,8 @@ combodec.prototype.key=function(K, down)
 			if( detected)
 			{
 				this.config.callback(C[i]);
-				if( C[i].interrupt)
-					this.seq.push('_');
+				if( this.config.clear_on_combo)
+					this.clear_seq();
 			}
 		}
 	}
@@ -160,6 +168,8 @@ combodec.prototype.key=function(K, down)
 combodec.prototype.clear_seq=function()
 {
 	this.seq.length=0;
+	this.timeout=this.time-1;
+	this.comboout=this.time-1;
 }
 
 /*\
@@ -172,7 +182,7 @@ combodec.prototype.frame=function()
 	if( this.time===this.timeout)
 		this.clear_seq();
 	if( this.time===this.comboout)
-		this.seq.push('_');
+		this.seq.push({k:'_',t:this.time});
 	this.time++;
 }
 

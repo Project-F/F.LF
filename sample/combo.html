@@ -26,6 +26,8 @@ var dec_config =
 var combo = [
 	{ name:'氣功波', seq:['def','right','att']},
 	{ name:'氣功波', seq:['def','left','att']},
+	{ name:'超級氣功波', seq:['def','right','att','att','att','att','att']},
+	{ name:'超級氣功波', seq:['def','left','att','att','att','att','att']},
 	{ name:'橫格', seq:['def','right','jump']},
 	{ name:'橫格', seq:['def','left','jump']},
 	{ name:'上攻', seq:['def','up','att']},
@@ -45,7 +47,10 @@ var TIMER = setInterval(onEnterFrame,1000/72); //72 fps
 function onEnterFrame()
 {
 	dec.frame(); //must supply frame events to detector
-	seq.innerHTML=dec.seq.toString();
+	var str='';
+	for( var i=0; i<dec.seq.length; i++)
+		str+=(i===0?'':',')+dec.seq[i].k;
+	seq.innerHTML=str;
 }
 
 function print(combo) //callback function when combo detected
