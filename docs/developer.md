@@ -26,7 +26,55 @@ F.LF is to be hackable. The architecture answer yes to the following questions:
 - can I append a new component by adding an entry to a list?
 - can I replace a module by implementing one with same interface?
 
-# roadmap
+# Getting started
+
+### join us
+get a [github](https://github.com/) account, join the discussion on [github](https://github.com/tyt2y3/F.LF/issues). remember to put the appropriate label:
+- `implementation` for implementation of new features (on or not on the roadmap)
+- `bug` to report general bugs
+- `compliance` for issues and observations releated to LF2 compliance
+- `question` to seek help
+- `suggestion` for suggestions, comments and general discussions.
+
+### development environment
+
+- programming text editor
+	- I recommend [geany](http://www.geany.org/) and [geany portable for windows](http://geanyportable.org/)
+- [node.js](http://nodejs.org/)
+- [git](http://git-scm.com/)
+- [optional] [console2](http://sourceforge.net/projects/console/)
+	- only to make the git console looks better
+- repositories
+	 - [github help/fork-a-repo](https://help.github.com/articles/fork-a-repo)
+	 - fork [F.core](https://github.com/tyt2y3/F.core), [F.LF](https://github.com/tyt2y3/F.LF) and [LFrelease](https://github.com/tyt2y3/LFrelease). The three repositories must be named and placed as below:
+
+```
+ F
+ |---F.core
+ |---LF
+ |---LFrelease
+```
+
+### workflow
+
+#### collaboration model
+- [github help/fork & pull](https://help.github.com/articles/using-pull-requests)
+- in normal circumstances, changes to `F.core` should be avoided.
+- do development on dev branchs and pull `origin/master` frequently. resolve conflicts as soon as possible.
+- [dchelimsky/Topic Branches](https://github.com/dchelimsky/rspec/wiki/Topic-Branches)
+- only make pull request on topic branches, that is, branch with only one important change.
+
+	> you can cherry-pick the important updates to a separate branch and make a pull request on that branch (try [this](http://stackoverflow.com/questions/5256021/send-a-pull-request-on-github-for-only-latest-commit)). or try using one branch for each topic in the first place (`docs` branch for documentation, `test` branch for test cases).
+- only make pull request when reasonable progress is being made
+	- program code should be functional and slightly tested
+- do not include personal code playground or unrelated files in a pull request.
+
+#### make demo
+in `F/LF/tools`, run `./make_demo.sh` to create a latest demo in `LFrelease`.
+in `F/LFrelease`, run `./make_release.sh` to commit and push changes.
+after pushing to branch `gh-pages`, the demo should be live at ` http://your-github-username.github.io/LFrelease/demo/demo3.html`
+
+# Roadmap
 
 here lists the unimplemented features.
 
@@ -70,6 +118,14 @@ here lists the unimplemented features.
 	- currently, we use a requirejs plugin to load data files all at once during startup.
 	- however, this will increase startup time and waste bandwidth
 	- we would like to have a content loader which load resources on demand (lazy loading), at the start of a match.
+
+### software engineering
+- build system
+	- possibly [grunt](http://gruntjs.com/). the current build system is based on linux shell script, which is not platform independent and not javascript oriented.
+- automated test suite
+	- to develope a test suite specifically for F.LF. to test against the specification of:
+		- frame transition sequence
+		- movement (position difference)
 
 ### documentation compilation
 - the LF2 standard
