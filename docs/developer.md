@@ -37,8 +37,9 @@ F.LF is to be hackable. The architecture answer yes to the following questions:
 - [optional] [console2](http://sourceforge.net/projects/console/)
 	- only to make the git console looks better
 - repositories
-	 - fork [F.core](https://github.com/tyt2y3/F.core), [F.LF](https://github.com/tyt2y3/F.LF) and [LFrelease](https://github.com/tyt2y3/LFrelease). The three repositories must be named and placed as below:
 	 - [github help/fork-a-repo](https://help.github.com/articles/fork-a-repo)
+	 - fork [F.core](https://github.com/tyt2y3/F.core), [F.LF](https://github.com/tyt2y3/F.LF) and [LFrelease](https://github.com/tyt2y3/LFrelease). The three repositories must be named and placed as below:
+
 ```
  F
  |---F.core
@@ -51,10 +52,11 @@ look into `LF/demo`
 
 #### collaboration model
 - [github help/fork & pull](https://help.github.com/articles/using-pull-requests)
-- in normal circumstances, change to `F.core` should be avoided.
+- in normal circumstances, changes to `F.core` should be avoided.
 - do development on dev branchs and pull `origin/master` frequently. resolve conflicts as soon as possible.
 - [dchelimsky/Topic Branches](https://github.com/dchelimsky/rspec/wiki/Topic-Branches)
 - only make pull request on topic branches, that is, branch with only one important change.
+
 	> you can cherry-pick the important updates to a separate branch and make a pull request on that branch (try [this](http://stackoverflow.com/questions/5256021/send-a-pull-request-on-github-for-only-latest-commit)). or try using one branch for each topic in the first place (`docs` branch for documentation, `test` branch for test cases).
 - only make pull request when reasonable progress is being made
 	- program code should be functional and slightly tested
@@ -63,7 +65,7 @@ look into `LF/demo`
 #### make demo
 in `F/LF/tools`, run `./make_demo.sh` to create a latest demo in `LFrelease`.
 in `F/LFrelease`, run `./make_release.sh` to commit and push changes.
-after pushing to branch `gh-pages`, the demo should be live at `your-github-username.github.io/LFrelease/demo/demo3.html`
+after pushing to branch `gh-pages`, the demo should be live at ` http://your-github-username.github.io/LFrelease/demo/demo3.html`
 
 # Roadmap
 
@@ -115,8 +117,8 @@ here lists the unimplemented features.
 	- possibly [grunt](http://gruntjs.com/). the current build system is based on linux shell script, which is not platform independent and not javascript oriented.
 - automated test suite
 	- to develope a test suite specifically for F.LF. to test against the specification of:
-	- frame transition sequence
-	- movement (position difference)
+		- frame transition sequence
+		- movement (position difference)
 
 ### documentation compilation
 - the LF2 standard
