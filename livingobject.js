@@ -37,8 +37,9 @@ function ( Global, Sprite, Mech, Fcombodec)
 		$.data=data;
 		$.spec=config.spec;
 		$.team=config.team;
-		$.states = null;
-		$.states_switch_dir = null;
+		$.states = null; //the collection of states forming a state machine
+		$.statemem = {}; //state memory, will be cleared on every state transition
+		$.states_switch_dir = null; //whether to allow switch dir in each state
 
 		//construction
 		$.match=config.match;
@@ -94,37 +95,53 @@ function ( Global, Sprite, Mech, Fcombodec)
 			function combo_event(kobj)
 			{
 				var K=kobj.name;
-				/**	different from `state_update`, current state receive the combo event first,
-					and only if it returned falsy result, the combo event is passed to the generic state
-				 */
-				var tar1=$.states[$.frame.D.state];
-				if( tar1) var res1=tar1.call($,'combo',K);
-				var tar2=$.states['generic'];
-				if(!res1)
-				if( tar2) var res2=tar2.call($,'combo',K);
-
 				if( K==='left' || K==='right')
+				{
 					if( $.switch_dir)
 						$.switch_dir_fun(K);
+				}
+				$.statemem.combo = K;
 			}
 			var dec_con = //combo detector
 			{
-				timeout: Global.detector_config.timeout,
-				comboout: Global.detector_config.comboout,
-				no_repeat_key: Global.detector_config.no_repeat_key,
+				clear_on_combo: true,
 				callback: combo_event //callback function when combo detected
 			}
 			var combo_list = [
-				{ name:'left', seq:['left']},
-				{ name:'right', seq:['right']},
-				{ name:'def', seq:['def']},
-				{ name:'jump', seq:['jump']},
-				{ name:'att', seq:['att']},
-				{ name:'run', seq:['right','right']},
-				{ name:'run', seq:['left','left']}
+				{ name:'left',	seq:['left'],	clear_on_combo:false},
+				{ name:'right',	seq:['right'],	clear_on_combo:false},
+				{ name:'def',	seq:['def'],	clear_on_combo:false},
+				{ name:'jump',	seq:['jump'],	clear_on_combo:false},
+				{ name:'att',	seq:['att'],	clear_on_combo:false},
+				{ name:'run',	seq:['right','right'],	maxtime:9},
+				{ name:'run',	seq:['left','left'],	maxtime:9}
+				//plus those defined in Global.combo_list
 			];
 			$.combodec = new Fcombodec($.con, dec_con, combo_list.concat(Global.combo_list));
 		}
+	}
+
+	//to emit a combo event
+	livingobject.prototype.combo_update = function()
+	{		
+		/**	different from `state_update`, current state receive the combo event first,
+			and only if it returned falsy result, the combo event is passed to the generic state.
+			if the combo event is not consumed, it is stored in state memory,
+			resulting in 1 combo event being emited every frame until it is being handled or
+			overridden by a new combo event
+		 */
+		var $=this;
+		var K = $.statemem.combo;
+		if(!K) return ;
+
+		var tar1=$.states[$.frame.D.state];
+		if( tar1) var res1=tar1.call($,'combo',K);
+		var tar2=$.states['generic'];
+		if(!res1)
+		if( tar2) var res2=tar2.call($,'combo',K);
+		if( res1 || res2 ||
+			K==='left' || K==='right') //dir combos are not persistent
+			$.statemem.combo = null;
 	}
 
 	//setup for a match
@@ -193,7 +210,7 @@ function ( Global, Sprite, Mech, Fcombodec)
 		$.itr.lasthit--;
 		if( $.itr.lasthit<-3)
 		{
-			if( $.health.fall>0 && $.health.fall<10) $.health.fall=0;
+			//if( $.health.fall>0 && $.health.fall<10) $.health.fall=0;
 			if( $.health.fall>0) $.health.fall += GC.recover.fall;
 			if( $.health.bdefend>0) $.health.bdefend += GC.recover.bdefend;
 		}
@@ -223,14 +240,8 @@ function ( Global, Sprite, Mech, Fcombodec)
 	livingobject.prototype.TU=function()
 	{
 		var $=this;
-
-		//fetch inputs
-		if( $.con)
-			$.con.fetch();
-
 		//state
 		$.TU_update();
-
 		//combo detector
 		if( $.con)
 			$.combodec.frame();
@@ -238,8 +249,16 @@ function ( Global, Sprite, Mech, Fcombodec)
 
 	livingobject.prototype.transit=function()
 	{
-		if( !this.effect.stuck)
-			this.trans.trans();
+		var $=this;
+		//fetch inputs
+		if( $.con)
+		{
+			$.con.fetch();
+			$.combo_update();
+		}
+		//frame transition
+		if( !$.effect.stuck)
+			$.trans.trans();
 	}
 
 	livingobject.prototype.set_pos=function(x,y,z)
@@ -453,6 +472,11 @@ function ( Global, Sprite, Mech, Fcombodec)
 			}
 		}
 
+		this.get_wait=function()
+		{
+			return wait;
+		}
+
 		this.set_next=function(value,au,out)
 		{
 			if(!au) au=0;
@@ -513,6 +537,7 @@ function ( Global, Sprite, Mech, Fcombodec)
 
 					if( is_trans)
 					{
+						$.statemem = {};
 						var old_switch_dir=$.switch_dir;
 						if( $.states_switch_dir && $.states_switch_dir[$.frame.D.state] !== undefined)
 							$.switch_dir=$.states_switch_dir[$.frame.D.state];

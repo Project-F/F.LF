@@ -27,23 +27,6 @@ G.combo_list = [
 	{ name:'hit_Fj', seq:['def','right','jump']},
 	{ name:'hit_ja', seq:['def','jump','att']}
 ];
-/*\
- * global.detector_config
- [ property ]
- * combo detector config
- * 
- * {
- - timeout (number) time to clear buffer
- - comboout (number) the max time interval(in frames) between keys to make a combo
- - no_repeat_key (number) eliminate repeated key strokes by browser
- * }
-\*/
-G.detector_config =
-{
-	timeout:30, //(approx. 1s in 30fps)
-	comboout:8,
-	no_repeat_key: true
-};
 
 G.gameplay={};
 var GC = G.gameplay;
@@ -96,7 +79,7 @@ GC.itr={};
 GC.itr.hit_stall= 3; //default stall when hit somebody
 
 GC.recover={};
-GC.recover.fall= -1; //fall recover constant
+GC.recover.fall= -0.7; //fall recover constant
 GC.recover.bdefend= -0.5; //bdefend recover constant
 
 GC.effect={};
@@ -106,11 +89,11 @@ GC.effect.duration= 3; //default effect lasting duration
 GC.character={};
 GC.character.bounceup={};
 GC.character.bounceup.limit={};
-GC.character.bounceup.limit.xy= 14.2; //defined speed threshold to bounce up again
+GC.character.bounceup.limit.xy= 13.4; //defined speed threshold to bounce up again
 GC.character.bounceup.limit.y= 11; //y threshold; will bounce if any one of xy,y is overed
 GC.character.bounceup.factor={};
-GC.character.bounceup.factor.x= 0.6; //defined bounce up factors
-GC.character.bounceup.factor.y= -0.4;
+GC.character.bounceup.factor.x= 0.5; //defined bounce up factors
+GC.character.bounceup.factor.y= -0.57;
 GC.character.bounceup.factor.z= 0.6;
 
 GC.defend={};
@@ -124,12 +107,12 @@ GC.fall.KO= 60; //defined KO
 GC.friction={};
 GC.friction.factor={}; //defined factor of friction when on the ground
 // friction is computed as: v -= |v|*degree1 + v*v*degree2
-GC.friction.factor.degree1= 0.26;
-GC.friction.factor.degree2= 0.02;
+GC.friction.factor.degree1= 0.28;
+GC.friction.factor.degree2= 0.005;
 GC.friction.fell={};
-GC.friction.fell.factor= 0.76; //previously 0.34; defined friction at the moment of falling onto ground
+GC.friction.fell.factor= 0.76; //defined friction at the moment of falling onto ground
 
-GC.min_speed= 1; //defined minimum speed
+GC.min_speed= 0.1; //defined minimum speed
 
 GC.gravity= 1.7; //defined gravity
 

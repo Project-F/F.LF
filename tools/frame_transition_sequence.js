@@ -1,7 +1,7 @@
 requirejs.config({
 	baseUrl: '../../'
 });
-requirejs(['LF/sprite','LFrelease/data/bandit'],
+requirejs(['LF/sprite','LFrelease/LF2_19/data/bandit'],
 function(sprite,bandit)
 {
 	define();
@@ -12,8 +12,8 @@ function(sprite,bandit)
 		//the complete definition of frame transition sequences
 
 		//bandit
-		bandit.bmp.file[0]["file(0-69)"] = "../../LFrelease/sprite/bandit_0.png";
-		bandit.bmp.file[1]["file(70-139)"] = "../../LFrelease/sprite/bandit_1.png";
+		bandit.bmp.file[0]["file(0-69)"] = "../../LFrelease/LF2_19/sprite/bandit_0.png";
+		bandit.bmp.file[1]["file(70-139)"] = "../../LFrelease/LF2_19/sprite/bandit_1.png";
 
 		list=
 		[
@@ -22,7 +22,7 @@ function(sprite,bandit)
 			seq:[
 			{	name: 'stop_running',
 				frame: [10,218,218,218,218,218,0],
-				remark:[]
+				remark:['','','','','','slided 21 px']
 			},
 			{	name: 'rowing',
 				frame: [10,102,102,103,103,103,104,104,104,105,105,105,219,219,219,0,0,0,0],
@@ -101,12 +101,24 @@ function(sprite,bandit)
 				remark:['5 TU. oscillates.','2 TU. effect vanishes']
 			},
 			{	name: 'catching',
-				frame: [5,120,121,121,122,123,123,123,123,123,121],
-				remark:['move and catch','caught. 5 TU','','att pressed','5 TU']
+				frame: [5,120,121,121,122,123,121],
+				remark:['move and catch','caught. 5 TU','','att pressed','5 TU','5 TU','can attack again']
 			},
 			{	name: 'caught',
 				frame: [226,131,130,130,130,130,132,132,132,132,132,130],
 				remark:['in dance of pain','being caught. 6 TU','','','','being hit','effect type 0','','','effect vanished']
+			},
+			{
+				name: 'being caught',
+				frame: [],
+				remark:['without any attack, 43 TU','1 attack, 46 TU','2 attacks, 49 TU','3 attacks, 52 TU','4 attacks, 55 TU',
+					'with 5 attacks closly packed, 61 TU','5 attacks losing 1 TU, 62 TU','5 attacks losing 2 TU, 63 TU',
+					'5 attacks losing 3 TU, 64 TU','5 attacks losing 4 TU, 65 TU']
+			},
+			{
+				name: 'released after being caught',
+				frame: [130,181,182,230],
+				remark:['','3 TU','2 TU','on ground']
 			},
 			{	name: 'throw lying man',
 				frame: [121,232,233,234,0],

@@ -48,15 +48,21 @@ function(livingobject, Global, Futil)
 						}
 					}
 				}
+				else if( ps.y===0 && $.frame.N===212)
+				{
+					$.trans.frame(999);
+				}
 			break;
 			case 'combo':
 				switch(K)
 				{
 				case 'left': case 'right':
-				case 'def': case 'jump': case 'att':
 				case 'run':
 				break;
 				default:
+					if( K==='def')  K='hit_d';
+					if( K==='jump') K='hit_j';
+					if( K==='att')  K='hit_a';
 					if( $.frame.D[K])
 					{
 						$.trans.frame($.frame.D[K], 11);
@@ -303,11 +309,6 @@ function(livingobject, Global, Futil)
 		'4':function(event,K) //jump
 		{	var $=this;
 			switch (event) {
-			case 'state_entry':
-				if( $.frame.N===210)
-					$.state4={}; //memory for state:4
-				//memory is cleared every `state_entry` of frame 210
-			break;
 
 			case 'frame':
 				if( $.frame.N===212 && $.frame.PN===211)
@@ -322,33 +323,29 @@ function(livingobject, Global, Futil)
 			break;
 
 			case 'TU':
-				if( $.frame.N===212 && $.state4.pending_attack)
-				{
-					if( $.hold.obj)
-					{
-						var dx = $.con.state.left !== $.con.state.right;
-						if( dx && $.proper($.hold.id,'jump_throw'))
-							$.trans.frame(52, 10); //sky light weapon throw
-						else if( $.proper($.hold.id,'attackable'))
-							$.trans.frame(30, 10); //light weapon attack
-					}
-					else
-						$.trans.frame(80, 10); //jump attack
-					//
-					$.state4.pending_attack = false;
-				}
 			break;
 
 			case 'combo':
 				if( K==='att')
 				{
-					/** $.state4.pending_attack:
-					a transition to jump_attack can only happen after entering frame 212.
+					/** a transition to jump_attack can only happen after entering frame 212.
 					if an 'att' key event arrives while in frame 210 or 211,
 					the jump attack event should be pended and be performed on 212
 					 */
-					$.state4.pending_attack = true;
-					return 1;
+					if( $.frame.N===212)
+					{
+						if( $.hold.obj)
+						{
+							var dx = $.con.state.left !== $.con.state.right;
+							if( dx && $.proper($.hold.id,'jump_throw'))
+								$.trans.frame(52, 10); //sky light weapon throw
+							else if( $.proper($.hold.id,'attackable'))
+								$.trans.frame(30, 10); //light weapon attack
+						}
+						else
+							$.trans.frame(80, 10); //jump attack
+						return 1;
+					}
 				}
 			break;
 		}},
@@ -427,15 +424,25 @@ function(livingobject, Global, Futil)
 		'9':function(event,K) //catching, throw lying man
 		{	var $=this;
 			switch (event) {
+			case 'state_entry':
+				$.statemem.stateTU=true;
+				$.statemem.counter=43;
+				$.statemem.attacks=0;
+			break;
 
 			case 'state_exit':
-				$.catching=0;
+				$.catching=null;
 				$.ps.zz=0;
 			break;
 
 			case 'frame':
-				$.state9={}; //memory for state:9
-				$.state9.frameTU=true;
+				if( $.frame.N===123) //a successful attack
+				{
+					$.statemem.counter+=3;
+					$.statemem.attacks++;
+					if( $.statemem.attacks===5)
+						$.statemem.counter+=3;
+				}
 				$.catching.caught_b(
 						$.mech.make_point($.frame.D.cpoint),
 						$.frame.D.cpoint,
@@ -447,9 +454,12 @@ function(livingobject, Global, Futil)
 			if( $.caught_cpointkind()===1 &&
 				$.catching.caught_cpointkind()===2 )
 			{	//really catching you
-				if( $.state9.frameTU)
-				{	$.state9.frameTU=false;
-					//the immediate `TU` after `frame`. the reason for this is a synchronization issue
+				if( $.statemem.stateTU)
+				{	$.statemem.stateTU=false;
+					/**the immediate `TU` after `state`. the reason for this is a synchronization issue,
+						i.e. it must be waited until both catcher and catchee transited to the second frame
+						and it is not known at the point of `frame` event, due to different scheduling.
+					 */
 
 					//injury
 					if( $.frame.D.cpoint.injury)
@@ -471,6 +481,13 @@ function(livingobject, Global, Futil)
 						if($.con.state.right) $.switch_dir_fun('right');
 					}
 				}
+				$.statemem.counter--;
+				if( $.statemem.counter===0)
+				if( $.frame.N===121)
+				{
+					$.catching.caught_release();
+					$.trans.frame(999,15);
+				}
 			}
 			else
 			{
@@ -484,7 +501,8 @@ function(livingobject, Global, Futil)
 			{
 				case 'att':
 					var dx = $.con.state.left !== $.con.state.right;
-					if( dx && $.frame.D.cpoint.taction)
+					var dy = $.con.state.up   !== $.con.state.down;
+					if( (dx || dy) && $.frame.D.cpoint.taction)
 					{
 						var tac = $.frame.D.cpoint.taction;
 						if( tac<0)
@@ -520,22 +538,25 @@ function(livingobject, Global, Futil)
 			switch (event) {
 
 			case 'state_exit':
-				$.catching=0;
+				$.catching=null;
+				$.caught_b_holdpoint=null;
+				$.caught_b_cpoint=null;
+				$.caught_b_adir=null;
+				$.caught_throwz=null;
 			break;
 
 			case 'frame':
-				$.state10={};
-				$.state10.frameTU=true;
+				$.statemem.frameTU=true;
 				$.trans.set_wait(99, 10, 99); //lock until frame transition
 				$.frame.mobility=0; //never moves //magic number
 			break;
 
 			case 'TU':
 				if( $.caught_cpointkind()===2 &&
-				$.catching.caught_cpointkind()===1 )
+				$.catching && $.catching.caught_cpointkind()===1 )
 				{	//really being caught
-					if( $.state10.frameTU)
-					{	$.state10.frameTU=false; //the immediate `TU` after `frame`
+					if( $.statemem.frameTU)
+					{	$.statemem.frameTU=false; //the immediate `TU` after `frame`
 
 						var holdpoint=$.caught_b_holdpoint;
 						var cpoint=$.caught_b_cpoint;
@@ -577,7 +598,8 @@ function(livingobject, Global, Futil)
 				}
 				else
 				{
-					$.trans.frame(212, 10);
+					if( $.catching)
+						$.trans.frame(212, 10);
 				}
 			break;
 		}},
@@ -610,7 +632,15 @@ function(livingobject, Global, Futil)
 						$.trans.set_next(181);
 						break;
 					case 181:
+						//console.log('y:'+$.ps.y+', vy:'+$.ps.vy+', vx:'+$.ps.vx);
 						$.trans.set_next(182);
+						var vy = $.ps.vy>0?$.ps.vy:-$.ps.vy;
+							 if( 0<vy && vy<4)
+							$.trans.set_wait(2);
+						else if( 4<=vy && vy<7)
+							$.trans.set_wait(3);
+						else if( 7<=vy)
+							$.trans.set_wait(4);
 						break;
 					case 182:
 						$.trans.set_next(183);
@@ -641,6 +671,7 @@ function(livingobject, Global, Futil)
 			case 'fell_onto_ground':
 			case 'fall_onto_ground':
 				var ps=$.ps;
+				//console.log('speed:'+$.mech.speed()+', vy:'+ps.vy);
 				if( $.mech.speed() > GC.character.bounceup.limit.xy ||
 					ps.vy > GC.character.bounceup.limit.y)
 				{
@@ -659,10 +690,10 @@ function(livingobject, Global, Futil)
 					if( 186 <= $.frame.N && $.frame.N <= 191)
 						return 231;
 				}
-				if( $.caught_throwinjury !==0)
+				if( $.caught_throwinjury)
 				{
 					$.health.hp -= $.caught_throwinjury;
-					$.caught_throwinjury = 0;
+					$.caught_throwinjury = null;
 				}
 			break;
 		}},
@@ -807,7 +838,7 @@ function(livingobject, Global, Futil)
 		{
 			//kind 0 ITR
 			$.itr.lasthit=0; accepthit=true;
-			$.effect.dvx = ITR.dvx ? att.dirh()*ITR.dvx:0;
+			$.effect.dvx = ITR.dvx ? att.dirh()*ITR.dvx-att.dirh()*0.58:0; //magic compensation
 			$.effect.dvy = ITR.dvy ? ITR.dvy:0;
 			var effectnum = ITR.effect!==undefined?ITR.effect:GC.default.effect.num;
 
@@ -1069,6 +1100,21 @@ function(livingobject, Global, Futil)
 			$.trans.frame(GC.default.cpoint.vaction, 20);
 		$.caught_throwinjury=cpoint.throwinjury;
 		$.caught_throwz=throwz;
+	}
+	character.prototype.caught_release=function()
+	{
+		var $=this;
+		$.catching=0;
+		$.trans.frame(181,20);
+		var dvx=4, dvy=-5; //magic number
+		if( dvx !==0) $.ps.vx = ($.caught_b_adir==='right'?1:-1)* dvx;
+		if( dvy !==0) $.ps.vy = dvy;
+
+		//impulse
+		$.mech.set_pos(
+			$.ps.x + $.ps.vx,
+			$.ps.y + $.ps.vy,
+			$.ps.z + $.ps.vz );
 	}
 
 	return character;
