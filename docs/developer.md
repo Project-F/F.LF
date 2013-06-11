@@ -28,6 +28,14 @@ F.LF is to be hackable. The architecture answer yes to the following questions:
 
 # Getting started
 
+### join us
+get a [github](https://github.com/) account, join the discussion on [github](https://github.com/tyt2y3/F.LF/issues). remember to put the appropriate label:
+- `implementation` for implementation of new features (on or not on the roadmap)
+- `bug` to report general bugs
+- `compliance` for issues and observations releated to LF2 compliance
+- `question` to seek help
+- `suggestion` for suggestions, comments and general discussions.
+
 ### development environment
 
 - programming text editor
@@ -48,7 +56,6 @@ F.LF is to be hackable. The architecture answer yes to the following questions:
 ```
 
 ### workflow
-look into `LF/demo`
 
 #### collaboration model
 - [github help/fork & pull](https://help.github.com/articles/using-pull-requests)
