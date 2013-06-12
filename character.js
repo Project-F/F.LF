@@ -482,8 +482,8 @@ function(livingobject, Global, Futil)
 					}
 				}
 				$.statemem.counter--;
-				if( $.statemem.counter===0)
-				if( $.frame.N===121)
+				if( $.statemem.counter<=0)
+				if( $.frame.N===121 || $.frame.N===122)
 				{
 					$.catching.caught_release();
 					$.trans.frame(999,15);
@@ -496,33 +496,36 @@ function(livingobject, Global, Futil)
 			break; //TU
 
 			case 'combo':
-			if( $.frame.N===121)
 			switch(K)
 			{
 				case 'att':
-					var dx = $.con.state.left !== $.con.state.right;
-					var dy = $.con.state.up   !== $.con.state.down;
-					if( (dx || dy) && $.frame.D.cpoint.taction)
+					if( $.frame.N===121)
 					{
-						var tac = $.frame.D.cpoint.taction;
-						if( tac<0)
-						{	//turn myself around
-							$.switch_dir_fun($.ps.dir==='right'?'left':'right'); //toogle dir
-							$.trans.frame(-tac, 10);
-						}
-						else
+						var dx = $.con.state.left !== $.con.state.right;
+						var dy = $.con.state.up   !== $.con.state.down;
+						if( (dx || dy) && $.frame.D.cpoint.taction)
 						{
-							$.trans.frame(tac, 10);
+							var tac = $.frame.D.cpoint.taction;
+							if( tac<0)
+							{	//turn myself around
+								$.switch_dir_fun($.ps.dir==='right'?'left':'right'); //toogle dir
+								$.trans.frame(-tac, 10);
+							}
+							else
+							{
+								$.trans.frame(tac, 10);
+							}
+							var nextframe=$.data.frame[$.trans.next()];
+							$.catching.caught_throw( nextframe.cpoint, $.dirv());
 						}
-						var nextframe=$.data.frame[$.trans.next()];
-						$.catching.caught_throw( nextframe.cpoint, $.dirv());
+						else if($.frame.D.cpoint.aaction)
+							$.trans.frame($.frame.D.cpoint.aaction, 10);
+						else
+							$.trans.frame(122, 10);
 					}
-					else if($.frame.D.cpoint.aaction)
-						$.trans.frame($.frame.D.cpoint.aaction, 10);
-					else
-						$.trans.frame(122, 10);
-				return 1;
+				return 1; //always return true so that `att` is not re-fired next frame
 				case 'jump':
+					if( $.frame.N===121)
 					if($.frame.D.cpoint.jaction)
 					{
 						$.trans.frame($.frame.D.cpoint.jaction, 10);

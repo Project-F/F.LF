@@ -1,11 +1,10 @@
 /*\
  * loader.js
  * 
- * loader is a requirejs plugin that reads a list of content packages,
- * and selects one of them if there are more than one, and loads it.
+ * loader is a requirejs plugin that loads content packages
 \*/
 
-define(['LF/packages'],function(packages){
+define(['LF/packages','LF/global'],function(packages,global){
 
 	return {
 		load: function (name, require, load, config)
@@ -38,6 +37,16 @@ define(['LF/packages'],function(packages){
 				content.location = normalize(config.baseUrl)+path;
 				require( [path+'manifest'], function(mani)
 				{
+					var manifest_schema=
+					{
+						"data":"string",
+						"properties":"string",
+						"resourcemap":"string!optional"
+					}
+					if( !validate(manifest_schema,mani))
+					{
+						console.log('loader: error: manifest.js of '+path+' is not correct.');
+					}
 					require( [path+mani.data], load_data);
 					manifest=mani;
 					load_something('properties');
@@ -57,10 +66,22 @@ define(['LF/packages'],function(packages){
 			}
 			function load_data(datalist)
 			{
+				function allow_load(OO)
+				{
+					if( typeof global.lazyload==='function')
+					{
+						if( !global.lazyload(OO))
+							return true;
+					}
+					else
+						return true;
+				}
+
 				var datafile_depend=[];
 				for( var i=0; i<datalist.object.length; i++)
 				{
-					datafile_depend.push(path+datalist.object[i].file);
+					if( allow_load(datalist.object[i]))
+						datafile_depend.push(path+datalist.object[i].file);
 				}
 				require( datafile_depend, function()
 				{
@@ -72,19 +93,29 @@ define(['LF/packages'],function(packages){
 						else
 							gamedata[i]=datalist[i];
 					}
-					for( var i=0; i<datalist.object.length; i++)
+					for( var i=0, j=0; i<datalist.object.length; i++)
 					{
 						var O = datalist.object[i];
 						var obj=
 						{
 							id: O.id,
-							type: O.type,
-							data: arguments[i]
+							type: O.type
 						};
+						if( allow_load(O))
+						{
+							obj.data = arguments[j];
+							j++
+						}
+						else
+						{
+							obj.data = 'lazy';
+							obj.file = path+O.file;
+						}
 
 						gamedata.object.push(obj);
 					}
 					content.data=gamedata;
+					module_lazyload();
 					load_ready();
 				});
 			}
@@ -107,6 +138,41 @@ define(['LF/packages'],function(packages){
 				if( validate(content_schema,content))
 					load(content); //make the require loader return
 			}
+			function module_lazyload()
+			{	//embed the lazyload module
+				if( typeof global.lazyload==='function')
+				{
+					content.data.object.load=function(ID,ready)
+					{
+						var objects=content.data.object;
+						var load_list=[];
+						var res_list=[];
+						for( var i=0; i<ID.length; i++)
+						{
+							var O; //search for the object
+							for( var j=0; j<objects.length; j++)
+								if( objects[j].id===ID[i])
+								{
+									O=objects[j];
+									break;
+								}
+							if( O && O.data==='lazy')
+							{
+								load_list.push(O);
+								res_list .push(O.file);
+							}
+						}
+						if( res_list.length)
+							requirejs(res_list,function()
+							{
+								for( var i=0; i<arguments.length; i++)
+									load_list[i].data = arguments[i];
+								ready();
+							});
+					}
+				}
+			}
+
 			/** a simple JSON schema validator*/
 			function validate(schema,object)
 			{

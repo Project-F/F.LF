@@ -68,14 +68,12 @@ buildinfo){
 		[
 			{
 				controller: control1,
-				data: package.data.object[0].data,
-				id: package.data.object[0].id,
+				id: 30,
 				team: 1
 			},
 			{
 				controller: control2,
-				data: package.data.object[1].data,
-				id: package.data.object[1].id,
+				id: 1,
 				team: 2
 			}
 		],

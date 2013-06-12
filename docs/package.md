@@ -30,7 +30,7 @@ the JSON data in `manifest.js` is in the following schema:
 {
 	"data":"string/url-js",
 	"properties":"string/url-js",
-	"resourcemap/optional":"string/url-js"
+	"resourcemap":"string/url-js!optional"
 }
 ```
 > note that this JSON schema is made up by me for the sake of understandability. there is however plan to develop a validator of this format.

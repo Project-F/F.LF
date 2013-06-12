@@ -1,0 +1,93 @@
+# loader.js
+### specification
+
+loader is a requirejs plugin that loads content packages.
+> the specification of F.LF content packages is defined in package.md
+
+## Usage
+
+```
+requirejs(['LF/loader!anystring'],function(){...});
+```
+
+## mechanism
+
+#### 1 package list
+`LF/packages.js` is first loaded. packages.js should define a list of available content packages, as in the following structure
+```
+{
+	//"package name": { path:"path/to/package" }
+	"LF2 1.451": { path:"LFrelease/LF2_19" }
+}
+```
+(unimplemented) if there are multiple packages, let the user choose which to load
+
+#### 2 load package
+`manifest.js` under the package directory is loaded and checked against the schema.
+
+#### 2.1 load data
+load the specified data list, typically named `data.js`.
+
+##### lazy loading
+
+if global.lazyload is defined, a function `load()` is inserted to `package.data.object` 
+with the following use:
+```
+function load
+(ID,    //array of object IDs to load,
+ready)  //callback when all requested files are loaded
+{
+	//the function is async
+}
+```
+
+every object defined in the array `object` by `data.js` will be passed to `global.lazyload`, and `global.lazyload` shall return `true` if it wants to __not__ load the data file at this moment. the `data` property of that object will then be marked `'lazy'` in this case. if `global.lazyload` returns falsy or `global.lazyload` is not defined, the data file will be loaded immediately, and the `data` property of that object will contain the structure defined by the js file `file`
+
+other properties defined by `data.js` are copied as is.
+
+later, if the data files are wanted, one should call for example
+```
+package.data.object.load([1,2], //wants to load object with id 1 and 2
+function ()
+{
+	//all data is ready now
+});
+```
+
+in the scenario of F.LF, character data files are not loaded during startup, and are only being loaded when a match starts, only if that character is being selected.
+
+#### 2.2 load properties
+load the specified properties file, typically named `properties.js`.
+
+#### 2.3 load resourcemap
+if defined, load the specified resourcemap, typically named `resourcemap.js`.
+
+#### return
+the loader plugin is __blocking__, and will only return when all data files are loaded. the returned structure is like:
+```
+package:
+{
+	data:
+	{
+		object: [
+			{id:30, type:'character', data:{...}},
+		],
+		background:[
+		],
+		...
+	}
+	properties:
+	{
+		...
+	},
+	resourcemap:
+	{
+		...
+	},
+	location: '../../LFrelease/LF2_19/' //location of the package relative to the html file
+}
+```
+
+## todo
+
+support loading packages from a remote location

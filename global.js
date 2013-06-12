@@ -28,6 +28,13 @@ G.combo_list = [
 	{ name:'hit_ja', seq:['def','jump','att']}
 ];
 
+G.lazyload = function(O)
+{
+	//return true to delay loading of data files of specific type
+	if( O.type==='character')
+		return true;
+}
+
 G.gameplay={};
 var GC = G.gameplay;
 

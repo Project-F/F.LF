@@ -41,7 +41,7 @@ factory,Scene,Random)
 		{
 			player:
 			[
-				{controller, data, id, team},,,
+				{controller, id, team},,,
 			],
 			background:
 			{
@@ -49,15 +49,23 @@ factory,Scene,Random)
 			control: 'debug'
 		}
 		 */
-		this.scene = new Scene();
-		this.effects = this.create_effects(this.config.effects);
-		this.character = this.create_characters(setting.player);
-		this.randomseed = this.new_randomseed();
-		this.control = this.create_controller(setting.control);
-		this.lightweapon=[];
-		this.heavyweapon=[];
-		this.drop_weapons();
-		this.create_timer();
+		var char_list=[];
+		for( var i=0; i<setting.player.length; i++)
+			char_list.push(setting.player[i].id);
+		var $=this;
+
+		this.data.object.load(char_list,function()
+		{
+			$.scene = new Scene();
+			$.effects = $.create_effects($.config.effects);
+			$.character = $.create_characters(setting.player);
+			$.randomseed = $.new_randomseed();
+			$.control = $.create_controller(setting.control);
+			$.lightweapon=[];
+			$.heavyweapon=[];
+			$.drop_weapons();
+			$.create_timer();
+		});
 	}
 
 	match.prototype.create_timer=function()
@@ -135,10 +143,14 @@ factory,Scene,Random)
 		};
 		for( var i=0; i<players.length; i++)
 		{
-			var player = players[i];
+			var player = players[i];			
+			var datai=Futil.arr_search(
+				this.data.object,
+				function (X) { return X.id===player.id;}
+			);
 			char_config.controller = player.controller;
 			char_config.team = player.team;
-			var len = array.push( new factory.character (char_config,player.data,player.id) );
+			var len = array.push( new factory.character (char_config, this.data.object[datai].data, player.id) );
 			// TODO: player placements
 			array[len-1].set_pos( pos[len-1].x, pos[len-1].y, pos[len-1].z);
 		}

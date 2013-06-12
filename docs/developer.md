@@ -114,7 +114,7 @@ here lists the unimplemented features.
 - interface
 	- mimic original LF2 interface
 - content pack (done)
-- content loader
+- content loader (done)
 	- currently, we use a requirejs plugin to load data files all at once during startup.
 	- however, this will increase startup time and waste bandwidth
 	- we would like to have a content loader which load resources on demand (lazy loading), at the start of a match.
