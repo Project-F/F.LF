@@ -191,10 +191,22 @@ sprite.resolve_resource=function(res)
  * set width and height
  - P (object) `{x,y}`
 \*/
+/*\
+ * sprite.set_w_h
+ [ method ]
+ * set width and height
+ - w (number)
+ - h (number)
+\*/
 sprite.prototype.set_wh=function(P)
 {
 	this.el.style.width=P.x+'px';
 	this.el.style.height=P.y+'px';
+}
+sprite.prototype.set_w_h=function(w,h)
+{
+	this.el.style.width=w+'px';
+	this.el.style.height=h+'px';
 }
 
 /*\
@@ -203,11 +215,22 @@ sprite.prototype.set_wh=function(P)
  * set x and y
  - P (object) `{x,y}`
 \*/
+/*\
+ * sprite.set_x_y
+ [ method ]
+ * set x and y
+ - x (number)
+ - y (number)
+\*/
 if( support.css2dtransform && !sp_masterconfig.disable_css2dtransform)
 {
 	sprite.prototype.set_xy=function(P)
 	{
 		this.el.style[support.css2dtransform]= 'translate('+P.x+'px,'+P.y+'px) ';
+	}
+	sprite.prototype.set_x_y=function(x,y)
+	{
+		this.el.style[support.css2dtransform]= 'translate('+x+'px,'+y+'px) ';
 	}
 }
 else
@@ -216,6 +239,11 @@ else
 	{
 		this.el.style.left=P.x+'px';
 		this.el.style.top=P.y+'px';
+	}
+	sprite.prototype.set_x_y=function(x,y)
+	{
+		this.el.style.left=x+'px';
+		this.el.style.top=y+'px';
 	}
 }
 /*\
@@ -317,10 +345,21 @@ sprite.prototype.switch_img=function(name)
  [ method ]
  - P (object) `{x,y}`
 \*/
+/*\
+ * sprite.set_img_x_y
+ [ method ]
+ - x (number)
+ - y (number)
+\*/
 sprite.prototype.set_img_xy=function(P)
 {
 	this.img[this.cur_img].style.left= P.x+'px';
 	this.img[this.cur_img].style.top= P.y+'px';
+}
+sprite.prototype.set_img_x_y=function(x,y)
+{
+	this.img[this.cur_img].style.left= x+'px';
+	this.img[this.cur_img].style.top= y+'px';
 }
 
 /*\

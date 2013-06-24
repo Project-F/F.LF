@@ -47,16 +47,14 @@ function run()
 	perform("for( var i=0, j=0; i < LIM; i++){ if(i*i>i) j+=i/2;}");
 	*/
 
-	/*
 	text.innerHTML+= "---creating objects dynamically\n";
 	perform("for(var i=0; i < LIM; i++){"+'\n'+
 	"var a={w:i,x:2*i,y:3*i,z:i*i};}");
 
 	text.innerHTML+= "VS look up in a predefined table\n";
 	perform("var A=[];"+'\n'+
-	"for(var i=0; i < 100; i++){ A.push[i];}"+'\n'+
+	"for(var i=0; i < 100; i++){ A.push({w:i,x:2*i,y:3*i,z:i*i});}"+'\n'+
 	"for(var i=0; i < LIM; i++){ var a=A[i%100];}");
-	*/
 
 	text.innerHTML+= "---calling functions\n";
 	perform("function A(i){return i+5;}"+'\n'+

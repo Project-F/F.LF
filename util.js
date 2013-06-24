@@ -83,8 +83,8 @@ make_array: function (target)
  - fc_criteria (function) return true when an accepted element is passed in
  - [fc_replace] (function) to return a replacement value when original value is passed in
  - [search_all] (boolean) if true, will search through entire array before returning the list of indices, otherwise, will return immediately at the first accepted element
- = (array) if `search_all` is true
- = (object) if `search_all` if false
+ = (number) index of the found element if `search_all` if false
+ = (array) of (number) if `search_all` is true
 \*/
 search_array: function (arr, fc_criteria, fc_replace, search_all)
 {
@@ -310,13 +310,13 @@ call_each: function(arr,method /*,arg*/)
 	{
 		for( var i=0; i<arr.length; i++)
 			if( typeof arr[i][method]==='function')
-				arr[i].apply(this, arg);
+				arr[i][method].apply(null, arg);
 	}
 	else if( arr)
 	{
 		for( var i in arr)
 			if( typeof arr[i][method]==='function')
-				arr[i].apply(this, arg);
+				arr[i][method].apply(null, arg);
 	}
 }
 

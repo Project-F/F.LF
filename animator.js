@@ -133,12 +133,12 @@ animator.prototype.show_frame=function(i)
 	top = -((Math.floor(i/c.gx))*c.h+c.y+c.bordertop);
 	if( this.horimirror)
 		left= -this.target.img[this.target.cur_img].naturalWidth-left+c.w-c.borderleft-c.borderright;
-	this.target.set_wh({
-		x: c.w-c.borderleft-c.borderright,
-		y: c.h-c.bordertop-c.borderbottom
-	});
-	this.target.set_img_xy({x:left,y:top});
-	//may also need to set_xy to compensate the border
+	this.target.set_w_h(
+		c.w-c.borderleft-c.borderright,
+		c.h-c.bordertop-c.borderbottom
+	);
+	this.target.set_img_x_y(left,top);
+	//may also need to set_x_y to compensate the border
 }
 animator.prototype.get_at=function(i) //get the content of the graph at frame i
 {	//by default at the current frame

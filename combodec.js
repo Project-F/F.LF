@@ -35,6 +35,7 @@ define( function(){
 |		name: 'blast',	//combo name
 |		seq:  ['def','right','att'], //array of key sequence
 |		maxtime: 10 //[optional] the max allowed time difference between the first and last key input
+|		clear_on_combo: false, //[optional] override generic config
 |	} //,,,
 |	];
 |	var dec = new combodec ( con, dec_config, combo);
@@ -152,7 +153,7 @@ combodec.prototype.key=function(K, down)
 			if( detected)
 			{
 				this.config.callback(C[i]);
-				if( this.config.clear_on_combo)
+				if( C[i].clear_on_combo || (C[i].clear_on_combo!==false && this.config.clear_on_combo))
 					this.clear_seq();
 			}
 		}
