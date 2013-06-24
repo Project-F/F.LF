@@ -1,13 +1,20 @@
-## the LF2 standard - concepts and mechanisms
+<!DOCTYPE html>
+<html>
+<title>F.LF/documentation outline</title>
+
+<xmp theme="projectF">
+> this document outline the topics of the two books to be published regarding F.LF.
+> this outline is by no means exhausive, is only for reminder of interesting topics.
+
+# the LF2 standard - concepts and mechanisms
 
 - living objects
 	- properties
 	- states & frames
+	- switch direction
 - frame transition
 	- wait, next
 	- lock and authority
-- direction
-	- switch direction
 - team
 	- events that will trigger team change
 - combo
@@ -36,7 +43,7 @@
 		- mobility
 - all documents related to data changing
 
-## Hands on F.LF - the most sophisticated fighter game engine
+# Hands on F.LF - the most sophisticated fighter game engine
 
 - introduction
 	- brief history of LF2
@@ -61,7 +68,7 @@
 - scripting
 	- scriptable parts of the engine
 - develop
-	- toolchain
+	- development environment
 	- architecture
 	- programming concepts
 		- engine as an operating system
@@ -71,3 +78,7 @@
 	- how-to
 		- implement new livingobject types
 		- implement new effect types
+</xmp>
+
+<script src="strapdown_0_2/strapdown.js"></script>
+</html>

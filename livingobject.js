@@ -59,7 +59,6 @@ function ( Global, Sprite, Mech, Fcombodec)
 			PN: 0, //previous frame number
 			N: 0, //current frame number
 			D: data.frame[0], //current frame's data object
-			mobility: 1,
 			ani: //animation sequence
 			{
 				i:0, up:true
@@ -95,10 +94,11 @@ function ( Global, Sprite, Mech, Fcombodec)
 			function combo_event(kobj)
 			{
 				var K=kobj.name;
-				if( K==='left' || K==='right')
+				switch (K)
 				{
-					if( $.switch_dir)
-						$.switch_dir_fun(K);
+					case 'left': case 'right':
+						if( $.switch_dir)
+							$.switch_dir_fun(K);
 				}
 				$.statemem.combo = K;
 			}
@@ -110,6 +110,8 @@ function ( Global, Sprite, Mech, Fcombodec)
 			var combo_list = [
 				{ name:'left',	seq:['left'],	clear_on_combo:false},
 				{ name:'right',	seq:['right'],	clear_on_combo:false},
+				{ name:'up',	seq:['up'],		clear_on_combo:false},
+				{ name:'down',	seq:['down'],	clear_on_combo:false},
 				{ name:'def',	seq:['def'],	clear_on_combo:false},
 				{ name:'jump',	seq:['jump'],	clear_on_combo:false},
 				{ name:'att',	seq:['att'],	clear_on_combo:false},
@@ -121,6 +123,11 @@ function ( Global, Sprite, Mech, Fcombodec)
 		}
 	}
 
+	livingobject.prototype.destroy = function()
+	{
+		this.sp.destroy();
+	}
+
 	//to emit a combo event
 	livingobject.prototype.combo_update = function()
 	{		
@@ -128,11 +135,12 @@ function ( Global, Sprite, Mech, Fcombodec)
 			and only if it returned falsy result, the combo event is passed to the generic state.
 			if the combo event is not consumed, it is stored in state memory,
 			resulting in 1 combo event being emited every frame until it is being handled or
-			overridden by a new combo event
+			overridden by a new combo event.
+			a combo event is emitted even when there is no combo, in such case `K=null`
 		 */
 		var $=this;
 		var K = $.statemem.combo;
-		if(!K) return ;
+		if(!K) K=null;
 
 		var tar1=$.states[$.frame.D.state];
 		if( tar1) var res1=tar1.call($,'combo',K);
@@ -140,7 +148,7 @@ function ( Global, Sprite, Mech, Fcombodec)
 		if(!res1)
 		if( tar2) var res2=tar2.call($,'combo',K);
 		if( res1 || res2 ||
-			K==='left' || K==='right') //dir combos are not persistent
+			K==='left' || K==='right' || K==='up' || K==='down') //dir combos are not persistent
 			$.statemem.combo = null;
 	}
 
@@ -159,12 +167,15 @@ function ( Global, Sprite, Mech, Fcombodec)
 		//show frame
 		$.sp.show_pic($.frame.D.pic);
 
+		$.ps.fric=1; //reset friction
 		//velocity
-		$.frame.mobility=1;
-		$.ps.vx+= $.dirh() * $.frame.D.dvx;
-		if( $.frame.D.dvz) //heavyweapon does not have dvz
-			$.ps.vz+= $.dirv() * $.frame.D.dvz;
-		$.ps.vy+= $.frame.D.dvy;
+		if( $.frame.D.dvx)
+			if( $.ps.y<0 || ($.ps.vx>0?$.ps.vx:-$.ps.vx)-1 < $.frame.D.dvx) //accelerate..
+				$.ps.vx = $.dirh() * $.frame.D.dvx; //..is okay
+			else //decelerate..
+				$.mech.linear_friction(1,0); //..must be gradual
+		if( $.frame.D.dvz) $.ps.vz = $.dirv() * $.frame.D.dvz;
+		if( $.frame.D.dvy) $.ps.vy = $.frame.D.dvy;
 
 		//wait for next frame
 		$.trans.set_wait($.frame.D.wait,99);
@@ -189,13 +200,13 @@ function ( Global, Sprite, Mech, Fcombodec)
 				$.effect.i=-1;
 			else
 				$.effect.i=1;
-			$.sp.set_xy({x:$.ps.sx + $.effect.oscillate*$.effect.i, y:$.ps.sy+$.ps.sz});
+			$.sp.set_x_y($.ps.sx + $.effect.oscillate*$.effect.i, $.ps.sy+$.ps.sz);
 		}
 		if( $.effect.timeout===0)
 		{
 			$.effect.oscillate = 0;
 			$.effect.stuck = false;
-			$.sp.set_xy({x:$.ps.sx, y:$.ps.sy+$.ps.sz});
+			$.sp.set_x_y($.ps.sx, $.ps.sy+$.ps.sz);
 		}
 		else if( $.effect.timeout===-1)
 		{
@@ -270,7 +281,7 @@ function ( Global, Sprite, Mech, Fcombodec)
 	//  all other volumes e.g. itr should start with prefix vol_
 	livingobject.prototype.vol_body=function() 
 	{
-		return this.mech.body();
+		return this.mech.body_body();
 	}
 
 	livingobject.prototype.cur_state=function()
@@ -292,8 +303,15 @@ function ( Global, Sprite, Mech, Fcombodec)
 			if( $.proper(efid,'oscillate'))
 				$.effect.oscillate=$.proper(efid,'oscillate');
 			if( $.proper(efid,'cant_move'))
-				$.frame.mobility=0;
+				$.effect.stuck=true;
 		}
+		$.effect.timeout=duration;
+	}
+
+	livingobject.prototype.effect_stuck=function(duration)
+	{
+		var $=this;
+		$.effect.stuck=true;
 		$.effect.timeout=duration;
 	}
 
@@ -472,7 +490,11 @@ function ( Global, Sprite, Mech, Fcombodec)
 			}
 		}
 
-		this.get_wait=function()
+		this.next=function()
+		{
+			return next;
+		}
+		this.wait=function()
 		{
 			return wait;
 		}
@@ -490,11 +512,6 @@ function ( Global, Sprite, Mech, Fcombodec)
 					lockout=wait;
 				next=value;
 			}
-		}
-
-		this.next=function()
-		{
-			return next;
 		}
 
 		this.reset_lock=function(au)

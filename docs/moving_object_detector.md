@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<title>F.LF/tools/moving object detector</title>
+
+<xmp theme="projectF">
+# moving object detector
+the moving object detector is developed to infer character movement of LF2 at pixel-precision, for collecting data to be used in unit testing.
+
+## Usage
+- capture a screenshot by `Alt+Printscreen` and `Ctrl+v` to paste it into the application
+> this step requires a HTML5 supporting browser
+- click and drag over the pasted image to crop to the area of interest.
+> crop to just surround the object. the larger the area the long the computation will be.
+- press `compute` to compute the distance the object moved. if `x only` is checked, will only search for horizontal movement, resulting in a much faster computation
+- wait. the result will be rendered when computation is finished.
+
+below is an example screenshot (geany icon as an example):
+<img src="https://docs.google.com/drawings/d/1SQnJM0rEjfqDGnDPRwpR-dKz1fLPlEsUnwOkNyGuYeQ/pub?w=1099&amp;h=522">
+
+## the algorithm
+the algorithm works by computing what may be known as discrete cross correlation. it is computed by superposing two images on each other and counting the number of overlapping pixels with the exact same color. because the background did not move, when the two images are superposed with zero offset, the number will be large. assume the background is non uniform, on other offset the correlation will be low, except, when the moving object coincide with itself. to normalize, we divide that number with the overlapping area to get a ratio. that's it, simple enough.
+<img src="https://docs.google.com/drawings/d/1vCdZlGldzJlWfSXzNRxM3yNh6_Fjn28odcJD3-yrB10/pub?w=844&amp;h=486">
+
+## limitations
+- the background must not move, which is often not the case in LF2
+- the background must be non uniform or noisy
+- the background must be non periodic or repeats only at a long distance
+- the moving object must be exactly the same over different frames
+- javascript for number crunching is quite slow, even for a small area
+
+</xmp>
+
+<script src="strapdown_0_2/strapdown.js"></script>
+</html>

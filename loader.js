@@ -162,13 +162,12 @@ define(['LF/packages','LF/global'],function(packages,global){
 								res_list .push(O.file);
 							}
 						}
-						if( res_list.length)
-							requirejs(res_list,function()
-							{
-								for( var i=0; i<arguments.length; i++)
-									load_list[i].data = arguments[i];
-								ready();
-							});
+						requirejs(res_list,function()
+						{
+							for( var i=0; i<arguments.length; i++)
+								load_list[i].data = arguments[i];
+							ready();
+						});
 					}
 				}
 			}

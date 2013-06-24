@@ -36,7 +36,7 @@ function sprite (bmp, parent)
 	 [ property ]
 	 - Fanimator (object)
 	\*/
-	var ani = this.ani = {length:0};
+	var ani = this.ani = [];
 	/*\
 	 * sprite.dir
 	 [ property ]
@@ -108,6 +108,19 @@ function sprite (bmp, parent)
 		ani[i] = new Fanimator(ani_con);
 	}
 }
+
+/*\
+ * sprite.destroy
+ [ method ]
+ * clear memory so that itself and the DOM nodes can be garbage collected
+\*/
+sprite.prototype.destroy = function()
+{
+	this.sp.remove();
+	this.sp=null;
+	this.ani.length=0;
+}
+
 /*\
  * sprite.show_pic
  [ method ]
@@ -151,11 +164,12 @@ sprite.prototype.switch_lr = function(dir) //switch to `dir`
 /*\
  * sprite.set_xy
  [ method ]
- - P (object) `{x,y}`
+ - x (number)
+ - y (number)
 \*/
-sprite.prototype.set_xy = function(P)
+sprite.prototype.set_x_y = function(x,y)
 {
-	this.sp.set_xy(P);
+	this.sp.set_x_y(x,y);
 }
 /*\
  * sprite.set_z

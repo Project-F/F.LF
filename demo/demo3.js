@@ -11,26 +11,12 @@ requirejs.config(
 
 requirejs(['F.core/controller','F.core/sprite',
 'LF/loader!packages','LF/match','LF/keychanger',
-'./buildinfo.js'],
+'LF/util','./buildinfo.js'],
 function(Fcontroller,Fsprite,
 package,Match,Keychanger,
-buildinfo){
+util,buildinfo){
 
-	if( package.resourcemap)
-	{
-		var resmap = [
-			package.resourcemap, //package-defined resourcemap
-			{	//default resourcemap
-				get: function(res)
-				{
-					return package.location+res;
-				}
-			}
-		];
-		Fsprite.masterconfig_set('resourcemap',resmap);
-	}
-	else
-		Fsprite.masterconfig_set('baseUrl',package.location);
+	util.setup_resourcemap(package,Fsprite);
 
 	var control_con1 =
 	{
@@ -77,8 +63,11 @@ buildinfo){
 				team: 2
 			}
 		],
-
-		control: 'debug'
+		control: 'debug',
+		set:
+		{
+			weapon: true
+		}
 	});
 
 });

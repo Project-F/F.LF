@@ -1,7 +1,13 @@
+<!DOCTYPE html>
+<html>
+<title>F.LF/spec/package</title>
+
+<xmp theme="projectF">
 # Content packages
 ### Specification
 
 Gaming content must be packed into a package. A content package contains:
+
 - characters, weapons and other objects
 - backgrounds
 - sounds
@@ -38,6 +44,7 @@ the JSON data in `manifest.js` is in the following schema:
 `url-js` is the url to a file with `.js` extension with the file name without the extension. sounds quirky, but this is inherited from `requirejs`. basically `path/to/x.js` should be written as `path/to/x`.
 
 the entries are:
+
 - `data` is the url to the file `data.js`, corresponds to `data.txt` as found in LF2
 - `properties` is the url to the file `properties.js`, its format and usage is defined by __F.LF (extended standard)__
 - `resourcemap` is the url to the file `resourcemap.js`, its format and usage is defined by [__F.core__](http://tyt2y3.github.io/F.core/docs/docs.html#resourcemap). a resourcemap allows mapping from a canonical resource name (shorter and understandable) to the actual url (long and ugly), for example, consider an entry:
@@ -59,3 +66,7 @@ resourcemap.js
 
 ### example
 it is always easier to learn from examples. check out the package `LF2_19` in the [release channel](https://github.com/tyt2y3/LFrelease/tree/master/LF2_19).
+</xmp>
+
+<script src="strapdown_0_2/strapdown.js"></script>
+</html>

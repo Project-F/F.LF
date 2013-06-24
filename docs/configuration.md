@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<title>F.LF/configuration</title>
+
+<xmp theme="projectF">
+> this document shows configurations for different toolchains
+
+<a id='console2'></a>
+## configure console2 as git bash's shell
+
+<img src='https://docs.google.com/document/d/1gulgm2e9dbjWf8eZ3z1Hb1M2bP1s8Qh02W7a6n4WzYM/pubimage?id=1gulgm2e9dbjWf8eZ3z1Hb1M2bP1s8Qh02W7a6n4WzYM&image_id=1DQwdrAC_pOzbt7anlQMhzCZJw_vCKD7dDtC1'/>
+
+sample configuration:
+```
+title: Git Bash
+icon: C:\Program Files (x86)\Git\etc
+shell: C:\Windows\SysWOW64\cmd.exe /c ""C:\Program Files (x86)\Git\bin\sh.exe" --login -i"
+startup_dir: %HOMEDRIVE%%HOMEPATH%
+```
+</xmp>
+
+<script src="strapdown_0_2/strapdown.js"></script>
+</html>

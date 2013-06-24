@@ -85,7 +85,7 @@ scene.prototype.query = function(volume, exclude, where)
 		if( this.live[i]['vol_'+tag])
 		{
 			var vol = this.live[i]['vol_'+tag](tagvalue);
-			for( var j in vol)
+			for( var j=0; j<vol.length; j++)
 			{
 				if( this.intersect( volume, vol[j]))
 				{

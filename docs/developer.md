@@ -1,17 +1,27 @@
-This is intended to be a guideline for developers who want to do development on F.LF
+<!DOCTYPE html>
+<html>
+<title>F.LF/Develop</title>
+
+<xmp theme="projectF">
+
+> This document is intended to be a guideline for developers who want to do development on F.LF
 
 # Architecture
 
-The open LF2 project is divided into three repositories, [F.core](https://github.com/tyt2y3/F.core), F.LF and [LFrelease](https://github.com/tyt2y3/LFrelease). F.LF is the game engine which implements ___the LF2 standard___ and provides gaming functionalities. F.core provides the engine components to build a HTML5 game. While F.LF _could_ be platform independent, current implementation does depend a lot on the browser environment. LFrelease contains material (sprites,data,sound,etc) converted from original LF2. Such division is to ensure that F.LF is 100% original work containing no third party copyrighted material.
+### Overview
+The open LF2 project is divided into three repositories, [F.core](https://github.com/tyt2y3/F.core), [F.LF](https://github.com/tyt2y3/F.LF) and [LFrelease](https://github.com/tyt2y3/LFrelease). F.LF is the game engine which implements ___the LF2 standard___ and provides gaming functionalities. F.core provides the engine components to build a HTML5 game. F.LF should be deployable on a web server taking advantage of latest web technology, while still playable on a local file system. LFrelease contains material (sprites,data,sound,etc) converted from original LF2. Such division is to ensure that F.LF is 100% original work containing no third party copyrighted material.
 
 Let's have a top-down walk through the modules.
+
 - `global.js` defines the global parameters
+- `loader.js` is to load data files in a content package
+- `packages.js` list the available content packages
 - `keychanger.js` is a small utility to change keys of a controller
-- `loader.js` is to load data files in a content package.
+- `util.js` contains miscellaneous utility functions
 - `match.js` is a generalization above game modes (e.g. VSmode, stagemode, battlemode)
 	the life time of a `match` object represents the course of a match, from start when weapon drops to end all opponents killed.
 	- `factories.js` is responsible to list all available classes to `match` as `match` does not depend on object classes directly.
-	- `character.js` is a generalization of all LF2 characters. `LFrelease/data/specification.js` specifies the exact property of a character
+	- `character.js` is a generalization of all LF2 characters. `properties.js` specifies the exact property of a character
 	- `weapon.js` is a generalization of `heavyweapon` and `lightweapon`.
 		- `livingobject.js` is a base class. `character` and `weapon` each derive from `livingobject`, adding their specialized properties and methods.
 			- `sprite.js` is a class to handle sprite animation needs in LF2.
@@ -21,6 +31,7 @@ Let's have a top-down walk through the modules.
 
 ### Considerations
 F.LF is to be hackable. The architecture answer yes to the following questions:
+
 - can I customize behavior by changing only few parameters in a single place?
 - can I extend functionality by wrapping over existing code?
 - can I append a new component by adding an entry to a list?
@@ -30,6 +41,7 @@ F.LF is to be hackable. The architecture answer yes to the following questions:
 
 ### join us
 get a [github](https://github.com/) account, join the discussion on [github](https://github.com/tyt2y3/F.LF/issues). remember to put the appropriate label:
+
 - `implementation` for implementation of new features (on or not on the roadmap)
 - `bug` to report general bugs
 - `compliance` for issues and observations releated to LF2 compliance
@@ -39,11 +51,12 @@ get a [github](https://github.com/) account, join the discussion on [github](htt
 ### development environment
 
 - programming text editor
-	- I recommend [geany](http://www.geany.org/) and [geany portable for windows](http://geanyportable.org/)
+	> I recommend [geany](http://www.geany.org/) and [geany portable for windows](http://geanyportable.org/)
 - [node.js](http://nodejs.org/)
+	> for building demo
 - [git](http://git-scm.com/)
 - [optional] [console2](http://sourceforge.net/projects/console/)
-	- only to make the git console looks better
+	> [configuration](configuration.md#console2), only to make the git console looks better
 - repositories
 	 - [github help/fork-a-repo](https://help.github.com/articles/fork-a-repo)
 	 - fork [F.core](https://github.com/tyt2y3/F.core), [F.LF](https://github.com/tyt2y3/F.LF) and [LFrelease](https://github.com/tyt2y3/LFrelease). The three repositories must be named and placed as below:
@@ -84,7 +97,7 @@ here lists the unimplemented features.
 	- opoint
 	- health and mana system
 - weapons
-	- stick,hoe and stone implemented
+	- stick, hoe and stone implemented
 - specialattack
 - drinks
 - baseball, miscell (Criminal, etc, broken_weapon)
@@ -122,7 +135,7 @@ here lists the unimplemented features.
 ### software engineering
 - build system
 	- possibly [grunt](http://gruntjs.com/). the current build system is based on linux shell script, which is not platform independent and not javascript oriented.
-- automated test suite
+- automated test suite (done)
 	- to develope a test suite specifically for F.LF. to test against the specification of:
 		- frame transition sequence
 		- movement (position difference)
@@ -149,8 +162,9 @@ The aim of Project F is to produce a completely free code base for the community
 
 The bottom line is, no trade secret or proprietary source code can enter the F.LF repository. the following rules are extremely important, and have to be beared in mind.
 
-#### do not state the long form of LF2. it could be Loyal Fighter 2 or anything
-#### do not look into the disassembly of LF2.
+__do not state the long form of LF2. it could be Loyal Fighter 2 or anything__
+
+__do not look into the disassembly of LF2__
 
 ### engineering process
 
@@ -159,3 +173,13 @@ The top-down engineering process starts from playing LF2, observing its behaviou
 The bottom-up engineering process starts implementing a system, and observe the behavioural difference from LF2, and improve the implementation. If everything is okay, then write a specification.
 
 Both processes produce a pair of specification and implementation as the end product. A task is said to be finished only if the specification and implementation comply to each other and they both comply to LF2 behavior to a high degree.
+
+### test driven development
+
+A unit test suite is specifically developed for F.LF to simulate keyborad input and compare the output with a designated data set. Implementation of a new feature should be associated with a test case. The test result is a measurement of compatibility with LF2, and will be a good measurement if there are enough test cases. The automated testing should be run frequently to ensure code changes do not break previsouly working cases.
+
+for more information, read [unit_test_suite.md](unit_test_suite.md).
+</xmp>
+
+<script src="strapdown_0_2/strapdown.js"></script>
+</html>

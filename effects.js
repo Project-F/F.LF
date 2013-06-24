@@ -12,7 +12,7 @@ function ( Global, Sprite, Feffects_pool)
 /*\
  * effect_set
  [ class ]
- * effect_set is the set of all kinds of effects
+ * effect_set is the set for all kinds of effects
  * this is a big manager. there is only 1 instance of effect_set in a match.
  - config (object)
  - DATA (array) of data (object)
@@ -37,6 +37,12 @@ function effect_set(config,DATA,ID) //DATA and ID are arrays
 	}
 }
 
+effect_set.prototype.destroy=function()
+{
+	for( var i in this.efs)
+		this.efs[i].destroy();
+}
+
 /*\
  * effect_set.create
  [ method ]
@@ -53,10 +59,8 @@ effect_set.prototype.create=function(param,id,subnum)
 
 effect_set.prototype.TU=function()
 {
-	for ( var i in this.efs)
-	{
+	for( var i in this.efs)
 		this.efs[i].TU();
-	}
 }
 
 effect_set.prototype.transit=function()
@@ -71,6 +75,14 @@ Feffects_pool.prototype.TU=function()
 	this.for_each(function(E){
 		E.TU();
 	});
+}
+Feffects_pool.prototype.destroy=function()
+{
+	//destroy all, no matter active or not
+	for( var i=0; i<this.pool.length; i++)
+	{
+		this.pool[i].destroy();
+	}
 }
 
 /*\
@@ -92,6 +104,11 @@ function effect(config,data,id)
 	this.frameD;
 	this.wait=-1;
 	this.next;
+}
+
+effect.prototype.destroy=function()
+{
+	this.sp.destroy();
 }
 
 effect.prototype.TU=function()
@@ -139,7 +156,7 @@ effect.prototype.born=function(P,N)
 	var x=P.x - this.frameD.centerx;
 	var y=P.y - this.frameD.centery;
 	var z=P.z;
-	this.sp.set_xy({x:x, y:y+z});
+	this.sp.set_x_y(x, y+z);
 	this.sp.set_z(z+1);
 	this.sp.show_pic(this.frameD.pic);
 	this.sp.show();

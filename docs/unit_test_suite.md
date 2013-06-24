@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<title>F.LF/unit test suite</title>
+
+<xmp theme="projectF">
+# unit test suite
+### usage guide
+
+## Introduction
+An automated unit test suite is essential for F.LF to deliver quality-guarantee software. However since LF2 is a game of computer simulation, unit test here differs from traditional sense in software engineering. The unit test suite is specifically developed for F.LF to simulate keyborad input and compare the output with a designated data set. It provides an objective, scientific and precise measurement of compatibility of F.LF to LF2. It facilitates development by providing errors and expected values in organized tables.
+
+## Concept
+As the name suggests, testing is divided into individual units in unit testing. and the units in F.LF is hierarchical:
+
+- scenario
+	> a scenario is a match. in defining a scenario you can specify the players and their teams
+
+	- case
+	> a scenario can have many cases. you can setup a case by placing players at specific positions or drop new weapons to the scene.
+
+## Specification
+A case is defined by a sequence of TU data for each player, with each datum containing a combination of the followings:
+
+- keyborad input `k`. specify the exact keys to be pressed at this TU
+- expected frame number `f`
+- expected movement `dx`, `dy`. the position difference from current TU to the previous TU
+- (unimplemented) other internal properties of a player to check for
+
+### format
+Test cases are written in `test_cases.js` following a JSON formatting. Add and modify test cases in that file. Understand the exact syntax there. It should be easily understandable by anyone who is familiar with JSON.
+
+## Gathering data
+Just one question, how do I optain the frame number and movement data from LF2? Obviously this is taken care by F.LF, although in a sub-optimal way.
+
+#### knowing the frame number
+<img style='float:left; margin-right:20px;' src="https://docs.google.com/drawings/d/1XZB1JqJzszyHK2zXafdiFvm_qcxoVIZsF5sfCX8OCpA/pub?w=132&amp;h=100">
+in [frame_encode](https://drive.google.com/folderview?id=0B6AWO3FZ2ZFrNEVCVnZBaE9NYUU&usp=sharing), there contains specially frame encoded characters, that the data file and sprite is altered in a way that the each frame uses a unique `pic`, and each pic has a number on the top left corner showing the current frame number. to be used with 1.9 or 2.0.
+<div style='clear:both'></div>
+
+#### knowing the position difference
+[`tools/moving_object_detector.html`](../tools/moving_object_detector.html) is a tool to detect object movement over a non-uniform background.
+
+## Interpreting the results
+Below is a sample section of the result table
+<img src="https://docs.google.com/drawings/d/12M0X6qu923YSdDuZde1dSOqzksFc4v_zL_LFfgmsR1Q/pub?w=830&amp;h=359">
+
+if there are errors, they will be marked by a red label. frame error is intolerable while position error with sum less than a certain threshold is acceptable. the total error cell will be marked <span style='padding:0 10px; background-color:red; color:white;'>red</span> if error is too large, or <span style='padding:0 10px; background-color:#0D0; color:white;'>green</span> if it is satisfactory.
+
+#### mean path error (path <i style='font-family:serif;'>E&#772;</i>)
+<img src="https://docs.google.com/drawings/d/1VqxFyt2DBhp4hijXUsyUmPpplpXWCH3j1nJwSrlmrUI/pub?w=535&amp;h=203">
+
+While errors in dx,dy can be useful, it cannot meaningfully describe an overall resemblance between the path of two moving objects. for example in one TU, the error in dx is +1, and in the next TU the error is -1, then the overall error should be 0. thus, the measurement __mean path error__ (path <i style='font-family:serif;'>E&#772;</i>) is introduced. the expected (dx,dy) is added sequentially to form an expected trajectory, and is compared with the actual trajectory on each sample point, and the average sample distance is computed. because coordinate in LF2 is rounded to exact pixel to be rendered on screen, a mean path error smaller than 0.5 is actually negligible.
+
+## A note to fixing errors
+Since a computer simulation has infinite cases and unit testing is never exhaustive, it can only guarantee key aspects of the system have met expectation. It requires human's analysis and judgement to improve the engine systematically. One should not attempt eliminating errors exhaustively in a case-by-case, pixel-by-pixel manner. Instead, observe patterns, generalize. Think about the mechanisms.
+</xmp>
+
+<script src="strapdown_0_2/strapdown.js"></script>
+</html>

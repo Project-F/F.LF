@@ -1,3 +1,8 @@
+<!DOCTYPE html>
+<html>
+<title>F.LF/spec/sprite</title>
+
+<xmp theme="projectF">
 # Sprite
 ### Specification
 
@@ -38,3 +43,7 @@
 - `h` height of a frame
 - `row` number of frames in one row
 - `col` number of frames in one column
+</xmp>
+
+<script src="strapdown_0_2/strapdown.js"></script>
+</html>

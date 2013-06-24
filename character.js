@@ -1,8 +1,8 @@
 /**	a LF2 character
  */
 
-define(['LF/livingobject','LF/global','F.core/util'],
-function(livingobject, Global, Futil)
+define(['LF/livingobject','LF/global','F.core/util','LF/util'],
+function(livingobject, Global, Futil, util)
 {
 	var GC=Global.gameplay;
 
@@ -27,8 +27,10 @@ function(livingobject, Global, Futil)
 					else
 					{
 						ps.vy=0; //set to zero
-						ps.vx *= GC.friction.fell.factor;
-						ps.vz *= GC.friction.fell.factor;
+						$.mech.linear_friction(
+							util.lookup(GC.friction.fell,ps.vx),
+							util.lookup(GC.friction.fell,ps.vz)
+						);
 					}
 				}
 				else if( ps.y+ps.vy>=0 && ps.vy>0) //predict falling onto the ground
@@ -38,19 +40,15 @@ function(livingobject, Global, Futil)
 						$.trans.frame(result, 15);
 					else
 					{
-						switch ($.frame.N)
-						{
-						case 212: //jumping
+						if( $.frame.N===212) //jumping
 							$.trans.frame(215, 15); //crouch
-							break;
-						default:
+						else
 							$.trans.frame(219, 15); //crouch2
-						}
 					}
 				}
 				else if( ps.y===0 && $.frame.N===212)
 				{
-					$.trans.frame(999);
+					//$.trans.frame(999);
 				}
 			break;
 			case 'combo':
@@ -77,12 +75,6 @@ function(livingobject, Global, Futil)
 		'0':function(event,K) //standing
 		{	var $=this;
 			switch (event) {
-			case 'TU':
-				var dx = $.con.state.left !== $.con.state.right,
-					dz = $.con.state.up   !== $.con.state.down;
-				if( dx || dz) //to resolve key conflicts
-					$.trans.frame(5);
-			break;
 
 			case 'frame':
 				if( $.hold.obj && $.hold.obj.type==='heavyweapon')
@@ -90,6 +82,30 @@ function(livingobject, Global, Futil)
 			break;
 
 			case 'combo':
+				switch(K)
+				{
+				case 'left': case 'right': case 'up': case 'down':
+				case 'jump':
+					var dx = $.con.state.left !== $.con.state.right,
+						dz = $.con.state.up   !== $.con.state.down;
+					if( dx || dz)
+					{
+						if( K!=='jump') //walk
+							$.trans.frame(5); //TODO: select randomly from 5,6,7,8
+						//apply movement
+						if( $.hold.obj && $.hold.obj.type==='heavyweapon')
+						{
+							if( dx) $.ps.vx=$.dirh()*($.data.bmp.heavy_walking_speed);
+							$.ps.vz=$.dirv()*($.data.bmp.heavy_walking_speedz);
+						}
+						else
+						{
+							if( dx) $.ps.vx=$.dirh()*($.data.bmp.walking_speed);
+							$.ps.vz=$.dirv()*($.data.bmp.walking_speedz);
+						}
+					}
+				break;
+				}
 				switch(K)
 				{
 				case 'run':
@@ -163,26 +179,12 @@ function(livingobject, Global, Futil)
 
 		'1':function(event,K) //walking
 		{	var $=this;
+
+			var dx = $.con.state.left !== $.con.state.right,
+				dz = $.con.state.up   !== $.con.state.down;
 			switch (event) {
-			case 'TU':
-				var dx = $.con.state.left !== $.con.state.right;
-				if( $.hold.obj && $.hold.obj.type==='heavyweapon')
-				{
-					if( dx)
-						$.ps.vx=$.dirh()*($.data.bmp.heavy_walking_speed);
-					$.ps.vz=$.dirv()*($.data.bmp.heavy_walking_speedz);
-				}
-				else
-				{
-					if( dx)
-						$.ps.vx=$.dirh()*($.data.bmp.walking_speed);
-					$.ps.vz=$.dirv()*($.data.bmp.walking_speedz);
-				}
-			break;
 
 			case 'frame':
-				var dx = $.con.state.left !== $.con.state.right,
-					dz = $.con.state.up   !== $.con.state.down;
 				if( $.hold.obj && $.hold.obj.type==='heavyweapon')
 				{
 					if( dx || dz)
@@ -193,10 +195,24 @@ function(livingobject, Global, Futil)
 				else
 				{
 					$.frame_ani_oscillate(5,8);
-					if( !dx && !dz)
-						$.trans.frame(999); //go back to standing
 				}
 				$.trans.set_wait($.data.bmp.walking_frame_rate-1);
+			break;
+
+			case 'TU':
+				//apply movement
+				if( $.hold.obj && $.hold.obj.type==='heavyweapon')
+				{
+					if( dx) $.ps.vx=$.dirh()*($.data.bmp.heavy_walking_speed);
+					$.ps.vz=$.dirv()*($.data.bmp.heavy_walking_speedz);
+				}
+				else
+				{
+					if( dx) $.ps.vx=$.dirh()*($.data.bmp.walking_speed);
+					$.ps.vz=$.dirv()*($.data.bmp.walking_speedz);
+				}
+				if( !dx && !dz)
+					$.trans.frame(999); //go back to standing
 			break;
 
 			case 'state_entry':
@@ -204,14 +220,28 @@ function(livingobject, Global, Futil)
 			break;
 
 			case 'combo':
-				//walking same as standing
-				return $.states['0'].call($,event,K);
+				if( !dx && !dz && !$.statemem.released)
+				{
+					$.statemem.released=true;
+					$.mech.unit_friction();
+				}
+				//walking same as standing, except null combo
+				if( K) return $.states['0'].call($,event,K);
 			break;
 		}},
 
 		'2':function(event,K) //running, heavy_obj_run
 		{	var $=this;
 			switch (event) {
+
+			case 'frame':
+				if( $.hold.obj && $.hold.obj.type==='heavyweapon')
+					$.frame_ani_oscillate(16,18);
+				else
+					$.frame_ani_oscillate(9,11);
+				$.trans.set_wait($.data.bmp.running_frame_rate);
+			//no break here
+
 			case 'TU':
 				//to maintain the velocity against friction
 				if( $.hold.obj && $.hold.obj.type==='heavyweapon')
@@ -226,12 +256,9 @@ function(livingobject, Global, Futil)
 				}
 			break;
 
-			case 'frame':
-				if( $.hold.obj && $.hold.obj.type==='heavyweapon')
-					$.frame_ani_oscillate(16,18);
-				else
-					$.frame_ani_oscillate(9,11);
-				$.trans.set_wait($.data.bmp.running_frame_rate);
+			case 'state_exit':
+				//slight impulse
+				$.mech.linear_friction(-1,-1);
 			break;
 
 			case 'combo':
@@ -303,6 +330,12 @@ function(livingobject, Global, Futil)
 			case 'frame':
 				if( $.frame.D.next===999 && $.ps.y<0)
 					$.trans.set_next(212); //back to jump
+				switch ($.frame.N)
+				{
+					case 85: case 86: //run attack
+						$.ps.fric=0.5;
+					break;
+				}
 			break;
 		}},
 
@@ -311,18 +344,22 @@ function(livingobject, Global, Futil)
 			switch (event) {
 
 			case 'frame':
-				if( $.frame.N===212 && $.frame.PN===211)
-				{	//start jumping
-					var dx=0;
-					if($.con.state.left)  dx-=1;
-					if($.con.state.right) dx+=1;
-					$.ps.vx= dx * $.data.bmp.jump_distance;
-					$.ps.vz= $.dirv() * $.data.bmp.jump_distancez;
-					$.ps.vy= $.data.bmp.jump_height; //upward force
-				}
+				$.statemem.frameTU=true;
 			break;
 
 			case 'TU':
+				if( $.statemem.frameTU)
+				{	$.statemem.frameTU=false;
+					if( $.frame.N===212 && $.frame.PN===211)
+					{	//start jumping
+						var dx=0;
+						if($.con.state.left)  dx-=1;
+						if($.con.state.right) dx+=1;
+						$.ps.vx= dx * ($.data.bmp.jump_distance-1);
+						$.ps.vz= $.dirv() * ($.data.bmp.jump_distancez-1);
+						$.ps.vy= $.data.bmp.jump_height; //upward force
+					}
+				}
 			break;
 
 			case 'combo':
@@ -354,8 +391,8 @@ function(livingobject, Global, Futil)
 		{	var $=this;
 			switch (event) {
 			case 'state_entry':
-				$.ps.vx= $.dirh() * $.data.bmp.dash_distance;
-				$.ps.vz= $.dirv() * $.data.bmp.dash_distancez;
+				$.ps.vx= $.dirh() * ($.data.bmp.dash_distance-1);
+				$.ps.vz= $.dirv() * ($.data.bmp.dash_distancez-1);
 				$.ps.vy= $.data.bmp.dash_height;
 			break;
 
@@ -396,8 +433,10 @@ function(livingobject, Global, Futil)
 		'6':function(event,K) //rowing
 		{	var $=this;
 			switch (event) {
-			case 'frame':
-				$.frame.mobility=1.4; //magic number
+			case 'TU':
+				//to maintain the velocity against friction
+				$.ps.vx = $.dirh() * $.frame.D.dvx;
+				$.ps.vz = $.dirv() * $.frame.D.dvz;
 			break;
 		}},
 
@@ -405,7 +444,7 @@ function(livingobject, Global, Futil)
 		{	var $=this;
 			switch (event) {
 			case 'frame':
-				$.frame.mobility=0.6; //magic number
+				//$.frame.mobility=0.6; //magic number
 				if( $.frame.N===111)
 					$.trans.inc_wait(4);
 			break;
@@ -415,7 +454,7 @@ function(livingobject, Global, Futil)
 		{	var $=this;
 			switch (event) {
 			case 'frame':
-				$.frame.mobility=0.3; //magic number
+				//$.frame.mobility=0.3; //magic number
 				if( $.frame.N===112)
 					$.trans.inc_wait(4);
 			break;
@@ -551,7 +590,7 @@ function(livingobject, Global, Futil)
 			case 'frame':
 				$.statemem.frameTU=true;
 				$.trans.set_wait(99, 10, 99); //lock until frame transition
-				$.frame.mobility=0; //never moves //magic number
+				//$.frame.mobility=0; //never moves //magic number
 			break;
 
 			case 'TU':
@@ -618,7 +657,8 @@ function(livingobject, Global, Futil)
 				{
 					case 220: case 222: case 224: case 226:
 						$.trans.inc_wait(2, 20, 99); //lock until frame transition
-						$.frame.mobility=0; //cannot move //magic number
+						$.effect_stuck($.trans.wait());
+						//$.frame.mobility=0; //cannot move //magic number
 					break;
 				}
 			break;
@@ -633,6 +673,7 @@ function(livingobject, Global, Futil)
 				{
 					case 180:
 						$.trans.set_next(181);
+						$.trans.set_wait(0);
 						break;
 					case 181:
 						//console.log('y:'+$.ps.y+', vy:'+$.ps.vy+', vx:'+$.ps.vx);
@@ -664,6 +705,7 @@ function(livingobject, Global, Futil)
 				{
 					case 180:
 						$.trans.set_next(185);
+						$.trans.set_wait(0);
 						break;
 					case 186:
 						$.trans.set_next(191);
@@ -715,9 +757,33 @@ function(livingobject, Global, Futil)
 			switch (event) {
 
 			case 'frame':
-				if( $.hold.obj && $.hold.obj.type==='heavyweapon')
-					if( $.frame.N===19) //heavy_stop_run
+				switch( $.frame.N)
+				{
+				case 19: //heavy_stop_run
+					if( $.hold.obj && $.hold.obj.type==='heavyweapon')
 						$.trans.set_next(12);
+				break;
+				case 215:
+					$.trans.inc_wait(-1);
+				break;
+				case 219: //crouch after rowing
+					switch( $.frame.PN) //previous frame number
+					{
+					case 105: //after rowing
+						$.mech.unit_friction();
+					break;
+					case 216: //after dash
+					case 90: case 91: //dash attack
+						$.trans.inc_wait(-1);
+					break;
+					}
+				break;
+				}
+			break;
+
+			case 'TU':
+				if( $.frame.N===219 && $.frame.PN===216)
+					$.mech.unit_friction();
 			break;
 
 			case 'combo':
@@ -841,7 +907,7 @@ function(livingobject, Global, Futil)
 		{
 			//kind 0 ITR
 			$.itr.lasthit=0; accepthit=true;
-			$.effect.dvx = ITR.dvx ? att.dirh()*ITR.dvx-att.dirh()*0.58:0; //magic compensation
+			$.effect.dvx = ITR.dvx ? att.dirh()*(ITR.dvx-1)*1:0; //magic compensation
 			$.effect.dvy = ITR.dvy ? ITR.dvy:0;
 			var effectnum = ITR.effect!==undefined?ITR.effect:GC.default.effect.num;
 
@@ -869,11 +935,11 @@ function(livingobject, Global, Futil)
 			}
 
 			//effect
-			var vanish = GC.effect.duration;
+			var vanish = GC.effect.duration-1;
 			switch( $.trans.next())
 			{
-				case 111: vanish=4; break;
-				case 112: vanish=5; break;
+				case 111: vanish=3; break;
+				case 112: vanish=4; break;
 			}
 			$.effect_create( effectnum, vanish);
 			$.visualeffect_create( effectnum, rect, (attps.x < $.ps.x), ($.health.fall>0?1:2));
@@ -946,9 +1012,9 @@ function(livingobject, Global, Futil)
 						$.itr_rest_update( hit[t].uid, ITR);
 						//stalls
 						if( $.frame.N===72)
-							$.trans.inc_wait(4, 10);
+							$.effect_stuck(4);
 						else
-							$.trans.inc_wait(GC.itr.hit_stall, 10);
+							$.effect_stuck(GC.itr.hit_stall);
 
 						//attack one enemy only
 						if( ITR.arest) break;

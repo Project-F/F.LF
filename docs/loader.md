@@ -1,8 +1,12 @@
-# loader.js
-### specification
+<!DOCTYPE html>
+<html>
+<title>F.LF/spec/loader</title>
 
-loader is a requirejs plugin that loads content packages.
-> the specification of F.LF content packages is defined in package.md
+<xmp theme="projectF">
+# loader.js
+### Specification
+
+loader is a requirejs plugin that loads content packages. the specification of F.LF content packages is defined in package.md
 
 ## Usage
 
@@ -12,7 +16,7 @@ requirejs(['LF/loader!anystring'],function(){...});
 
 ## mechanism
 
-#### 1 package list
+#### 1 package listing
 `LF/packages.js` is first loaded. packages.js should define a list of available content packages, as in the following structure
 ```
 {
@@ -29,7 +33,6 @@ requirejs(['LF/loader!anystring'],function(){...});
 load the specified data list, typically named `data.js`.
 
 ##### lazy loading
-
 if global.lazyload is defined, a function `load()` is inserted to `package.data.object` 
 with the following use:
 ```
@@ -41,9 +44,7 @@ ready)  //callback when all requested files are loaded
 }
 ```
 
-every object defined in the array `object` by `data.js` will be passed to `global.lazyload`, and `global.lazyload` shall return `true` if it wants to __not__ load the data file at this moment. the `data` property of that object will then be marked `'lazy'` in this case. if `global.lazyload` returns falsy or `global.lazyload` is not defined, the data file will be loaded immediately, and the `data` property of that object will contain the structure defined by the js file `file`
-
-other properties defined by `data.js` are copied as is.
+every object defined in the array `object` by `data.js` will be passed to `global.lazyload`, and `global.lazyload` shall return `true` if it wants to __not__ load the data file at this moment. the `data` property of that object will then be marked `'lazy'` in this case. if `global.lazyload` returns falsy or `global.lazyload` is not defined, the data file will be loaded immediately, and the `data` property of that object will contain the structure defined by the js file `file`. other properties defined by `data.js` are copied as is.
 
 later, if the data files are wanted, one should call for example
 ```
@@ -54,7 +55,7 @@ function ()
 });
 ```
 
-in the scenario of F.LF, character data files are not loaded during startup, and are only being loaded when a match starts, only if that character is being selected.
+in the scenario of F.LF, character data files are not loaded during startup, and are only being loaded when a match starts, only if that characters are being selected.
 
 #### 2.2 load properties
 load the specified properties file, typically named `properties.js`.
@@ -71,8 +72,10 @@ package:
 	{
 		object: [
 			{id:30, type:'character', data:{...}},
+			...
 		],
 		background:[
+			...
 		],
 		...
 	}
@@ -91,3 +94,7 @@ package:
 ## todo
 
 support loading packages from a remote location
+</xmp>
+
+<script src="strapdown_0_2/strapdown.js"></script>
+</html>

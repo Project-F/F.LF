@@ -1,8 +1,15 @@
+<!DOCTYPE html>
+<html>
+<title>F.LF/spec/character.js</title>
+
+<xmp theme="projectF">
+
 # character.js
 ### Specification and implementation status
 This specification is based on information by LF-EMPIRE. [http://lf-empire.de/en/lf2-empire/data-changing/types/167-type-0-characters](http://lf-empire.de/en/lf2-empire/data-changing/types/167-type-0-characters).
 
-# bmp
+# data file
+## bmp
 ### file
 `array` of file elements
 #### file element attributes
@@ -45,7 +52,8 @@ rowing_distance: 5
 }
 ```
 
-# frame sequences
+## frame
+### frame sequences
 
 ```
 000 - 003: standing
@@ -70,7 +78,7 @@ rowing_distance: 5
 095      : dash_defend
 100 - 101: rowing (from falling-frames) (unimplemented)
 102 - 109: rowing (rolling)
-110 - 111: defend (111, if char is being hit)
+110 - 111: defend (111, if character is being hit)
 112 - 114: broken_defend
 115      : picking_light
 116 - 117: picking_heavy
@@ -95,7 +103,7 @@ rowing_distance: 5
 232 - 234: throw_lying_man
 ```
 
-### attributes
+### frame attributes
 - `pic`
 - `state`
 - `wait`
@@ -107,9 +115,9 @@ rowing_distance: 5
 - `mp`
 - `sound`
 
-# frame elements
+### frame elements
 
-## interactions: `itr`
+### interactions: `itr`
 
 ### attributes
 - [`kind`](#itrkind)
@@ -121,10 +129,12 @@ rowing_distance: 5
 - `injury`
 - [`effect`](#itreffect)
 
+<a id='itrkind'></a>
 ### itr:kind
 
 #### itr:kind:0
 normal attack
+
 - `active`
 	- trigger an event by intersecting with others
 - conditional `team exclusive`
@@ -133,6 +143,7 @@ normal attack
 
 #### itr:kind:1
 characters with this itr can catch characters that are in state:16 (Dance of Pain).
+
 - `active`
 - `team exclusive`
 	- only interacts with other teams
@@ -142,21 +153,23 @@ extra attributes:
 ```
 "catchingact": [A,B]
 ```
-catcher transits to frame A if catcher approaches the one being caught from the front, otherwiser to frame B
+catcher transits to frame A if catcher approaches the one being caught from the front, otherwise to frame B
 ```
 "caughtact": [A,B]
 ```
-the one being caught transits to frame A if catcher approaches the one being caught from the front, otherwiser to frame B
+the one being caught transits to frame A if catcher approaches the one being caught from the front, otherwise to frame B
 
 for details consult [inter-living-object-interactions.html](http://f-lf2.blogspot.hk/2013/01/inter-living-object-interactions.html).
 
 #### itr:kind:2
 characters with this itr can pick up weapons
+
 - `active`
 - only interact with pickable items
 
 #### itr:kind:3
 characters with this itr can catch characters, without state:16 requirement as kind:3
+
 - `active`
 - `team exclusive`
 - only interact with characters
@@ -166,6 +179,7 @@ other properties same as kind 1
 #### itr:kind:4
 (unimplemented) characters with this itr can hit others as if he is a heavyweapon.
 normally this itr appears in falling frames of a character
+
 - `active`
 - conditional `team neutral`
 	- can hit any team
@@ -176,12 +190,14 @@ kind 5 is for weapons
 
 #### itr:kind:6
 when a character initiates a punch, he checks if his itr volume intersects with another itr volume of kind:6, if this is true he will transit to frame 70 instead of 60 or 65.
+
 - `passive`
 	- other characters trigger an event by intersecting with this itr
 - `team exclusive`
 
 #### itr:kind:7
 characters with this itr can pick up weapons without causing a frame transition
+
 - `active`
 - `key press`
 	- require holding down the attack key
@@ -192,15 +208,18 @@ kind 8,9,10,11 are for special attacks
 
 #### itr:kind:14
 living objects with this itr acts as obstacle to characters
+
 - `passive`
 - only interact with characters
 
 #### itr:kind:15,16
 kind 15,16 are for special attacks
 
+<a id='itrvolume'></a>
 ### itr:volume
 for details consult [volume specification](http://f-lf2.blogspot.hk/2013/01/scenejs-volume.html).
 
+<a id='itreffect'></a>
 ### itr:effect
 with this attribute, an effect will be created when itr:kind:0 occurs.
 effects can be purely visual, but most effects include behaviours that affect characters being hit.
@@ -239,3 +258,7 @@ effects apply `dvx`,`dvy` as velocity to characters being hit.
 - `x`, `y`, `w`, `h`
 
 for details consult [volume specification](http://f-lf2.blogspot.hk/2013/01/scenejs-volume.html).
+</xmp>
+
+<script src="strapdown_0_2/strapdown.js"></script>
+</html>
