@@ -120,7 +120,7 @@ GC.friction.fell=    //defined friction at the moment of falling onto ground
 	15:7
 }
 
-GC.min_speed= 0.1; //defined minimum speed
+GC.min_speed= 1; //defined minimum speed
 
 GC.gravity= 1.7; //defined gravity
 
