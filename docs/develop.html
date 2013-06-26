@@ -4,8 +4,6 @@
 
 <xmp theme="projectf">
 
-> This document is intended to be a guideline for developers who want to do development on F.LF
-
 # Architecture
 
 ### Overview
@@ -37,56 +35,7 @@ F.LF is to be hackable. The architecture answer yes to the following questions:
 - can I append a new component by adding an entry to a list?
 - can I replace a module by implementing one with same interface?
 
-# Getting started
-
-### join us
-get a [github](https://github.com/) account, join the discussion on [github](https://github.com/tyt2y3/F.LF/issues). remember to put the appropriate label:
-
-- `implementation` for implementation of new features (on or not on the roadmap)
-- `bug` to report general bugs
-- `compliance` for issues and observations releated to LF2 compliance
-- `question` to seek help
-- `suggestion` for suggestions, comments and general discussions.
-
-### development environment
-
-- programming text editor
-	> I recommend [geany](http://www.geany.org/) and [geany portable for windows](http://geanyportable.org/)
-- [node.js](http://nodejs.org/)
-	> for building demo
-- [git](http://git-scm.com/)
-- [optional] [console2](http://sourceforge.net/projects/console/)
-	> [configuration](configuration.html#console2), only to make the git console looks better
-- repositories
-	 - [github help/fork-a-repo](https://help.github.com/articles/fork-a-repo)
-	 - fork [F.core](https://github.com/tyt2y3/F.core), [F.LF](https://github.com/tyt2y3/F.LF) and [LFrelease](https://github.com/tyt2y3/LFrelease). The three repositories must be named and placed as below:
-
-```
- F
- |---F.core
- |---LF
- |---LFrelease
-```
-
-### workflow
-
-#### collaboration model
-- [github help/fork & pull](https://help.github.com/articles/using-pull-requests)
-- in normal circumstances, changes to `F.core` should be avoided.
-- do development on dev branchs and pull `origin/master` frequently. resolve conflicts as soon as possible.
-- [dchelimsky/Topic Branches](https://github.com/dchelimsky/rspec/wiki/Topic-Branches)
-- only make pull request on topic branches, that is, branch with only one important change.
-
-	> you can cherry-pick the important updates to a separate branch and make a pull request on that branch (try [this](http://stackoverflow.com/questions/5256021/send-a-pull-request-on-github-for-only-latest-commit)). or try using one branch for each topic in the first place (`docs` branch for documentation, `test` branch for test cases).
-- only make pull request when reasonable progress is being made
-	- program code should be functional and slightly tested
-- do not include personal code playground or unrelated files in a pull request.
-
-#### make demo
-in `F/LF/tools`, run `./make_demo.sh` to create a latest demo in `LFrelease`.
-in `F/LFrelease`, run `./make_release.sh` to commit and push changes.
-after pushing to branch `gh-pages`, the demo should be live at ` http://your-github-username.github.io/LFrelease/demo/demo3.html`
-
+<a id='roadmap'></a>
 # Roadmap
 
 here lists the unimplemented features.
@@ -126,8 +75,8 @@ here lists the unimplemented features.
 	- (extended) story mode
 - interface
 	- mimic original LF2 interface
-- content pack (done)
-- content loader (done)
+- content pack <span style="color:#FFF; padding:0 10px; border-radius:5px; background: #0C0;">done</span>
+- content loader <span style="color:#FFF; padding:0 10px; border-radius:5px; background: #0C0;">done</span>
 	- currently, we use a requirejs plugin to load data files all at once during startup.
 	- however, this will increase startup time and waste bandwidth
 	- we would like to have a content loader which load resources on demand (lazy loading), at the start of a match.
@@ -135,7 +84,7 @@ here lists the unimplemented features.
 ### software engineering
 - build system
 	- possibly [grunt](http://gruntjs.com/). the current build system is based on linux shell script, which is not platform independent and not javascript oriented.
-- automated test suite (done)
+- automated test suite <span style="color:#FFF; padding:0 10px; border-radius:5px; background: #0C0;">done</span>
 	- to develope a test suite specifically for F.LF. to test against the specification of:
 		- frame transition sequence
 		- movement (position difference)
@@ -146,10 +95,8 @@ here lists the unimplemented features.
 
 # engineering process
 
-F.LF attempts a clean room implementation of LF2.
 ### Clean room implementation
-
-A quote from [Wikipedia](http://en.wikipedia.org/wiki/Clean_room_design)
+F.LF attempts a clean room implementation of LF2. A quote from [Wikipedia](http://en.wikipedia.org/wiki/Clean_room_design)
 > Clean room design is the method of copying a design by reverse engineering and then recreating it without infringing any of the copyrights and trade secrets associated with the original design. Clean room design is useful as a defense against copyright and trade secret infringement because it relies on independent invention.
 
 > Typically, a clean room design is done by having someone examine the system to be reimplemented and having this person write a specification. This specification is then reviewed by a lawyer to ensure that no copyrighted material is included. The specification is then implemented by a team with no connection to the original examiners.
@@ -162,11 +109,22 @@ The aim of Project F is to produce a completely free code base for the community
 
 The bottom line is, no trade secret or proprietary source code can enter the F.LF repository. the following rules are extremely important, and have to be beared in mind.
 
-__do not state the long form of LF2. it could be Loyal Fighter 2 or anything__
+- __do not state the long form of LF2. it could be Loyal Fighter 2 or anything__
+- __do not look into the disassembly of LF2__
 
-__do not look into the disassembly of LF2__
+### Collaboration model
+- [github help/fork & pull](https://help.github.com/articles/using-pull-requests)
+- in normal circumstances, changes to `F.core` should be avoided.
+- do development on dev branchs and pull `origin/master` frequently. resolve conflicts as soon as possible.
+- [dchelimsky/Topic Branches](https://github.com/dchelimsky/rspec/wiki/Topic-Branches)
+- only make pull request on topic branches, that is, branch with only one important change.
 
-### engineering process
+	> you can cherry-pick the important updates to a separate branch and make a pull request on that branch (try [this](http://stackoverflow.com/questions/5256021/send-a-pull-request-on-github-for-only-latest-commit)). or try using one branch for each topic in the first place (`docs` branch for documentation, `test` branch for test cases).
+- only make pull request when reasonable progress is being made
+	- program code should be functional and slightly tested
+- do not include personal code playground or unrelated files in a pull request.
+
+### Workflow
 
 The top-down engineering process starts from playing LF2, observing its behaviour, and write a specification. The specification is then implemented.
 
@@ -174,12 +132,22 @@ The bottom-up engineering process starts implementing a system, and observe the 
 
 Both processes produce a pair of specification and implementation as the end product. A task is said to be finished only if the specification and implementation comply to each other and they both comply to LF2 behavior to a high degree.
 
-### test driven development
+### Test Driven Development
 
 A unit test suite is specifically developed for F.LF to simulate keyborad input and compare the output with a designated data set. Implementation of a new feature should be associated with a test case. The test result is a measurement of compatibility with LF2, and will be a good measurement if there are enough test cases. The automated testing should be run frequently to ensure code changes do not break previsouly working cases.
 
 for more information, read [unit_test_suite](unit_test_suite.html).
+
+### Build system
+F.LF employs [requirejs](http://requirejs.org/) for dependency management, and takes advantage of requirejs's optimization tool `r.js` to combine and minify all scripts together into a single script file. However, only scripts from `F.core` and `F.LF` are combined, without any from content packages. content scripts (such as data files) are loaded dynamically.
+
+#### building
+- in `F/LF/tools`, run `./make_demo.sh` to build demos to `LFrelease`.
+- in `F/LF/tools`, run `./make_docs.sh` to copy the documentation to `LFrelease`.
+- in `F/LFrelease`, run `./make_release.sh` to commit and push changes.
+after pushing to branch `gh-pages`, the demo will be live at ` http://your-github-username.github.io/LFrelease/demo/demo3.html`
 </xmp>
 
+<script src="projectfdocs.js"></script>
 <script src="strapdown_0_2/strapdown.js"></script>
 </html>

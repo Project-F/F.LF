@@ -1,6 +1,9 @@
 cd ../docs
+#in LF/docs
 cp -r * ../../LFrelease/docs
-cd ../../LFrelease/docs
+cd ../
+#in LF/
+cp index.html ../LFrelease
 #echo "rename all .md to .html"
 #for filename in $(ls *.md | sed 's/ /__/g')
 #do
