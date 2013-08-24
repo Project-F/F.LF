@@ -12,7 +12,7 @@ function(livingobject, Global, Futil, util)
 		{	var $=this;
 			switch (event) {
 			case 'TU':
-				$.interaction();
+				$.post_interaction();
 
 				//dynamics: position, friction, gravity
 				$.mech.dynamics(); //any further change in position will not be updated on screen until next TU
@@ -67,6 +67,9 @@ function(livingobject, Global, Futil, util)
 						return 1;
 					}
 				}
+			break;
+			case 'post_combo': //after state specific processing
+				$.pre_interaction();
 			break;
 		}},
 
@@ -211,8 +214,12 @@ function(livingobject, Global, Futil, util)
 					if( dx) $.ps.vx=$.dirh()*($.data.bmp.walking_speed);
 					$.ps.vz=$.dirv()*($.data.bmp.walking_speedz);
 				}
-				if( !dx && !dz)
-					$.trans.frame(999); //go back to standing
+				if( !dx && !dz && !$.statemem.transed)
+				{
+					$.statemem.transed=true;
+					$.trans.set_next(999); //go back to standing
+					$.trans.set_wait(1,1,2);
+				}
 			break;
 
 			case 'state_entry':
@@ -254,11 +261,6 @@ function(livingobject, Global, Futil, util)
 					$.ps.vx= $.dirh() * $.data.bmp.running_speed;
 					$.ps.vz= $.dirv() * $.data.bmp.running_speedz;
 				}
-			break;
-
-			case 'state_exit':
-				//slight impulse
-				$.mech.linear_friction(-1,-1);
 			break;
 
 			case 'combo':
@@ -333,7 +335,13 @@ function(livingobject, Global, Futil, util)
 				switch ($.frame.N)
 				{
 					case 85: case 86: //run attack
-						$.ps.fric=0.5;
+						$.ps.fric=0.6;
+					break;
+					case 60: case 65:
+						$.ps.fric=0;
+					break;
+					case 71:
+						$.ps.fric=0.3;
 					break;
 				}
 			break;
@@ -444,7 +452,6 @@ function(livingobject, Global, Futil, util)
 		{	var $=this;
 			switch (event) {
 			case 'frame':
-				//$.frame.mobility=0.6; //magic number
 				if( $.frame.N===111)
 					$.trans.inc_wait(4);
 			break;
@@ -454,9 +461,12 @@ function(livingobject, Global, Futil, util)
 		{	var $=this;
 			switch (event) {
 			case 'frame':
-				//$.frame.mobility=0.3; //magic number
-				if( $.frame.N===112)
-					$.trans.inc_wait(4);
+				switch ($.frame.N)
+				{
+					case 114:
+						$.ps.fric=0;
+					break;
+				}
 			break;
 		}},
 
@@ -475,13 +485,19 @@ function(livingobject, Global, Futil, util)
 			break;
 
 			case 'frame':
-				if( $.frame.N===123) //a successful attack
+				switch ($.frame.N)
 				{
-					$.statemem.counter+=3;
+					case 123: //a successful attack
 					$.statemem.attacks++;
-					if( $.statemem.attacks===5)
-						$.statemem.counter+=3;
+					$.statemem.counter+=3;
+					$.trans.inc_wait(1);
+					break;
+					case 233: case 234:
+					$.trans.inc_wait(-1);
+					break;
 				}
+				if( $.frame.N===234)
+					return;
 				$.catching.caught_b(
 						$.mech.make_point($.frame.D.cpoint),
 						$.frame.D.cpoint,
@@ -520,19 +536,19 @@ function(livingobject, Global, Futil, util)
 						if($.con.state.right) $.switch_dir_fun('right');
 					}
 				}
+			}
+			break; //TU
+			
+			case 'post_combo':
 				$.statemem.counter--;
 				if( $.statemem.counter<=0)
+				if( !($.frame.N===122 && $.statemem.attacks===4)) //let it finish the 5th punch
 				if( $.frame.N===121 || $.frame.N===122)
 				{
 					$.catching.caught_release();
 					$.trans.frame(999,15);
 				}
-			}
-			else
-			{
-				$.trans.frame(999,10);
-			}
-			break; //TU
+			break;
 
 			case 'combo':
 			switch(K)
@@ -556,6 +572,7 @@ function(livingobject, Global, Futil, util)
 							}
 							var nextframe=$.data.frame[$.trans.next()];
 							$.catching.caught_throw( nextframe.cpoint, $.dirv());
+							$.statemem.counter+=10;
 						}
 						else if($.frame.D.cpoint.aaction)
 							$.trans.frame($.frame.D.cpoint.aaction, 10);
@@ -590,10 +607,14 @@ function(livingobject, Global, Futil, util)
 			case 'frame':
 				$.statemem.frameTU=true;
 				$.trans.set_wait(99, 10, 99); //lock until frame transition
-				//$.frame.mobility=0; //never moves //magic number
 			break;
 
 			case 'TU':
+				if( $.frame.N===135) //to be lifted against gravity
+				{
+					$.ps.vy=0;
+				}
+				
 				if( $.caught_cpointkind()===2 &&
 				$.catching && $.catching.caught_cpointkind()===1 )
 				{	//really being caught
@@ -655,10 +676,11 @@ function(livingobject, Global, Futil, util)
 			case 'frame':
 				switch($.frame.N)
 				{
+					case 221: case 223: case 225:
+						$.trans.set_next(999);
+					break;
 					case 220: case 222: case 224: case 226:
-						$.trans.inc_wait(2, 20, 99); //lock until frame transition
-						$.effect_stuck($.trans.wait());
-						//$.frame.mobility=0; //cannot move //magic number
+						//$.trans.inc_wait(0, 20, 99); //lock until frame transition
 					break;
 				}
 			break;
@@ -673,15 +695,15 @@ function(livingobject, Global, Futil, util)
 				{
 					case 180:
 						$.trans.set_next(181);
-						$.trans.set_wait(0);
+						$.trans.set_wait(1);
 						break;
 					case 181:
 						//console.log('y:'+$.ps.y+', vy:'+$.ps.vy+', vx:'+$.ps.vx);
 						$.trans.set_next(182);
 						var vy = $.ps.vy>0?$.ps.vy:-$.ps.vy;
-							 if( 0<vy && vy<4)
+							 if( 0<=vy && vy<=4)
 							$.trans.set_wait(2);
-						else if( 4<=vy && vy<7)
+						else if( 4<vy && vy<7)
 							$.trans.set_wait(3);
 						else if( 7<=vy)
 							$.trans.set_wait(4);
@@ -705,7 +727,7 @@ function(livingobject, Global, Futil, util)
 				{
 					case 180:
 						$.trans.set_next(185);
-						$.trans.set_wait(0);
+						$.trans.set_wait(1);
 						break;
 					case 186:
 						$.trans.set_next(191);
@@ -720,7 +742,7 @@ function(livingobject, Global, Futil, util)
 				if( $.mech.speed() > GC.character.bounceup.limit.xy ||
 					ps.vy > GC.character.bounceup.limit.y)
 				{
-					ps.vy *= GC.character.bounceup.factor.y;
+					ps.vy = -GC.character.bounceup.y;
 					ps.vx *= GC.character.bounceup.factor.x;
 					ps.vz *= GC.character.bounceup.factor.z;
 					if( 180 <= $.frame.N && $.frame.N <= 185)
@@ -784,6 +806,13 @@ function(livingobject, Global, Futil, util)
 			case 'TU':
 				if( $.frame.N===219 && $.frame.PN===216)
 					$.mech.unit_friction();
+			break;
+
+			case 'fall_onto_ground':
+				$.mech.linear_friction(
+					util.lookup(GC.friction.fell,$.ps.vx),
+					util.lookup(GC.friction.fell,$.ps.vz)
+				);
 			break;
 
 			case 'combo':
@@ -907,7 +936,7 @@ function(livingobject, Global, Futil, util)
 		{
 			//kind 0 ITR
 			$.itr.lasthit=0; accepthit=true;
-			$.effect.dvx = ITR.dvx ? att.dirh()*(ITR.dvx-1)*1:0; //magic compensation
+			$.effect.dvx = ITR.dvx ? att.dirh()*(ITR.dvx-1):0; //magic compensation
 			$.effect.dvy = ITR.dvy ? ITR.dvy:0;
 			var effectnum = ITR.effect!==undefined?ITR.effect:GC.default.effect.num;
 
@@ -916,12 +945,14 @@ function(livingobject, Global, Futil, util)
 			{
 				if( ITR.injury)	$.health.hp -= GC.defend.injury.factor * ITR.injury;
 				if( ITR.bdefend) $.health.bdefend += ITR.bdefend;
-				if( $.health.bdefend > GC.defend.break)
-				{
+				if( $.health.bdefend > GC.defend.break_limit)
+				{	//broken defence
 					$.trans.frame(112, 20);
+					if( $.effect.dvx)
+						$.effect.dvx -= util.lookup(GC.defend.break_absorb,$.effect.dvx);
 				}
-				else //an effective defence
-				{
+				else
+				{	//an effective defence
 					$.trans.frame(111, 20);
 				}
 			}
@@ -979,15 +1010,11 @@ function(livingobject, Global, Futil, util)
 		return accepthit;
 	}
 
-	character.prototype.interaction=function()
+	//pre interaction is based on `itr` of next frame
+	character.prototype.pre_interaction=function()
 	{
 		var $=this;
-		var ITR_LIST=Futil.make_array($.frame.D.itr);
-
-		/*TODO: */
-		/*某葉: 基本上會以先填入的itr為優先， 但在範圍重複、同effect的情況下的2組itr，
-			攻擊時，會隨機指定其中一個itr的效果。
-			（在範圍有部份重複或是完全重複的部份才有隨機效果。）*/
+		var ITR_LIST=Futil.make_array($.trans.next_frame_D().itr);
 
 		for( var i in ITR_LIST)
 		{
@@ -998,30 +1025,6 @@ function(livingobject, Global, Futil, util)
 
 			switch (ITR.kind)
 			{
-			case 0: //normal attack
-				for( var t in hit)
-				{
-					var team_allow=true;
-					if( hit[t].type==='character' && hit[t].team===$.team)
-						team_allow=false; //only attack characters of other teams
-
-					if( team_allow)
-					if( $.itr_rest_test( hit[t].uid, ITR))
-					if( hit[t].hit(ITR,$,{x:$.ps.x,y:$.ps.y,z:$.ps.z},vol))
-					{	//hit you!
-						$.itr_rest_update( hit[t].uid, ITR);
-						//stalls
-						if( $.frame.N===72)
-							$.effect_stuck(4);
-						else
-							$.effect_stuck(GC.itr.hit_stall);
-
-						//attack one enemy only
-						if( ITR.arest) break;
-					}
-				}
-			break;
-
 			case 1: //catch
 			case 3: //super catch
 				for( var t in hit)
@@ -1067,6 +1070,61 @@ function(livingobject, Global, Futil, util)
 						$.hold.obj = hit[t];
 						$.hold.id= $.hold.obj.id;
 						break;
+					}
+				}
+			break;
+			}
+		}
+	}
+
+	//post interaction is based on `itr` of current frame
+	character.prototype.post_interaction=function()
+	{
+		var $=this;
+		var ITR_LIST=Futil.make_array($.frame.D.itr);
+
+		//TODO
+		/*某葉: 基本上會以先填入的itr為優先， 但在範圍重複、同effect的情況下的2組itr，
+			攻擊時，會隨機指定其中一個itr的效果。
+			（在範圍有部份重複或是完全重複的部份才有隨機效果。）*/
+
+		for( var i in ITR_LIST)
+		{
+			var ITR=ITR_LIST[i]; //the itr tag in data
+			//first check for what I have got into intersect with
+			var vol=$.mech.volume(ITR);
+			var hit= $.scene.query(vol, $, {tag:'body'});
+
+			switch (ITR.kind)
+			{
+			case 0: //normal attack
+				for( var t in hit)
+				{
+					var team_allow=true;
+					if( hit[t].type==='character' && hit[t].team===$.team)
+						team_allow=false; //only attack characters of other teams
+
+					if( team_allow)
+					if( $.itr_rest_test( hit[t].uid, ITR))
+					if( hit[t].hit(ITR,$,{x:$.ps.x,y:$.ps.y,z:$.ps.z},vol))
+					{	//hit you!
+						$.itr_rest_update( hit[t].uid, ITR);
+						//stalls
+						switch ($.frame.N)
+						{
+							case 86: case 87:
+								$.effect_stuck(2);
+								$.trans.inc_wait(1);
+								break;
+							case 91:
+								$.effect_stuck(2);
+								break;
+							default:
+								$.effect_stuck(GC.itr.hit_stall);
+						}
+
+						//attack one enemy only
+						if( ITR.arest) break;
 					}
 				}
 			break;
@@ -1175,15 +1233,10 @@ function(livingobject, Global, Futil, util)
 		var $=this;
 		$.catching=0;
 		$.trans.frame(181,20);
-		var dvx=4, dvy=-5; //magic number
-		if( dvx !==0) $.ps.vx = ($.caught_b_adir==='right'?1:-1)* dvx;
-		if( dvy !==0) $.ps.vy = dvy;
-
-		//impulse
-		$.mech.set_pos(
-			$.ps.x + $.ps.vx,
-			$.ps.y + $.ps.vy,
-			$.ps.z + $.ps.vz );
+		$.effect.dvx=3; //magic number
+		$.effect.dvy=-3;
+		$.effect.timein=-1;
+		$.effect.timeout=0;
 	}
 
 	return character;

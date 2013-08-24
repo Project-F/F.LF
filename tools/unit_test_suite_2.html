@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<head>
+<meta http-equiv='content-type' content='text/html; charset=UTF-8'>
+</head>
+
+<body>
+<script data-main='../../' src='../third_party/require.js'></script>
+<script>
+define('test_cases',[],{
+test_cases: [
+{
+	scenario:
+	{	//2 players interactions
+		player: [
+			{ id: 1, team: 1},
+			{ id: 30, team: 2}
+		]
+	},
+	cases: [
+	{	name: 'run attack',
+		setup: function(match)
+		{
+			match.character[0].set_pos(300,0,200);
+			match.character[1].set_pos(430,0,200);
+		},
+		player: [
+		[	//Deep
+			{f:[0,1,2,3],k:['right','right']},
+			{f:9,dx:8.5},{f:9,dx:8.5,k:'att'},
+			{f:85,dx:8.5},{f:85,dx:7},{f:85,dx:7},{f:85,dx:6},
+			{f:86,dx:6},{f:86,dx:5},{f:86,dx:0},{f:86,dx:0},{f:86,dx:0},{f:86,dx:4},
+			{f:87,dx:4},{f:87,dx:3},{f:87,dx:2},{f:87,dx:0},{f:87,dx:0},{f:87,dx:0},{f:87,dx:1},
+			{f:88,dx:0},{f:88,dx:0},{f:88,dx:0},{f:88,dx:0},
+			{f:0,dx:0}
+		],
+		[	//Bandit
+			{f:[0,1,2,3],k:'left'},
+			{f:[0,1,2,3]},{f:[0,1,2,3]},{f:[0,1,2,3]},{f:[0,1,2,3]},{f:[0,1,2,3]},{f:[0,1,2,3]},
+			{f:[0,1,2,3]},{f:[0,1,2,3]},
+			{f:220,dx:0},{f:220,dx:0},{f:220,dx:0},{f:220,dx:0},{f:220,dx:-3},
+			{f:221,dx:-2},{f:221,dx:-1},
+			{f:180,dx:0},{f:180,dx:0},{f:180,dx:0},{f:180,dx:0},
+			{f:185,dx:5},{f:185,dx:4},{f:185,dx:3},{f:185,dx:3},{f:185,dx:3},{f:185,dx:3},
+			{f:230,dx:3},{f:230,dx:1},{f:230,dx:0},{f:230,dx:0},{f:230,dx:0},
+			{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}, //20 per line
+			{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}
+		]]
+	}
+	]
+}
+]});
+requirejs(['LF/tools/unit_test_suite'],function(){});
+</script>
+<script data-main='unit_test_suite.js' src='../third_party/require.js'></script>
+</body>

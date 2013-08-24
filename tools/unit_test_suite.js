@@ -1,12 +1,22 @@
-requirejs.config({
-	baseUrl: '../../'
-});
-requirejs(['F.core/sprite','F.core/util','F.core/math',
+requirejs(['F.core/sprite','F.core/util','F.core/math','F.core/css!LF/tools/tools.css',
 'LF/sprite','LF/loader!packages','LF/match','LF/util',
-'LF/tools/test_cases'],
-function(Fsprite,Futil,Fmath,
+'test_cases'],
+function(Fsprite,Futil,Fmath,cssloaded,
 Sprite,package,Match,util,
 test_cases){
+
+	(function(){
+	//prepare HTML
+	var DOC=
+	"<div class='Fbar'>F.LF/unit test suite <a href='../docs/unit_test_suite.html'>Help</a></div>"+
+	"<div id='overall'></div>"+
+	"<div id='stage' class='canvas'></div>"+
+	"<div id='data'></div>";
+	var doc = document.createElement('div');
+	doc.innerHTML=DOC;
+	var body = document.getElementsByTagName('body')[0];
+	body.insertBefore(doc,body.firstChild);
+	}());
 
 	util.setup_resourcemap(package,Fsprite);
 	var test_cases=test_cases.test_cases;
@@ -21,6 +31,7 @@ test_cases){
 		delta:0
 	};
 
+	//RTcontroller is a F.core compatible controller to simulate keyboard input from pre-defined data
 	function RTcontroller()
 	{
 		var $=this;
@@ -209,11 +220,13 @@ test_cases){
 			else
 				return x===A;
 		}
+		if( char.frame.N===230)
+			var y;
 		if( spec.f===undefined)
 		{}
 		else if( is_in(char.frame.N, spec.f))
 		{	//good
-			result.f = 0; //no error
+			result.f = 'no error';
 		}
 		else
 		{
@@ -260,11 +273,11 @@ test_cases){
 				if( result.f!==undefined)
 				{
 					has_f=true;
-					if( result.f===0)
+					if( result.f==='no error')
 						;
 					else
 					{
-						show_error(result_col.f, result.f);
+						show_frameN(result_col.f, result.f);
 						err_fr+=1;
 					}
 				}
@@ -272,13 +285,13 @@ test_cases){
 				{
 					has_dx=true;
 					err_dx+=result.dx>0?result.dx:-result.dx;
-					show_error(result_col.dx, result.dx, 1);
+					show_error(result_col.dx, result.dx);
 				}
 				if( result.dy!==undefined)
 				{
 					has_dy=true;
 					err_dy+=result.dy>0?result.dy:-result.dy;
-					show_error(result_col.dy, result.dy, 1);
+					show_error(result_col.dy, result.dy);
 				}
 				if( result.tr!==undefined)
 				{
@@ -298,7 +311,7 @@ test_cases){
 			show_value($.ccase.result_table[i].errorsum_fr, err_fr, 0, 0);
 			show_value($.ccase.result_table[i].errorsum_dx, err_dx);
 			show_value($.ccase.result_table[i].errorsum_dy, err_dy);
-			show_value($.ccase.result_table[i].errorsum_tr, err_tr/has_tr);
+			show_value($.ccase.result_table[i].errorsum_tr, has_tr?err_tr/has_tr:0);
 			set_delta($.ccase.result_table[i].errorsum_all, errorsum);
 		}
 		//facilitate garbage collection
@@ -329,10 +342,14 @@ test_cases){
 		else
 			E.style.backgroundColor = '#F00';
 	}
-	function show_error(E,e,dif)
+	function show_frameN(E,e)
+	{
+		E.innerHTML += " <span class='errorlabel'>"+e+"</span>";
+	}
+	function show_error(E,e)
 	{
 		var re=Math.round(e*10)/10;
-		if( re) E.innerHTML += " <span class='errorlabel'>"+(re>0 && dif?'+':'')+re+"</span>";
+		if( re) E.innerHTML += " <span class='errorlabel'>"+(re>0?'+':'')+re+"</span>";
 	}
 
 	function make_table()
@@ -415,7 +432,9 @@ test_cases){
 						result_table.r_dy=r_dy;
 						result_table.r_tr=r_tr;
 						//create first column
-						add_cell(r_head,'S'+(i+1)+'.C'+(j+1)+'.Ch'+(h+1)).colSpan=2;
+						var table_name = add_cell(r_head,'S'+(i+1)+'.C'+(j+1)+'.Ch'+(h+1));
+						table_name.colSpan=2;
+						table_name.style.width='100px';
 						add_cell(r_pic,'pic').colSpan=2;
 						add_cell(r_state,'state').colSpan=2;
 						add_cell(r_key,'key').colSpan=2;
@@ -426,7 +445,7 @@ test_cases){
 						add_cell(r_tr,'path <i>E&#772;</i>');
 						add_cell(r_foot,'total');
 						//second column
-						add_cell(r_head,ccase.name).colSpan=99;
+						add_cell(r_head,h>0?null:ccase.name).colSpan=99;
 						add_cell(r_subh,'sum');
 						result_table.errorsum_fr = add_cell(r_fr);
 						result_table.errorsum_dx = add_cell(r_dx);

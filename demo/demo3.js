@@ -59,7 +59,7 @@ util,buildinfo){
 			},
 			{
 				controller: control2,
-				id: 1,
+				id: 30,
 				team: 2
 			}
 		],

@@ -45,11 +45,12 @@ pre
 {
 	margin:0 0 20px 0;
 	height:60px;
-	background-image:url('http://docs.google.com/document/d/1DcPRilw9xEn8tET09rWet3o7x12rD-SkM5SoVJO1nnQ/pubimage?id=1DcPRilw9xEn8tET09rWet3o7x12rD-SkM5SoVJO1nnQ&image_id=19OMD_e2s9wHU52R1ofJIjUrpOP_KI3jKUh9n');
+	background: #7c547c;
+	background-image:url('http://docs.google.com/document/d/1DcPRilw9xEn8tET09rWet3o7x12rD-SkM5SoVJO1nnQ/pubimage?id=1DcPRilw9xEn8tET09rWet3o7x12rD-SkM5SoVJO1nnQ&image_id=19OMD_e2s9wHU52R1ofJIjUrpOP_KI3jKUh9n'),
+	linear-gradient(to right,  #7c547c 0%,#444466 50%);
 	background-repeat:no-repeat;
 	background-position:0px 0px;
 	background-size: contain;
-	background-color:#7c547c;
 	color:#FFF;
 	text-align:right;
 	font-size:30px;
@@ -66,7 +67,7 @@ pre
 </style>
 </head>
 <body>
-<div class='Fbar'>F.LF/moving object detector <a href='../docs/moving_object_detector.md'>Help</a></div>
+<div class='Fbar'>F.LF/moving object detector <a href='../docs/moving_object_detector.html'>Help</a></div>
 <div id='master' class='unselectable'>
 	<div id='cropper'></div>
 </div>
@@ -165,8 +166,11 @@ function newpastedimage(im)
 	{
 		for( var i=1; i<result.length; i++)
 		{
-			drawarrow(rect.w+5,i*(rect.h+1),result[i].x,result[i].y);
-			c.fillText('x:'+result[i].x+',y:'+result[i].y, rect.w+15, i*(rect.h+1)-5);
+			for( var j in result[i])
+			{
+				drawarrow(rect.w+5,i*(rect.h+1)-40+j*15,result[i][j].x,result[i][j].y);
+				c.fillText((j=='0'?'':j)+': x:'+result[i][j].x+',y:'+result[i][j].y, rect.w+15, i*(rect.h+1)-40+j*15-5);
+			}
 		}
 	}
 	function drawarrow(x,y,vx,vy)
@@ -182,30 +186,41 @@ function newpastedimage(im)
 	}
 	function offset_fast(A,B)
 	{
+		var result={};
 		var res=search_for_num(A);
-		if( res)
+		var has=false;
+		for( var i in res)
 		{
-			var posA=res.pos,
-				posB=search_sym(B,res.num);
+			has=true;
+			var posA=res[i].pos,
+				posB=search_sym(B,res[i].num);
 			if( posB)
 			{
 				var offsetx = posB.x-posA.x;
 				if( xonly)
-					return { x:offsetx, y:0};
-				var off = offset_generic(A,B,offsetx);
-				return { x:offsetx, y:off.y};
+					result[i]={ x:offsetx, y:0};
+				else
+				{
+					var off = offset_generic(A,B,offsetx);
+					result[i]={ x:offsetx, y:off.y};
+				}
 			}
 		}
-		return offset_generic(A,B);
+		if( has)
+			return result;
+		else
+			return {'0':offset_generic(A,B)};
 	}
 	function search_for_num(A)
 	{
+		var result={};
 		//search for any number symbol
 		for( var i in number_sym)
 		{
 			var res=search_sym(A,number_sym[i]);
-			if( res) return { num:number_sym[i], pos:res};
+			if( res) result[i] = { num:number_sym[i], pos:res};
 		}
+		return result;
 	}
 	function search_sym(A,sym)
 	{

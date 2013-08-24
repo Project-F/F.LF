@@ -78,7 +78,8 @@ function ( Global, Sprite, Mech, Fcombodec)
 			dvx: 0, dvy: 0,
 			oscillate: 0,
 			stuck: false, //when an object is said to be 'stuck', there is not state and frame update
-			timeout: 0
+			timein: 0, //time to take effect
+			timeout: 0 //time to lose effect
 		};
 		$.catching= 0; //state 9: the object being caught by me now
 					//OR state 10: the object catching me now
@@ -147,6 +148,8 @@ function ( Global, Sprite, Mech, Fcombodec)
 		var tar2=$.states['generic'];
 		if(!res1)
 		if( tar2) var res2=tar2.call($,'combo',K);
+		if( tar1) tar1.call($,'post_combo');
+		if( tar2) tar2.call($,'post_combo');
 		if( res1 || res2 ||
 			K==='left' || K==='right' || K==='up' || K==='down') //dir combos are not persistent
 			$.statemem.combo = null;
@@ -170,10 +173,12 @@ function ( Global, Sprite, Mech, Fcombodec)
 		$.ps.fric=1; //reset friction
 		//velocity
 		if( $.frame.D.dvx)
-			if( $.ps.y<0 || ($.ps.vx>0?$.ps.vx:-$.ps.vx)-1 < $.frame.D.dvx) //accelerate..
+		{
+			var avx = $.ps.vx>0?$.ps.vx:-$.ps.vx;
+			if( $.ps.y<0 || avx < $.frame.D.dvx) //accelerate..
 				$.ps.vx = $.dirh() * $.frame.D.dvx; //..is okay
-			else //decelerate..
-				$.mech.linear_friction(1,0); //..must be gradual
+			//decelerate must be gradual
+		}
 		if( $.frame.D.dvz) $.ps.vz = $.dirv() * $.frame.D.dvz;
 		if( $.frame.D.dvy) $.ps.vy = $.frame.D.dvy;
 
@@ -194,28 +199,33 @@ function ( Global, Sprite, Mech, Fcombodec)
 			$.state_update('TU');
 
 		//effect
-		if( $.effect.oscillate)
+		if( $.effect.timein<0)
 		{
-			if( $.effect.i===1)
-				$.effect.i=-1;
-			else
-				$.effect.i=1;
-			$.sp.set_x_y($.ps.sx + $.effect.oscillate*$.effect.i, $.ps.sy+$.ps.sz);
+			if( $.effect.oscillate)
+			{
+				if( $.effect.i===1)
+					$.effect.i=-1;
+				else
+					$.effect.i=1;
+				$.sp.set_x_y($.ps.sx + $.effect.oscillate*$.effect.i, $.ps.sy+$.ps.sz);
+			}
+			if( $.effect.timeout===0)
+			{
+				$.effect.oscillate = 0;
+				$.effect.stuck = false;
+				$.sp.set_x_y($.ps.sx, $.ps.sy+$.ps.sz);
+			}
+			else if( $.effect.timeout===-1)
+			{
+				if( $.effect.dvx) $.ps.vx = $.effect.dvx;
+				if( $.effect.dvy) $.ps.vy = $.effect.dvy;
+				$.effect.dvx=0;
+				$.effect.dvy=0;
+			}
+			$.effect.timeout--;
 		}
-		if( $.effect.timeout===0)
-		{
-			$.effect.oscillate = 0;
-			$.effect.stuck = false;
-			$.sp.set_x_y($.ps.sx, $.ps.sy+$.ps.sz);
-		}
-		else if( $.effect.timeout===-1)
-		{
-			if( $.effect.dvx) $.ps.vx = $.effect.dvx;
-			if( $.effect.dvy) $.ps.vy = $.effect.dvy;
-			$.effect.dvx=0;
-			$.effect.dvy=0;
-		}
-		$.effect.timeout--;
+		//if( $.uid===1)
+		//	console.log('TU: fN:'+$.frame.N+',effect.timeout:'+$.effect.timeout);
 
 		//recovery
 		$.itr.lasthit--;
@@ -245,7 +255,9 @@ function ( Global, Sprite, Mech, Fcombodec)
 		var tar2=$.states[$.frame.D.state];
 		if( tar2) var res2=tar2.call($,event);
 		//
-		return res1 || res2;
+		if( tar1) var res3=tar1.call($,'post_'+event);
+		//
+		return res1 || res2 || res3;
 	}
 
 	livingobject.prototype.TU=function()
@@ -268,8 +280,11 @@ function ( Global, Sprite, Mech, Fcombodec)
 			$.combo_update();
 		}
 		//frame transition
-		if( !$.effect.stuck)
+		if( $.effect.timein<0 && $.effect.stuck)
+			; //stuck!
+		else
 			$.trans.trans();
+		$.effect.timein--;
 	}
 
 	livingobject.prototype.set_pos=function(x,y,z)
@@ -305,6 +320,7 @@ function ( Global, Sprite, Mech, Fcombodec)
 			if( $.proper(efid,'cant_move'))
 				$.effect.stuck=true;
 		}
+		$.effect.timein=0;
 		$.effect.timeout=duration;
 	}
 
@@ -312,6 +328,7 @@ function ( Global, Sprite, Mech, Fcombodec)
 	{
 		var $=this;
 		$.effect.stuck=true;
+		$.effect.timein=0;
 		$.effect.timeout=duration;
 	}
 
@@ -522,6 +539,14 @@ function ( Global, Sprite, Mech, Fcombodec)
 			{
 				lock=0;
 			}
+		}
+
+		this.next_frame_D=function()
+		{
+			var anext = next;
+			if( anext===999)
+				anext=0;
+			return $.data.frame[anext];
 		}
 
 		this.trans=function()

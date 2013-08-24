@@ -100,13 +100,18 @@ GC.character.bounceup.limit.xy= 13.4; //defined speed threshold to bounce up aga
 GC.character.bounceup.limit.y= 11; //y threshold; will bounce if any one of xy,y is overed
 GC.character.bounceup.factor={};
 GC.character.bounceup.factor.x= 0.5; //defined bounce up factors
-GC.character.bounceup.factor.y= -0.57;
 GC.character.bounceup.factor.z= 0.6;
+GC.character.bounceup.y= 4.25; //defined bounce up speed
 
 GC.defend={};
 GC.defend.injury={};
 GC.defend.injury.factor= 0.1; //defined defend injury factor
-GC.defend.break= 40; //defined defend break
+GC.defend.break_limit= 40; //defined defend break
+GC.defend.break_absorb= //how much dvx to absorb when defence is broken
+{	//look up table
+	5:0,
+	15:5
+}
 
 GC.fall={};
 GC.fall.KO= 60; //defined KO
@@ -115,7 +120,9 @@ GC.friction={};
 GC.friction.fell=    //defined friction at the moment of falling onto ground
 {	//a look up table
 	//speed:friction
-	7:4, //smaller or equal to 7, value is 4
+	3:2,
+	5:3,
+	6:4, //smaller or equal to 6, value is 4
 	9:5,
 	15:7
 }
