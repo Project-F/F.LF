@@ -93,14 +93,21 @@ function key(e,down)
 		el.style.backgroundColor = down? '#FCC':'#CCC';
 	}
 	console.log(e.keyCode);
-	return true;
+	//the follow section blocks nearly all browser key events, including ctrl+f and F1,F2
+	e.cancelBubble = true;
+	e.returnValue = false;
+	if (e.stopPropagation)
+	{
+		e.stopPropagation();
+		e.preventDefault();
+	}
+	return false;
 }
 </script>
+<span style='font-size:16pt;'>
+This webpage shows the strange behaviour of key events in different browsers. For most cheap keyboard, no more than 3 keys can be pressed down simultaneously.<br>
+Some keys remain red when released, as no corresponding keyup event is received. Some keys are never highlighted because the keycode is inconsistent across browsers. Alpha numeric keys are the only safe default set, but by letting the user to set manually, any key can be used.<br>
+It is impossible to override some browser's special function key and operating system's key combination, like alt+tab or ctrl+tab, but some including F1~F12 and ctrl+f can be overrided.<br>
+</span>
 
-This webpage shows the strange behaviour of key events in different browsers.<br>
-No more than 3 keys can be pressed down simultaneously in my test.<br>
-Some keys remain red when released, as no corresponding keyup event is received.<br>
-As it is hard to override browser's special function key and operating system's key combination,<br>
-the recommendation is avoid all those keys.<br>
-Only alpha- numberic keys are trust- worthy to use in game.<br>
 </body>
