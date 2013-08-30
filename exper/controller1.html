@@ -8,6 +8,22 @@
 </style>
 </head>
 <body>
+<div id='keycode'>keycode:</div>
+<div class='key' id='k27'>Esc</div>
+<div class='key' id='k112'>F1</div>
+<div class='key' id='k113'>F2</div>
+<div class='key' id='k114'>F3</div>
+<div class='key' id='k115'>F4</div>
+<div class='key' id='k116'>F5</div>
+<div class='key' id='k117'>F6</div>
+<div class='key' id='k118'>F7</div>
+<div class='key' id='k119'>F8</div>
+<div class='key' id='k120'>F9</div>
+<div class='key' id='k121'>F10</div>
+<div class='key' id='k122'>F11</div>
+<div class='key' id='k123'>F12</div>
+<div class='key' id='k19' style='width:90px'>Break</div>
+<div style='clear:both'></div>
 <div class='key' id='k192'>~<br>`</div>
 <div class='key' id='k49'>1</div>
 <div class='key' id='k50'>2</div>
@@ -48,7 +64,7 @@
 <div class='key' id='k74'>J</div>
 <div class='key' id='k75'>K</div>
 <div class='key' id='k76'>L</div>
-<div class='key' id='k59'>:<br>;</div>
+<div class='key' id='k186'>:<br>;</div>
 <div class='key' id='k222'>"<br>'</div>
 <div class='key' id='k13' style='width:105px'>enter</div>
 <div style='clear:both'></div>
@@ -76,6 +92,14 @@
 window.onkeydown=keydown;
 window.onkeyup=keyup;
 
+//block F1 key in IE
+if( 'onhelp' in window)
+{
+	window.onhelp = function(){
+		return false;
+	}
+}
+
 function keydown(e){ key(e,1) };
 function keyup  (e){ key(e,0) };
 function key(e,down)
@@ -92,8 +116,8 @@ function key(e,down)
 		    el = document.getElementById('k'+e.keyCode+'r');
 		el.style.backgroundColor = down? '#FCC':'#CCC';
 	}
-	console.log(e.keyCode);
-	//the follow section blocks nearly all browser key events, including ctrl+f and F1,F2
+	document.getElementById('keycode').innerHTML='keycode: '+e.keyCode;
+	//the follow section blocks some browser-native key events, including ctrl+f and F1~F12
 	e.cancelBubble = true;
 	e.returnValue = false;
 	if (e.stopPropagation)

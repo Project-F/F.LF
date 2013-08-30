@@ -11,6 +11,14 @@ function keyup(e)
 	return master_controller.key(e,0);
 }
 
+//block F1 key in IE
+if( 'onhelp' in window)
+{
+	window.onhelp = function(){
+		return false;
+	}
+}
+
 var master_controller = (function()
 {
 	if (document.addEventListener){
@@ -34,6 +42,15 @@ var master_controller = (function()
 			if ( this.child[I].key(e.keyCode,down))
 				break;//if one controller catches a key, the next controller will never receive an event
 		}
+		//the follow section blocks some browser-native key events, including ctrl+f and F1~F12
+		e.cancelBubble = true;
+		e.returnValue = false;
+		if (e.stopPropagation)
+		{
+			e.stopPropagation();
+			e.preventDefault();
+		}
+		return false;
 	}
 	return mas;
 }());
@@ -262,6 +279,14 @@ function(A)
 			case 'left': code=37; break;
 			case 'right': code=39; break;
 			case 'space': code=32; break;
+			case 'esc': code=27; break;
+		}
+	}
+	if( A.length==2)
+	{
+		if( A.charAt(0)==='F')
+		{
+			code=111+parseInt(A.slice(1));
 		}
 	}
 	return code;
@@ -283,6 +308,10 @@ function(code)
 	{
 		return String.fromCharCode(code).toLowerCase();
 	}
+	else if( code>=112 && code<=123)
+	{
+		return 'F'+(code-111);
+	}
 	else
 	{
 		var nam = code;
@@ -293,6 +322,7 @@ function(code)
 			case 37: nam='left'; break;
 			case 39: nam='right'; break;
 			case 32: nam='space'; break;
+			case 27: nam='esc'; break;
 		}
 		return nam;
 	}
