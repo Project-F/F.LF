@@ -12,16 +12,16 @@
 
 define(['F.core/util','F.core/collision'], function (Futil,Fcollision)
 {
-var UID=0;
 
 function scene (config)
 {
 	this.live = {}; //list of living objects
+	this.uid = 0;
 }
 
 scene.prototype.add = function(C)
 {
-	C.uid = UID++;
+	C.uid = this.uid++;
 	this.live[C.uid]=C;
 	return C.uid;
 }
@@ -100,6 +100,20 @@ scene.prototype.query = function(volume, exclude, where)
 
 //return true if volume A and B intersect
 scene.prototype.intersect = function(A,B)
+{
+	//less garbage version
+	var A_left=A.x+A.vx, A_top=A.y+A.vy, A_right=A.x+A.vx+A.w, A_bottom=A.y+A.vy+A.h;
+	var B_left=B.x+B.vx, B_top=B.y+B.vy, B_right=B.x+B.vx+B.w, B_bottom=B.y+B.vy+B.h;
+
+	return ( Fcollision.rect_flat(
+			A_left, A_top, A_right, A_bottom,
+			B_left, B_top, B_right, B_bottom) &&
+		Fcollision.rect_flat(
+			A.z-A.zwidth, 0, A.z+A.zwidth, 1,
+			B.z-B.zwidth, 0, B.z+B.zwidth, 1)
+		);
+}
+scene.prototype.intersect_old = function(A,B)
 {
 	var AV={ left:A.x+A.vx, top:A.y+A.vy, right:A.x+A.vx+A.w, bottom:A.y+A.vy+A.h };
 	var BV={ left:B.x+B.vx, top:B.y+B.vy, right:B.x+B.vx+B.w, bottom:B.y+B.vy+B.h };

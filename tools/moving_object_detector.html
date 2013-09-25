@@ -75,6 +75,7 @@ pre
 <canvas id='canvas'></canvas>
 <div id='description'>
 	<button id='compute'>compute</button>
+	<button id='render_hori'>render horizontally</button>
 	<input id='xonly' type='checkbox' checked>x only
 	<pre>
 	This is a simple tool for detecting moving object.
@@ -138,16 +139,12 @@ function newpastedimage(im)
 
 	cropchanged=function()
 	{
-		can.e.width = rect.w+100;
-		can.e.height= img.length*(rect.h+1);
-		c.clearRect(0,0,can.w,can.h);
-		for( var i=0; i<img.length; i++)
-			c.drawImage(img[i],rect.x,rect.y,rect.w,rect.h,0,i*(rect.h+1),rect.w,rect.h);
+		render();
 		renderresult(result);
 	}
-
 	document.getElementById('compute').onclick=function()
 	{
+		render();
 		xonly=document.getElementById('xonly').checked;
 		if( img.length>1)
 		{
@@ -158,9 +155,33 @@ function newpastedimage(im)
 			cropchanged();
 		}
 	}
+	document.getElementById('render_hori').onclick=function()
+	{
+		render(true);
+	}
+	
 	function getdata(i)
 	{	//get image data of the i-th image
 		return c.getImageData(0,i*(rect.h+1),rect.w,rect.h);
+	}
+	function render(hori)
+	{
+		if( hori)
+		{
+			can.w = can.e.width = img.length*(rect.w+1);
+			can.h = can.e.height= rect.h;
+			c.clearRect(0,0,can.w,can.h);
+			for( var i=0; i<img.length; i++)
+				c.drawImage(img[i],rect.x,rect.y,rect.w,rect.h,i*(rect.w+1),0,rect.w,rect.h);
+		}
+		else //render vertically
+		{
+			can.w = can.e.width = rect.w+100;
+			can.h = can.e.height= img.length*(rect.h+1);
+			c.clearRect(0,0,can.w,can.h);
+			for( var i=0; i<img.length; i++)
+				c.drawImage(img[i],rect.x,rect.y,rect.w,rect.h,0,i*(rect.h+1),rect.w,rect.h);
+		}
 	}
 	function renderresult(result)
 	{

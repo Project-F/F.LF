@@ -33,35 +33,43 @@ define(['LF/packages','LF/global'],function(packages,global){
 
 			function load_package(pack)
 			{
-				path=normalize(pack.path);
-				content.location = normalize(config.baseUrl)+path;
+				path=normalize_path(pack.path);
+				content.location = normalize_path(config.baseUrl)+path;
 				require( [path+'manifest'], function(mani)
 				{
+					manifest=mani;
 					var manifest_schema=
 					{
 						"data":"string",
 						"properties":"string",
 						"resourcemap":"string!optional"
 					}
-					if( !validate(manifest_schema,mani))
+					if( !validate(manifest_schema,manifest))
 					{
 						console.log('loader: error: manifest.js of '+path+' is not correct.');
 					}
-					require( [path+mani.data], load_data);
-					manifest=mani;
+					require( [path+normalize_file(manifest.data)], load_data);
 					load_something('properties');
 					load_something('resourcemap');
 				});
 			}
-			function normalize(ppp)
+			function normalize_path(ppp)
 			{	//normalize a file path section
-				if( ppp==='')
-					return ppp;
+				if( !ppp)
+					return '';
 				ppp=ppp.replace(/\\/g,'/');
 				if( ppp.charAt(ppp.length-1)!=='/')
 					ppp+='/';
 				if( ppp.charAt(0)==='/')
 					ppp=ppp.slice(1);
+				return ppp;
+			}
+			function normalize_file(ppp)
+			{
+				if( !ppp)
+					return '';
+				if( ppp.lastIndexOf('.js')===ppp.length-3)
+					ppp = ppp.slice(0,ppp.length-3);
 				return ppp;
 			}
 			function load_data(datalist)
@@ -79,16 +87,20 @@ define(['LF/packages','LF/global'],function(packages,global){
 
 				var datafile_depend=[];
 				for( var i=0; i<datalist.object.length; i++)
-				{
 					if( allow_load(datalist.object[i]))
-						datafile_depend.push(path+datalist.object[i].file);
-				}
+						datafile_depend.push(path+normalize_file(datalist.object[i].file));
+				for( var i=0; i<datalist.background.length; i++)
+					if( allow_load(datalist.background[i]))
+						datafile_depend.push(path+normalize_file(datalist.background[i].file));
+
 				require( datafile_depend, function()
 				{
 					var gamedata={};
 					for ( var i in datalist)
 					{
 						if( i==='object')
+							gamedata[i]=[];
+						else if( i==='background')
 							gamedata[i]=[];
 						else
 							gamedata[i]=datalist[i];
@@ -109,10 +121,18 @@ define(['LF/packages','LF/global'],function(packages,global){
 						else
 						{
 							obj.data = 'lazy';
-							obj.file = path+O.file;
+							obj.file = path+normalize_file(O.file);
 						}
 
 						gamedata.object.push(obj);
+					}
+					for( var i=0; i<datalist.background.length; i++,j++)
+					{
+						var O = datalist.background[i];
+						gamedata.background.push({
+							id: O.id,
+							data: arguments[j]
+						});
 					}
 					content.data=gamedata;
 					module_lazyload();
@@ -121,7 +141,7 @@ define(['LF/packages','LF/global'],function(packages,global){
 			}
 			function load_something(thing)
 			{
-				require( [path+manifest[thing]], function(it){
+				require( [path+normalize_file(manifest[thing])], function(it){
 					content[thing] = it;
 					load_ready();
 				});

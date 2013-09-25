@@ -5,9 +5,9 @@
 \*/
 
 define(['F.core/util','F.core/controller',
-'LF/factories','LF/scene','LF/third_party/random','LF/util'],
+'LF/factories','LF/scene','LF/background','LF/third_party/random','LF/util'],
 function(Futil,Fcontroller,
-factory,Scene,Random,util)
+factory,Scene,Background,Random,util)
 {
 	/*\
 	 * match
@@ -37,35 +37,45 @@ factory,Scene,Random,util)
 
 	match.prototype.create=function(setting)
 	{
-		/**
-		setting =
-		{
+		/** setting={
 			player:
 			[
-				{controller, id, team},,,
+				{
+					controller: control1,
+					id: 30,
+					team: 1
+				},
+				{
+					controller: control2,
+					id: 1,
+					team: 2
+				}
 			],
-			background:
+			control: 'debug',
+			set:
 			{
+				weapon: true
 			},
-			control: 'debug'
-		}
-		 */
+			background: {id:1}
+		} */
 		var char_list=[];
 		for( var i=0; i<setting.player.length; i++)
 			char_list.push(setting.player[i].id);
 		if( !setting.set) setting.set={};
 		var $=this;
 
+		$.randomseed = $.new_randomseed();
+		$.create_scenegraph();
+		$.create_effects($.config.effects);
+		$.control = $.create_controller(setting.control);
+		$.create_background(setting.background);
+
 		this.data.object.load(char_list,function()
 		{
-			$.scene = new Scene();
-			$.effects = $.create_effects($.config.effects);
-			$.character = $.create_characters(setting.player);
-			$.randomseed = $.new_randomseed();
-			$.control = $.create_controller(setting.control);
-			$.lightweapon=[];
-			$.heavyweapon=[];
-			$.drop_weapons(setting.set.weapon);
+			if( setting.player)
+				$.create_characters(setting.player);
+			if( setting.set.weapon)
+				$.drop_weapons(setting.set.weapon);
 			$.create_timer();
 		});
 	}
@@ -82,7 +92,26 @@ factory,Scene,Random,util)
 			e.removeChild(e.lastChild);
 	}
 
+	match.prototype.log=function(mes)
+	{
+		console.log(this.time.t+': '+mes);
+	}
+
+	match.prototype.destroy_object=function(obj)
+	{
+		
+	}
+
 	//all methods below are considered private
+
+	match.prototype.create_scenegraph=function()
+	{
+		var $=this;
+		$.scene = new Scene();
+		$.character = {};
+		$.weapon = {};
+		$.effect = {};
+	}
 
 	match.prototype.create_timer=function()
 	{
@@ -92,8 +121,9 @@ factory,Scene,Random,util)
 			t:0,
 			paused: false,
 			timer: null,
-			$fps: document.getElementById('fps')
+			$fps: util.div('fps')
 		};
+		if( !$.time.$fps) $.calculate_fps = function(){};
 		$.time.timer = setInterval( function(){$.frame();}, 1000/30.5);
 	}
 
@@ -106,7 +136,8 @@ factory,Scene,Random,util)
 		if( !$.time.paused)
 		{
 			$.TU_trans();
-			$.calculate_fps(1);
+			if( $.time.t%30===0)
+				$.calculate_fps(30);
 		}
 		else
 		{
@@ -125,6 +156,7 @@ factory,Scene,Random,util)
 		$.for_all('transit');
 		$.emit_event('TU');
 		$.for_all('TU');
+		$.background.TU();
 	}
 
 	match.prototype.emit_event=function(E)
@@ -136,42 +168,36 @@ factory,Scene,Random,util)
 	match.prototype.for_all=function(oper)
 	{
 		var $=this;
-		for( var i=0; i<$.character.length; i++)   $.character[i][oper]();
-		for( var i=0; i<$.lightweapon.length; i++) $.lightweapon[i][oper]();
-		for( var i=0; i<$.heavyweapon.length; i++) $.heavyweapon[i][oper]();
-		$.effects[oper]();
+		for( var i in $.character)
+			$.character[i][oper]();
+		for( var i in $.weapon)
+			$.weapon[i][oper]();
+		for( var i in $.effect)
+			$.effect[i][oper]();
 	}
 
 	match.prototype.calculate_fps=function(mul)
 	{
 		var $=this;
-		if( $.time.$fps)
-		{
-			var ot=$.time.time;
-			$.time.time = new Date().getTime();
-			var diff = $.time.time-ot;
-			$.time.$fps.value = Math.round(1000/diff*mul)+'fps';
-		}
+		var ot=$.time.time;
+		$.time.time = new Date().getTime();
+		var diff = $.time.time-ot;
+		$.time.$fps.value = Math.round(1000/diff*mul)+'fps';
 	}
 
 	match.prototype.create_characters=function(players)
 	{
 		var $=this;
 		var pos=[
-			{x:400,y:0,z:200},
-			{x:300,y:0,z:200},
-			{x:200,y:0,z:200},
-			{x:500,y:0,z:200}
+			$.background.get_pos(0.55,0.5),
+			$.background.get_pos(0.45,0.5),
+			$.background.get_pos(0.40,0.5),
+			$.background.get_pos(0.60,0.5)
 		];
-		var array=[];
 		var char_config =
 		{
-			spec: $.spec,
-			controller: null,
 			match: $,
-			stage: $.stage,
-			scene: $.scene,
-			effects: $.effects,
+			controller: null,
 			team: 0
 		};
 		for( var i=0; i<players.length; i++)
@@ -180,11 +206,11 @@ factory,Scene,Random,util)
 			var pdata = util.select_from($.data.object,{id:player.id}).data;
 			char_config.controller = player.controller;
 			char_config.team = player.team;
-			var len = array.push( new factory.character (char_config, pdata, player.id) );
-			// TODO: player placements
-			array[len-1].set_pos( pos[len-1].x, pos[len-1].y, pos[len-1].z);
+			var char = new factory.character(char_config, pdata, player.id);
+			char.set_pos( pos[i].x, pos[i].y, pos[i].z); //TODO: proper player placements
+			var uid = $.scene.add(char);
+			$.character[uid] = char;
 		}
-		return array;
 	}
 
 	match.prototype.create_effects=function(config)
@@ -198,22 +224,20 @@ factory,Scene,Random,util)
 		effects_config.stage = $.stage;
 
 		var param = Futil.extract_array( $.grouped_object.effects, ['data','id']);
-		return new factory.effects ( effects_config, param.data, param.id);
-	}
-
-	match.prototype.create_random=function()
-	{
+		$.effect[0] = new factory.effects ( effects_config, param.data, param.id);
+		$.visualeffect = $.effect[0];
 	}
 
 	match.prototype.drop_weapons=function(setup)
 	{
 		var $=this;
-		if( setup)
-		{
-			$.create_weapon( 100, {x:100,y:-800,z:200});
-			$.create_weapon( 101, {x:500,y:-800,z:200});
-			$.create_weapon( 150, {x:400,y:-800,z:250});
-		}
+		var A=$.background.get_pos(0.35,0.5),
+			B=$.background.get_pos(0.70,0.5),
+			C=$.background.get_pos(0.50,0.8);
+		A.y=B.y=C.y=-800;
+		$.create_weapon( 100, A);
+		$.create_weapon( 101, B);
+		$.create_weapon( 150, C);
 	}
 
 	match.prototype.create_weapon=function(id,pos)
@@ -222,11 +246,7 @@ factory,Scene,Random,util)
 		var weapon= id<150 ? 'lightweapon':'heavyweapon';
 		var wea_config=
 		{
-			spec: $.spec,
-			match: $,
-			stage: $.stage,
-			scene: $.scene,
-			effects: $.effects
+			match: $
 		};
 		var res=Futil.arr_search(
 			$.grouped_object[weapon],
@@ -235,12 +255,25 @@ factory,Scene,Random,util)
 		var object = $.grouped_object[weapon][res];
 		var wea = new factory[weapon]( wea_config, object.data, object.id);
 		wea.set_pos(pos.x,pos.y,pos.z);
-
-		$[weapon].push(wea);
+		var uid = $.scene.add(wea);
+		$.weapon[uid] = wea;
 	}
 
-	match.prototype.periodic_event=function(event)
+	match.prototype.create_background=function(bg)
 	{
+		var $=this;
+		if( bg)
+		{
+			var bgdata = util.select_from($.data.background,{id:bg.id}).data;
+			$.background = new Background({
+				layers:util.div('background'),
+				floor:util.div('floor'),
+				scrollbar:true,
+				camerachase:{character:$.character}
+			},bgdata,bg.id);
+		}
+		else
+			$.background = new Background(null); //create an empty background
 	}
 
 	match.prototype.new_randomseed=function()
@@ -260,12 +293,11 @@ factory,Scene,Random,util)
 		var $=this;
 		if( allow==='debug')
 		{
-			var config =
+			var funkey_config =
 			{
-				'0':'0','1':'1','2':'2','3':'3','4':'4','5':'5','6':'6','7':'7','8':'8','9':'9',
-				ctrl:'ctrl'
+				'F1':'F1','F2':'F2','F3':'F3','F4':'F4','F5':'F5','F6':'F6','F7':'F7','F8':'F8','F9':'F9','F10':'F10'
 			};
-			var Fcon = new Fcontroller(config);
+			var Fcon = new Fcontroller(funkey_config);
 			Fcon.child.push ({
 				key: function(I,down)
 				{
@@ -273,14 +305,14 @@ factory,Scene,Random,util)
 					{
 						switch (I)
 						{
-							case '1':
+							case 'F1':
 								if( !$.time.paused)
 									$.time.paused=true;
 								else
 									$.time.paused=false;
 							break;
 
-							case '2':
+							case 'F2':
 								if( $.time.paused)
 									$.TU_trans();
 								else

@@ -29,6 +29,7 @@ function mech(parent)
 	this.frame=parent.frame;
 	this.parent=parent;
 	this.vol_body={0:{},1:{},2:{},3:{},4:{},5:{},length:0,empty_data:{}};
+	this.bg=parent.bg;
 }
 
 //return the array of volume of the current frame, that volume can be bdy,itr or other
@@ -296,6 +297,11 @@ mech.prototype.set_pos= function(x,y,z)
 	var fD=this.frame.D;
 
 	ps.x=x; ps.y=y; ps.z=z;
+	if( ps.z < this.bg.zboundary[0]) //z bounding
+		ps.z = this.bg.zboundary[0];
+	if( ps.z > this.bg.zboundary[1])
+		ps.z = this.bg.zboundary[1];
+
 	ps.sx = ps.dir==='right'? (ps.x-fD.centerx):(ps.x+fD.centerx-sp.w);
 	ps.sy = y - fD.centery;
 	ps.sz = z;
@@ -308,11 +314,16 @@ mech.prototype.dynamics= function()
 	var fD=this.frame.D;
 	var GC=Global.gameplay;
 
-	if( !this.blocking_xz())
+	if( !this.blocking_xz()) //blocked by obstacle
 	{
 		ps.x += ps.vx;
 		ps.z += ps.vz;
 	}
+	if( ps.z < this.bg.zboundary[0]) //z bounding
+		ps.z = this.bg.zboundary[0];
+	if( ps.z > this.bg.zboundary[1])
+		ps.z = this.bg.zboundary[1];
+
 	ps.y += ps.vy;
 
 	ps.sx = ps.dir==='right'? (ps.x-fD.centerx):(ps.x+fD.centerx-sp.w);

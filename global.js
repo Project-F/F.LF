@@ -10,6 +10,15 @@ define(function()
 
 var G={};
 
+G.application={};
+G.application.window={};
+G.application.window.width=794;
+G.application.window.height=550;
+G.application.viewer={};
+G.application.viewer.height=400;
+G.application.camera={};
+G.application.camera.speed_factor=1/18;
+
 /*\
  * global.combo_list
  [ property ]
@@ -50,6 +59,7 @@ GC.default={};
 
 GC.default.itr={};
 GC.default.itr.zwidth= 12; //default itr zwidth
+GC.default.itr.hit_stall= 3; //default stall when hit somebody
 
 GC.default.cpoint={};
 GC.default.cpoint.hurtable= 0; //default cpoint hurtable
@@ -82,11 +92,9 @@ GC.default.machanics.mass= 1; //default mass; weight = mass * gravity
  * 
  * these are defined constants over the game, tweak them carefully otherwise it might introduce bugs
 \*/
-GC.itr={};
-GC.itr.hit_stall= 3; //default stall when hit somebody
 
 GC.recover={};
-GC.recover.fall= -0.7; //fall recover constant
+GC.recover.fall= -0.5; //fall recover constant
 GC.recover.bdefend= -0.5; //bdefend recover constant
 
 GC.effect={};
@@ -94,20 +102,24 @@ GC.effect.num_to_id= 300; //convert effect num to id
 GC.effect.duration= 3; //default effect lasting duration
 
 GC.character={};
-GC.character.bounceup={};
+GC.character.bounceup={}; //bounce up during fall
 GC.character.bounceup.limit={};
 GC.character.bounceup.limit.xy= 13.4; //defined speed threshold to bounce up again
 GC.character.bounceup.limit.y= 11; //y threshold; will bounce if any one of xy,y is overed
-GC.character.bounceup.factor={};
-GC.character.bounceup.factor.x= 0.5; //defined bounce up factors
-GC.character.bounceup.factor.z= 0.6;
 GC.character.bounceup.y= 4.25; //defined bounce up speed
+GC.character.bounceup.absorb= //how much dvx to absorb when bounce up
+{
+	9:1,
+	14:4,
+	20:10,
+	40:20
+}
 
 GC.defend={};
 GC.defend.injury={};
 GC.defend.injury.factor= 0.1; //defined defend injury factor
 GC.defend.break_limit= 40; //defined defend break
-GC.defend.break_absorb= //how much dvx to absorb when defence is broken
+GC.defend.absorb= //how much dvx to absorb when defence is broken
 {	//look up table
 	5:0,
 	15:5
@@ -115,16 +127,28 @@ GC.defend.break_absorb= //how much dvx to absorb when defence is broken
 
 GC.fall={};
 GC.fall.KO= 60; //defined KO
+GC.fall.wait180= //the wait of 180 depends on effect.dvy
+{	//lookup
+	//dvy:wait
+	7:1,
+	9:2,
+	11:3,
+	13:4,
+	15:5,
+	17:6
+}
 
 GC.friction={};
-GC.friction.fell=    //defined friction at the moment of falling onto ground
-{	//a look up table
+GC.friction.fell=    //defined friction at the moment of fell onto ground
+{	//a lookup table
 	//speed:friction
-	3:2,
-	5:3,
+	2:0,
+	3:1,
+	5:2,
 	6:4, //smaller or equal to 6, value is 4
 	9:5,
-	15:7
+	13:7,
+	15:9
 }
 
 GC.min_speed= 1; //defined minimum speed
@@ -136,9 +160,8 @@ GC.weapon.bounceup={}; //when a weapon falls onto ground
 GC.weapon.bounceup.limit= 8; //defined limit to bounce up again
 GC.weapon.bounceup.speed={};
 GC.weapon.bounceup.speed.y= -3.7; //defined bounce up speed
-GC.weapon.bounceup.factor={};
-GC.weapon.bounceup.factor.x= 0.6;
-GC.weapon.bounceup.factor.z= 0.6;
+GC.weapon.bounceup.speed.x= 6;
+GC.weapon.bounceup.speed.z= 3;
 GC.weapon.soft_bounceup={}; //when heavy weapon being hit by character punch
 GC.weapon.soft_bounceup.speed={};
 GC.weapon.soft_bounceup.speed.y= -2;

@@ -182,7 +182,7 @@ test_cases: [
 		setup: function(match)
 		{
 			match.character[0].set_pos(300,0,200);
-			match.character[1].set_pos(440,0,200);
+			match.character[1].set_pos(455,0,200);
 		},
 		player: [
 		[	//player 1
@@ -338,12 +338,12 @@ test_cases: [
 		setup: function(match)
 		{
 			match.character[0].set_pos(300,0,200);
-			match.character[1].set_pos(510,0,200);
+			match.character[1].set_pos(520,0,200);
 		},
 		player: [
 		[
 			{f:[0,1,2,3],k:['right','right']},
-			{f:9},{f:9,k:'jump'},
+			{f:9,dx:8},{f:9,dx:8,k:'jump'},
 			{f:213,dx:15},{f:213,dx:14},{f:213,dx:14,k:'att'},
 			{f:90,dx:14},{f:90,dx:14},{f:90,dx:14},
 			{f:91,dx:14},{f:91,dx:14},{f:91,dx:14},{f:91,dx:14},//impact
@@ -375,7 +375,7 @@ test_cases: [
 		setup: function(match)
 		{
 			match.character[0].set_pos(300,0,200);
-			match.character[1].set_pos(510,0,200);
+			match.character[1].set_pos(520,0,200);
 		},
 		player: [
 		[
@@ -401,7 +401,7 @@ test_cases: [
 			{f:114,dx:2},{f:114,dx:2},{f:114,dx:2},
 			{f:0,dx:2},{f:0,dx:1},{f:0,dx:0}
 		]]
-	}, 
+	},
 	{	name: 'catch',
 		setup: function(match)
 		{
@@ -730,6 +730,69 @@ test_cases: [
 			{f:185},{f:185},{f:185},{f:185},{f:185},{f:185},
 			{f:230},{f:230},
 			{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}, //20 per line
+			{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}
+		]]
+	},
+	{	name: 'rowing from falling',
+		setup: function(match)
+		{
+			match.character[0].set_pos(300,0,200);
+			match.character[1].set_pos(455,0,200);
+		},
+		player: [
+		[	//player 1
+			{f:[0,1,2,3],k:['right','right']},
+			{f:9,dx:8},{f:9,dx:8,k:'att'},
+			{f:85,dx:8},{f:85,dx:7},{f:85,dx:6},{f:85,dx:6},
+			{f:86,dx:6},{f:86,dx:5},
+			{f:86,dx:0},{f:86,dx:0},{f:86,dx:0},
+			{f:86,dx:4},
+			{f:87,dx:4},{f:87,dx:3},{f:87,dx:2},{f:87,dx:1},
+			{f:0,dx:0},
+			{},{},{},{},{},{},{},{} //dont care
+		],
+		[	//player 2
+			{f:[0,1,2,3],k:'longhold left'}, //hold the 'left' key until a release operation
+			{f:[5,6,7,8],dx:-4}, //f:[5,6,7,8] means either of them is okay
+			{f:[5,6,7,8],dx:-4,k:'release left'}, //release the 'left' key
+			{f:[5,6,7,8],dx:-3}, //dx is the x movement compared with the previous frame
+			{f:[5,6,7,8],dx:-2},
+			{f:[0,1,2,3],dx:-1},
+			{f:[0,1,2,3],dx:0},
+			{f:[0,1,2,3],dx:0},
+			{f:[0,1,2,3],dx:0}, //moment being hit
+			{f:180,dx:0,dy:0},{f:180,dx:0,dy:0},{f:180,dx:0,dy:0},{f:180,dx:0,dy:0},
+			{f:181,dx:10,dy:-8},{f:181,dx:9,dy:-5},{f:181,dx:9,dy:-3},{f:181,dx:9,dy:-2},
+			{f:182,dx:9,dy:0},{f:182,dx:9,dy:2,k:'jump'},
+			{f:100,dx:5,dy:2},{f:100,dx:5,dy:0},
+			{f:101,dx:5,dy:0},{f:101,dx:5,dy:2},{f:101,dx:5,dy:5},{f:101,dx:6},
+			{f:215,dx:5,dy:3},{f:215,dx:1,dy:0},
+			{f:0,dx:1,dy:0},{f:0,dx:0,dy:0}
+		]]
+	},
+	{	name: 'punch each other',
+		setup: function(match)
+		{
+			match.character[0].set_pos(300,0,200);
+			match.character[1].set_pos(350,0,200);
+		},
+		player: [
+		[	//player 1
+			{f:[0,1,2,3]},
+			{f:[0,1,2,3],k:'att'},
+			{f:[60,65]},{f:[60,65]},{f:[61,66]},
+			{f:220},{f:220},{f:220},{f:220},{f:220},
+			{f:221},{f:221},{f:221},{f:221},
+			{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},
+			{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}
+		],
+		[	//player 2
+			{f:[0,1,2,3],k:'left'},
+			{f:[0,1,2,3],k:'att'},
+			{f:[60,65]},{f:[60,65]},{f:[61,66]},
+			{f:220},{f:220},{f:220},{f:220},{f:220},
+			{f:221},{f:221},{f:221},{f:221},
+			{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},
 			{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}
 		]]
 	} //*/

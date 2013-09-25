@@ -92,8 +92,10 @@ function sprite (bmp, parent)
 			w:bmp.file[i].w+1, h:bmp.file[i].h+1,    //width, height of a frame
 			gx:bmp.file[i].row, gy:bmp.file[i].col,//define a gx*gy grid of frames
 			tar:sp,     //target sprite
-			borderright: 1,
-			borderbottom: 1
+			borderleft: 1,
+			bordertop: 1,
+			borderright: 2,
+			borderbottom: 2
 		};
 		/* var ani_mirror_con=
 		{

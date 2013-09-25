@@ -4,6 +4,14 @@
 \*/
 
 define(function(){
+
+if (typeof console==='undefined')
+{	//polyfill for IE, this is just for precaution
+	// we should not use console.log in production anyway unless for fatal error
+    console={};
+    console.log = function(){}
+}
+
 var util={};
 
 util.select_from=function(from,where,option)
@@ -29,6 +37,34 @@ util.lookup=function(A,x)
 		if( x<=i)
 			return A[i];
 	}
+}
+
+util.lookup_abs=function(A,x)
+{
+	if( x<0) x=-x;
+	for( var i in A)
+	{
+		if( x<=i)
+			return A[i];
+	}
+}
+
+util.shallow_copy=function(A)
+{
+	var B={};
+	for( var i in A)
+		B[i] = A[i];
+	return B;
+}
+
+util.div=function(classname)
+{
+	if( !util.container)
+	{
+		util.container = document.getElementsByClassName('LFcontainer')[0];
+		if( !util.container) return null;
+	}
+	return util.container.getElementsByClassName('LF'+classname)[0];
 }
 
 /**

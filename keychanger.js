@@ -3,7 +3,7 @@
 define(['F.core/controller'], function (Fcontroller)
 {
 
-change_active=false;
+var change_active=false;
 
 function keychanger (append_at, controllers)
 {
@@ -14,7 +14,7 @@ function keychanger (append_at, controllers)
 		add_player(controllers[i], i);
 	}
 
-	//the ok button
+	/* //the ok button
 	var rule = create_at(append_at,'div');
 	rule.style.clear='both';
 	var ok = create_at(append_at,'button');
@@ -24,16 +24,16 @@ function keychanger (append_at, controllers)
 	{	//when click, the ok button will try to purge everything
 		ok.onclick= null;
 		append_at.parentNode.removeChild(append_at);
-	}
+	} */
 
 	function add_player(con, num)
 	{
-		if( num!==0)
+		/*if( num!==0)
 		{
 			var sep=create_at(append_at, 'div');
 			sep.style.float='left';
 			sep.innerHTML='&nbsp;&nbsp;&nbsp;&nbsp;';
-		}
+		}*/
 
 		var table=create_at(append_at, 'table');
 		table.style.float='left';
@@ -56,26 +56,27 @@ function keychanger (append_at, controllers)
 			add_cell(R,name);
 			var cell=add_cell(R, con.config[name]);
 			cell.style.cursor='pointer';
+			var target;
 			cell.onclick=function()
 			{
 				if( !change_active)
 				{
 					change_active=true;
-					var This=this;
-					This.style.backgroundColor= "#FAA";
-					var hold=window.onkeydown;
-					window.onkeydown=function(e)
-					{
-						if (!e) e = window.event;
-						var value=e.keyCode;
-						window.onkeydown=hold;
-						cell.innerHTML=Fcontroller.keycode_to_keyname(value);
-						con.config[name]=Fcontroller.keycode_to_keyname(value);
-						con.keycode[name]=value;
-						This.style.backgroundColor= "#EEE";
-						change_active=false;
-					}
+					target=this;
+					target.style.backgroundColor= '#FAA';
+					document.addEventListener('keydown', keydown, true);
 				}
+			}
+			function keydown(e)
+			{
+				if (!e) e = window.event;
+				var value=e.keyCode;
+				cell.innerHTML=Fcontroller.keycode_to_keyname(value);
+				con.config[name]=Fcontroller.keycode_to_keyname(value);
+				con.keycode[name]=value;
+				target.style.backgroundColor= '#EEE';
+				change_active=false;
+				document.removeEventListener('keydown', keydown, true);
 			}
 		}
 	}

@@ -3,8 +3,8 @@
  * 
  * a base class for all living objects
 \*/
-define(['LF/global','LF/sprite','LF/mechanics','F.core/combodec'],
-function ( Global, Sprite, Mech, Fcombodec)
+define(['LF/global','LF/sprite','LF/mechanics','LF/util','F.core/combodec'],
+function ( Global, Sprite, Mech, util, Fcombodec)
 {
 	var GC=Global.gameplay;
 
@@ -13,12 +13,8 @@ function ( Global, Sprite, Mech, Fcombodec)
 	 [ class ]
 	 | config=
 	 | {
-	 | spec,
-	 | controller, (characters only)
 	 | match,
-	 | stage,
-	 | scene,
-	 | effects,
+	 | controller, (characters only)
 	 | team
 	 | }
 	\*/
@@ -35,18 +31,20 @@ function ( Global, Sprite, Mech, Fcombodec)
 		$.uid=-1; //unique id, set by scene
 		$.id=thisID; //character id, specify tactical behavior. accept values from 0~99
 		$.data=data;
-		$.spec=config.spec;
 		$.team=config.team;
 		$.states = null; //the collection of states forming a state machine
 		$.statemem = {}; //state memory, will be cleared on every state transition
 		$.states_switch_dir = null; //whether to allow switch dir in each state
 
-		//construction
+		//handles
 		$.match=config.match;
-		$.scene=config.scene;
-		$.visualeffect=config.effects;
+		$.spec=$.match.spec;
+		$.scene=$.match.scene;
+		$.visualeffect=$.match.visualeffect;
+		$.bg=$.match.background;
 
-		$.sp = new Sprite(data.bmp, config.stage);
+		//states
+		$.sp = new Sprite(data.bmp, $.match.stage);
 		$.health=
 		{
 			hp: 100,
@@ -74,6 +72,7 @@ function ( Global, Sprite, Mech, Fcombodec)
 		};
 		$.effect=
 		{
+			num: -99,
 			i: 0,
 			dvx: 0, dvy: 0,
 			oscillate: 0,
@@ -129,6 +128,11 @@ function ( Global, Sprite, Mech, Fcombodec)
 		this.sp.destroy();
 	}
 
+	livingobject.prototype.log = function(mes)
+	{
+		this.match.log(mes);
+	}
+
 	//to emit a combo event
 	livingobject.prototype.combo_update = function()
 	{		
@@ -160,7 +164,6 @@ function ( Global, Sprite, Mech, Fcombodec)
 	{
 		var $=this;
 		$.state_update('setup');
-		$.scene.add($);
 	}
 
 	//update done at every frame
@@ -178,9 +181,11 @@ function ( Global, Sprite, Mech, Fcombodec)
 			if( $.ps.y<0 || avx < $.frame.D.dvx) //accelerate..
 				$.ps.vx = $.dirh() * $.frame.D.dvx; //..is okay
 			//decelerate must be gradual
+			if( $.frame.D.dvx<0)
+				$.ps.vx = $.ps.vx - $.dirh();
 		}
 		if( $.frame.D.dvz) $.ps.vz = $.dirv() * $.frame.D.dvz;
-		if( $.frame.D.dvy) $.ps.vy = $.frame.D.dvy;
+		if( $.frame.D.dvy) $.ps.vy += $.frame.D.dvy;
 
 		//wait for next frame
 		$.trans.set_wait($.frame.D.wait,99);
@@ -195,9 +200,6 @@ function ( Global, Sprite, Mech, Fcombodec)
 	{
 		var $=this;
 
-		if( !$.effect.stuck)
-			$.state_update('TU');
-
 		//effect
 		if( $.effect.timein<0)
 		{
@@ -211,6 +213,7 @@ function ( Global, Sprite, Mech, Fcombodec)
 			}
 			if( $.effect.timeout===0)
 			{
+				$.effect.num = -99;
 				$.effect.oscillate = 0;
 				$.effect.stuck = false;
 				$.sp.set_x_y($.ps.sx, $.ps.sy+$.ps.sz);
@@ -224,8 +227,11 @@ function ( Global, Sprite, Mech, Fcombodec)
 			}
 			$.effect.timeout--;
 		}
-		//if( $.uid===1)
-		//	console.log('TU: fN:'+$.frame.N+',effect.timeout:'+$.effect.timeout);
+
+		if( $.effect.timein<0 && $.effect.stuck)
+			; //stuck
+		else
+			$.state_update('TU');
 
 		//recovery
 		$.itr.lasthit--;
@@ -285,6 +291,10 @@ function ( Global, Sprite, Mech, Fcombodec)
 		else
 			$.trans.trans();
 		$.effect.timein--;
+		if( $.effect.timein<0 && $.effect.stuck)
+			; //stuck!
+		else
+			$.state_update('transit');
 	}
 
 	livingobject.prototype.set_pos=function(x,y,z)
@@ -309,27 +319,46 @@ function ( Global, Sprite, Mech, Fcombodec)
 		return num+GC.effect.num_to_id;
 	}
 
-	livingobject.prototype.effect_create=function(num,duration)
+	livingobject.prototype.effect_create=function(num,duration,dvx,dvy)
 	{
 		var $=this;
-		if( num!==null && num!==undefined)
+		if( num >= $.effect.num)
 		{
 			var efid= num+GC.effect.num_to_id;
 			if( $.proper(efid,'oscillate'))
 				$.effect.oscillate=$.proper(efid,'oscillate');
 			if( $.proper(efid,'cant_move'))
 				$.effect.stuck=true;
+			if( dvx!==undefined)
+				$.effect.dvx = dvx;
+			if( dvy!==undefined)
+				$.effect.dvy = dvy;
+			if( $.effect.num>=0)
+			{	//only allow extension of effect
+				if( 0 < $.effect.timein)
+					$.effect.timein=0;
+				if( duration > $.effect.timeout)
+					$.effect.timeout=duration;
+			}
+			else
+			{
+				$.effect.timein=0;
+				$.effect.timeout=duration;
+			}
+			$.effect.num = num;
 		}
-		$.effect.timein=0;
-		$.effect.timeout=duration;
 	}
 
-	livingobject.prototype.effect_stuck=function(duration)
+	livingobject.prototype.effect_stuck=function(timein,timeout)
 	{
 		var $=this;
-		$.effect.stuck=true;
-		$.effect.timein=0;
-		$.effect.timeout=duration;
+		if( !$.effect.stuck || $.effect.num<=-1)
+		{
+			$.effect.num=-1; //magic number
+			$.effect.stuck=true;
+			$.effect.timein=timein;
+			$.effect.timeout=timeout;
+		}
 	}
 
 	livingobject.prototype.visualeffect_create=function(num, rect, righttip, variant)
@@ -442,7 +471,7 @@ function ( Global, Sprite, Mech, Fcombodec)
 		}
 		if( $.spec[id])
 			return $.spec[id][prop];
-		return null;
+		return undefined;
 	}
 
 	function frame_transistor($)
@@ -600,7 +629,7 @@ function ( Global, Sprite, Mech, Fcombodec)
 
 					$.frame_update();
 
-					if( oldlock===10) //combo
+					if( oldlock===10 || oldlock===11) //combo triggered action
 						if( wait>0)
 							wait-=1;
 				}

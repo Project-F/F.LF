@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<title>F.LF/processing</title>
+
+<xmp theme="projectf">
+# processes <-> living objects
+
+### as processes
+Every living object in a computer simulation is regarded as a process in an operating system. The processes just sit there and wait for the kernel to signal and hand over CPU time to each of them. After doing its job, a process can optionally return a value. By design, a process can only modify itself, or make __system calls__, or communicate with other processes via __inter-process calls__.
+
+### as living objects
+Living objects like character, light and heavy weapon are derived from a base class livingobject.
+Each livingobject in a match is autonomous: he is responsible for managing his own position and states; and only he can change his states.
+This will create hassles in programming, such that even a character is being held and is conceptually passive, still, his states can only be managed by the catcher via inter-process calls, but not directly.
+
+## Processing Pipeline
+![](https://docs.google.com/drawings/d/1ClwNnuIotFFPuloy-KUaObCCnF8lYCxOCiKCpu4aF7U/pub?w=971&h=571)
+
+- states processing can only be performed at the start of a frame, during `TU`.
+- frame transitions can only happen when `wait` reaches 0, and at the end of a frame, during `transition`.
+- a living object remains statefully static between `TU` and `transition`. in other words, no stateful changes can be made in between.
+- states handle combo events before transition, but the handlers can do nothing more than determining which frame to transit to.
+- keyboard input is buffered, and only before `transition` will a living object fetch for inputs. see [keyboard](keyboard.html) for more information.
+- between `TU` and `transition`, there can be other processes. see [kernel](kernel.html) for more info.
+- the above diagram should be a simplification, in actual implementation there are more events.
+
+## Inter-process Protocol
+### general concept
+2 livingobjects communicate and interact via function calls
+
+- caller ==> callee
+- caller <-- callee return
+- consensus - hand shaking before making any change
+- mutual respect - read-only to other's state
+- any updates that affect determinism must occur no earlier than the upcoming frame transition, this treatment is to ensure that livingobjects have equal opportunity regardless of their position on the processing pipeline
+
+### example: punch & hit
+exist between all living objects
+
+- A ==> B.hit() I hit you!
+- A <-- true accept your hit (hand shaking)
+- A is responsible for keeping arest or vrest, that A cannot interact with B again in a defined time interval
+- B is responsible for putting itself into an effect
+- B may return false under some circumstances, in such case this hit event will cause no change
+
+### complex example: catch & throw
+exists only between characters, say A catches B:
+
+- __phase a__: when A's itr:kind:1 intersect with B's body, which B is in state 16
+	- A ==> B.caught_a() I catch you!
+	- B double checks whether itself is in `state 16`, returns false if not (consensus)
+	- B transits to `itr.caughtact` depends on being attacked in front or at back
+	- B resets `fall`, drops weapon and labels A as `catcher`
+	- B returns true
+	- A <-- true yes you caught me (hand shaking)
+	- A transits to `itr.catchingact` depends on attacked in front or at back
+	- A labels B as being caught (a channel established)
+- __phase b__: A has a `cpoint:kind:1`, B has a `cpoint:kind:2`
+	- A ==> B.caught_b()
+	- B receives and stores A's `cpoint`
+	- B will (in the next TU) move itself to coincide its `cpoint` with A's `cpoint`
+- __phase throw__: when A decides to throw B
+	- A ==> B.caught_throw()
+	- B transits to `cpoint.vaction` or (if undefined) a default frame
+	- B receives and stores A's `cpoint`
+	- B will (in the next TU) gain velocity and an impulse, and fly away afterwards
+
+## System call
+
+an `opoint` creates an object. this is done by calling `this.match.create_object()`. the hosting match (or kernel) will __schedule an object create task, and execute it after the end of the current TU__.
+
+## frame transition lock
+Any frame transition caused by any event is delayed until the end of a TU to take effect. this is to maintain determinism to allow synchronization over network. As a consequence, there can be many frame transition _attempts_ in a TU.
+To resolve frame transition conflicts, F.LF introduces __frame transition lock__. Each attempt in causing a frame transition will set a lock to its authority, and late comers can only override the frame transition if they have a higher or equal value than the current lock.
+
+> the following is completely speculation, and have little to no evidence from LF2.
+
+taken from `livingobject.js`
+```
+function frame_transistor($)
+{
+	/*DC*/
+	var wait=1; //when wait decreases to zero, a frame transition happens
+	var next=999; //next frame
+	var lock=0;
+	var lockout=1; //when lockout equals 0, the lock will be reset automatically
+	//frame transitions are caused differently: going to the next frame, a combo is pressed, being hit, or being burnt
+	//  and they can all happen *at the same TU*, to determine which frame to go to,
+	//  each cause is given an authority which is used to resolve frame transition conflicts.
+	//  lock=0 means unlocked
+	//  common authority values:
+	//0-9: natural
+	//     0: natural
+	// 10: move,defend,jump,punch,catching,caught
+	// 11: special moves
+	// 15: environmental interactions
+	// 2x: interactions
+	//    20: being punch
+	//    25: hit by special attack
+	// 3x: strong interactions
+	//    30: in effect type 0
+	//    35: fire, ice, blast
+```
+![](https://docs.google.com/drawings/pub?id=1AumTGB6--R7ExI2xYIjyxjyEKxmOZAhRHG83EUEJBAo&w=692&h=451)
+</xmp>
+
+<script src="projectfdocs.js"></script>
+<script src="strapdown_0_2/strapdown.js"></script>
+</html>

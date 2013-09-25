@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<title>F.LF/The LF2 standard</title>
+<style>
+.bricks table {
+	border: 1px solid black;
+}
+.bricks td {
+	border: 1px solid black;
+	text-align: center;
+	font-size: 20px;
+	padding: 5px;
+}
+</style>
+
+<xmp theme="projectf">
+# The LF2 standard
+### Overview
+
+The LF2 standard is a software standard defining the fighting-oriented game LF2. It includes a set of design and specification documents. It should not be taken as a "hard" standard as in HTML5, that principles and design decisions are the heart of the standard, whereas specifications are just for reference.
+
+The LF2 standard is an attempt to formalize and generalize LF2. It is derived from observations to the original LF2 without looking into its source code or disassembly. Indeed, information derived from observation is never enough when it comes to implementation. A large portion of knowledge presented here is postulated by imagination and engineering sense, then supported and refined by rigorous testings.
+
+> personally I think it is like deriving the Krebs cycle from a bacterium.
+
+The LF2 standard is _meant to be_ faithful to LF2, but modification is made where appropriate:
+
+- Extended Standard
+
+> Designs that do not come from the original LF2 are marked as __extended standard__. These extensions are necessary for flexibility concerns. There should be no compatibility issue with original LF2 because LF2 simply hard coded the functionality and does not allow customization. For example, effects data file is extended standard.
+
+- Adapted Standard
+
+> Designs that are different from the original LF2 deliberately are marked as __adapted standard__. These adaptation are necessary for technological concerns. Without these adaptation, F.LF may not function or may function poorly. For example, bmp must be converted to png for its compression and cross platform ability.
+
+## F.LF as an operating system
+At the highest abstract level, F.LF should be viewed as an operating system for games as they share many design concepts (that makes the relation of F.LF to LF2 an analogy to Linux/GNU to UNIX). It has the following structure:
+<div class='bricks'>
+<table style='float:left; margin-right:20px;'>
+<tr><td>users</td></tr>
+<tr><td>[processes](processing.html)</td></tr>
+<tr><td>[monolithic kernel](kernel.html)</td></tr>
+<tr><td>"hardware"</td></tr>
+<tr><td>platform</td></tr>
+</table>
+</div>
+<div class='bricks'>
+<table>
+<tr><td colspan=3>player 1</td><td colspan=3>player 2</td></tr>
+<tr><td>character 1</td><td>weapon 1</td><td>special attack 1</td><td>character 2</td><td>weapon 2</td><td>...</td></tr>
+<tr><td colspan=99>match</td></tr>
+<tr><td>controller</td><td>graphics</td><td>sound</td><td>networking</td><td>UI</td><td>...</td></tr>
+<tr><td colspan=99>HTML5</td></tr>
+</table>
+</div>
+<div style='clear:both;'></div>
+
+Other OS features not captured in the above diagram includes [package management](package.html) and scripted programming.
+
+The living objects in F.LF are controlled by <b>FDSM</b> - Frame Driven State Machines, and are programmable through __frame sequences__. Conceptually, FASM is like a Turing machine, and frame sequences is like the data strip. Though, precisely, frame sequences has no memory and its data cannot be changed on runtime.
+
+## F.LF as a computer simulation
+Every game of LF2 is simulating a reality with its own natural and physical laws. There are consequences and implications of F.LF being a computer simulation program. The two major problems are determinism and synchronization. Some of the generic subject matters are discussed in Project F:
+
+- [Computer simulation - Notion and terminologies](http://project--f.blogspot.hk/2013/04/computer-simulation.html)
+- [Time model and determinism - why use a fixed interval game clock](http://project--f.blogspot.hk/2013/04/time-model-and-determinism.html)
+
+The above articles must be read and well understood in order to comprehend the LF2 standard, as those concepts and terminologies are used implicitly throughout the standard.
+</xmp>
+
+<script src="projectfdocs.js"></script>
+<script src="strapdown_0_2/strapdown.js"></script>
+</html>

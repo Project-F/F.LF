@@ -1,3 +1,13 @@
+requirejs.config(
+{
+	config:
+	{
+		'F.core/sprite':
+		{
+			disable_css2dtransform: true
+		}
+	}
+});
 requirejs(['F.core/sprite','F.core/util','F.core/math','F.core/css!LF/tools/tools.css',
 'LF/sprite','LF/loader!packages','LF/match','LF/util',
 'test_cases'],
@@ -8,7 +18,7 @@ test_cases){
 	(function(){
 	//prepare HTML
 	var DOC=
-	"<div class='Fbar'>F.LF/unit test suite <a href='../docs/unit_test_suite.html'>Help</a></div>"+
+	"<div class='Fbar'>F.LF/unit test suite <a href='https://docs.google.com/spreadsheet/lv?key=0AqAWO3FZ2ZFrdGZBa2xDNzdDeVdhNU9UQVMtaklpQXc&type=view&gid=0&f=false&sortcolid=20&sortasc=false&rowsperpage=250'>log</a><a href='../docs/unit_test_suite.html'>Help</a></div>"+
 	"<div id='overall'></div>"+
 	"<div id='stage' class='canvas'></div>"+
 	"<div id='data'></div>";
@@ -21,13 +31,15 @@ test_cases){
 	util.setup_resourcemap(package,Fsprite);
 	var test_cases=test_cases.test_cases;
 	var cur_scenario=test_cases.length;
-	var d_data = document.getElementById('data');
-	var d_stage = document.getElementById('stage');
+	var d_data = document.getElementById('data'),
+		d_stage = document.getElementById('stage'),
+		d_overall = document.getElementById('overall');
+	var passing_delta = 10;
 	var case_start_delay = 10;
 	var overall =
 	{
-		passing_cases:0,
-		finished_cases:0,
+		passed:0,
+		finished:0,
 		delta:0
 	};
 
@@ -193,7 +205,7 @@ test_cases){
 			for( var i=0; i<$.num_player; i++)
 				$.control[i].frame();
 		}
-		if( E==='transit')
+		else if( E==='transit')
 		{
 			if( $.t>=0 && $.t<$.duration)
 				for( var i=0; i<$.num_player; i++)
@@ -206,6 +218,20 @@ test_cases){
 			{
 				$.show_result();
 				$.next_case();
+			}
+		}
+		else if( E==='start')
+		{
+			for( var i=0; i<$.num_player; i++)
+			{
+				(function (i){
+					$.match.character[i].log=function(mess)
+					{
+						if( $.ccase.result_table[i] && 
+							$.ccase.result_table[i][$.t])
+							$.ccase.result_table[i][$.t].log.innerHTML+= mess+'<br>';
+					}
+				}(i));
 			}
 		}
 	}
@@ -313,6 +339,11 @@ test_cases){
 			show_value($.ccase.result_table[i].errorsum_dy, err_dy);
 			show_value($.ccase.result_table[i].errorsum_tr, has_tr?err_tr/has_tr:0);
 			set_delta($.ccase.result_table[i].errorsum_all, errorsum);
+			if( errorsum<=passing_delta)
+				overall.passed++;
+			overall.finished++;
+			overall.delta+=errorsum;
+			d_overall.innerHTML='Overall: Passed('+overall.passed+'/'+overall.finished+')'+' &Delta;='+overall.delta;
 		}
 		//facilitate garbage collection
 		$.ccase.result_table.length=0;
@@ -337,7 +368,7 @@ test_cases){
 		var rdelta=Math.round(delta*10)/10;
 		E.innerHTML = '&Delta;='+rdelta;
 		E.style.color = '#FFF';
-		if( delta<=10)
+		if( delta<=passing_delta)
 			E.style.backgroundColor = '#0D0';
 		else
 			E.style.backgroundColor = '#F00';
@@ -426,7 +457,8 @@ test_cases){
 							r_dx = create_at(table,'tr'),
 							r_dy = create_at(table,'tr'),
 							r_tr = create_at(table,'tr'),
-							r_foot = create_at(table,'tr');
+							r_foot = create_at(table,'tr'),
+							r_log = create_at(table,'tr');
 						result_table.r_fr=r_fr;
 						result_table.r_dx=r_dx;
 						result_table.r_dy=r_dy;
@@ -444,6 +476,7 @@ test_cases){
 						add_cell(r_dy,'dy');
 						add_cell(r_tr,'path <i>E&#772;</i>');
 						add_cell(r_foot,'total');
+						add_cell(r_log,'log').colSpan=2;
 						//second column
 						add_cell(r_head,h>0?null:ccase.name).colSpan=99;
 						add_cell(r_subh,'sum');
@@ -453,15 +486,15 @@ test_cases){
 						result_table.errorsum_tr = add_cell(r_tr);
 						result_table.errorsum_all = add_cell(r_foot);
 						//third column
-						add_cell(r_subh).colSpan=99;
-						add_cell(r_foot).colSpan=99;
+						add_cell(r_subh).colSpan=999;
+						add_cell(r_foot).colSpan=999;
 
 						for( var l=0; l<duration; l++)
 						{	//for each defined frame
 							var frame = ccase.player[h][l];
 							if(!frame) continue;
 							var data = players[h].data;
-							var pic = add_cell(r_pic);
+							var pic = create_at(add_cell(r_pic),'div');
 							if( frame.f!==undefined)
 							{
 								var data_frame = data.frame[frame.f instanceof Array? frame.f[0]:frame.f];
@@ -479,7 +512,8 @@ test_cases){
 								f: add_cell(r_fr, frame.f),
 								dx: add_cell(r_dx, frame.dx),
 								dy: add_cell(r_dy, frame.dy),
-								tr: add_cell(r_tr)
+								tr: add_cell(r_tr),
+								log: add_cell(r_log)
 							};
 						}
 					}
@@ -501,9 +535,54 @@ test_cases){
 		if( cur_scenario<0)
 		{	//all scenario finished
 			d_stage.style.display='none';
+			submit_log([
+					window.location,
+					overall.passed,overall.finished,overall.delta,
+					Browser()[0]+','+Browser()[1]
+				]);
 		}
 		else
 			new Testcase(test_cases[cur_scenario]);
+	}
+	function Browser()
+	{
+		var N= navigator.appName, ua= navigator.userAgent, tem;
+		var M= ua.match(/(opera|chrome|safari|firefox|msie)\/?\s*(\.?\d+(\.\d+)*)/i);
+		if(M && (tem= ua.match(/version\/([\.\d]+)/i))!= null) M[2]= tem[1];
+		M= M? [M[1], M[2]]: [N, navigator.appVersion,'-?'];
+		return M;
+	}
+	function submit_log(ldata)
+	{	//submit log to google form silently
+		var form = document.createElement('form');
+		var target = document.createElement('iframe');
+		target.name = 'hiddenframe';
+		target.style.display = 'none';
+		var body = document.getElementsByTagName('body')[0];
+		form.action = 'https://docs.google.com/forms/d/1p212mOPl37gJ7AA87b_eW1OOwY3h9-zdXnVjDRYPwDY/formResponse';
+		form.method = 'POST';
+		form.style.display = 'none';
+		form.target = 'hiddenframe';
+		body.appendChild(target);
+		body.appendChild(form);
+		var data=[];
+		for( var i=0; i<5; i++)
+		{
+			data[i] = document.createElement('input');
+			data[i].type = 'text';
+			form.appendChild(data[i]);
+		}
+		data[0].name = 'entry.543839435';
+		data[1].name = 'entry.244956536';
+		data[2].name = 'entry.1649007291';
+		data[3].name = 'entry.36587793';
+		data[4].name = 'entry.962836516';
+		data[0].value = ldata[0];
+		data[1].value = ldata[1];
+		data[2].value = ldata[2];
+		data[3].value = ldata[3];
+		data[4].value = ldata[4];
+		form.submit();
 	}
 
 	(function main()

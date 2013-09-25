@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<title>F.LF/kernel</title>
+
+<xmp theme="projectf">
+# kernel <-> match
+F.LF as an operating system have to manage a set of running processes. The kernel schedules the processes sequentially, hand over CPU time to each of them. Tasks like creating new objects will occur occasionally and are scheduled after the end of a kernel cycle.
+![](https://docs.google.com/drawings/pub?id=1R3vKVKgbP0ZH-mi-peJLnnUBkmdNHLBSy7vNEG32wdE&w=840&h=317)
+
+Kernel manages the life cycle of all objects by calling `create`, `destroy` and other methods. A match has its own life cycle, starts when players press `Start!` and ends when one player wins. The kernel is monolithic and shortlived.
+
+Sometimes the processes can interfere and cause each others to transit to a certain frame. If `transition` is not separated from `TU`, late processes will be unable to cause any change to earlier processes; in this case, the earlier processes will gain tactical benefit. The following diagram demonstrates the problem (sprite courtesy Bandit from LF2).
+
+![](https://docs.google.com/drawings/pub?id=1Sj9uenBMPkkbYflT6DZKhwdS7O0RZx8OmcfJu5cVuTM&w=448&h=571)
+</xmp>
+
+<script src="projectfdocs.js"></script>
+<script src="strapdown_0_2/strapdown.js"></script>
+</html>

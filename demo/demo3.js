@@ -37,8 +37,9 @@ util,buildinfo){
 	keychanger.style.backgroundColor='#FFF';
 	keychanger.style.display='';
 
-	document.getElementById('footnote').innerHTML+=
-		'; '+(buildinfo.timestamp==='unbuilt'?'unbuilt demo':'built on: '+buildinfo.timestamp);
+	document.getElementById('footnote').innerHTML=
+		(buildinfo.timestamp==='unbuilt'?'unbuilt demo':'built on: '+buildinfo.timestamp)+'; '+
+		document.getElementById('footnote').innerHTML;
 
 	var match = new Match
 	({
@@ -59,7 +60,7 @@ util,buildinfo){
 			},
 			{
 				controller: control2,
-				id: 30,
+				id: 1,
 				team: 2
 			}
 		],

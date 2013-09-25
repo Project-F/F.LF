@@ -44,11 +44,17 @@ function weapon(type)
 				var ps=$.ps;
 				if( ps.y===0 && ps.vy>0) //fell onto ground
 				{
-					if( $.heavy && this.mech.speed() > GC.weapon.bounceup.limit)
+					if( this.mech.speed() > GC.weapon.bounceup.limit)
 					{	//bounceup
-						ps.vy = GC.weapon.bounceup.speed.y;
-						ps.vx *= GC.weapon.bounceup.factor.x;
-						ps.vz *= GC.weapon.bounceup.factor.z;
+						if( $.light)
+						{
+							ps.vy = 0;
+							$.trans.frame(70);
+						}
+						if( $.heavy)
+							ps.vy = GC.weapon.bounceup.speed.y;
+						if( ps.vx) ps.vx = (ps.vx>0?1:-1)*GC.weapon.bounceup.speed.x;
+						if( ps.vz) ps.vz = (ps.vz>0?1:-1)*GC.weapon.bounceup.speed.z;
 					}
 					else
 					{
@@ -152,11 +158,12 @@ function weapon(type)
 						}
 						$.itr_rest_update( hit[k], hit[k].uid, itr_rest);
 						//create an effect
-						if( $.light) $.effect.timeout=2;
-						if( $.heavy) $.effect.timeout=4;
+						var timeout;
+						if( $.light) timeout=2;
+						if( $.heavy) timeout=4;
 						$.effect.dvx=0;
 						$.effect.dvy=0;
-						$.effect.stuck=true;
+						$.effect_stuck(0,timeout);
 					}
 				}
 			}
@@ -189,10 +196,15 @@ function weapon(type)
 			}
 			else if( $.cur_state()===1004) //on_ground
 			{
-				accept=true;
-				var asp = att.mech.speed();
-				$.ps.vx= asp* GC.weapon.gain.factor.x * (att.ps.vx>0?1:-1);
-				$.ps.vy= asp* GC.weapon.gain.factor.y;
+				//var asp = att.mech.speed();
+				//$.ps.vx= asp* GC.weapon.gain.factor.x * (att.ps.vx>0?1:-1);
+				//$.ps.vy= asp* GC.weapon.gain.factor.y;
+				if( att.type==='lightweapon' || att.type==='heavyweapon')
+				{
+					accept=true;
+					$.ps.vx= (att.ps.vx?(att.ps.vx>0?1:-1):0)*GC.weapon.bounceup.speed.x;
+					$.ps.vz= (att.ps.vz?(att.ps.vz>0?1:-1):0)*GC.weapon.bounceup.speed.z;
+				}
 			}
 		}
 
@@ -265,7 +277,7 @@ function weapon(type)
 				var imx,imy; //impulse
 				if( $.light)
 				{
-					imx=73; imy=-23;
+					imx=58; imy=-15;
 				}
 				if( $.heavy)
 				{

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
-<title>F.LF/spec/package</title>
+<title>F.LF/ref/package</title>
 
 <xmp theme="projectf">
 # Content packages
-### Specification
+### Reference
 
 Gaming content must be packed into a package. A content package contains:
 
@@ -39,9 +39,8 @@ the JSON data in `manifest.js` is in the following schema:
 	"resourcemap":"string/url-js!optional"
 }
 ```
-> note that this JSON schema is made up by me for the sake of understandability. there is however plan to develop a validator of this format.
 
-`url-js` is the url to a file with `.js` extension with the file name without the extension. sounds quirky, but this is inherited from `requirejs`. basically `path/to/x.js` should be written as `path/to/x`.
+`url-js` is the url to a file with `.js` extension.
 
 the entries are:
 

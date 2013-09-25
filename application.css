@@ -1,0 +1,178 @@
+.LFcontainer
+{
+	position:absolute;
+	left:0px; top:0px;
+	font-family:Arial,sans;
+	font-size:22px;
+}
+.LFwindow
+{
+	position:relative;
+	width:794px;
+	height:550px;
+	border:5px solid #676767;
+}
+.LFviewerContainer .LFwindow
+{
+	height:400px;
+}
+.LFwindowCaption
+{
+	position:relative;
+	top:0px;
+	width:804px; height:30px;
+	background:#676767;
+	/*
+	border-left:1px solid #676767;
+	border-top:1px solid #676767;
+	background-image:url("http://docs.google.com/document/d/1DcPRilw9xEn8tET09rWet3o7x12rD-SkM5SoVJO1nnQ/pubimage?id=1DcPRilw9xEn8tET09rWet3o7x12rD-SkM5SoVJO1nnQ&image_id=19OMD_e2s9wHU52R1ofJIjUrpOP_KI3jKUh9n");
+	background-repeat:no-repeat;
+	background-position:-50px 0px;
+	background-size: contain; */
+}
+.LFwindowCaptionTitle
+{
+	font-family:"Segoe UI",Arial,sans;
+	font-size:20px;
+	color:#FFF;
+	width:90%;
+	text-align:center;
+	padding:2px 0px 5px 20px;
+	text-shadow:0px 0px 5px #AAA;
+}
+.LFwindowCaptionButtonBar
+{
+	position:absolute;
+	top:0px; right:0px;
+	height:100%;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+.LFwindowCaptionButton, .LFProjectFbutton
+{
+	background:#1878ca;
+	/* blue:#1878ca, red:#c74f4f; */
+	float:right;
+	width:auto; height:85%;
+	padding:0 10px 0 10px;
+	margin-right:10px;
+	text-align:center;
+	text-decoration:none;
+	font-size:12px;
+	color:#FFF;
+	cursor:pointer;
+}
+.LFwindowCaptionButton:hover
+{
+	background:#248ce5;
+}
+.LFProjectFbutton
+{
+	background:#7c547c;
+}
+.LFProjectFbutton:hover
+{
+	background:#9d6e9d;
+}
+.LFkeychanger
+{
+	position:absolute;
+	right:0px;
+	top:30px;
+	border:1px solid #AAA;
+	z-index:10000;
+	font-size:12px;
+	padding:10px;
+}
+.LFpanel
+{
+	position:absolute;
+	left:0; top:0;
+	width:100%; height:128px;
+	background:#324d9a;
+	z-index:2;
+}
+.LFbackground
+{
+	position:absolute;
+	left:0; top:0;
+	width:100%; height:550px;
+	z-index:-1;
+	overflow:hidden;
+}
+.LFviewerContainer .LFbackground
+{
+	top:-128px;
+}
+.LFbackgroundLayer
+{
+	position:absolute;
+	left:0; top:0;
+}
+.LFfloorHolder
+{
+	position:absolute;
+	left:0; top:0;
+	width:100%; height:550px;
+	overflow:hidden;
+	z-index:1;
+}
+.LFviewerContainer .LFfloorHolder
+{
+	top:-128px;
+}
+.LFfloor
+{
+	position:absolute;
+	left:0; top:0;
+	width:1000px;
+	height:100%;
+}
+.LFtopStatus, .LFbottomStatus
+{
+	position:absolute;
+	bottom:0px;
+	width:100%; height:22px;
+	line-height:22px;
+	background:#000;
+	text-align:right;
+}
+.LFfps
+{
+	float:left;
+	border:none;
+	background:none;
+	width:50px;
+	color:#FFF;
+	padding:0 5px 0 5px;
+}
+.LFfootnote
+{
+	font-family:"MS PMincho",monospace;
+	font-size:12px;
+	text-shadow: 0px -1px 2px #666, 1px 0px 2px #666, 0px 2px 2px #666, -2px 0px 2px #666;
+	letter-spacing:2px;
+	color:#FFF;
+}
+.LFbackgroundScroll
+{
+	position:absolute;
+	width:100%;
+	top:550px;
+	overflow-x:scroll;
+	overflow-y:hidden;
+}
+.LFbackgroundScrollChild
+{
+	position:absolute;
+	left:0; top:0;
+	height:1px;
+}
+.LFviewerContainer .LFbackgroundScroll
+{
+	top:400px;
+	z-index:10;
+}

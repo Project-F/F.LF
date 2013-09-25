@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<title>F.LF/keyboard</title>
+
+<xmp theme="projectf">
+# Keyboard Controller
+LF2 is a keyboard figher type of game, that the keyboard controller must feel "rigid" and "reactive" to players. In technical terms, it should be reliable and responsive. The requirements are:
+
+- never drop keys
+- respond in a guaranteed time frame
+- eliminate repeated keys caused by long-pressing a key
+
+F.core `controller` and `combodec` provides a system meeting all the above requirements. For more information, consult [F.core/controller](http://tyt2y3.github.io/F.core/docs/docs.html#controller).
+
+### Time diagram
+![](https://docs.google.com/drawings/d/1zCOam0P_xCECUHGqeexLAhgoMjC5785RQRjGgxQ6jT8/pub?w=604&h=396)
+
+The respond time is always smaller than one time unit (TU). Keyboard inputs received during the course of a TU is buffered, and processed at the end of the TU, when `combo` event occurs. If a valid combo is detected, it may cause a frame transition, and changes will take place at the next TU.
+</xmp>
+
+<script src="projectfdocs.js"></script>
+<script src="strapdown_0_2/strapdown.js"></script>
+</html>
