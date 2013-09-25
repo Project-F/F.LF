@@ -39,7 +39,7 @@ control_recorder.prototype.key= function(k,down)
  * this next time unit, your game is said to be non-time-deterministic, and theoretically
  * you cannot record and playback key inputs and receive __exact same__ result,
  * but generally speaking if the recording fps is high enough the error will be small
- * for details see [http://project--f.blogspot.hk/2013/03/time-model-and-determinism.html](http://project--f.blogspot.hk/2013/03/time-model-and-determinism.html)
+ * for details see [http://project--f.blogspot.hk/2013/04/time-model-and-determinism.html](http://project--f.blogspot.hk/2013/04/time-model-and-determinism.html)
 \*/
 control_recorder.prototype.frame= function()
 {

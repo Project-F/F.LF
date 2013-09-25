@@ -29,6 +29,18 @@ rect: function (rect1,rect2)
 	return true;
 },
 
+//produces less garbage
+rect_flat: function (rect1_left,rect1_top,rect1_right,rect1_bottom,
+					 rect2_left,rect2_top,rect2_right,rect2_bottom)
+{
+	if(rect1_bottom < rect2_top)	return false;
+	if(rect1_top > rect2_bottom)	return false;
+	if(rect1_right < rect2_left)	return false;
+	if(rect1_left > rect2_right)	return false;
+
+	return true;
+},
+
 normalize_rect: function (rect)
 {
 	if( rect.left > rect.right && rect.top > rect.bottom)

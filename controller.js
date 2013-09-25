@@ -117,7 +117,7 @@ function controller (config)
 	 * 
 	 * if `sync===true`, a key up-down event will be buffered, and must be `fetch` manually.
 	 * there are very good reasons to architect your game in synchronous mode
-	 * - time-determinism; see [http://project--f.blogspot.hk/2013/03/time-model-and-determinism.html](http://project--f.blogspot.hk/2013/03/time-model-and-determinism.html)
+	 * - time-determinism; see [http://project--f.blogspot.hk/2013/04/time-model-and-determinism.html](http://project--f.blogspot.hk/2013/04/time-model-and-determinism.html)
 	 * - never drop keys; see [http://project--f.blogspot.hk/2012/11/keyboard-controller.html](http://project--f.blogspot.hk/2012/11/keyboard-controller.html)
 	\*/
 	this.sync=false;

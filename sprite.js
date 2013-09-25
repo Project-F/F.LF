@@ -29,7 +29,7 @@ var sp_masterconfig = module.config() || {};
  * or
  - img    (string) if you have only one image
  * }
- * config is one time only and will be dumped, without keeping a reference, after constructor returns
+ * config is one time only and will be dumped, without keeping a reference, after constructor returns. that means it is okay to reuse config objects, in loops or other contexts.
 |	var sp_config=
 |	{
 |		canvas: canvas,    // create and append a div to this node
@@ -70,7 +70,10 @@ function sprite (config)
 	this.img={};
 	this.cur_img=null;
 
-	this.set_wh(config.wh);
+	if( config.wh==='fit')
+		this.fit_to_img=true;
+	else if( typeof config.wh==='object')
+		this.set_wh(config.wh);
 	if( config.img)
 	{	//add the images in config list
 		if( typeof config.img==='object')
@@ -267,12 +270,15 @@ sprite.prototype.set_z=function(z)
 \*/
 sprite.prototype.add_img=function(imgpath,Name)
 {
+	var This=this;
 	var im = document.createElement('img');
 	im.setAttribute('class','F_sprite_img');
 	im.onload=function()
 	{
 		if( !this.naturalWidth) this.naturalWidth=this.width;
 		if( !this.naturalHeight) this.naturalHeight=this.height;
+		if( This.fit_to_img)
+			This.set_w_h(this.naturalWidth,this.naturalHeight);
 		this.onload=null;
 	}
 	im.src = sprite.resolve_resource(imgpath);
@@ -360,6 +366,16 @@ sprite.prototype.set_img_x_y=function(x,y)
 {
 	this.img[this.cur_img].style.left= x+'px';
 	this.img[this.cur_img].style.top= y+'px';
+}
+
+sprite.prototype.draw_to_canvas=function(canvas)
+{
+	var img = this.img[this.cur_img];
+	canvas.drawImage(img, -parseInt(img.style.left), -parseInt(img.style.top), //src
+						parseInt(this.el.style.width), parseInt(this.el.style.height),
+						parseInt(this.el.style.left), parseInt(this.el.style.top), //dest
+						parseInt(this.el.style.width), parseInt(this.el.style.height)
+						);
 }
 
 /*\

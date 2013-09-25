@@ -273,7 +273,15 @@ extract_array: function(array, prop)
 	return out;
 },
 
-/**proposed method*/
+/** proposed method
+group an array of objects using a key
+group_elements( [{name:'alice',gender:'F'},{name:'bob',gender:'M'},{name:'cathy',gender:'F'}], 'gender')
+returns
+{
+	'F':[{name:'alice',gender:'F'},{name:'cathy',gender:'F'}],
+	'M':[{name:'bob',gender:'M'}]
+}
+*/
 group_elements: function(arr,key)
 {
 	var group={};
@@ -287,7 +295,7 @@ group_elements: function(arr,key)
 	return group;
 },
 
-/**proposed method*/
+/** proposed method*/
 for_each: function(arr,callback)
 {
 	if( arr instanceof Array)
@@ -302,7 +310,7 @@ for_each: function(arr,callback)
 	}
 },
 
-/**proposed method*/
+/** proposed method*/
 call_each: function(arr,method /*,arg*/)
 {
 	var arg = Array.prototype.slice.call(arguments,2);
