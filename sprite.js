@@ -48,10 +48,6 @@ function sprite (config)
 	if( config.div)
 	{
 		this.el = config.div;
-		/* if( this.el.hasAttribute('class'))
-			this.el.setAttribute('class', this.el.getAttribute('class')+' F_sprite_inline');
-		else
-			this.el.setAttribute('class','F_sprite_inline'); */
 		if( this.el.className)
 			this.el.className += ' F_sprite_inline';
 		else
@@ -59,12 +55,18 @@ function sprite (config)
 		if( window.getComputedStyle(this.el).getPropertyValue('position')==='static')
 			this.el.style.position='relative';
 	}
+	else if( config.inplace_div)
+	{
+		this.inline_img=true;
+		this.el = config.inplace_div;
+	}
 	else
 	{
 		this.el = document.createElement('div');
 		//this.el.setAttribute('class','F_sprite');
 		this.el.className = 'F_sprite';
-		config.canvas.appendChild(this.el);
+		if( config.canvas)
+			config.canvas.appendChild(this.el);
 	}
 
 	this.img={};
@@ -211,6 +213,14 @@ sprite.prototype.set_w_h=function(w,h)
 	this.el.style.width=w+'px';
 	this.el.style.height=h+'px';
 }
+sprite.prototype.set_w=function(w)
+{
+	this.el.style.width=w+'px';
+}
+sprite.prototype.set_h=function(h)
+{
+	this.el.style.height=h+'px';
+}
 
 /*\
  * sprite.set_xy
@@ -272,14 +282,16 @@ sprite.prototype.add_img=function(imgpath,Name)
 {
 	var This=this;
 	var im = document.createElement('img');
-	im.setAttribute('class','F_sprite_img');
-	im.onload=function()
+	if( !this.inline_img)
+		im.setAttribute('class','F_sprite_img');
+	im.addEventListener('load', onload, true);
+	function onload()
 	{
 		if( !this.naturalWidth) this.naturalWidth=this.width;
 		if( !this.naturalHeight) this.naturalHeight=this.height;
 		if( This.fit_to_img)
 			This.set_w_h(this.naturalWidth,this.naturalHeight);
-		this.onload=null;
+		im.removeEventListener('load', onload, true);
 	}
 	im.src = sprite.resolve_resource(imgpath);
 	this.el.appendChild(im);
@@ -297,19 +309,20 @@ sprite.prototype.add_img=function(imgpath,Name)
 sprite.prototype.adopt_img=function(im)
 {
 	var Name=im.getAttribute('name');
-	if( im.hasAttribute('class'))
-		im.setAttribute('class', im.getAttribute('class')+' F_sprite_img');
+	if( im.className)
+		im.className += ' F_sprite_img';
 	else
-		im.setAttribute('class','F_sprite_img');
+		im.className = 'F_sprite_img';
 	if( !im.naturalWidth) im.naturalWidth=im.width;
 	if( !im.naturalHeight) im.naturalHeight=im.height;
 	if( !im.naturalWidth && !im.naturalHeight)
-		im.onload=function()
-		{
-			if( !this.naturalWidth) this.naturalWidth=this.width;
-			if( !this.naturalHeight) this.naturalHeight=this.height;
-			this.onload=null;
-		}
+		im.addEventListener('load', onload, true);
+	function onload()
+	{
+		if( !this.naturalWidth) this.naturalWidth=this.width;
+		if( !this.naturalHeight) this.naturalHeight=this.height;
+		im.removeEventListener('load', onload, true);
+	}
 	this.img[Name]=im;
 	this.switch_img(Name);
 }
