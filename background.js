@@ -9,20 +9,35 @@ define(['F.core/util','F.core/sprite','F.core/support','LF/global'],function(Fut
 		{	//create an empty background
 			$.id = -1;
 			$.name = 'empty background';
-			$.width = GA.window.width;
+			$.width = 1500;
 			$.zboundary = [0,300];
 			$.height=$.zboundary[1]-$.zboundary[0];
+			$.shadow={x:0,y:0,img:''}
 			return;
 		}
 		$.layers;
 		$.floor = config.floor;
 		$.data = data;
-		$.name = data.name;
+		$.name = data.name.replace(/_/g,' ');
 		$.id = id;
 
 		$.zboundary=data.zboundary;
 		$.width=data.width;
 		$.height=$.zboundary[1]-$.zboundary[0];
+		$.shadow={
+			x:0,y:0, //offset x,y
+			img:data.shadow
+		};
+		(function(){
+			var sp = new Fsprite({img:data.shadow});
+			sp.img[0].addEventListener('load', onload, true);
+			function onload()
+			{
+				$.shadow.x = (this.naturalWidth||this.width)/2;
+				$.shadow.y = (this.naturalHeight||this.height)/2;
+				sp.img[0].removeEventListener('load', onload, true);
+			}
+		}());
 
 		$.floor.style.width=$.width+'px';
 
@@ -136,7 +151,7 @@ define(['F.core/util','F.core/sprite','F.core/support','LF/global'],function(Fut
 		{
 			var $=this;
 			for( var i=0; i<$.layers.length; i++)
-				$.layers[i].div.style.left=Math.round(-X*$.layers[i].ratio)+'px';
+				$.layers[i].div.style.left=-X*$.layers[i].ratio+'px';
 		}
 	}
 

@@ -30,6 +30,7 @@ function mech(parent)
 	this.parent=parent;
 	this.vol_body={0:{},1:{},2:{},3:{},4:{},5:{},length:0,empty_data:{}};
 	this.bg=parent.bg;
+	this.sha=parent.shadow;
 }
 
 //return the array of volume of the current frame, that volume can be bdy,itr or other
@@ -319,6 +320,13 @@ mech.prototype.dynamics= function()
 		ps.x += ps.vx;
 		ps.z += ps.vz;
 	}
+	if( this.floor_xbound)
+	{
+		if( ps.x<0)
+			ps.x=0;
+		if( ps.x>this.bg.width)
+			ps.x=this.bg.width;
+	}
 	if( ps.z < this.bg.zboundary[0]) //z bounding
 		ps.z = this.bg.zboundary[0];
 	if( ps.z > this.bg.zboundary[1])
@@ -337,7 +345,12 @@ mech.prototype.dynamics= function()
 	}
 
 	sp.set_x_y(ps.sx, ps.sy+ps.sz); //projection onto screen
-	sp.set_z(ps.sz+ps.zz);  //z ordering
+	sp.set_z(ps.sz+ps.zz); //z ordering
+	if( this.sha)
+	{
+		this.sha.set_x_y(ps.x-this.bg.shadow.x, ps.z-this.bg.shadow.y);
+		this.sha.set_z(ps.sz-1);
+	}
 
 	if( ps.y===0) //only when on the ground
 	{

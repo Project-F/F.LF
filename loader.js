@@ -89,9 +89,11 @@ define(['LF/packages','LF/global'],function(packages,global){
 				for( var i=0; i<datalist.object.length; i++)
 					if( allow_load(datalist.object[i]))
 						datafile_depend.push(path+normalize_file(datalist.object[i].file));
+
 				for( var i=0; i<datalist.background.length; i++)
-					if( allow_load(datalist.background[i]))
-						datafile_depend.push(path+normalize_file(datalist.background[i].file));
+					datafile_depend.push(path+normalize_file(datalist.background[i].file));
+
+				datafile_depend.push(path+normalize_file(datalist.UI.file));
 
 				require( datafile_depend, function()
 				{
@@ -134,6 +136,8 @@ define(['LF/packages','LF/global'],function(packages,global){
 							data: arguments[j]
 						});
 					}
+					gamedata.UI = arguments[j];
+
 					content.data=gamedata;
 					module_lazyload();
 					load_ready();

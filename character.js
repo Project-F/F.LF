@@ -1,8 +1,8 @@
 /**	a LF2 character
  */
 
-define(['LF/livingobject','LF/global','F.core/util','LF/util'],
-function(livingobject, Global, Futil, util)
+define(['LF/livingobject','LF/global','F.core/combodec','F.core/util','LF/util'],
+function(livingobject, Global, Fcombodec, Futil, util)
 {
 	var GC=Global.gameplay;
 
@@ -45,10 +45,45 @@ function(livingobject, Global, Futil, util)
 							$.trans.frame(219, 15); //crouch2
 					}
 				}
-				else if( ps.y===0 && $.frame.N===212)
+
+				//health reduce
+				if( $.frame.D.mp)
 				{
-					//$.trans.frame(999);
+					if( $.data.frame[$.frame.PN].next===$.frame.N)
+					{	//if this frame is transited by next of previous frame
+						if( $.frame.D.mp<0)
+						{
+							$.health.mp += $.frame.D.mp;
+							if( $.health.mp<0)
+							{
+								$.health.mp = 0;
+								$.trans.frame($.frame.D.hit_d);
+							}
+						}
+					}
+					else
+					{
+						var dmp = $.frame.D.mp%1000,
+							dhp = Math.floor($.frame.D.mp/1000)*10;
+						$.health.mp -= dmp;
+						$.health.hp -= dhp;
+					}
 				}
+				//health recover
+				//http://lf2.wikia.com/wiki/Health_and_mana
+				if( $.match.time.t%12===0)
+				if( $.health.hp < $.health.hp_bound)
+				{
+					$.health.hp++;
+				}
+				if( $.match.time.t%3===0)
+				if( $.health.mp < $.health.mp_full)
+				{
+					$.health.mp+= 1+Math.floor((500-($.health.hp<500?$.health.hp:500))/100);
+				}
+				//recovery
+				if( $.health.fall>0) $.health.fall += GC.recover.fall;
+				if( $.health.bdefend>0) $.health.bdefend += GC.recover.bdefend;
 			break;
 			case 'transit':
 				//dynamics: position, friction, gravity
@@ -62,18 +97,29 @@ function(livingobject, Global, Futil, util)
 				case 'run':
 				break;
 				default:
-					if( K==='def')  K='hit_d';
-					if( K==='jump') K='hit_j';
-					if( K==='att')  K='hit_a';
-					if( $.frame.D[K])
+					var tag = Global.combo_tag[K];
+					if( tag && $.frame.D[tag])
 					{
-						$.trans.frame($.frame.D[K], 11);
-						return 1;
+						if( !$.id_update('combo',K,tag))
+						{
+							$.trans.frame($.frame.D[tag], 11);
+							return 1;
+						}
 					}
 				}
 			break;
 			case 'post_combo': //after state specific processing
 				$.pre_interaction();
+			break;
+			case 'state_exit':
+				if( $.combo_buffer)
+					switch ($.combo_buffer)
+					{
+						case 'def': case 'jump': case 'att': case 'run':
+							//basic actions cannot transfer across states
+							$.combo_buffer = null;
+						break;
+					}
 			break;
 		}},
 
@@ -364,6 +410,8 @@ function(livingobject, Global, Futil, util)
 
 			case 'frame':
 				$.statemem.frameTU=true;
+				if( $.frame.PN===80 || $.frame.PN===81) //after jump attack
+					$.statemem.attlock=2;
 			break;
 
 			case 'TU':
@@ -379,14 +427,16 @@ function(livingobject, Global, Futil, util)
 						$.ps.vy= $.data.bmp.jump_height; //upward force
 					}
 				}
+				if( $.statemem.attlock)
+					$.statemem.attlock--;
 			break;
 
 			case 'combo':
-				if( K==='att')
+				if( (K==='att' || $.con.state.att) && !$.statemem.attlock)
 				{
 					/** a transition to jump_attack can only happen after entering frame 212.
 					if an 'att' key event arrives while in frame 210 or 211,
-					the jump attack event should be pended and be performed on 212
+					the jump attack event will be pended and be performed on 212
 					 */
 					if( $.frame.N===212)
 					{
@@ -400,7 +450,8 @@ function(livingobject, Global, Futil, util)
 						}
 						else
 							$.trans.frame(80, 10); //jump attack
-						return 1;
+						if( K==='att')
+							return 1;
 					}
 				}
 			break;
@@ -416,7 +467,7 @@ function(livingobject, Global, Futil, util)
 			break;
 
 			case 'combo':
-				if( K==='att')
+				if( K==='att' || $.con.state.att)
 				{
 					if( $.proper('dash_backattack') || //back attack
 						$.dirh()===($.ps.vx>0?1:-1)) //if not turning back
@@ -426,7 +477,8 @@ function(livingobject, Global, Futil, util)
 						else
 							$.trans.frame(90, 10);
 						$.switch_dir=false;
-						return 1;
+						if( K==='att')
+							return 1;
 					}
 				}
 				if( K==='left' || K==='right')
@@ -767,6 +819,11 @@ function(livingobject, Global, Futil, util)
 
 			case 'fell_onto_ground':
 			case 'fall_onto_ground':
+				if( $.caught_throwinjury>0)
+				{
+					$.injury(-$.caught_throwinjury);
+					$.caught_throwinjury = null;
+				}
 				var ps=$.ps;
 				//console.log('speed:'+$.mech.speed()+', vx:'+ps.vx+', vy:'+ps.vy);
 				if( $.mech.speed() > GC.character.bounceup.limit.xy ||
@@ -788,11 +845,6 @@ function(livingobject, Global, Futil, util)
 						return 230; //next frame
 					if( 186 <= $.frame.N && $.frame.N <= 191)
 						return 231;
-				}
-				if( $.caught_throwinjury)
-				{
-					$.health.hp -= $.caught_throwinjury;
-					$.caught_throwinjury = null;
 				}
 			break;
 			
@@ -866,7 +918,7 @@ function(livingobject, Global, Futil, util)
 						var dx=0;
 						if($.con.state.left)  dx-=1;
 						if($.con.state.right) dx+=1;
-						if( dx)
+						if( dx || $.ps.vx!==0)
 						{
 							$.trans.frame(213, 10);
 							$.switch_dir_fun(dx===1?'right':'left');
@@ -920,6 +972,7 @@ function(livingobject, Global, Futil, util)
 					$.statemem.lastvx = $.ps.vx;
 					$.statemem.curvx = null;
 				}
+				$.ps.vz=$.dirv()*($.data.bmp.walking_speedz);
 			break;
 			case 'post_interaction':
 				if( $.frame.N===291 ||
@@ -944,7 +997,7 @@ function(livingobject, Global, Futil, util)
 		'default':function()
 		{
 		},
-		'1': function(event) //deep
+		'1': function(event,K,tag) //deep
 		{
 			var $=this;
 			switch (event)
@@ -969,6 +1022,15 @@ function(livingobject, Global, Futil, util)
 			case 'state15_crouch':
 				if( $.frame.PN>=267 && $.frame.PN<=272)
 					$.trans.inc_wait(-1);
+			break;
+			case 'combo':
+				if( tag==='hit_Fj')
+				{
+					if( K==='D>J' || K==='D>AJ')
+						$.switch_dir_fun('right');
+					else
+						$.switch_dir_fun('left');
+				}
 			break;
 			}
 		}
@@ -1008,10 +1070,94 @@ function(livingobject, Global, Futil, util)
 		else
 			$.id_update=idupdates['default'];
 		$.states_switch_dir = states_switch_dir;
+		$.mech.floor_xbound = true;
+		$.con = config.controller;
+		if( $.con)
+		{
+			function combo_event(kobj)
+			{
+				var K=kobj.name;
+				switch (K)
+				{
+					case 'left': case 'right':
+						if( $.switch_dir)
+							$.switch_dir_fun(K);
+				}
+				$.combo_buffer = K;
+			}
+			var dec_con = //combo detector
+			{
+				clear_on_combo: true,
+				callback: combo_event //callback function when combo detected
+			}
+			var combo_list = [
+				{ name:'left',	seq:['left'],	clear_on_combo:false},
+				{ name:'right',	seq:['right'],	clear_on_combo:false},
+				{ name:'up',	seq:['up'],		clear_on_combo:false},
+				{ name:'down',	seq:['down'],	clear_on_combo:false},
+				{ name:'def',	seq:['def'],	clear_on_combo:false},
+				{ name:'jump',	seq:['jump'],	clear_on_combo:false},
+				{ name:'att',	seq:['att'],	clear_on_combo:false},
+				{ name:'run',	seq:['right','right'],	maxtime:9},
+				{ name:'run',	seq:['left','left'],	maxtime:9}
+				//plus those defined in Global.combo_list
+			];
+			$.combodec = new Fcombodec($.con, dec_con, combo_list.concat(Global.combo_list));
+		}
+		$.health.bdefend=0;
+		$.health.fall=0;
+		$.health.hp=$.health.hp_full=$.health.hp_bound= $.proper('hp') || GC.default.health.hp_full;
+		$.health.mp_full= GC.default.health.mp_full;
+		$.health.mp= GC.default.health.mp_start;
+		$.trans.frame=function(next,au)
+		{
+			if( next===0 || next===999)
+			{
+				this.set_next(next,au);
+				this.set_wait(0,au);
+				return;
+			}
+			var nextF = $.data.frame[next];
+			if( !nextF) return;
+			var dmp=0;
+			if( nextF.mp>0)
+				dmp=nextF.mp%1000;
+			if( $.health.mp-dmp>=0)
+			{
+				this.set_next(next,au);
+				this.set_wait(0,au);
+			}
+		}
 		$.setup();
 	}
 	character.prototype = new livingobject();
 	character.prototype.constructor = character;
+
+	//to emit a combo event
+	character.prototype.combo_update = function()
+	{		
+		/**	different from `state_update`, current state receive the combo event first,
+			and only if it returned falsy result, the combo event is passed to the generic state.
+			if the combo event is not consumed, it is stored in state memory,
+			resulting in 1 combo event being emited every frame until it is being handled or
+			overridden by a new combo event.
+			a combo event is emitted even when there is no combo, in such case `K=null`
+		 */
+		var $=this;
+		var K = $.combo_buffer;
+		if(!K) K=null;
+
+		var tar1=$.states[$.frame.D.state];
+		if( tar1) var res1=tar1.call($,'combo',K);
+		var tar2=$.states['generic'];
+		if(!res1)
+		if( tar2) var res2=tar2.call($,'combo',K);
+		if( tar1) tar1.call($,'post_combo');
+		if( tar2) tar2.call($,'post_combo');
+		if( res1 || res2 ||
+			K==='left' || K==='right' || K==='up' || K==='down') //dir combos are not persistent
+			$.combo_buffer = null;
+	}
 
 	/** @protocol caller hits callee
 		@param ITR the itr object in data
@@ -1024,12 +1170,12 @@ function(livingobject, Global, Futil, util)
 		var $=this;
 		var accepthit=false;
 
-		var ef_dvx=0, ef_dvy=0;
+		var ef_dvx=0, ef_dvy=0, dhp=0;
 		if( $.cur_state()===10) //being caught
 		{
 			if( $.catching.caught_cpointhurtable())
 			{
-				$.itr.lasthit=0; accepthit=true;
+				accepthit=true;
 				fall();
 			}
 			if( $.catching.caught_cpointhurtable()===0 && $.catching!==att)
@@ -1038,8 +1184,8 @@ function(livingobject, Global, Futil, util)
 			}
 			else
 			{
-				$.itr.lasthit=0; accepthit=true;
-				$.health.hp -= Math.abs(ITR.injury);
+				accepthit=true;
+				dhp -= Math.abs(ITR.injury);
 				if( ITR.injury>0)
 				{
 					$.effect_create(0, GC.effect.duration);
@@ -1059,7 +1205,7 @@ function(livingobject, Global, Futil, util)
 		else
 		{
 			//kind 0 ITR
-			$.itr.lasthit=0; accepthit=true;
+			accepthit=true;
 			var compen = $.ps.y===0? 1:0; //magic compensation
 			ef_dvx = ITR.dvx ? att.dirh()*(ITR.dvx-compen):0;
 			ef_dvy = ITR.dvy ? ITR.dvy:0;
@@ -1068,7 +1214,7 @@ function(livingobject, Global, Futil, util)
 			if( $.cur_state()===7 &&
 			    (attps.x > $.ps.x)===($.ps.dir==='right')) //attacked in front
 			{
-				if( ITR.injury)	$.health.hp -= GC.defend.injury.factor * ITR.injury;
+				if( ITR.injury)	dhp -= GC.defend.injury.factor * ITR.injury;
 				if( ITR.bdefend) $.health.bdefend += ITR.bdefend;
 				if( $.health.bdefend > GC.defend.break_limit)
 				{	//broken defence
@@ -1085,7 +1231,7 @@ function(livingobject, Global, Futil, util)
 			{
 				if( $.hold.obj && $.hold.obj.type==='heavyweapon')
 					$.drop_weapon(0,0);
-				if( ITR.injury)	$.health.hp -= ITR.injury; //injury
+				if( ITR.injury)	dhp -= ITR.injury; //injury
 				$.health.bdefend = 45; //lose defend ability immediately
 				fall();
 			}
@@ -1136,8 +1282,15 @@ function(livingobject, Global, Futil, util)
 				$.drop_weapon(ef_dvx, ef_dvy);
 		}
 
+		if( dhp<0)
+			$.injury(dhp);
 		//if( accepthit) $.log('hit: next='+$.trans.next());
 		return accepthit;
+	}
+	character.prototype.injury=function(dhp)
+	{
+		this.health.hp+=dhp;
+		this.health.hp_bound+=Math.ceil(dhp*1/3);
 	}
 
 	//pre interaction is based on `itr` of next frame
@@ -1360,6 +1513,8 @@ function(livingobject, Global, Futil, util)
 		else
 			$.trans.frame(GC.default.cpoint.vaction, 20);
 		$.caught_throwinjury=cpoint.throwinjury;
+		if( $.caught_throwinjury===GC.unspecified)
+			$.caught_throwinjury = GC.default.itr.throw_injury;
 		$.caught_throwz=throwz;
 	}
 	character.prototype.caught_release=function()

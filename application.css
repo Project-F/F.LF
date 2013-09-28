@@ -176,3 +176,30 @@
 	top:400px;
 	z-index:10;
 }
+.LFwindowMessage
+{
+	/*http://www.brunildo.org/test/img_center.html*/
+	position:absolute;
+	left:0; top:0;
+	width:100%; height:100%;
+	z-index:100;
+}
+.LFpauseMessage {
+    display: table-cell;
+    text-align: center;
+    vertical-align: middle;
+	position:absolute;
+	left:0; top:0;
+	width:100%; height:100%;
+}
+.LFpauseMessage * {
+    vertical-align: middle;
+}
+.LFpauseMessage {
+    display: block;
+}
+.LFpauseMessage span {
+    display: inline-block;
+    height: 100%;
+    width: 1px;
+}

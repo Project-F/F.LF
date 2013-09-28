@@ -351,6 +351,8 @@ function weapon(type)
 				}
 			}
 		}
+		if( result.thrown)
+			$.shadow.show();
 		return result;
 	}
 
@@ -363,6 +365,7 @@ function weapon(type)
 		if( dvy) $.ps.vy=dvy * 0.2;
 		$.ps.zz=0;
 		$.trans.frame(999);
+		$.shadow.show();
 	}
 
 	typeweapon.prototype.pick=function(att)
@@ -372,6 +375,7 @@ function weapon(type)
 		{
 			$.holder=att;
 			$.team=att.team;
+			$.shadow.hide();
 			return true;
 		}
 		return false;

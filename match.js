@@ -4,11 +4,14 @@
  * a match is a generalization above game modes (e.g. VSmode, stagemode, battlemode)
 \*/
 
-define(['F.core/util','F.core/controller',
-'LF/factories','LF/scene','LF/background','LF/third_party/random','LF/util'],
-function(Futil,Fcontroller,
-factory,Scene,Background,Random,util)
+define(['F.core/util','F.core/controller','F.core/sprite',
+'LF/factories','LF/scene','LF/background','LF/third_party/random','LF/util',
+'LF/global'],
+function(Futil,Fcontroller,Fsprite,
+factory,Scene,Background,Random,util,
+Global)
 {
+	var GA=Global.application;
 	/*\
 	 * match
 	 [ class ]
@@ -20,7 +23,6 @@ factory,Scene,Background,Random,util)
 	 |	package	//the content package
 	 |	}
 	\*/
-
 	function match(config)
 	{
 		var $=this;
@@ -33,6 +35,30 @@ factory,Scene,Background,Random,util)
 		if( !$.config)
 			$.config = {};
 		$.time;
+
+		//UI
+		if( util.div('pauseMessage'))
+		{
+			$.pause_mess = new Fsprite({
+				inplace_div: util.div('pauseMessage'),
+				img: $.data.UI.pause
+			});
+			$.pause_mess.hide();
+		}
+		if( util.div('panel'))
+		{
+			$.panel=[];
+			for( var i=0; i<8; i++)
+			{
+				var pane = new Fsprite({
+					canvas: util.div('panel'),
+					img: $.data.UI.panel.pic,
+					wh: 'fit'
+				});
+				pane.set_x_y(GA.panel.pane.width*(i%4), GA.panel.pane.height*Math.floor(i/4));
+				$.panel.push(pane);
+			}
+		}
 	}
 
 	match.prototype.create=function(setting)
@@ -157,6 +183,8 @@ factory,Scene,Background,Random,util)
 		$.emit_event('TU');
 		$.for_all('TU');
 		$.background.TU();
+		if( $.panel)
+			$.show_hp();
 	}
 
 	match.prototype.emit_event=function(E)
@@ -210,6 +238,44 @@ factory,Scene,Background,Random,util)
 			char.set_pos( pos[i].x, pos[i].y, pos[i].z); //TODO: proper player placements
 			var uid = $.scene.add(char);
 			$.character[uid] = char;
+			//pane
+			if( $.panel)
+			{
+				var spic = new Fsprite({
+					canvas: $.panel[i].el,
+					img: pdata.bmp.small,
+					wh: 'fit'
+				});
+				spic.set_x_y($.data.UI.panel.x,$.data.UI.panel.y);
+				$.panel[i].hp_bound = new Fsprite({canvas: $.panel[i].el});
+				$.panel[i].hp_bound.set_x_y( $.data.UI.panel.hpx, $.data.UI.panel.hpy);
+				$.panel[i].hp_bound.set_w_h( $.data.UI.panel.hpw, $.data.UI.panel.hph);
+				$.panel[i].hp_bound.el.style.background = $.data.UI.panel.hp_dark;
+				$.panel[i].hp = new Fsprite({canvas: $.panel[i].el});
+				$.panel[i].hp.set_x_y( $.data.UI.panel.hpx, $.data.UI.panel.hpy);
+				$.panel[i].hp.set_w_h( $.data.UI.panel.hpw, $.data.UI.panel.hph);
+				$.panel[i].hp.el.style.background = $.data.UI.panel.hp_bright;
+				$.panel[i].mp_bound = new Fsprite({canvas: $.panel[i].el});
+				$.panel[i].mp_bound.set_x_y( $.data.UI.panel.mpx, $.data.UI.panel.mpy);
+				$.panel[i].mp_bound.set_w_h( $.data.UI.panel.mpw, $.data.UI.panel.mph);
+				$.panel[i].mp_bound.el.style.background = $.data.UI.panel.mp_dark;
+				$.panel[i].mp = new Fsprite({canvas: $.panel[i].el});
+				$.panel[i].mp.set_x_y( $.data.UI.panel.mpx, $.data.UI.panel.mpy);
+				$.panel[i].mp.set_w_h( $.data.UI.panel.mpw, $.data.UI.panel.mph);
+				$.panel[i].mp.el.style.background = $.data.UI.panel.mp_bright;
+			}
+		}
+	}
+
+	match.prototype.show_hp=function()
+	{
+		var $=this;
+		for( var i in $.character)
+		{
+			var ch = $.character[i];
+			$.panel[i].hp.set_w(Math.floor(ch.health.hp/ch.health.hp_full*$.data.UI.panel.hpw));
+			$.panel[i].hp_bound.set_w(Math.floor(ch.health.hp_bound/ch.health.hp_full*$.data.UI.panel.hpw));
+			$.panel[i].mp.set_w(Math.floor(ch.health.mp/ch.health.mp_full*$.data.UI.panel.mpw));
 		}
 	}
 
@@ -276,6 +342,17 @@ factory,Scene,Background,Random,util)
 			$.background = new Background(null); //create an empty background
 	}
 
+	match.prototype.F7=function()
+	{
+		var $=this;
+		for( var i in $.character)
+		{
+			var ch = $.character[i];
+			ch.health.hp=ch.health.hp_full=ch.health.hp_bound= ch.proper('hp') || Global.gameplay.default.health.hp_full;
+			ch.health.mp=ch.health.mp_full;
+		}
+	}
+
 	match.prototype.new_randomseed=function()
 	{
 		var rand = new Random();
@@ -318,7 +395,14 @@ factory,Scene,Background,Random,util)
 								else
 									$.time.paused=true;
 							break;
+							case 'F7':
+								$.F7();
+							break;
 						}
+						if( $.time.paused)
+							$.pause_mess.show();
+						else
+							$.pause_mess.hide();
 					}
 				}
 			});

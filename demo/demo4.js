@@ -16,30 +16,20 @@ function(Fcontroller,Fsprite,Fsupport,
 package,Match,Keychanger,
 util,buildinfo){
 
-	util.setup_resourcemap(package,Fsprite);
-
-	var control_con1 =
+	//analytics
+	if( window.location.href.indexOf('http')===0)
 	{
-		up:'u',down:'m',left:'h',right:'k',def:',',jump:'i',att:'j'
-	};
-	var control_con2 =
-	{
-		up:'w',down:'x',left:'a',right:'d',def:'z',jump:'q',att:'s'
-	};
-	var control1 = new Fcontroller(control_con1);
-	var control2 = new Fcontroller(control_con2);
-	control1.sync=true;
-	control2.sync=true;
-
-	var keychanger = util.div('keychanger');
-	keychanger.style.display='none';
-	Keychanger(keychanger, [control1, control2]);
-	keychanger.style.backgroundColor='#FFF';
-	util.div('keychangerButton').onclick=function()
-	{
-		keychanger.style.display= keychanger.style.display===''?'none':'';
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','http://www.google-analytics.com/analytics.js','ga');
+		ga('create', 'UA-37320960-5', 'tyt2y3.github.io');
+		ga('send', 'pageview');
 	}
 
+	//
+	// UI window
+	//
 	var maximized=undefined;
 	function resizer(ratio)
 	{
@@ -59,8 +49,11 @@ util,buildinfo){
 		util.div('maximizeButton').onclick=function()
 		{
 			var link=document.createElement('a');
-			link.href = 'demo4.html';
+			link.href = 'demo4.html?max';
 			link.target='_blank';
+			link.style.display='none';
+			var body = document.getElementsByTagName('body')[0];
+			body.appendChild(link);
 			link.click();
 		}
 	else
@@ -88,9 +81,38 @@ util,buildinfo){
 				}
 			}
 		}
+	if( window.location.href.match(/max/))
+		util.div('maximizeButton').onclick();
 
 	util.div('footnote').innerHTML+='; '+
 		(buildinfo.timestamp==='unbuilt'?'unbuilt demo':'built on: '+buildinfo.timestamp);
+
+	//
+	// F.LF stuff
+	//
+	util.setup_resourcemap(package,Fsprite);
+
+	var control_con1 =
+	{
+		up:'u',down:'m',left:'h',right:'k',def:',',jump:'i',att:'j'
+	};
+	var control_con2 =
+	{
+		up:'w',down:'x',left:'a',right:'d',def:'z',jump:'q',att:'s'
+	};
+	var control1 = new Fcontroller(control_con1);
+	var control2 = new Fcontroller(control_con2);
+	control1.sync=true;
+	control2.sync=true;
+
+	var keychanger = util.div('keychanger');
+	keychanger.style.display='none';
+	Keychanger(keychanger, [control1, control2]);
+	keychanger.style.backgroundColor='#FFF';
+	util.div('keychangerButton').onclick=function()
+	{
+		keychanger.style.display= keychanger.style.display===''?'none':'';
+	}
 
 	var match = new Match
 	({

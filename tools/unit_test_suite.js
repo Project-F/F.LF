@@ -1,5 +1,6 @@
 requirejs.config(
 {
+	baseUrl: '../../',
 	config:
 	{
 		'F.core/sprite':
@@ -191,6 +192,7 @@ test_cases){
 				$.mem[i] = {};
 			}
 			$.t=-case_start_delay;
+			$.match.F7();
 		}
 	}
 	Testcase.prototype.event=function(E)
@@ -536,15 +538,15 @@ test_cases){
 		{	//all scenario finished
 			d_stage.style.display='none';
 			submit_log([
-					window.location,
+					window.location.href.slice(window.location.href.lastIndexOf('/')+1),
 					overall.passed,overall.finished,overall.delta,
-					Browser()[0]+','+Browser()[1]
-				]);
+					browser_info()[0]+','+browser_info()[1]
+				]); //*/
 		}
 		else
 			new Testcase(test_cases[cur_scenario]);
 	}
-	function Browser()
+	function browser_info()
 	{
 		var N= navigator.appName, ua= navigator.userAgent, tem;
 		var M= ua.match(/(opera|chrome|safari|firefox|msie)\/?\s*(\.?\d+(\.\d+)*)/i);

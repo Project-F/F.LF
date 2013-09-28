@@ -3,8 +3,8 @@
  * 
  * a base class for all living objects
 \*/
-define(['LF/global','LF/sprite','LF/mechanics','LF/util','F.core/combodec'],
-function ( Global, Sprite, Mech, util, Fcombodec)
+define(['LF/global','LF/sprite','LF/mechanics','LF/util','F.core/sprite'],
+function ( Global, Sprite, Mech, util, Fsprite)
 {
 	var GC=Global.gameplay;
 
@@ -45,12 +45,20 @@ function ( Global, Sprite, Mech, util, Fcombodec)
 
 		//states
 		$.sp = new Sprite(data.bmp, $.match.stage);
+		if( !$.proper('no_shadow'))
+		{
+			var sp_sha=
+			{
+				canvas: $.match.stage,
+				wh: 'fit',
+				img: $.bg.shadow.img
+			}
+			$.shadow = new Fsprite(sp_sha);
+		}
 		$.health=
 		{
 			hp: 100,
-			mp: 100,
-			bdefend: 0,
-			fall: 0
+			mp: 100
 		};
 		$.frame=
 		{
@@ -68,7 +76,6 @@ function ( Global, Sprite, Mech, util, Fcombodec)
 		$.itr=
 		{
 			vrest: [], //a history of what have been hit by me recently
-			lasthit: -100 //time when last being hit
 		};
 		$.effect=
 		{
@@ -88,39 +95,6 @@ function ( Global, Sprite, Mech, util, Fcombodec)
 			id: 0 //id of holding
 		};
 		$.switch_dir=true; //direction switcher
-		$.con = config.controller;
-		if( $.con)
-		{
-			function combo_event(kobj)
-			{
-				var K=kobj.name;
-				switch (K)
-				{
-					case 'left': case 'right':
-						if( $.switch_dir)
-							$.switch_dir_fun(K);
-				}
-				$.statemem.combo = K;
-			}
-			var dec_con = //combo detector
-			{
-				clear_on_combo: true,
-				callback: combo_event //callback function when combo detected
-			}
-			var combo_list = [
-				{ name:'left',	seq:['left'],	clear_on_combo:false},
-				{ name:'right',	seq:['right'],	clear_on_combo:false},
-				{ name:'up',	seq:['up'],		clear_on_combo:false},
-				{ name:'down',	seq:['down'],	clear_on_combo:false},
-				{ name:'def',	seq:['def'],	clear_on_combo:false},
-				{ name:'jump',	seq:['jump'],	clear_on_combo:false},
-				{ name:'att',	seq:['att'],	clear_on_combo:false},
-				{ name:'run',	seq:['right','right'],	maxtime:9},
-				{ name:'run',	seq:['left','left'],	maxtime:9}
-				//plus those defined in Global.combo_list
-			];
-			$.combodec = new Fcombodec($.con, dec_con, combo_list.concat(Global.combo_list));
-		}
 	}
 
 	livingobject.prototype.destroy = function()
@@ -131,32 +105,6 @@ function ( Global, Sprite, Mech, util, Fcombodec)
 	livingobject.prototype.log = function(mes)
 	{
 		this.match.log(mes);
-	}
-
-	//to emit a combo event
-	livingobject.prototype.combo_update = function()
-	{		
-		/**	different from `state_update`, current state receive the combo event first,
-			and only if it returned falsy result, the combo event is passed to the generic state.
-			if the combo event is not consumed, it is stored in state memory,
-			resulting in 1 combo event being emited every frame until it is being handled or
-			overridden by a new combo event.
-			a combo event is emitted even when there is no combo, in such case `K=null`
-		 */
-		var $=this;
-		var K = $.statemem.combo;
-		if(!K) K=null;
-
-		var tar1=$.states[$.frame.D.state];
-		if( tar1) var res1=tar1.call($,'combo',K);
-		var tar2=$.states['generic'];
-		if(!res1)
-		if( tar2) var res2=tar2.call($,'combo',K);
-		if( tar1) tar1.call($,'post_combo');
-		if( tar2) tar2.call($,'post_combo');
-		if( res1 || res2 ||
-			K==='left' || K==='right' || K==='up' || K==='down') //dir combos are not persistent
-			$.statemem.combo = null;
 	}
 
 	//setup for a match
@@ -233,15 +181,6 @@ function ( Global, Sprite, Mech, util, Fcombodec)
 		else
 			$.state_update('TU');
 
-		//recovery
-		$.itr.lasthit--;
-		if( $.itr.lasthit<-3)
-		{
-			//if( $.health.fall>0 && $.health.fall<10) $.health.fall=0;
-			if( $.health.fall>0) $.health.fall += GC.recover.fall;
-			if( $.health.bdefend>0) $.health.bdefend += GC.recover.bdefend;
-		}
-
 		//attack rest
 		for( var I in $.itr.vrest)
 		{	//watch out that itr.vrest might grow very big
@@ -261,9 +200,7 @@ function ( Global, Sprite, Mech, util, Fcombodec)
 		var tar2=$.states[$.frame.D.state];
 		if( tar2) var res2=tar2.call($,event);
 		//
-		if( tar1) var res3=tar1.call($,'post_'+event);
-		//
-		return res1 || res2 || res3;
+		return res1 || res2;
 	}
 
 	livingobject.prototype.TU=function()

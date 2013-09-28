@@ -11,13 +11,18 @@ define(function()
 var G={};
 
 G.application={};
-G.application.window={};
-G.application.window.width=794;
-G.application.window.height=550;
-G.application.viewer={};
-G.application.viewer.height=400;
-G.application.camera={};
-G.application.camera.speed_factor=1/18;
+var GA = G.application;
+GA.window={};
+GA.window.width=794;
+GA.window.height=550;
+GA.viewer={};
+GA.viewer.height=400;
+GA.camera={};
+GA.camera.speed_factor=1/18;
+GA.panel={};
+GA.panel.pane={};
+GA.panel.pane.width=198;
+GA.panel.pane.height=54;
 
 /*\
  * global.combo_list
@@ -26,16 +31,35 @@ G.application.camera.speed_factor=1/18;
  | { name:'DvA', seq:['def','down','att']} //example
 \*/
 G.combo_list = [
-	{ name:'hit_Fa', seq:['def','left','att']},
-	{ name:'hit_Fa', seq:['def','right','att']},
-	{ name:'hit_Da', seq:['def','down','att']},
-	{ name:'hit_Ua', seq:['def','up','att']},
-	{ name:'hit_Dj', seq:['def','down','jump']},
-	{ name:'hit_Uj', seq:['def','up','jump']},
-	{ name:'hit_Fj', seq:['def','left','jump']},
-	{ name:'hit_Fj', seq:['def','right','jump']},
-	{ name:'hit_ja', seq:['def','jump','att']}
+	{ name:'D<A', seq:['def','left','att'], clear_on_combo:false},
+	{ name:'D>A', seq:['def','right','att'], clear_on_combo:false},
+	{ name:'DvA', seq:['def','down','att']},
+	{ name:'D^A', seq:['def','up','att']},
+	{ name:'DvJ', seq:['def','down','jump']},
+	{ name:'D^J', seq:['def','up','jump']},
+	{ name:'D<J', seq:['def','left','jump']},
+	{ name:'D>J', seq:['def','right','jump']},
+	{ name:'D<AJ', seq:['def','left','att','jump']},
+	{ name:'D>AJ', seq:['def','right','att','jump']},
+	{ name:'DJA', seq:['def','jump','att']}
 ];
+G.combo_tag =
+{	//look up from combo name to tag name
+	'def':'hit_d',
+	'jump':'hit_j',
+	'att':'hit_a',
+	'D>A':'hit_Fa',
+	'D<A':'hit_Fa',
+	'DvA':'hit_Da',
+	'D^A':'hit_Ua',
+	'DvJ':'hit_Dj',
+	'D^J':'hit_Uj',
+	'D>J':'hit_Fj',
+	'D<J':'hit_Fj',
+	'D<AJ':'hit_Fj',
+	'D>AJ':'hit_Fj',
+	'DJA':'hit_ja'
+};
 
 G.lazyload = function(O)
 {
@@ -56,10 +80,15 @@ var GC = G.gameplay;
  * if any of them cannot be overridden, please move them out of default.
 \*/
 GC.default={};
+GC.default.health={};
+GC.default.health.hp_full=500;
+GC.default.health.mp_full=500;
+GC.default.health.mp_start=200; //it cannot be overriden
 
 GC.default.itr={};
 GC.default.itr.zwidth= 12; //default itr zwidth
 GC.default.itr.hit_stall= 3; //default stall when hit somebody
+GC.default.itr.throw_injury= 10;
 
 GC.default.cpoint={};
 GC.default.cpoint.hurtable= 0; //default cpoint hurtable
@@ -94,7 +123,7 @@ GC.default.machanics.mass= 1; //default mass; weight = mass * gravity
 \*/
 
 GC.recover={};
-GC.recover.fall= -0.5; //fall recover constant
+GC.recover.fall= -0.45; //fall recover constant
 GC.recover.bdefend= -0.5; //bdefend recover constant
 
 GC.effect={};
