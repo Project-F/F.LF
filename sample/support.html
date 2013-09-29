@@ -12,7 +12,6 @@ requirejs(['F.core/support'], function(support)
 {
 	var out=document.getElementById('output');
 	var str='';
-	str+=navigator.userAgent.toLowerCase()+'<br>';
 	for( var I in support)
 		str+= I+': '+support[I]+'<br>';
 	out.innerHTML=str;

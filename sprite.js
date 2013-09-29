@@ -129,7 +129,8 @@ function sprite (config)
 |			{
 |				baseUrl: '../sprites/',
 |				resourcemap: map_def,
-|				disable_css2dtransform: true //null by default
+|				disable_css2dtransform: false, //null by default
+|				disable_css3dtransform: false  //null by default
 |			}
 |		}
 |	});
@@ -235,7 +236,18 @@ sprite.prototype.set_h=function(h)
  - x (number)
  - y (number)
 \*/
-if( support.css2dtransform && !sp_masterconfig.disable_css2dtransform)
+if( support.css3dtransform && !sp_masterconfig.disable_css3dtransform)
+{
+	sprite.prototype.set_xy=function(P)
+	{
+		this.el.style[support.css3dtransform]= 'translate3d('+P.x+'px,'+P.y+'px, 0px) ';
+	}
+	sprite.prototype.set_x_y=function(x,y)
+	{
+		this.el.style[support.css3dtransform]= 'translate3d('+x+'px,'+y+'px, 0px) ';
+	}
+}
+else if( support.css2dtransform && !sp_masterconfig.disable_css2dtransform)
 {
 	sprite.prototype.set_xy=function(P)
 	{

@@ -43,7 +43,12 @@ define(function()
 	//test for browser and device
 	//[--adapted from Crafty engine
 	//	https://github.com/craftyjs/Crafty/blob/master/src/extensions.js
-	(function(){
+	(function(){		
+		var N= navigator.appName, ua= navigator.userAgent, tem;
+		var M= ua.match(/(opera|chrome|safari|firefox|msie)\/?\s*(\.?\d+(\.\d+)*)/i);
+		if(M && (tem= ua.match(/version\/([\.\d]+)/i))!= null) M[2]= tem[1];
+		M= M? [M[1], M[2]]: [N, navigator.appVersion,'-?'];
+		support.browser = M;
 		var ua = navigator.userAgent.toLowerCase();
 		var match = /(webkit)[ \/]([\w.]+)/.exec(ua) ||
 					/(o)pera(?:.*version)?[ \/]([\w.]+)/.exec(ua) ||
@@ -91,7 +96,7 @@ define(function()
 				if( str===window.getComputedStyle(el).getPropertyValue( transforms[t] ))
 					support.css2dtransform= t;
 
-				str = 'matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)'
+				str = 'matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1)'
 				el.style[t] = str;
 				if( str===window.getComputedStyle(el).getPropertyValue( transforms[t] ))
 					support.css3dtransform= t;
