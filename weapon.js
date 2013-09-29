@@ -110,6 +110,13 @@ function weapon(type)
 		livingobject.call(this,config,data,thisID);
 		$.type = type;
 		$.states = states;
+		for( var i=0; i<$.sp.ani.length; i++)
+		{	//fix border issue
+			$.sp.ani[i].config.borderleft=1;
+			$.sp.ani[i].config.bordertop=0;
+			$.sp.ani[i].config.borderright=2;
+			$.sp.ani[i].config.borderbottom=2;
+		}
 		$.setup();
 	}
 	typeweapon.prototype = new livingobject();

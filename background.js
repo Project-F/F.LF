@@ -136,7 +136,16 @@ define(['F.core/util','F.core/sprite','F.core/support','LF/global'],function(Fut
 		return { x:$.width*rx, y:0, z:$.zboundary[0]+$.height*rz};
 	}
 
-	if( Fsupport.css2dtransform) //disable
+	if( Fsupport.css3dtransform)
+	{
+		background.prototype.scroll=function(X)
+		{
+			var $=this;
+			for( var i=0; i<$.layers.length; i++)
+				$.layers[i].div.style[Fsupport.css3dtransform]= 'translate3d('+(-X*$.layers[i].ratio)+'px,0px,0px) ';
+		}
+	}
+	else if( Fsupport.css2dtransform)
 	{
 		background.prototype.scroll=function(X)
 		{
