@@ -151,7 +151,7 @@ define(['F.core/util','F.core/sprite','F.core/support','LF/global'],function(Fut
 		{
 			var $=this;
 			for( var i=0; i<$.layers.length; i++)
-				$.layers[i].div.style[Fsupport.css2dtransform]= 'translate('+(-X*$.layers[i].ratio)+'px,0) ';
+				$.layers[i].div.style[Fsupport.css2dtransform]= 'translate('+(-X*$.layers[i].ratio)+'px,0px) ';
 		}
 	}
 	else
