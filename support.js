@@ -5,15 +5,30 @@ define(function()
 	 * support
 	 * test for browser support of certain technologies, most code is adapted from other places.
 	 * including
-	 * - [Crafty/extensions.js](https://github.com/craftyjs/Crafty/blob/master/src/extensions.js)
+	 * - [http://davidwalsh.name/vendor-prefix](http://davidwalsh.name/vendor-prefix)
 	 * - [https://gist.github.com/3626934](https://gist.github.com/3626934)
 	 * - [https://gist.github.com/1579671](https://gist.github.com/3626934)
 	 * [example](../sample/support.html)
 	 # <iframe src="../sample/support.html" width="800" height="200"></iframe>
 	\*/
 	/*\
+	 * support.browser
+	 - (number) browser name
+	 [ property ]
+	\*/
+	/*\
+	 * support.browser_name
+	 - (number) browser name
+	 [ property ]
+	\*/
+	/*\
+	 * support.browser_version
+	 - (number) browser version string
+	 [ property ]
+	\*/
+	/*\
 	 * support.mobile
-	 - (string) mobile device name
+	 - (string) mobile device name, undefined if not on a mobile device
 	 [ property ]
 	\*/
 	/*\
@@ -22,8 +37,18 @@ define(function()
 	 [ property ]
 	\*/
 	/*\
-	 * support.version
-	 - (number) browser major version
+	 * support.prefix_dom
+	 - (string) browser prefix for DOM
+	 [ property ]
+	\*/
+	/*\
+	 * support.prefix_css
+	 - (string) browser prefix for css
+	 [ property ]
+	\*/
+	/*\
+	 * support.prefix_js
+	 - (string) browser prefix for js
 	 [ property ]
 	\*/
 	/*\
@@ -38,44 +63,42 @@ define(function()
 	 * support.css3dtransform
 	 - (string) if supported, style property name with correct prefix
 	 [ property ]
+	 | if( support.css3dtransform)
+	 | 	this.el.style[support.css3dtransform]= 'translate3d('+P.x+'px,'+P.y+'px, 0px) ';
 	\*/
 
 	//test for browser and device
-	//[--adapted from Crafty engine
-	//	https://github.com/craftyjs/Crafty/blob/master/src/extensions.js
 	(function(){		
 		var N= navigator.appName, ua= navigator.userAgent, tem;
 		var M= ua.match(/(opera|chrome|safari|firefox|msie)\/?\s*(\.?\d+(\.\d+)*)/i);
 		if(M && (tem= ua.match(/version\/([\.\d]+)/i))!= null) M[2]= tem[1];
 		M= M? [M[1], M[2]]: [N, navigator.appVersion,'-?'];
-		support.browser = M;
-		var ua = navigator.userAgent.toLowerCase();
-		var match = /(webkit)[ \/]([\w.]+)/.exec(ua) ||
-					/(o)pera(?:.*version)?[ \/]([\w.]+)/.exec(ua) ||
-					/(ms)ie ([\w.]+)/.exec(ua) ||
-					/(moz)illa(?:.*? rv:([\w.]+))?/.exec(ua) || [];
-		var mobile = /iPad|iPod|iPhone|Android|webOS|IEMobile/i.exec(ua);
+		support.browser = M[0];
+		support.browser_name = M[0];
+		support.browser_version = M[1];
+		var mobile = /iPad|iPod|iPhone|Android|webOS|IEMobile/i.exec(navigator.userAgent.toLowerCase());
 		support.mobile= mobile?mobile[0]:undefined;
-		support.prefix = (match[1] || match[0]);
-
-		if (support.prefix === "moz") support.prefix = "Moz";
-		if (support.prefix === "o") support.prefix = "O";
-
-		if (match[2]) {
-			//support.versionName = match[2];
-			support.version = +(match[2].split("."))[0];
-		}
+		//[--adapted from http://davidwalsh.name/vendor-prefix
+		var styles = window.getComputedStyle(document.documentElement, ''),
+			pre = (Array.prototype.slice
+				.call(styles)
+				.join('') 
+				.match(/-(moz|webkit|ms)-/) || (styles.OLink === '' && ['', 'o'])
+				)[1],
+			dom = ('WebKit|Moz|MS|O').match(new RegExp('(' + pre + ')', 'i'))[1];
+		support.prefix = dom;
+		support.prefix_dom = dom;
+		support.prefix_css = '-'+pre+'-';
+		support.prefix_js = pre[0].toUpperCase() + pre.substr(1);
+		//--]
 	}());
-	//--] end
 
 	//test for css 2d transform support
 	//[--adapted from https://gist.github.com/3626934
 	(function(){
-		support.css2dtransform=undefined;
-		support.css3dtransform=undefined;
 
-		var el = document.createElement('p'), t, has3d,
-		transforms = {
+		var el = document.createElement('p'), t, has3d;
+		var transforms = {
 			'WebkitTransform':'-webkit-transform',
 			'OTransform':'-o-transform',
 			'MSTransform':'-ms-transform',
@@ -98,7 +121,8 @@ define(function()
 
 				str = 'matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1)'
 				el.style[t] = str;
-				if( str===window.getComputedStyle(el).getPropertyValue( transforms[t] ))
+				//if( str===window.getComputedStyle(el).getPropertyValue( transforms[t] ))
+				if( window.getComputedStyle(el).getPropertyValue( transforms[t] ).indexOf('matrix3d')===0)
 					support.css3dtransform= t;
 			}
 		}
@@ -106,7 +130,7 @@ define(function()
 		el.parentNode.removeChild(el);
 	}());
 	//--] end
-	
+
 	//support requestAnimationFrame
 	//[--adapted from https://gist.github.com/1579671
 	// http://paulirish.com/2011/requestanimationframe-for-smart-animating/

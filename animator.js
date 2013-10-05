@@ -121,10 +121,6 @@ animator.prototype.set_frame=function(i)
 	this.I=i;
 	this.show_frame(i);
 }
-animator.prototype.hmirror=function(val) //legacy
-{
-	this.horimirror = val;
-}
 animator.prototype.show_frame=function(i)
 {
 	var c=this.config;

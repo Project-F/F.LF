@@ -4,7 +4,7 @@
  * - display and control sprites on page using `<div>` and `<img>` tag
  * - multiple images for one sprite
  * - **not** using canvas for sprite animations
- * - support style left/top and CSS transform, depending on browser support
+ * - support style left/top and CSS 2d/3d transform, depending on browser support
 \*/
 define(['F.core/css!F.core/style.css','F.core/support','F.core/resourcemap','module'],
 function(css,support,resourcemap,module)
@@ -18,22 +18,21 @@ var sp_masterconfig = module.config() || {};
  [ class ]
  - config (object)
  * {
- - canvas (object) `div` DOM node to create and append sprites to
+ - canvas (object) `div` DOM node to create and append sprites to; __or__
  - div    (object) `div` DOM node, if specified, will use this `div` as sprite instead of creating a new one
- * you only choose between `canvas` or `div` option
- - wh     (object) width and height
+ - wh     (object) width and height; __or__
+ - wh     (string) 'fit' fit to image size
  - img    (object) image list
- *      {
- -      name (string) image path
- *      }
- * or
- - img    (string) if you have only one image
+ - { name (string) image path }; __or__
+ - img    (string) if you have only one image. in this case the image will be named '0'
  * }
+ * 
  * config is one time only and will be dumped, without keeping a reference, after constructor returns. that means it is okay to reuse config objects, in loops or other contexts.
 |	var sp_config=
 |	{
 |		canvas: canvas,    // create and append a div to this node
 |		wh: {x:100,y:100}, // width and height
+|		wh: 'fit',         // OR fit to image size
 |		img: 'test_sprite.png' // image path
 |	}
 |	var sp1 = new sprite(sp_config);
@@ -45,6 +44,11 @@ function sprite (config)
 	this.ID=sp_count;
 	sp_count++;
 
+	/*\
+	 * sprite.el
+	 [ property ]
+	 * the `div` element
+	\*/
 	if( config.div)
 	{
 		this.el = config.div;
@@ -63,13 +67,22 @@ function sprite (config)
 	else
 	{
 		this.el = document.createElement('div');
-		//this.el.setAttribute('class','F_sprite');
 		this.el.className = 'F_sprite';
 		if( config.canvas)
 			config.canvas.appendChild(this.el);
 	}
 
+	/*\
+	 * sprite.img
+	 [ property ]
+	 * the img list
+	\*/
 	this.img={};
+	/*\
+	 * sprite.cur_img
+	 [ property ]
+	 * name of current image
+	\*/
 	this.cur_img=null;
 
 	if( config.wh==='fit')
@@ -95,10 +108,15 @@ function sprite (config)
 		}
 	}
 
-	if( support.css2dtransform && !config.div)
+	if( (support.css3dtransform && !sp_masterconfig.disable_css3dtransform) ||
+		(support.css2dtransform && !sp_masterconfig.disable_css2dtransform))
 	{
-		this.el.style.left=0+'px';
-		this.el.style.top=0+'px';
+		if( !config.div)
+		{
+			this.el.style.left=0+'px';
+			this.el.style.top=0+'px';
+		}
+		this.x=0; this.y=0;
 	}
 }
 
@@ -112,12 +130,13 @@ function sprite (config)
  = config (object) if get
  * the schema is:
  * {
- - baseUrl (string) base url prepended to all image paths
+ - baseUrl (string) base url prepended to all image paths; __or__
  - resourcemap (object) a @resourcemap definition
  * }
  * choose only one of `baseUrl` or `resourcemap`, they are two schemes of resource url resolution. `baseUrl` simply prepend a string before every url, while `resourcemap` is a general solution. if set, this option will take effect on the next `add_img` or `sprite` creation.
  * 
- * because css2dtransform support is built into prototype of `sprite` during module definition, `disable_css2dtransform` can only be set using requirejs.config __before any__ module loading
+ * because css transform support is built into prototype of `sprite` during module definition, `disable_css2dtransform` can only be set using requirejs.config __before any__ module loading
+ * 
  * example:
 |	requirejs.config(
 |	{
@@ -128,7 +147,6 @@ function sprite (config)
 |			'F.core/sprite':
 |			{
 |				baseUrl: '../sprites/',
-|				resourcemap: map_def,
 |				disable_css2dtransform: false, //null by default
 |				disable_css3dtransform: false  //null by default
 |			}
@@ -204,6 +222,18 @@ sprite.resolve_resource=function(res)
  - w (number)
  - h (number)
 \*/
+/*\
+ * sprite.set_w
+ [ method ]
+ * set width
+ - w (number)
+\*/
+/*\
+ * sprite.set_h
+ [ method ]
+ * set height
+ - h (number)
+\*/
 sprite.prototype.set_wh=function(P)
 {
 	this.el.style.width=P.x+'px';
@@ -235,27 +265,42 @@ sprite.prototype.set_h=function(h)
  * set x and y
  - x (number)
  - y (number)
+ * will use css3dtransform, css2dtransform and csslefttop automatically, depending on browser support
 \*/
 if( support.css3dtransform && !sp_masterconfig.disable_css3dtransform)
 {
 	sprite.prototype.set_xy=function(P)
 	{
-		this.el.style[support.css3dtransform]= 'translate3d('+P.x+'px,'+P.y+'px, 0px) ';
+		this.x=P.x; this.y=P.y;
+		this.el.style[support.css3dtransform]= 'translate3d('+P.x+'px,'+P.y+'px, 0px) '+(this.mirrored?'scaleX(-1) ':'');
 	}
 	sprite.prototype.set_x_y=function(x,y)
 	{
-		this.el.style[support.css3dtransform]= 'translate3d('+x+'px,'+y+'px, 0px) ';
+		this.x=x; this.y=y;
+		this.el.style[support.css3dtransform]= 'translate3d('+x+'px,'+y+'px, 0px) '+(this.mirrored?'scaleX(-1) ':'');
+	}
+	sprite.prototype.mirror=function(m)
+	{
+		this.mirrored=m;
+		this.set_x_y(this.x,this.y);
 	}
 }
 else if( support.css2dtransform && !sp_masterconfig.disable_css2dtransform)
 {
 	sprite.prototype.set_xy=function(P)
 	{
-		this.el.style[support.css2dtransform]= 'translate('+P.x+'px,'+P.y+'px) ';
+		this.x=P.x; this.y=P.y;
+		this.el.style[support.css2dtransform]= 'translate('+P.x+'px,'+P.y+'px) '+(this.mirrored?'scaleX(-1) ':'');
 	}
 	sprite.prototype.set_x_y=function(x,y)
 	{
-		this.el.style[support.css2dtransform]= 'translate('+x+'px,'+y+'px) ';
+		this.x=x; this.y=y;
+		this.el.style[support.css2dtransform]= 'translate('+x+'px,'+y+'px) '+(this.mirrored?'scaleX(-1) ':'');
+	}
+	sprite.prototype.mirror=function(m)
+	{
+		this.mirrored=m;
+		this.set_x_y(this.x,this.y);
 	}
 }
 else
@@ -269,6 +314,10 @@ else
 	{
 		this.el.style.left=x+'px';
 		this.el.style.top=y+'px';
+	}
+	sprite.prototype.mirror=function(m)
+	{
+		//not supported
 	}
 }
 /*\
