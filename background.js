@@ -28,6 +28,10 @@ define(['F.core/util','F.core/sprite','F.core/support','LF/global'],function(Fut
 			x:0,y:0, //offset x,y
 			img:data.shadow
 		};
+		if( Fsupport.css3dtransform)
+			$.dropframe = 0;
+		else
+			$.dropframe = 1;
 		(function(){
 			var sp = new Fsprite({img:data.shadow});
 			sp.img[0].addEventListener('load', onload, true);
@@ -142,7 +146,7 @@ define(['F.core/util','F.core/sprite','F.core/support','LF/global'],function(Fut
 		{
 			var $=this;
 			for( var i=0; i<$.layers.length; i++)
-				$.layers[i].div.style[Fsupport.css3dtransform]= 'translate3d('+(-X*$.layers[i].ratio)+'px,0px,0px) ';
+				$.layers[i].div.style[Fsupport.css3dtransform]= 'translate3d('+-Math.floor(X*$.layers[i].ratio)+'px,0px,0px) ';
 		}
 	}
 	else if( Fsupport.css2dtransform)
@@ -151,7 +155,7 @@ define(['F.core/util','F.core/sprite','F.core/support','LF/global'],function(Fut
 		{
 			var $=this;
 			for( var i=0; i<$.layers.length; i++)
-				$.layers[i].div.style[Fsupport.css2dtransform]= 'translate('+(-X*$.layers[i].ratio)+'px,0px) ';
+				$.layers[i].div.style[Fsupport.css2dtransform]= 'translate('+-Math.floor(X*$.layers[i].ratio)+'px,0px) ';
 		}
 	}
 	else
@@ -160,7 +164,7 @@ define(['F.core/util','F.core/sprite','F.core/support','LF/global'],function(Fut
 		{
 			var $=this;
 			for( var i=0; i<$.layers.length; i++)
-				$.layers[i].div.style.left=-X*$.layers[i].ratio+'px';
+				$.layers[i].div.style.left=-Math.floor(X)*$.layers[i].ratio+'px';
 		}
 	}
 
@@ -171,8 +175,7 @@ define(['F.core/util','F.core/sprite','F.core/support','LF/global'],function(Fut
 		var $=this;
 		if( $.camera_locked)
 			return;
-		var reduce=2;
-		if( $.cami++%reduce !==0)
+		if( $.cami++%($.dropframe+1)!==0)
 			return;
 		/** algorithm by Azriel
 			http://www.lf-empire.de/forum/archive/index.php/thread-4597.html
@@ -193,10 +196,10 @@ define(['F.core/util','F.core/sprite','F.core/support','LF/global'],function(Fut
 		var xLimit= (facing*screenW/24)+(avgX-halfW);
 		if( xLimit < 0) xLimit=0;
 		if( xLimit > $.width-screenW) xLimit = $.width-screenW;
-		var spdX = (xLimit - $.camerax) * GA.camera.speed_factor * reduce;
+		var spdX = (xLimit - $.camerax) * GA.camera.speed_factor * ($.dropframe+1);
 		if( spdX!==0)
 		{
-			if( -0.2<spdX && spdX<0.2)
+			if( -0.05<spdX && spdX<0.05)
 				$.camerax = xLimit;
 			else
 				$.camerax = $.camerax + spdX;

@@ -368,6 +368,11 @@ Global)
 	match.prototype.create_controller=function(allow)
 	{
 		var $=this;
+		function show_pause()
+		{
+			if( $.time.paused)
+				$.pause_mess.show();
+		}
 		if( allow==='debug')
 		{
 			var funkey_config =
@@ -400,7 +405,10 @@ Global)
 							break;
 						}
 						if( $.time.paused)
-							$.pause_mess.show();
+						{
+							$.pause_mess.hide();
+							setTimeout(show_pause,2);
+						}
 						else
 							$.pause_mess.hide();
 					}

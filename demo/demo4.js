@@ -16,6 +16,18 @@ function(Fcontroller,Fsprite,Fsupport,
 package,Match,Keychanger,
 util,buildinfo){
 
+	//feature check
+	if( !Fsupport.css2dtransform && !Fsupport.css3dtransform)
+	{
+		var mess = document.createElement('div');
+		mess.innerHTML=
+			'Sorry, your browser does not support CSS transform.<br>'+
+			'Please update to a latest HTML5 browser.';
+		mess.className = 'LFerrorMessage';
+		util.div('windowMessageHolder').appendChild(mess);
+		return;
+	}
+
 	//analytics
 	if( window.location.href.indexOf('http')===0)
 	{
@@ -38,8 +50,7 @@ util,buildinfo){
 			if( typeof ratio!=='number')
 			{
 				ratio = window.innerHeight/parseInt(window.getComputedStyle(util.container,null).getPropertyValue('height'));
-				ratio = Math.floor(ratio*10)/10;
-				console.log(ratio);
+				ratio = Math.floor(ratio*100)/100;
 			}
 			util.container.style[Fsupport.css2dtransform+'Origin']= '0 0';
 			util.container.style[Fsupport.css2dtransform]= 'scale('+ratio+','+ratio+') ';

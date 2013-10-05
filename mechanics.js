@@ -344,12 +344,12 @@ mech.prototype.dynamics= function()
 		ps.sy = ps.y - fD.centery;
 	}
 
-	sp.set_x_y(ps.sx, ps.sy+ps.sz); //projection onto screen
-	sp.set_z(ps.sz+ps.zz); //z ordering
+	sp.set_x_y(Math.floor(ps.sx), Math.floor(ps.sy+ps.sz)); //projection onto screen
+	sp.set_z(Math.floor(ps.sz+ps.zz)); //z ordering
 	if( this.sha)
 	{
-		this.sha.set_x_y(ps.x-this.bg.shadow.x, ps.z-this.bg.shadow.y);
-		this.sha.set_z(ps.sz-1);
+		this.sha.set_x_y(Math.floor(ps.x-this.bg.shadow.x), Math.floor(ps.z-this.bg.shadow.y));
+		this.sha.set_z(Math.floor(ps.sz-1));
 	}
 
 	if( ps.y===0) //only when on the ground

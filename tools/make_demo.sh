@@ -10,4 +10,5 @@ cp demo/demo4-built.js ../LFrelease/demo/demo4.js
 rm demo/demo4-built.js
 
 echo "define({ timestamp: \""`date "+%T, %d %B %Y"`"\" })" > ../LFrelease/demo/buildinfo.js
+echo "define({ timestamp: \""`date "+%T, %d %B %Y"`"\" })"
 cp demo/index.html ../LFrelease/demo

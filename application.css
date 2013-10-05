@@ -3,7 +3,7 @@
 	position:absolute;
 	left:0px; top:0px;
 	font-family:Arial,sans;
-	font-size:22px;
+	font-size:18px;
 }
 .LFwindow
 {
@@ -176,7 +176,7 @@
 	top:400px;
 	z-index:10;
 }
-.LFwindowMessage
+.LFwindowMessageHolder
 {
 	/*http://www.brunildo.org/test/img_center.html*/
 	position:absolute;
@@ -184,7 +184,7 @@
 	width:100%; height:100%;
 	z-index:100;
 }
-.LFpauseMessage {
+.LFwindowMessage {
     display: table-cell;
     text-align: center;
     vertical-align: middle;
@@ -192,14 +192,19 @@
 	left:0; top:0;
 	width:100%; height:100%;
 }
-.LFpauseMessage * {
+.LFwindowMessage * {
     vertical-align: middle;
 }
-.LFpauseMessage {
+.LFwindowMessage {
     display: block;
 }
-.LFpauseMessage span {
+.LFwindowMessage span {
     display: inline-block;
     height: 100%;
     width: 1px;
+}
+.LFerrorMessage {
+	position:absolute;
+	left:0; top:128px;
+	color: #F00;
 }

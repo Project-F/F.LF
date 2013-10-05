@@ -1,5 +1,6 @@
 # F.LF - the open source LF2
 [F.LF Main Project Page](http://tyt2y3.github.io/LFrelease/)
+
 F.LF attempts a clean room implementation of the famous fighter game [LF2](http://lf2.net). The F stands for [Project F](http://project--f.blogspot.hk).
 
 ### Motivation
@@ -23,7 +24,7 @@ F.LF thrives for 99% compatibility with LF2.
 - data
 	- F.LF provide a [tool](http://tyt2y3.github.com/LFrelease/tools/data_file_converter.html) to convert xml-like LF2 data files into JSON.
 - sprite
-	- LF2 sprite images are in 24bit bmp and must be converted to 24bit png with defined transparent index (or 32bit png with transparency). in addition, F.LF requires XXX.png to be mirrored into XXX_mirror.png.
+	- LF2 sprite images are in 24bit bmp and must be converted to 24bit png with defined transparent index (or 32bit png with transparency).
 - sound
 	- LF2 sounds are in wav and must be converted to ogg and mp3 for use with HTML5 audio.
 - in general, materials should be compressed and converted to a format suitable for distribution and consumption on the web.

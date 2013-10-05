@@ -84,6 +84,18 @@ function(livingobject, Global, Fcombodec, Futil, util)
 				//recovery
 				if( $.health.fall>0) $.health.fall += GC.recover.fall;
 				if( $.health.bdefend>0) $.health.bdefend += GC.recover.bdefend;
+				//combo buffer
+				$.combo_buffer.timeout--;
+				if( $.combo_buffer.timeout===0)
+				{
+					switch ($.combo_buffer.combo)
+					{
+						case 'def': case 'jump': case 'att': case 'run':
+							$.combo_buffer.combo = null;
+						break;
+						//other combo is not cleared
+					}
+				}
 			break;
 			case 'transit':
 				//dynamics: position, friction, gravity
@@ -97,6 +109,7 @@ function(livingobject, Global, Fcombodec, Futil, util)
 				case 'run':
 				break;
 				default:
+					//here is where D>A, D>J... etc handled
 					var tag = Global.combo_tag[K];
 					if( tag && $.frame.D[tag])
 					{
@@ -112,14 +125,13 @@ function(livingobject, Global, Fcombodec, Futil, util)
 				$.pre_interaction();
 			break;
 			case 'state_exit':
-				if( $.combo_buffer)
-					switch ($.combo_buffer)
-					{
-						case 'def': case 'jump': case 'att': case 'run':
-							//basic actions cannot transfer across states
-							$.combo_buffer = null;
-						break;
-					}
+				switch ($.combo_buffer.combo)
+				{
+					case 'att': case 'run':
+						//cannot transfer across states
+						$.combo_buffer.combo = null;
+					break;
+				}
 			break;
 		}},
 
@@ -461,7 +473,7 @@ function(livingobject, Global, Fcombodec, Futil, util)
 		{	var $=this;
 			switch (event) {
 			case 'state_entry':
-				$.ps.vx= $.dirh() * ($.data.bmp.dash_distance-1);
+				$.ps.vx= $.dirh() * ($.data.bmp.dash_distance-1) * ($.frame.N===213?1:-1);
 				$.ps.vz= $.dirv() * ($.data.bmp.dash_distancez-1);
 				$.ps.vy= $.data.bmp.dash_height;
 			break;
@@ -486,14 +498,16 @@ function(livingobject, Global, Fcombodec, Futil, util)
 					if( K!=$.ps.dir)
 					{
 						if( $.dirh()==($.ps.vx>0?1:-1))
-						{//turn back
+						{	//turn back
 							if( $.frame.N===213) $.trans.frame(214, 0);
 							if( $.frame.N===216) $.trans.frame(217, 0);
+							$.switch_dir_fun(K);
 						}
 						else
-						{//turn to front
+						{	//turn to front
 							if( $.frame.N===214) $.trans.frame(213, 0);
 							if( $.frame.N===217) $.trans.frame(216, 0);
+							$.switch_dir_fun(K);
 						}
 						return 1;
 					}
@@ -918,15 +932,23 @@ function(livingobject, Global, Fcombodec, Futil, util)
 						var dx=0;
 						if($.con.state.left)  dx-=1;
 						if($.con.state.right) dx+=1;
-						if( dx || $.ps.vx!==0)
+						if( dx)
 						{
 							$.trans.frame(213, 10);
 							$.switch_dir_fun(dx===1?'right':'left');
 						}
-						else
+						else if( $.ps.vx===0)
 						{
 							$.trans.inc_wait(2, 10, 99); //lock until frame transition
 							$.trans.set_next(210, 10);
+						}
+						else if( ($.ps.vx>0?1:-1)===$.dirh())
+						{
+							$.trans.frame(213, 10);
+						}
+						else
+						{
+							$.trans.frame(214, 10);
 						}
 						return 1;
 					}
@@ -1043,7 +1065,7 @@ function(livingobject, Global, Fcombodec, Futil, util)
 		'2': false,
 		'3': false,
 		'4': true,
-		'5': true,
+		'5': false,
 		'6': false,
 		'7': true,
 		'8': false,
@@ -1072,6 +1094,11 @@ function(livingobject, Global, Fcombodec, Futil, util)
 		$.states_switch_dir = states_switch_dir;
 		$.mech.floor_xbound = true;
 		$.con = config.controller;
+		$.combo_buffer=
+		{
+			combo:null,
+			timeout:0
+		};
 		if( $.con)
 		{
 			function combo_event(kobj)
@@ -1083,7 +1110,8 @@ function(livingobject, Global, Fcombodec, Futil, util)
 						if( $.switch_dir)
 							$.switch_dir_fun(K);
 				}
-				$.combo_buffer = K;
+				$.combo_buffer.combo = K;
+				$.combo_buffer.timeout = 10;
 			}
 			var dec_con = //combo detector
 			{
@@ -1144,7 +1172,7 @@ function(livingobject, Global, Fcombodec, Futil, util)
 			a combo event is emitted even when there is no combo, in such case `K=null`
 		 */
 		var $=this;
-		var K = $.combo_buffer;
+		var K = $.combo_buffer.combo;
 		if(!K) K=null;
 
 		var tar1=$.states[$.frame.D.state];
@@ -1156,7 +1184,7 @@ function(livingobject, Global, Fcombodec, Futil, util)
 		if( tar2) tar2.call($,'post_combo');
 		if( res1 || res2 ||
 			K==='left' || K==='right' || K==='up' || K==='down') //dir combos are not persistent
-			$.combo_buffer = null;
+			$.combo_buffer.combo = null;
 	}
 
 	/** @protocol caller hits callee
