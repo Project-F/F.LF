@@ -26,15 +26,12 @@ function ( Global, Sprite, Mech, util, Fsprite)
 		var $=this;
 
 		//identity
-		$.type='livingobject';
 		$.name=data.bmp.name;
 		$.uid=-1; //unique id, set by scene
 		$.id=thisID; //character id, specify tactical behavior. accept values from 0~99
 		$.data=data;
 		$.team=config.team;
-		$.states = null; //the collection of states forming a state machine
 		$.statemem = {}; //state memory, will be cleared on every state transition
-		$.states_switch_dir = null; //whether to allow switch dir in each state
 
 		//handles
 		$.match=config.match;
@@ -79,11 +76,12 @@ function ( Global, Sprite, Mech, util, Fsprite)
 		};
 		$.effect=
 		{
-			num: -99,
-			i: 0,
+			num: -99, //effect number
 			dvx: 0, dvy: 0,
-			oscillate: 0,
 			stuck: false, //when an object is said to be 'stuck', there is not state and frame update
+			oscillate: 0, //if oscillate is non-zero, will oscillate for amplitude equals value of oscillate
+			blink: false, //blink: hide 2 TU, show 2 TU ,,, until effect vanishs
+			super: false, //when an object is in state 'super', it does not return body volume, such that it cannot be hit
 			timein: 0, //time to take effect
 			timeout: 0 //time to lose effect
 		};
@@ -94,12 +92,16 @@ function ( Global, Sprite, Mech, util, Fsprite)
 			obj: null, //something that I can hold or can hold me
 			id: 0 //id of holding
 		};
-		$.switch_dir=true; //direction switcher
+		$.allow_switch_dir=true; //direction switcher
 	}
+	livingobject.prototype.type='livingobject';
+	//livingobject.prototype.states = null; //the collection of states forming a state machine
+	//livingobject.prototype.states_switch_dir = null; //whether to allow switch dir in each state
 
 	livingobject.prototype.destroy = function()
 	{
 		this.sp.destroy();
+		this.shadow.remove();
 	}
 
 	livingobject.prototype.log = function(mes)
@@ -153,18 +155,49 @@ function ( Global, Sprite, Mech, util, Fsprite)
 		{
 			if( $.effect.oscillate)
 			{
-				if( $.effect.i===1)
-					$.effect.i=-1;
+				if( $.effect.oi===1)
+					$.effect.oi=-1;
 				else
-					$.effect.i=1;
-				$.sp.set_x_y($.ps.sx + $.effect.oscillate*$.effect.i, $.ps.sy+$.ps.sz);
+					$.effect.oi=1;
+				$.sp.set_x_y($.ps.sx + $.effect.oscillate*$.effect.oi, $.ps.sy+$.ps.sz);
+			}
+			else if( $.effect.blink)
+			{
+				if( $.effect.bi===undefined)
+					$.effect.bi = 0;
+				switch ($.effect.bi%4)
+				{
+					case 0: case 1:
+						$.sp.hide();
+					break;
+					case 2: case 3:
+						$.sp.show();
+					break;
+				}
+				$.effect.bi++;
 			}
 			if( $.effect.timeout===0)
 			{
 				$.effect.num = -99;
-				$.effect.oscillate = 0;
-				$.effect.stuck = false;
-				$.sp.set_x_y($.ps.sx, $.ps.sy+$.ps.sz);
+				if( $.effect.stuck)
+				{
+					$.effect.stuck = false;
+				}
+				if( $.effect.oscillate)
+				{
+					$.effect.oscillate = 0;
+					$.sp.set_x_y($.ps.sx, $.ps.sy+$.ps.sz);
+				}
+				if( $.effect.blink)
+				{
+					$.effect.blink = false;
+					$.effect.bi = undefined;
+					$.sp.show();
+				}
+				if( $.effect.super)
+				{
+					$.effect.super = false;
+				}
 			}
 			else if( $.effect.timeout===-1)
 			{
@@ -243,7 +276,7 @@ function ( Global, Sprite, Mech, util, Fsprite)
 	//  all other volumes e.g. itr should start with prefix vol_
 	livingobject.prototype.vol_body=function() 
 	{
-		return this.mech.body_body();
+		return this.mech.body();
 	}
 
 	livingobject.prototype.cur_state=function()
@@ -365,7 +398,7 @@ function ( Global, Sprite, Mech, util, Fsprite)
 			return true;
 	}
 
-	livingobject.prototype.switch_dir_fun = function(e)
+	livingobject.prototype.switch_dir = function(e)
 	{
 		var $=this;
 		if( $.ps.dir==='left' && e==='right')
@@ -530,6 +563,12 @@ function ( Global, Sprite, Mech, util, Fsprite)
 				}
 				else
 				{
+					if( next===1000)
+					{
+						$.match.destroy_object($);
+						return;
+					}
+
 					if( next===999)
 						next=0;
 					$.frame.PN=$.frame.N;
@@ -546,20 +585,20 @@ function ( Global, Sprite, Mech, util, Fsprite)
 					if( is_trans)
 					{
 						$.statemem = {};
-						var old_switch_dir=$.switch_dir;
+						var old_switch_dir=$.allow_switch_dir;
 						if( $.states_switch_dir && $.states_switch_dir[$.frame.D.state] !== undefined)
-							$.switch_dir=$.states_switch_dir[$.frame.D.state];
+							$.allow_switch_dir=$.states_switch_dir[$.frame.D.state];
 						else
-							$.switch_dir=false;
+							$.allow_switch_dir=false;
 
 						$.state_update('state_entry');
 
-						if( $.switch_dir && !old_switch_dir)
+						if( $.allow_switch_dir && !old_switch_dir)
 						{
 							if( $.con)
 							{
-								if($.con.state.left) $.switch_dir_fun('left');
-								if($.con.state.right) $.switch_dir_fun('right');
+								if($.con.state.left) $.switch_dir('left');
+								if($.con.state.right) $.switch_dir('right');
 							}
 						}
 					}

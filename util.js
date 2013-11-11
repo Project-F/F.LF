@@ -16,18 +16,31 @@ var util={};
 
 util.select_from=function(from,where,option)
 {
+	var res=[];
 	for( var i in from)
 	{
 		var O=from[i];
 		var match=true;
-		for( var j in where)
+		if( typeof where==='function')
 		{
-			if( O[j]!==where[j])
+			if( !where(O))
 				match=false;
 		}
+		else
+			for( var j in where)
+			{
+				if( O[j]!==where[j])
+					match=false;
+			}
 		if( match)
-			return O;
+			res.push(O);
 	}
+	if( res.length===0)
+		return ;
+	else if( res.length===1)
+		return res[0];
+	else
+		return res;
 }
 
 util.lookup=function(A,x)
@@ -65,6 +78,15 @@ util.div=function(classname)
 		if( !util.container) return null;
 	}
 	return util.container.getElementsByClassName('LF'+classname)[0];
+}
+
+util.filename=function(file)
+{
+	if( file.lastIndexOf('/')!==-1)
+		file = file.slice(file.lastIndexOf('/')+1);
+	if( file.lastIndexOf('.js')!==-1)
+		file = file.slice(0,file.lastIndexOf('.js'));
+	return file;
 }
 
 /**

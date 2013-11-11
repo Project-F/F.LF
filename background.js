@@ -66,7 +66,6 @@ define(['F.core/util','F.core/sprite','F.core/support','LF/global'],function(Fut
 			sc.onmousedown=function()
 			{
 				$.camera_locked=true;
-				$.scrolling=true;
 			}
 			sc.onmouseup=function()
 			{
@@ -76,7 +75,6 @@ define(['F.core/util','F.core/sprite','F.core/support','LF/global'],function(Fut
 			{	//IE 9,10 quirk
 				sc.onmousemove=function()
 				{
-					$.scrolling=false;
 					$.camera_locked=false;
 				}
 			}
@@ -88,6 +86,8 @@ define(['F.core/util','F.core/sprite','F.core/support','LF/global'],function(Fut
 			$.camerax = $.width/2;
 			$.cami = 0;
 		}
+		else
+			$.camera_locked = true;
 
 		$.layers=[];
 		$.layers.push({
@@ -177,9 +177,8 @@ define(['F.core/util','F.core/sprite','F.core/support','LF/global'],function(Fut
 			return;
 		if( $.cami++%($.dropframe+1)!==0)
 			return;
-		/** algorithm by Azriel
-			http://www.lf-empire.de/forum/archive/index.php/thread-4597.html
-		 */
+		/// algorithm by Azriel
+		/// http://www.lf-empire.de/forum/archive/index.php/thread-4597.html
 		var avgX=0,
 			facing=0,
 			numPlayers=0;

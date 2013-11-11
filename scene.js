@@ -21,15 +21,18 @@ function scene (config)
 
 scene.prototype.add = function(C)
 {
-	C.uid = this.uid++;
+	this.uid++;
+	C.uid = this.uid;
 	this.live[C.uid]=C;
 	return C.uid;
 }
 
 scene.prototype.remove = function(C)
 {
+	var uid = C.uid;
 	delete this.live[C.uid];
 	C.uid=-1;
+	return uid;
 }
 
 /*\

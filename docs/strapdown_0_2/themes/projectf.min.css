@@ -47,7 +47,7 @@ h4{font-size:16pt;text-decoration:underline;}
 h5{font-size:16pt;}
 h6{font-size:15pt;font-style:italic;}
 h4,h5,h6{margin:15pt 0 0 0!important;}
-p,ul{font-size:15pt;line-height:140%;margin:10px 0;}
+p,ul,ol{font-size:15pt;line-height:140%;margin:10px 0;}
 pre,code{font-family: Consolas, "Liberation Mono", Courier, monospace;}
 code{background-color:#F8F8F8;border-radius:4px;border:1px solid #DDD;font-size:85%;padding:0 6px;}
 pre{background-color:#F8F8F8;font-size:16pt;border:1px solid #DDD;padding:10px;}
@@ -55,3 +55,7 @@ pre code {border:none;}
 blockquote {border-left:4px solid #DDD;margin:0 10pt 0 40pt; padding-left:10pt;color:#222;}
 blockquote p {margin:0;}
 li ul {margin:0;}
+@media (max-width: 650px) {
+	p,ul,ol{font-size:13pt;line-height:140%;margin:10px 0;}
+	pre{font-size:13pt;}
+}

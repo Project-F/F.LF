@@ -5,7 +5,7 @@
  * 
  * note to data changers: tweak entries in this file very carefully. do not add or delete entries.
 \*/
-define(function()
+define(['LF/util'],function(util)
 {
 
 var G={};
@@ -61,12 +61,31 @@ G.combo_tag =
 	'DJA':'hit_ja'
 };
 
-G.lazyload = function(O)
+G.lazyload = function(O) //return true to delay loading of data files
 {
-	//return true to delay loading of data files of specific type
+	if( !this.character_list)
+		this.character_list={};
 	if( O.type==='character')
-		return true;
-}
+	{
+		var file = util.filename(O.file);
+		this.character_list[file] = true;
+		return true; //delay loading of all character files
+	}
+	else
+	{
+		var file = util.filename(O.file);
+		if( file.lastIndexOf('_')!==-1)
+			file = file.slice(0,file.lastIndexOf('_'));
+		/** delay loading of all character prefixed files. consider,
+			{id: 1, type:'character', file:'data/deep.js'},
+			{id:203, type:'specialattack', file:'data/deep_ball.js'}
+			as `deep.js` is of type character, any files matching `deep_*` will also be lazy loaded
+		*/
+		if( this.character_list[file])
+			return true;
+	}
+	return false;
+};
 
 G.gameplay={};
 var GC = G.gameplay;

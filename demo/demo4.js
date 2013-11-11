@@ -99,10 +99,8 @@ util,buildinfo){
 		(buildinfo.timestamp==='unbuilt'?'unbuilt demo':'built on: '+buildinfo.timestamp);
 
 	//
-	// F.LF stuff
+	// save settings
 	//
-	util.setup_resourcemap(package,Fsprite);
-
 	var control_con1 =
 	{
 		up:'u',down:'m',left:'h',right:'k',def:',',jump:'i',att:'j'
@@ -111,6 +109,32 @@ util,buildinfo){
 	{
 		up:'w',down:'x',left:'a',right:'d',def:'z',jump:'q',att:'s'
 	};
+	if( Fsupport.localStorage)
+	{
+		window.addEventListener('beforeunload',function(){
+			var obj =
+			{
+				controller:
+				[
+					control1.config, control2.config
+				]
+			}
+			Fsupport.localStorage.setItem('F.LF/settings',JSON.stringify(obj));
+		},false);
+
+		if( Fsupport.localStorage.getItem('F.LF/settings'))
+		{
+			var obj = JSON.parse(Fsupport.localStorage.getItem('F.LF/settings'));
+			control_con1 = obj.controller[0];
+			control_con2 = obj.controller[1];
+		}
+	}
+
+	//
+	// F.LF stuff
+	//
+	util.setup_resourcemap(package,Fsprite);
+
 	var control1 = new Fcontroller(control_con1);
 	var control2 = new Fcontroller(control_con2);
 	control1.sync=true;

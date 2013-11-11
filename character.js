@@ -11,6 +11,9 @@ function(livingobject, Global, Fcombodec, Futil, util)
 		'generic':function(event,K)
 		{	var $=this;
 			switch (event) {
+			case 'frame':
+				$.opoint();
+			break;
 			case 'TU':
 				if( $.state_update('post_interaction'))
 					; //do nothing
@@ -100,7 +103,7 @@ function(livingobject, Global, Fcombodec, Futil, util)
 			case 'transit':
 				//dynamics: position, friction, gravity
 				$.mech.dynamics(); //any further change in position will not be updated on screen until next TU
-				$.wpoint.call($); //my holding weapon following my change
+				$.wpoint(); //my holding weapon following my change
 			break;
 			case 'combo':
 				switch(K)
@@ -269,14 +272,15 @@ function(livingobject, Global, Fcombodec, Futil, util)
 
 			case 'TU':
 				//apply movement
+				var xfactor = 1-($.dirv()?1:0)*(1/7); //reduce x speed if moving diagonally
 				if( $.hold.obj && $.hold.obj.type==='heavyweapon')
 				{
-					if( dx) $.ps.vx=$.dirh()*($.data.bmp.heavy_walking_speed);
+					if( dx) $.ps.vx=xfactor*$.dirh()*($.data.bmp.heavy_walking_speed);
 					$.ps.vz=$.dirv()*($.data.bmp.heavy_walking_speedz);
 				}
 				else
 				{
-					if( dx) $.ps.vx=$.dirh()*($.data.bmp.walking_speed);
+					if( dx) $.ps.vx=xfactor*$.dirh()*($.data.bmp.walking_speed);
 					$.ps.vz=$.dirv()*($.data.bmp.walking_speedz);
 					if( !dx && !dz && !$.statemem.transed)
 					{
@@ -293,7 +297,7 @@ function(livingobject, Global, Fcombodec, Futil, util)
 
 			case 'combo':
 				if( dx!==0 && dx!==$.dirh())
-					$.switch_dir_fun($.ps.dir==='right'?'left':'right'); //toogle dir
+					$.switch_dir($.ps.dir==='right'?'left':'right'); //toogle dir
 				if( !dx && !dz && !$.statemem.released)
 				{
 					$.statemem.released=true;
@@ -318,14 +322,15 @@ function(livingobject, Global, Fcombodec, Futil, util)
 
 			case 'TU':
 				//to maintain the velocity against friction
+				var xfactor = 1-($.dirv()?1:0)*(1/7); //reduce x speed if moving diagonally
 				if( $.hold.obj && $.hold.obj.type==='heavyweapon')
 				{
-					$.ps.vx= $.dirh() * $.data.bmp.heavy_running_speed;
+					$.ps.vx= xfactor * $.dirh() * $.data.bmp.heavy_running_speed;
 					$.ps.vz= $.dirv() * $.data.bmp.heavy_running_speedz;
 				}
 				else
 				{
-					$.ps.vx= $.dirh() * $.data.bmp.running_speed;
+					$.ps.vx= xfactor * $.dirh() * $.data.bmp.running_speed;
 					$.ps.vz= $.dirv() * $.data.bmp.running_speedz;
 				}
 			break;
@@ -488,7 +493,7 @@ function(livingobject, Global, Fcombodec, Futil, util)
 							$.trans.frame(40, 10);
 						else
 							$.trans.frame(90, 10);
-						$.switch_dir=false;
+						$.allow_switch_dir=false;
 						if( K==='att')
 							return 1;
 					}
@@ -501,13 +506,13 @@ function(livingobject, Global, Fcombodec, Futil, util)
 						{	//turn back
 							if( $.frame.N===213) $.trans.frame(214, 0);
 							if( $.frame.N===216) $.trans.frame(217, 0);
-							$.switch_dir_fun(K);
+							$.switch_dir(K);
 						}
 						else
 						{	//turn to front
 							if( $.frame.N===214) $.trans.frame(213, 0);
 							if( $.frame.N===217) $.trans.frame(216, 0);
-							$.switch_dir_fun(K);
+							$.switch_dir(K);
 						}
 						return 1;
 					}
@@ -628,8 +633,8 @@ function(livingobject, Global, Fcombodec, Futil, util)
 
 					if( $.frame.D.cpoint.dircontrol===1)
 					{
-						if($.con.state.left) $.switch_dir_fun('left');
-						if($.con.state.right) $.switch_dir_fun('right');
+						if($.con.state.left) $.switch_dir('left');
+						if($.con.state.right) $.switch_dir('right');
 					}
 				}
 			}
@@ -659,7 +664,7 @@ function(livingobject, Global, Fcombodec, Futil, util)
 							var tac = $.frame.D.cpoint.taction;
 							if( tac<0)
 							{	//turn myself around
-								$.switch_dir_fun($.ps.dir==='right'?'left':'right'); //toogle dir
+								$.switch_dir($.ps.dir==='right'?'left':'right'); //toogle dir
 								$.trans.frame(-tac, 10);
 							}
 							else
@@ -742,9 +747,9 @@ function(livingobject, Global, Fcombodec, Futil, util)
 							if( cpoint.dircontrol===undefined)
 							{
 								if( cpoint.cover && cpoint.cover>=10)
-									$.switch_dir_fun(adir); //follow dir of catcher
+									$.switch_dir(adir); //follow dir of catcher
 								else //default cpoint cover
-									$.switch_dir_fun(adir==='left'?'right':'left'); //face the catcher
+									$.switch_dir(adir==='left'?'right':'left'); //face the catcher
 
 								$.mech.coincideXZ(holdpoint,$.mech.make_point($.frame.D.cpoint));
 							}
@@ -887,6 +892,12 @@ function(livingobject, Global, Fcombodec, Futil, util)
 				$.health.fall=0;
 				$.health.bdefend=0;
 			break;
+			case 'state_exit':
+				$.effect.timein=0;
+				$.effect.timeout=30;
+				$.effect.blink=true;
+				$.effect.super=true;
+			break;
 		}},
 
 		'15':function(event,K) //stop_running, crouch, crouch2, dash_attack, light_weapon_thw, heavy_weapon_thw, heavy_stop_run
@@ -935,7 +946,7 @@ function(livingobject, Global, Fcombodec, Futil, util)
 						if( dx)
 						{
 							$.trans.frame(213, 10);
-							$.switch_dir_fun(dx===1?'right':'left');
+							$.switch_dir(dx===1?'right':'left');
 						}
 						else if( $.ps.vx===0)
 						{
@@ -1049,9 +1060,9 @@ function(livingobject, Global, Fcombodec, Futil, util)
 				if( tag==='hit_Fj')
 				{
 					if( K==='D>J' || K==='D>AJ')
-						$.switch_dir_fun('right');
+						$.switch_dir('right');
 					else
-						$.switch_dir_fun('left');
+						$.switch_dir('left');
 				}
 			break;
 			}
@@ -1085,13 +1096,10 @@ function(livingobject, Global, Fcombodec, Futil, util)
 		var $=this;
 		// chain constructor
 		livingobject.call(this,config,data,thisID);
-		$.type = 'character';
-		$.states = states;
 		if( typeof idupdates[$.id]==='function')
 			$.id_update=idupdates[$.id];
 		else
 			$.id_update=idupdates['default'];
-		$.states_switch_dir = states_switch_dir;
 		$.mech.floor_xbound = true;
 		$.con = config.controller;
 		$.combo_buffer=
@@ -1107,8 +1115,8 @@ function(livingobject, Global, Fcombodec, Futil, util)
 				switch (K)
 				{
 					case 'left': case 'right':
-						if( $.switch_dir)
-							$.switch_dir_fun(K);
+						if( $.allow_switch_dir)
+							$.switch_dir(K);
 				}
 				$.combo_buffer.combo = K;
 				$.combo_buffer.timeout = 10;
@@ -1160,6 +1168,9 @@ function(livingobject, Global, Fcombodec, Futil, util)
 	}
 	character.prototype = new livingobject();
 	character.prototype.constructor = character;
+	character.prototype.type = 'character';
+	character.prototype.states = states;
+	character.prototype.states_switch_dir = states_switch_dir;
 
 	//to emit a combo event
 	character.prototype.combo_update = function()
@@ -1411,9 +1422,8 @@ function(livingobject, Global, Fcombodec, Futil, util)
 			case 0: //normal attack
 				for( var t in hit)
 				{
-					var team_allow=true;
-					if( hit[t].type==='character' && hit[t].team===$.team)
-						team_allow=false; //only attack characters of other teams
+					var team_allow = !(hit[t].type==='character' && hit[t].team===$.team);
+						//only attack characters of other teams
 
 					if( team_allow)
 					if( $.itr_rest_test( hit[t].uid, ITR))
@@ -1465,6 +1475,15 @@ function(livingobject, Global, Fcombodec, Futil, util)
 				//stalls
 				$.trans.inc_wait(GC.default.itr.hit_stall, 10);
 			}
+		}
+	}
+
+	character.prototype.opoint=function()
+	{
+		var $=this;
+		if( $.frame.D.opoint)
+		{
+			$.match.create_object($.frame.D.opoint, $);
 		}
 	}
 

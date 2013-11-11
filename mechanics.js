@@ -19,7 +19,7 @@ var GC=Global.gameplay;
 function mech(parent)
 {
 	var spec=parent.spec;
-	if( spec[parent.id] && spec[parent.id].mass)
+	if( spec[parent.id] && spec[parent.id].mass!==undefined && spec[parent.id].mass!==null)
 		this.mass=spec[parent.id].mass;
 	else
 		this.mass=Global.gameplay.default.machanics.mass;
@@ -28,7 +28,7 @@ function mech(parent)
 	this.sp=parent.sp;
 	this.frame=parent.frame;
 	this.parent=parent;
-	this.vol_body={0:{},1:{},2:{},3:{},4:{},5:{},length:0,empty_data:{}};
+	this.vol_body={0:{},1:{},2:{},3:{},4:{},5:{},length:0,empty_data:{},max:6};
 	this.bg=parent.bg;
 	this.sha=parent.shadow;
 }
@@ -41,7 +41,11 @@ mech.prototype.body= function(obj,filter,offset)
 	var off=offset;
 	if(!obj)
 		obj=this.frame.D.bdy;
-	if( obj===this.frame.D.bdy && !filter)
+	//if parent object is in `super` effect, returns no body volume
+	if( obj===this.frame.D.bdy && this.parent.effect.super)
+		return this.body_empty();
+	//if meets certain criteria (as in most cases), will use optimized version
+	if( obj===this.frame.D.bdy && !filter && (!(obj instanceof Array) || obj.length<=this.vol_body.max))
 		return this.body_body(offset);
 
 	if( obj instanceof Array)
@@ -77,6 +81,13 @@ mech.prototype.body= function(obj,filter,offset)
 		else
 			return [];
 	}
+}
+
+//returns a pseudo array with zero element
+mech.prototype.body_empty= function()
+{
+	this.vol_body.length = 0;
+	return this.vol_body;
 }
 
 //a slightly optimized version, creating less new objects
@@ -218,17 +229,24 @@ mech.prototype.volume= function(O,V)
 		}
 }
 
-mech.prototype.make_point= function(a)
+mech.prototype.make_point= function(a,prefix)
 {
 	var ps=this.ps;
 	var sp=this.sp;
 
-	if( a)
+	if( a && !prefix)
 	{
 		if( ps.dir==='right')
 			return {x:ps.sx+a.x, y:ps.sy+a.y, z:ps.sz+a.y};
 		else
 			return {x:ps.sx+sp.w-a.x, y:ps.sy+a.y, z:ps.sz+a.y};
+	}
+	else if( a && prefix)
+	{
+		if( ps.dir==='right')
+			return {x:ps.sx+a[prefix+'x'], y:ps.sy+a[prefix+'y'], z:ps.sz+a[prefix+'y']};
+		else
+			return {x:ps.sx+sp.w-a[prefix+'x'], y:ps.sy+a[prefix+'y'], z:ps.sz+a[prefix+'y']};
 	}
 	else
 	{

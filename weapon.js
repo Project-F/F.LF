@@ -108,8 +108,6 @@ function weapon(type)
 		var $=this;
 		// chain constructor
 		livingobject.call(this,config,data,thisID);
-		$.type = type;
-		$.states = states;
 		for( var i=0; i<$.sp.ani.length; i++)
 		{	//fix border issue
 			$.sp.ani[i].config.borderleft=1;
@@ -123,6 +121,8 @@ function weapon(type)
 	typeweapon.prototype.constructor = typeweapon;
 	typeweapon.prototype.light = type==='lightweapon';
 	typeweapon.prototype.heavy = type==='heavyweapon';
+	typeweapon.prototype.type = type;
+	typeweapon.prototype.states = states;
 
 	typeweapon.prototype.interaction=function()
 	{
@@ -145,7 +145,7 @@ function weapon(type)
 						itr_rest=ITR[j];
 					else
 						itr_rest=GC.default.weapon;
-					if( itr_rest.arest) itr_rest.arest+=20;
+					//if( itr_rest.arest) itr_rest.arest+=20; //what is this line for?
 					//
 					/*console.log('I='+$.uid+', he='+hit[k].uid+
 						', arest='+itr_rest.arest+
@@ -312,7 +312,7 @@ function weapon(type)
 				else
 					$.ps.zz = 0;
 
-				$.switch_dir_fun(att.ps.dir);
+				$.switch_dir(att.ps.dir);
 				$.ps.sz = $.ps.z = att.ps.z;
 				$.mech.coincideXY(holdpoint,$.mech.make_point(fD.wpoint));
 				$.mech.project();
