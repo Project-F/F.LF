@@ -34,6 +34,7 @@ Let's have a top-down walk through the modules.
 		- `livingobject.js` is a base class. `character` and `weapon` each derive from `livingobject`, adding their specialized properties and methods.
 			- `sprite.js` is a class to handle sprite animation needs in LF2.
 			- `mechanics.js` is a state-less helper class to process all mechanics of `livingobject`.
+	- `specialattack.js` is a generalization of all projectiles. 
 	- `effects.js` handles all the visual effects.
 	- `scene.js` maintains a graph of all livingobjects in the scene. collision detection is done by a scene query where livingobject query for intersection with other objects on the scene.
 	- `background.js` creates and maintains a background. also responsible for camera movement.

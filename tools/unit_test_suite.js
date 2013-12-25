@@ -36,7 +36,7 @@ test_cases){
 		d_stage = document.getElementById('stage'),
 		d_overall = document.getElementById('overall');
 	var passing_delta = 10;
-	var case_start_delay = 10;
+	var case_start_delay = 30;
 	var overall =
 	{
 		passed:0,
@@ -214,7 +214,7 @@ test_cases){
 				{
 					$.result[i][$.t]={};
 					if( $.ccase.player[i] && $.ccase.player[i][$.t])
-						$.test($.match.character[i], $.ccase.player[i][$.t], $.result[i][$.t], $.mem[i]);
+						$.test($.match.character[i+1], $.ccase.player[i][$.t], $.result[i][$.t], $.mem[i]);
 				}
 			if( $.t===$.duration)
 			{
@@ -227,7 +227,7 @@ test_cases){
 			for( var i=0; i<$.num_player; i++)
 			{
 				(function (i){
-					$.match.character[i].log=function(mess)
+					$.match.character[i+1].log=function(mess)
 					{
 						if( $.ccase.result_table[i] && 
 							$.ccase.result_table[i][$.t])

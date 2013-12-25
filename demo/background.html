@@ -1,46 +1,30 @@
 <head>
 <meta http-equiv='content-type' content='text/html; charset=UTF-8'>
+<style>
+.LFcontainer.bgviewer
+{
+	position:relative;
+	padding:10px 10px 30px 10px;
+	float:left;
+}
+#template
+{
+	display:none;
+}
+</style>
+<title>F.LF/background viewer demo</title>
 </head>
 
 <body>
 
-<div class='LFcontainer LFviewerContainer'>
-	<div class='LFwindow'>
-		<!--the client area of window-->
-		<div class='LFbackground'>
-		<!--background area-->
-		</div>
-		<div class='LFfloorHolder'>
-			<div class='LFfloor'>
-			<!--where characters can stand-->
-			</div>
+<div id='template' class='LFcontainer bgviewer'>
+	<div class='window'>
+		<div class='background'>
 		</div>
 	</div>
 </div>
 
-<script src="../third_party/require.js"></script>
-<script>
-//component test of background.js
-requirejs.config({
-	baseUrl: '../../',
-	config:
-	{
-		'F.core/sprite':
-		{
-			baseUrl: '../../LFrelease/LF2_19/'
-		}
-	}
-});
-requirejs(['LF/background','LFrelease/LF2_19/bg/cuhk/bg','LF/util','F.core/css!LF/application.css'],
-function(background,bgdata,util)
-{
-	new background({
-		layers:util.div('background'),
-		floor:util.div('floor'),
-		scrollbar:true,
-		viewer_only:true
-	},bgdata,1);
-});
-</script>
+<script src='../third_party/require.js'></script>
+<script src='background.js'></script>
 </div>
 </body>

@@ -21,26 +21,26 @@ td
 
 .Fbar
 {
-	margin:0 0 20px 0;
+	padding-left:250px;
 	height:60px;
 	background: #7c547c;
-	background-image:url("http://docs.google.com/document/d/1DcPRilw9xEn8tET09rWet3o7x12rD-SkM5SoVJO1nnQ/pubimage?id=1DcPRilw9xEn8tET09rWet3o7x12rD-SkM5SoVJO1nnQ&image_id=19OMD_e2s9wHU52R1ofJIjUrpOP_KI3jKUh9n"),
+	background-image:url('http://docs.google.com/document/d/1DcPRilw9xEn8tET09rWet3o7x12rD-SkM5SoVJO1nnQ/pubimage?id=1DcPRilw9xEn8tET09rWet3o7x12rD-SkM5SoVJO1nnQ&image_id=19OMD_e2s9wHU52R1ofJIjUrpOP_KI3jKUh9n'),
 	linear-gradient(to right,  #7c547c 0%,#444466 50%);
 	background-repeat:no-repeat;
 	background-position:0px 0px;
 	background-size: contain;
 	color:#FFF;
-	text-align:right;
 	font-size:30px;
 	line-height:60px;
+	flex: initial;
 }
 .Fbar a
 {
 	background-color:#FFF;
 	color:#7c547c;
-	padding:5px 10px;
-	border-radius:10px;
+	padding:5px 15px;
 	margin:0 10px;
+	border-radius:10px;
 }
 #overall
 {
@@ -48,4 +48,11 @@ td
 	border: 1px solid #000;
 	padding: 5px;
 	margin-bottom: 5px;
+}
+.canvas
+{
+position:relative;
+width:800px;
+height:300px;
+border:1px solid #000;
 }

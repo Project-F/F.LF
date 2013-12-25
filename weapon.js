@@ -115,6 +115,10 @@ function weapon(type)
 			$.sp.ani[i].config.borderright=2;
 			$.sp.ani[i].config.borderbottom=2;
 		}
+		$.hold=
+		{
+			obj: null //character who hold me
+		};
 		$.setup();
 	}
 	typeweapon.prototype = new livingobject();
@@ -200,6 +204,7 @@ function weapon(type)
 					$.ps.vx *= GC.weapon.reverse.factor.vx;
 				$.ps.vy *= GC.weapon.reverse.factor.vy;
 				$.ps.vz *= GC.weapon.reverse.factor.vz;
+				$.team = att.team; //change to the attacker's team
 			}
 			else if( $.cur_state()===1004) //on_ground
 			{
@@ -218,26 +223,22 @@ function weapon(type)
 		var fall= ITR.fall!==undefined? ITR.fall: GC.default.fall.value;
 		if( $.heavy)
 		{
-			if( $.cur_state()===2004)
+			if( $.cur_state()===2004) //on_ground
 			{
 				accept=true;
-				if( att.type==='character')
-				{
-					if( fall<GC.fall.KO)
-						$.ps.vy= GC.weapon.soft_bounceup.speed.y;
-					else
-					{
-						$.ps.vy = GC.weapon.bounceup.speed.y;
-					}
-				}
+				if( fall<30)
+					$.effect_create(0, GC.effect.duration);
+				else if( fall<GC.fall.KO)
+					$.ps.vy= GC.weapon.soft_bounceup.speed.y;
 				else
 				{
-					var asp = att.mech.speed();
-					$.ps.vx= asp* GC.weapon.gain.factor.x * (att.ps.vx>0?1:-1);
-					$.ps.vy= asp* GC.weapon.gain.factor.y;
+					$.ps.vy= GC.weapon.bounceup.speed.y;
+					if( att.ps.vx) $.ps.vx= (att.ps.vx>0?1:-1)*GC.weapon.bounceup.speed.x;
+					if( att.ps.vz) $.ps.vz= (att.ps.vz>0?1:-1)*GC.weapon.bounceup.speed.z;
+					$.trans.frame(999);
 				}
 			}
-			else if( $.cur_state()===2000)
+			else if( $.cur_state()===2000) //in_the_sky
 			{
 				if( fall>=GC.fall.KO)
 				{
@@ -246,14 +247,12 @@ function weapon(type)
 						$.ps.vx *= GC.weapon.reverse.factor.vx;
 					$.ps.vy *= GC.weapon.reverse.factor.vy;
 					$.ps.vz *= GC.weapon.reverse.factor.vz;
+					$.team = att.team; //change to the attacker's team
 				}
 			}
 		}
 		if( accept)
-		{
-			$.team = att.team; //change to the attacker's team
 			$.visualeffect_create( 0, rect, (attps.x < $.ps.x), (fall<GC.fall.KO?1:2));
-		}
 		return accept;
 	}
 
@@ -405,17 +404,18 @@ function weapon(type)
 
 	typeweapon.prototype.vol_itr=function(kind)
 	{
+		function match_kind(obj)
+		{
+			return obj.kind==kind; //use type conversion comparison
+		}
 		var $=this;
 		if( $.frame.D.itr)
 			return $.mech.body(
 				$.frame.D.itr, //make volume from itr
-				function (obj) //filter
-				{
-					return obj.kind==kind; //use type conversion comparison
-				}
+				match_kind //select only matched kind
 			);
 		else
-			return [];
+			return $.mech.body_empty();
 	}
 
 	return typeweapon;

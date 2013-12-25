@@ -54,24 +54,28 @@ scene.prototype.query = function(volume, exclude, where)
 	var tag=where.tag;
 	if(!tag) tag='body';
 	var tagvalue=0;
-	var colon=tag.indexOf(':');
-	if( colon!==-1)
-	{
-		tagvalue = tag.slice(colon+1);
-		tag = tag.slice(0,colon);
-	}
-	exclude=Futil.make_array(exclude);
+	var tag_split=tag.split(':');
+	tag = tag_split[0];
+	tagvalue = tag_split[1];
 
 	for ( var i in this.live)
 	{
 		var excluded=false;
-		for( var ex in exclude)
+		if( exclude instanceof Array)
 		{
-			if( this.live[i] === exclude[ex])
+			for( var ex=0; ex<exclude.length; ex++)
 			{
-				excluded=true;
-				break;
+				if( this.live[i] === exclude[ex])
+				{
+					excluded=true;
+					break;
+				}
 			}
+		}
+		else if( exclude)
+		{
+			if( this.live[i] === exclude)
+				excluded=true;
 		}
 		if( excluded)
 			continue;

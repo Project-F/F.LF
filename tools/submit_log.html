@@ -31,7 +31,7 @@ function submit_log()
 	data[2].name = 'entry.1649007291';
 	data[3].name = 'entry.36587793';
 	data[4].name = 'entry.962836516';
-	data[0].value = window.location;
+	data[0].value = window.location.href.slice(window.location.href.lastIndexOf('/')+1);
 	data[1].value = '5';
 	data[2].value = '6';
 	data[3].value = '0.0';

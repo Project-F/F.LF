@@ -123,6 +123,11 @@ sprite.prototype.show_pic = function(I)
 		else
 			break;
 	}
+	if( slot >= this.ani.length)
+	{
+		slot = this.ani.length-1;
+		I=999;
+	}
 	this.cur_img = slot;
 	this.sp.switch_img(this.cur_img);
 	this.ani[this.cur_img].set_frame(I);

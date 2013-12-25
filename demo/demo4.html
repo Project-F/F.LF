@@ -1,50 +1,62 @@
 <!DOCTYPE html>
 <head>
 <meta http-equiv='content-type' content='text/html; charset=UTF-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no'>
 </head>
 
 <body>
 <div class='LFcontainer'>
-	<div class='LFwindowCaption'>
-		<div class='LFwindowCaptionTitle'>
+	<div class='windowCaption'>
+		<div class='windowCaptionTitle'>
 			F.LF development demo
 		</div>
-		<div class='LFwindowCaptionButtonBar'>
-			<div class='LFwindowCaptionButton LFmaximizeButton'><span style='font-size:16px;'>&#9723;</span></div>
-			<div class='LFwindowCaptionButton LFkeychangerButton'><span style='font-family:"Arial Unicode MS";font-size:18px;'>&#9000;</span> keys</div>
-			<a class='LFwindowCaptionButton LFProjectFbutton'
+		<div class='windowCaptionButtonBar'>
+			<div class='maximizeButton'><span style='font-size:16px;'>&#9723;</span></div>
+			<div class='wideWindowButton'><span style='font-size:16px;'>&#8596;</span></div>
+			<div class='keychangerButton'><span style='font-family:"Arial Unicode MS";font-size:18px;'>&#9000;</span> keys</div>
+			<a class='ProjectFbutton'
 				href='http://tyt2y3.github.io/LFrelease/' target='_blank'>
 				<span style='font-family:"Palatino Linotype";font-size:16px;'>Project &#8497;</span>
 			</a>
 		</div>
-		<div class='LFkeychanger'>
+		<div class='keychanger'>
 			Keyboard settings<div style='clear:both;'></div>
 		</div>
 	</div>
-	<div class='LFwindow'>
+	<div class='window'>
 		<!--the client area of window-->
-		<div class='LFpanel'>
-			<div class='LFtopStatus'>
+		<div class='panel'>
+			<div class='topStatus'>
 			</div>
 		</div>
-		<div class='LFbackground'>
+		<div class='background'>
 		<!--background area-->
 		</div>
-		<div class='LFfloorHolder'>
-			<div class='LFfloor'>
+		<div class='floorHolder'>
+			<div class='floor'>
 			<!--where characters can stand-->
 			</div>
 		</div>
-		<div class='LFbottomStatus'>
-			<input class='LFfps' value='0fps'></input>
-			<span class='LFfootnote'>VS mode (PvP)</span>
+		<div class='bottomStatus'>
+			<input class='fps' value='0fps'></input>
+			<span class='footnote'></span>
 		</div>
-		<div class='LFwindowMessageHolder'>
-			<div class='LFpauseMessage LFwindowMessage'>
-				<span></span>
-			</div>
+		<div class='windowMessageHolder'>
+			<div class='pauseMessage'></div>
+			<div class='errorMessage'></div>
 		</div>
 	</div>
+	<pre class='projectFmessage'>
+              Project F
+     _____
+    / ____)
+   / /__      .    /     =|=_     /
+  / ____)     = --+--    =|=|  / /
+ / /          =  /      [-+-] / /
+`-/           O /       _____ _/
+	</pre>
+</div>
+<div class='LFtouchControlHolder'>
 </div>
 
 <script data-main="demo4.js" src="../third_party/require.js"></script>

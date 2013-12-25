@@ -19,10 +19,6 @@ GA.viewer={};
 GA.viewer.height=400;
 GA.camera={};
 GA.camera.speed_factor=1/18;
-GA.panel={};
-GA.panel.pane={};
-GA.panel.pane.width=198;
-GA.panel.pane.height=54;
 
 /*\
  * global.combo_list
@@ -106,7 +102,7 @@ GC.default.health.mp_start=200; //it cannot be overriden
 
 GC.default.itr={};
 GC.default.itr.zwidth= 12; //default itr zwidth
-GC.default.itr.hit_stall= 3; //default stall when hit somebody
+GC.default.itr.hit_stop= 3; //default stall when hit somebody
 GC.default.itr.throw_injury= 10;
 
 GC.default.cpoint={};
@@ -196,7 +192,7 @@ GC.friction.fell=    //defined friction at the moment of fell onto ground
 	6:4, //smaller or equal to 6, value is 4
 	9:5,
 	13:7,
-	15:9
+	25:9 //guess entry
 }
 
 GC.min_speed= 1; //defined minimum speed
@@ -208,8 +204,8 @@ GC.weapon.bounceup={}; //when a weapon falls onto ground
 GC.weapon.bounceup.limit= 8; //defined limit to bounce up again
 GC.weapon.bounceup.speed={};
 GC.weapon.bounceup.speed.y= -3.7; //defined bounce up speed
-GC.weapon.bounceup.speed.x= 6;
-GC.weapon.bounceup.speed.z= 3;
+GC.weapon.bounceup.speed.x= 3;
+GC.weapon.bounceup.speed.z= 1.5;
 GC.weapon.soft_bounceup={}; //when heavy weapon being hit by character punch
 GC.weapon.soft_bounceup.speed={};
 GC.weapon.soft_bounceup.speed.y= -2;
@@ -218,10 +214,8 @@ GC.weapon.hit={}; //when a weapon hit others
 GC.weapon.hit.vx= -3; //absolute speed
 GC.weapon.hit.vy= 0;
 
-GC.weapon.gain={}; //when a weapon is being hit at rest
-GC.weapon.gain.factor={}; //gain factor
-GC.weapon.gain.factor.x= 1.1;
-GC.weapon.gain.factor.y= 1.8;
+//GC.weapon.gain.factor.x= 1.1; //when a weapon is being hit at rest
+//GC.weapon.gain.factor.y= 1.8;
 
 GC.weapon.reverse={}; //when a weapon is being hit while travelling in air
 GC.weapon.reverse.factor={};

@@ -19,39 +19,35 @@ F.LF should be able to run as a standalone application offline, without the need
 ### Flash
 If possible, HTML5 features should be used. Flash fallback is not necessary, and should be avoided at all costs.
 
-## Graphics (general)
-PNG with transparency is well supported by all browsers. Image rotation, scaling and mirror is also well supported.
+## Graphics
 
-## Graphics (DOM vs Canvas)
-One of the most asked questions is why DOM is employed instead of Canvas in F.LF. Here is a long explanation. It starts from the requirement of a render engine:
+#### image rendering
+PNG with transparency is well supported by all browsers. Image rotation, scaling and mirror is also well supported **A**cross **A**ll **M**ajor **B**rowsers (Chrome, Firefox, IE) (AAMB).
 
-##### z-ordering
-in CSS, z-ordering is native and easy. in canvas, a z sorting alogrithm is needed.
-##### lazy rendering
-in DOM, only the changed part is re-rendered when needed. in canvas, the whole scene has to be re-rendered every frame.
-##### viewport clipping
-in CSS, viewport clipping can be done by `overflow:hidden` and browsers already optimized clipping very well. in canvas, viewport clipping is hard to implement manually.
-##### local coordinate system
-in CSS, `position:relative` gives advanced, infinite level hierarchical coordinate system. in canvas, a scene graph have to be implemented manually.
-##### CSS positioning
-in CSS, many positioning operators (floating, align, margin, etc) are available. in canvas, either the coordinates have to be hard coded or a layout system have to be implemented manually.
-##### hardware acceleration
-DOM animation is slow, that *was* true a few years ago. Today, Webkit and IE has excellent hardware acceleration for CSS 3d transform, making DOM animation (nearly) as fast as Canvas.
-
-#### Summary
-In summary, Canvas is fast because it is low level. But F.LF requires a high level render engine. All the features have to be implemented on top of Canvas, and it will take a lot of effort. Still, it is unsure whether a javascript render engine on top of Canvas will be faster than the existing C++ render engine in browsers. Browser engineers have already spent a lot of effort in optimizing and accelerating DOM performance, the improvements over the past few years is huge and clearly benchmarked. Project F developers will concentrate on game engine development, and there are really enough challenges. But once again, F.LF always welcome hacks and contributions.
-
-> ##### More on performance benchmarks
-It is always debatable on different types of benchmarks and their implications. One type is application benchmark where real world applications are run and measured. Another type is micro benchmark, where only a small subset of functionalities are tested (say floating point operations or matrix inverse). Micro benchmarks are cheap to produce because of their simplicity, that they are too optimized for particular operations and can hardly capture the performance characteristics of real world applications. On the other hand, application benchmarks are hard to obtain, that decisions have to be made before the actual applications are developed.
-> 
-> The best strategy is to take the path of least effort, and only invest effort when something is proven too slow.
-
+#### graphics engine
+The current graphics engine of F.LF is based on F.core which is DOM based. DOM animation is slow, that *was* true a few years ago. Today, Webkit and IE has excellent hardware acceleration for CSS 3d transform, making DOM animation (nearly) as fast as Canvas, at least on desktop. Still, Firefox is not so good at DOM animation and sometimes lags. A canvas based graphics engine *may* give better performance, that F.LF should consider supporting a canvas graphics backend. EaselJS or KineticJS may seem to be good choices.
 
 ## Sound
-Flash actually has a very good sound playback performance and functionality. HTML5 sound works **A**cross **A**ll **M**ajor **B**rowsers (Chrome, Firefox, IE) (AAMB), but does not support multi-burst (or whatever you call it, the same sound being played overlapped at different times). The quirk is, Firefox refuses to support patented MP3 and IE refuses to support free OGG. The work around is:
+
+#### playback
+Flash actually has a very good sound playback performance and functionality. HTML5 sound works AAMB, but does not support multi-burst (or whatever you call it, the same sound being played overlapped at different times). The quirk is, Firefox refuses to support patented MP3 and IE refuses to support free OGG. The work around is:
 
 1. create multiple objects of each sound (one object multi instance does not work, but multi object multi instance does)
 2. have 2 formats (MP3 and OGG) of each sound
+
+#### sound sprites
+HTML5 audio supports seeking to arbitrary position, thereby supports sound spriting, which is a technique that combines many audio segments into one long audio track.
+
+## Keyboard & Gamepad
+
+#### keyboard
+Keyboard input in browsers is good enough for gaming. Key conflict or key drop is not occuring too often. However some small number of keys have different keycode AAMB. Luckily, function keys F1~F12 and combinations (like Ctrl+F) can be overridden.
+
+#### gamepad
+The HTML5 gamepad API is in draft. In the future F.LF may be able to support gamepad.
+
+#### on-screen gamepad
+Quite a number of high end mobile devices can already run F.LF smoothly. However they will need an on-screen gamepad. We do not aware of any good ones, if you have one, please tell.
 
 ## Local storage
 Local storage works AAMB in HTTP. Only in IE, local storage does not work locally (`C:\`) because of security convention. That's why cookie is still needed to emulate local storage.

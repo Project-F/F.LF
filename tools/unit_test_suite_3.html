@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<head>
+<meta http-equiv='content-type' content='text/html; charset=UTF-8'>
+</head>
+
+<body>
+<script data-main='unit_test_suite.js' src='../third_party/require.js'></script>
+<script>
+define('test_cases',[],{
+test_cases: [
+{
+	scenario:
+	{	//2 players interactions
+		player: [
+			{ id: 11, team: 1},
+			{ id: 1,  team: 2}
+		]
+	},
+	cases: [
+	{	name: 'many punch',
+		setup: function(match)
+		{
+			match.character[1].set_pos(300,0,200);
+			match.character[2].set_pos(350,0,200);
+		},
+		player: [
+		[	//Davis
+			{f:[0,1,2,3],k:'def'},{f:110,k:['down','att']},
+			{f:270,dx:7},{f:271,dx:7},{f:271,dx:6},{f:271,dx:0},{f:271,dx:0},{f:271,dx:0},
+			{f:272,dx:5},{f:272,dx:4},{f:273,dx:3},{f:273,dx:0},{f:273,dx:0},{f:273,dx:0},
+			{f:274,dx:3},{f:274,dx:3},{f:275,dx:3},{f:275,dx:5},
+			{f:276,dx:5},{f:276,dx:5},{f:276,dx:0},{f:276,dx:0},{f:276,dx:0},
+			{f:277,dx:5},{f:277,dx:4},{f:278,dx:3},{f:278,dx:5},{f:279,dx:5},{f:279,dx:7},
+			{f:280,dx:7},{f:280,dx:6},{f:280,dx:0},{f:280,dx:0},{f:280,dx:0},
+			{f:281,dx:5},{f:281,dx:4},{f:281,dx:3},
+			{f:282,dx:3},{f:282,dx:2},{f:282,dx:1},{f:282,dx:0},
+			{f:0,dx:0}
+		],
+		[	//Deep
+			{f:[0,1,2,3],k:'left'},{f:[0,1,2,3]},{f:[0,1,2,3]},{f:[0,1,2,3]},
+			{f:220,dx:0},{f:220,dx:0},{f:220,dx:0},{f:220,dx:0},
+			{f:220,dx:7},{f:221,dx:6},{f:221,dx:5},{f:220,dx:4},
+			{f:220,dx:0},{f:220,dx:0},{f:220,dx:0},
+			{f:220,dx:7},{f:221,dx:6},{f:221,dx:5},{f:221,dx:4},{f:221,dx:3},
+			{f:220,dx:2},{f:220,dx:0},{f:220,dx:0},{f:220,dx:0},
+			{f:220,dx:10},{f:221,dx:9},{f:221,dx:8},{f:221,dx:7},{f:221,dx:6},
+			{f:0,dx:5},{f:0,dx:4},{f:180,dx:3},{f:180,dx:0},{f:180,dx:0},{f:180,dx:0},
+			{f:180,dx:7},{f:180,dx:6},{f:180,dx:6},{f:180,dx:6},
+			{f:181,dx:6},{f:181,dx:6},{f:181,dx:6},{f:181,dx:6},{f:181,dx:6},
+			{f:182,dx:6},{f:182,dx:6},{f:182,dx:6},{f:182,dx:6},
+			{f:183,dx:6},{f:183,dx:6},{f:183,dx:6},{f:183,dx:6},{f:183,dx:6},
+			{f:185,dx:6},{f:185,dx:6},{f:185,dx:6},{f:185,dx:6},{f:185,dx:6},{f:185,dx:6},
+			{f:230,dx:5},{f:230,dx:1},{f:230,dx:0},
+			{}
+		]]
+	}
+	]
+}
+]});
+</script>
+</body>

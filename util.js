@@ -77,7 +77,8 @@ util.div=function(classname)
 		util.container = document.getElementsByClassName('LFcontainer')[0];
 		if( !util.container) return null;
 	}
-	return util.container.getElementsByClassName('LF'+classname)[0];
+	if( !classname) return util.container;
+	return util.container.getElementsByClassName(classname)[0];
 }
 
 util.filename=function(file)
@@ -134,6 +135,19 @@ util.setup_resourcemap=function(package,Fsprite)
 	}
 	if( !has_resmap)
 		Fsprite.masterconfig_set('baseUrl',package.location);
+}
+
+//return the parameters passed by location
+util.location_parameters=function()
+{
+	var param = window.location.href.split('/').pop();
+	if( param.indexOf('?')!==-1)
+	{
+		var param = param.split('?').pop().split('&');
+		for( var i=0; i<param.length; i++)
+			param[i] = param[i].split('=');
+		return param;
+	}
 }
 
 return util;

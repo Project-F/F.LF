@@ -35,30 +35,7 @@ Global)
 		if( !$.config)
 			$.config = {};
 		$.time;
-
-		//UI
-		if( util.div('pauseMessage'))
-		{
-			$.pause_mess = new Fsprite({
-				inplace_div: util.div('pauseMessage'),
-				img: $.data.UI.pause
-			});
-			$.pause_mess.hide();
-		}
-		if( util.div('panel'))
-		{
-			$.panel=[];
-			for( var i=0; i<8; i++)
-			{
-				var pane = new Fsprite({
-					canvas: util.div('panel'),
-					img: $.data.UI.panel.pic,
-					wh: 'fit'
-				});
-				pane.set_x_y(GA.panel.pane.width*(i%4), GA.panel.pane.height*Math.floor(i/4));
-				$.panel.push(pane);
-			}
-		}
+		$.setup_UI();
 	}
 
 	match.prototype.create=function(setting)
@@ -138,6 +115,34 @@ Global)
 		console.log(this.time.t+': '+mes);
 	}
 
+	match.prototype.setup_UI=function()
+	{
+		var $=this;
+		if( util.div('pauseMessage'))
+		{
+			$.pause_mess = new Fsprite({
+				div: util.div('pauseMessage'),
+				img: $.data.UI.pause,
+				wh: 'fit'
+			});
+			$.pause_mess.hide();
+		}
+		if( util.div('panel'))
+		{
+			$.panel=[];
+			for( var i=0; i<8; i++)
+			{
+				var pane = new Fsprite({
+					canvas: util.div('panel'),
+					img: $.data.UI.panel.pic,
+					wh: 'fit'
+				});
+				pane.set_x_y($.data.UI.panel.pane_width*(i%4), $.data.UI.panel.pane_height*Math.floor(i/4));
+				$.panel.push(pane);
+			}
+		}
+	}
+
 	match.prototype.create_object=function(opoint, parent)
 	{
 		var $=this;
@@ -181,7 +186,7 @@ Global)
 			$fps: util.div('fps')
 		};
 		if( !$.time.$fps) $.calculate_fps = function(){};
-		$.time.timer = setInterval( function(){$.frame();}, 1000/30.5);
+		$.time.timer = setInterval( function(){$.frame();}, 1000/30);
 	}
 
 	match.prototype.frame=function()

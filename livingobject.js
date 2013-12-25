@@ -72,7 +72,8 @@ function ( Global, Sprite, Mech, util, Fsprite)
 		$.trans = new frame_transistor($);
 		$.itr=
 		{
-			vrest: [], //a history of what have been hit by me recently
+			arest: 0, //attack rest - time until the attacker can do a single hit again
+			vrest:[], //victim rest - time until a character can be hit again
 		};
 		$.effect=
 		{
@@ -87,11 +88,6 @@ function ( Global, Sprite, Mech, util, Fsprite)
 		};
 		$.catching= 0; //state 9: the object being caught by me now
 					//OR state 10: the object catching me now
-		$.hold=
-		{
-			obj: null, //something that I can hold or can hold me
-			id: 0 //id of holding
-		};
 		$.allow_switch_dir=true; //direction switcher
 	}
 	livingobject.prototype.type='livingobject';
@@ -124,7 +120,21 @@ function ( Global, Sprite, Mech, util, Fsprite)
 		$.sp.show_pic($.frame.D.pic);
 
 		$.ps.fric=1; //reset friction
-		//velocity
+
+		if( !$.state_update('frame_force'))
+			$.frame_force();
+
+		//wait for next frame
+		$.trans.set_wait($.frame.D.wait,99);
+		$.trans.set_next($.frame.D.next,99);
+
+		//state generic then specific update
+		$.state_update('frame');
+	}
+
+	livingobject.prototype.frame_force = function()
+	{
+		var $=this;
 		if( $.frame.D.dvx)
 		{
 			var avx = $.ps.vx>0?$.ps.vx:-$.ps.vx;
@@ -136,19 +146,15 @@ function ( Global, Sprite, Mech, util, Fsprite)
 		}
 		if( $.frame.D.dvz) $.ps.vz = $.dirv() * $.frame.D.dvz;
 		if( $.frame.D.dvy) $.ps.vy += $.frame.D.dvy;
-
-		//wait for next frame
-		$.trans.set_wait($.frame.D.wait,99);
-		$.trans.set_next($.frame.D.next,99);
-
-		//state generic then specific update
-		$.state_update('frame');
 	}
 
 	//update done at every TU (30fps)
 	livingobject.prototype.TU_update = function()
 	{
 		var $=this;
+
+		if( !$.state_update('TU_force'))
+			$.frame_force();
 
 		//effect
 		if( $.effect.timein<0)
@@ -228,10 +234,10 @@ function ( Global, Sprite, Mech, util, Fsprite)
 	{
 		var $=this;
 		var tar1=$.states['generic'];
-		if( tar1) var res1=tar1.call($,event);
+		if( tar1) var res1=tar1.apply($,arguments);
 		//
 		var tar2=$.states[$.frame.D.state];
-		if( tar2) var res2=tar2.call($,event);
+		if( tar2) var res2=tar2.apply($,arguments);
 		//
 		return res1 || res2;
 	}
@@ -378,24 +384,22 @@ function ( Global, Sprite, Mech, util, Fsprite)
 	livingobject.prototype.itr_rest_update=function(uid,ITR)
 	{
 		var $=this;
-		var newrest;
 		//rest: cannot interact again for some time
-		if( ITR.arest)
-			newrest = ITR.arest;
-		else if( ITR.vrest)
-			newrest = ITR.vrest;
+		if( ITR && (ITR.arest || ITR.vrest))
+		{
+			if( ITR.arest)
+				$.itr.arest = ITR.arest;
+			else if( ITR.vrest)
+				$.itr.vrest[uid] = ITR.vrest;
+		}
 		else
-			newrest = GC.default.character.arest;
-		$.itr.vrest[uid] = newrest;
-		//console.log('update vrest['+uid+'] of '+$.id+' to '+newrest);
+			$.itr.arest = GC.default.character.arest;
 	}
 
 	livingobject.prototype.itr_rest_test=function(uid,ITR)
 	{
 		var $=this;
-		//console.log('vrest['+uid+'] of '+$.id+' is '+$.itr.vrest[uid]);
-		if( !$.itr.vrest[uid])
-			return true;
+		return !$.itr.arest && !$.itr.vrest[uid];
 	}
 
 	livingobject.prototype.switch_dir = function(e)
