@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<head>
+<meta http-equiv='content-type' content='text/html; charset=UTF-8'>
+</head>
+<body>
+<button onclick='submit_log()'>submit</button>
+<script>
+function submit_log()
+{
+	var form = document.createElement('form');
+	var target = document.createElement('iframe');
+	target.name = 'hiddenframe';
+	target.style.display = 'none';
+	var body = document.getElementsByTagName('body')[0];
+	form.action = 'https://docs.google.com/forms/d/1p212mOPl37gJ7AA87b_eW1OOwY3h9-zdXnVjDRYPwDY/formResponse';
+	form.method = 'POST';
+	form.style.display = 'none';
+	//form.target = 'hiddenframe';
+	body.appendChild(target);
+	body.appendChild(form);
+
+	var data=[];
+	for( var i=0; i<5; i++)
+	{
+		data[i] = document.createElement('input');
+		data[i].type = 'text';
+		form.appendChild(data[i]);
+	}
+	data[0].name = 'entry.543839435';
+	data[1].name = 'entry.244956536';
+	data[2].name = 'entry.1649007291';
+	data[3].name = 'entry.36587793';
+	data[4].name = 'entry.962836516';
+	data[0].value = window.location.href.slice(window.location.href.lastIndexOf('/')+1);
+	data[1].value = '5';
+	data[2].value = '6';
+	data[3].value = '0.0';
+	data[4].value = Browser()[0]+','+Browser()[1];
+	form.submit();
+}
+function Browser()
+{
+	var N= navigator.appName, ua= navigator.userAgent, tem;
+	var M= ua.match(/(opera|chrome|safari|firefox|msie)\/?\s*(\.?\d+(\.\d+)*)/i);
+	if(M && (tem= ua.match(/version\/([\.\d]+)/i))!= null) M[2]= tem[1];
+	M= M? [M[1], M[2]]: [N, navigator.appVersion,'-?'];
+	return M;
+}
+
+function submit_log_ajax()
+{
+	var data=[{},{},{},{}];
+	data[0].name = 'entry.543839435';
+	data[1].name = 'entry.244956536';
+	data[2].name = 'entry.1649007291';
+	data[3].name = 'entry.36587793';
+	data[0].value = window.location;
+	data[1].value = '5';
+	data[2].value = '6';
+	data[3].value = '0.0';
+	var str='';
+	for( var i=0; i<data.length; i++)
+		str += encodeURIComponent(data[i].name)+'='+encodeURIComponent(data[i].value);
+	AjaxSend(str,'https://docs.google.com/forms/d/1p212mOPl37gJ7AA87b_eW1OOwY3h9-zdXnVjDRYPwDY/formResponse');
+
+	function CreateRequestObj () {
+		var forceActiveX = (window.ActiveXObject && location.protocol === "file:");
+		if (window.XMLHttpRequest && !forceActiveX) {
+			return new XMLHttpRequest();
+		}
+		else {
+			try {
+				return new ActiveXObject("Microsoft.XMLHTTP");
+			} catch(e) {}
+		}
+	}
+	function OnReadyStateChanged(httpRequest) {
+		if (httpRequest.readyState == 0 || httpRequest.readyState == 4) {
+			httpRequest.onreadystatechange = null;
+			if( httpRequest.status == 0 || 
+				(httpRequest.status >= 200 && httpRequest.status < 300) || 
+				httpRequest.status == 304 || httpRequest.status == 1223) {
+				if (httpRequest.responseText==="ok") {
+					console.log('okay');
+				}
+				else {
+					console.log('submit not accepted');
+				}
+			}
+			else {
+				console.log('cannot connect to the server');
+			}
+		}
+	}
+	function AjaxSend(data,url) {
+		var httpRequest = CreateRequestObj();
+		try {
+			httpRequest.open('POST', url, true);
+			httpRequest.onreadystatechange = function () {OnReadyStateChanged(httpRequest)};
+			httpRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+			httpRequest.send(data);
+		}
+		catch (e) {
+			console.log('cannot connect to the server');
+		}
+	}
+}
+</script>
+</body>

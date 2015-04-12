@@ -1,0 +1,36 @@
+<head>
+<meta http-equiv='content-type' content='text/html; charset=UTF-8'>
+</head>
+
+<body>
+<div style='position:relative'>
+<div id='canvas' class='canvas'></div>
+<script src="../third_party/require.js"></script>
+<script>
+//sample usage of sprite.js
+requirejs.config({
+	baseUrl: '../../',
+	config:
+	{
+		'F.core/sprite':
+		{
+			baseUrl: '../../LFrelease/LF2_19/'
+		}
+	}
+});
+requirejs(['LF/sprite','LFrelease/LF2_19/data/bandit'], function(sprite,data_bandit)
+{
+	var bandit=data_bandit;
+	var sp = new sprite(bandit.bmp,document.getElementById('canvas'));
+	var i = 70;
+	sp.switch_lr('right');
+	setInterval(function()
+	{
+		sp.show_pic(i++);
+		if( i>77)
+			i=70;
+	}, 1000/7);
+});
+</script>
+</div>
+</body>

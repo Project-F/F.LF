@@ -1,0 +1,61 @@
+.navbar{overflow:visible;margin-bottom:20px;color:#f5f5f5;*position:relative;*z-index:2;}
+.navbar-inner{
+min-height:50px;padding-left:20px;padding-right:20px;
+background: #7c547c;
+background-image:url('http://docs.google.com/document/d/1DcPRilw9xEn8tET09rWet3o7x12rD-SkM5SoVJO1nnQ/pubimage?id=1DcPRilw9xEn8tET09rWet3o7x12rD-SkM5SoVJO1nnQ&image_id=19OMD_e2s9wHU52R1ofJIjUrpOP_KI3jKUh9n'),
+linear-gradient(to right,  #7c547c 0%,#444466 50%);
+background-repeat:no-repeat;
+background-position:0px 0px;
+background-size: contain;
+}
+.navbar-inner:before,.navbar-inner:after{display:table;content:"";line-height:0;}
+.navbar-inner:after{clear:both;}
+.navbar .container{width:auto;}
+.navbar-fixed-top,.navbar-fixed-bottom{position:fixed;right:0;left:0;z-index:1030;margin-bottom:0;}
+.navbar-fixed-top .navbar-inner,.navbar-static-top .navbar-inner{border-width:0 0 1px;}
+.navbar-fixed-bottom .navbar-inner{border-width:1px 0 0;}
+.navbar-fixed-top .navbar-inner,.navbar-fixed-bottom .navbar-inner{padding-left:0;padding-right:0;-webkit-border-radius:0;-moz-border-radius:0;border-radius:0;}
+.navbar-static-top .container,.navbar-fixed-top .container,.navbar-fixed-bottom .container{width:940px;}
+.navbar-fixed-top{top:0;}
+.navbar-fixed-top .navbar-inner,.navbar-static-top .navbar-inner{box-shadow:inset 0 -1px 0 rgba(0, 0, 0, 0.1), 0 1px 10px rgba(0, 0, 0, 0.1);}
+.navbar .brand{float:right;display:block;padding:15px 20px 15px;margin-left:20px;font-size:28px;font-weight:200;color:#ffffff;}
+.navbar .brand:hover{text-decoration:none;}
+.navbar .brand a{color:#fff;text-decoration:none;}
+.navbar .brand a:hover{text-decoration:underline;}
+.navbar-text{margin-bottom:0;line-height:50px;}
+.navbar-link{color:#ffffff;}.navbar-link:hover{color:#ffffff;}
+.navbar .divider-vertical{height:50px;margin:0 9px;border-left:1px solid #2fa4e7;border-right:1px solid #54b4eb;}
+.navbar .btn,.navbar .btn-group{margin-top:10px;}
+.navbar .btn-group .btn,.navbar .input-prepend .btn,.navbar .input-append .btn{margin-top:0;}
+.container{width:940px; margin:auto auto;}
+
+@font-face {
+	font-family: 'Quattrocento Sans';
+	font-style: normal;
+	font-weight: 400;
+	src: local('Quattrocento Sans'), local('QuattrocentoSans'), url(https://themes.googleusercontent.com/static/fonts/quattrocentosans/v5/efd6FGWWGX5Z3ztwLBrG9Vu5wH655slqYw1A5eeqsL4.woff) format('woff');
+}
+
+body{
+/*font-family: Helvetica, arial, freesans, clean, sans-serif;*/
+font-family: 'Quattrocento Sans', sans-serif;
+}
+h1{font-size:26pt;border-bottom:4px solid #CACAE6;margin:30pt 0 0 0!important;}
+h2{font-size:22pt;border-bottom:1px solid #CACAE6;margin:25pt 0 0 0!important;}
+h3{font-size:18pt;margin:20pt 0 0 0!important;}
+h4{font-size:16pt;text-decoration:underline;}
+h5{font-size:16pt;}
+h6{font-size:15pt;font-style:italic;}
+h4,h5,h6{margin:15pt 0 0 0!important;}
+p,ul,ol{font-size:15pt;line-height:140%;margin:10px 0;}
+pre,code{font-family: Consolas, "Liberation Mono", Courier, monospace;}
+code{background-color:#F8F8F8;border-radius:4px;border:1px solid #DDD;font-size:85%;padding:0 6px;}
+pre{background-color:#F8F8F8;font-size:16pt;border:1px solid #DDD;padding:10px;}
+pre code {border:none;}
+blockquote {border-left:4px solid #DDD;margin:0 10pt 0 40pt; padding-left:10pt;color:#222;}
+blockquote p {margin:0;}
+li ul {margin:0;}
+@media (max-width: 650px) {
+	p,ul,ol{font-size:13pt;line-height:140%;margin:10px 0;}
+	pre{font-size:13pt;}
+}

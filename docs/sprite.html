@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<title>F.LF/ref/sprite</title>
+
+<xmp theme="projectf">
+# Sprite
+### Data specification
+
+#### schema
+```
+"sprite-data":
+{
+	"file":"array/sprite-file"
+}
+"sprite-file":
+{
+	"file(XX-YY)":"string/url",
+	"w":"integer",
+	"h":"integer",
+	"row":"integer",
+	"col":"integer"
+}
+```
+
+#### example
+```
+{
+	file: [
+	{
+	"file(0-69)": "sprite/bandit_0.png", w: 79, h: 79, row: 10, col: 7
+	},
+	{
+	"file(70-139)": "sprite/bandit_1.png", w: 79, h: 79, row: 10, col: 7
+	}
+	]
+}
+```
+
+#### meanings
+- `file(XX-YY)` file url
+	- the string must begin with 'file', but the subsequent '(XX-YY)' is ignored
+- `w` width of a sprite frame
+- `h` height of a frame
+- `row` number of frames in one row
+- `col` number of frames in one column
+</xmp>
+
+<script src="projectfdocs.js"></script>
+<script src="strapdown_0_2/strapdown.js"></script>
+</html>

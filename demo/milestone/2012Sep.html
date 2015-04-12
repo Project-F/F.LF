@@ -1,0 +1,8338 @@
+<head>
+<meta http-equiv='content-type' content='text/html; charset=UTF-8'>
+</head>
+<body>
+<textarea id='css' style='position:absolute; visibility:hidden; height:0px;'>
+.F_sprite
+{
+position:absolute;
+overflow:hidden;
+width:10px;
+height:10px;
+}
+.F_sprite_img
+{
+position:absolute;
+}
+.canvas
+{
+position:relative;
+width:650px;
+height:400px;
+border:1px solid #000;
+}
+.page
+{
+position:absolute;
+left:0px;
+top:0px;
+border:1px solid #000;
+visibility:hidden;
+z-index:1000;
+}
+</textarea>
+<div id='stage' class='canvas'></div>
+<button id='speed'>slow motion</button>
+<div id='keychanger' class='page'></div>
+<script>
+//----standalone utility----
+{
+F=new Object;
+F.embed_css = function (content)
+{
+	var head = document.getElementsByTagName('head')[0],
+	    style = document.createElement('style'),
+	    rules = document.createTextNode(content);
+
+	style.type = 'text/css';
+	if(style.styleSheet)
+	    style.styleSheet.cssText = rules.nodeValue;
+	else style.appendChild(rules);
+	head.appendChild(style);
+}
+F.embed_css(document.getElementById('css').value);
+}
+//----F.js----
+{/*Project F
+ */
+if( typeof F=='undefined') F=new Object();
+if( typeof F.css=='undefined') //#ifndef
+{
+
+//
+//javascript-----------------
+//
+/* //deprecated in favour of the use of head.js
+F.js = function (filename)
+{
+	var head = document.getElementsByTagName('head')[0];
+	var script = document.createElement('script');
+	script.src = filename;
+	script.type = 'text/javascript';
+	head.appendChild(script);
+}*/
+F.css = function (filename)
+{
+	var head = document.getElementsByTagName('head')[0];
+	var link = document.createElement('link');
+	link.href = filename;
+	link.rel = 'stylesheet';
+	link.type = 'text/css';
+	head.appendChild(link);
+}
+F.double_delegate = function (function1, function2)
+{
+	// http://roberthahn.ca/articles/2007/02/02/how-to-use-window-onload-the-right-way/
+	return function() {
+	if (function1)
+		function1.apply(this,Array.prototype.slice.call(arguments));
+	if (function2)
+		function2.apply(this,Array.prototype.slice.call(arguments));
+	}
+}
+
+//
+//data structure------------
+//
+F.arr_search = function ( arr,
+		fc_criteria,  //function to return true when an accepted element is passed in
+		fc_replace,   //[optional] function to return a replacement value when original value is passed in
+		search_all)   //[optional] if true, will search through entire array before returning the list of index
+				//otherwise, will return immediately at the first accepted element
+{
+	var found_list=new Array();
+	//for ( var i=0; i<arr.length; i++)
+	for ( var i in arr)
+	{
+		if ( fc_criteria(arr[i],i))
+		{
+			if ( fc_replace) {
+				arr[i] = fc_replace(arr[i]);
+			}
+			if ( !search_all) {
+				return i;
+			} else {
+				found_list.push(i);
+			}
+		}
+	}
+	if ( search_all) {
+		return found_list;
+	} else {
+		return -1;
+	}
+}
+
+F.push_unique = function ( array, element)
+{
+	var res = arr_search( array, function(E){return E==element} );
+	if (res == -1) array.push(element);
+}
+
+F.extend_object = function (obj1, obj2) //extend obj1 with all members of obj2
+{
+	for (var p in obj2)
+	{
+		if ( typeof obj2[p]=='object' )
+		{
+			obj1[p] = F.extend_object((obj1[p]?obj1[p]:{}), obj2[p]);
+		} else
+		{
+			obj1[p] = obj2[p];
+		}
+	}
+	return obj1;
+	// http://stackoverflow.com/questions/122102/what-is-the-most-efficient-way-to-clone-a-javascript-object
+}
+
+F.to_text = function ( //convert a JSON object to into text
+			//	usage: F.to_text(obj,'obj');
+	obj2, name,	//object and its name
+	sep,		//[optional] separator, default as '\n'
+	pretext,	//[used in recursion only] set it to null
+	filter,		//[optional] a filter function(p,P) passing in name p and object P
+			//	return 1 to completely hide the attribute,
+			//	OR return a string to be shown
+	TTL		//[optional] time-to-live to prevent infinite looping
+)
+{
+	if( TTL===0) return '';
+	if( !TTL) TTL=30;
+	if( !sep) sep='\n';
+	if( !pretext) pretext='';
+
+	var str = pretext+ name +':'+sep;
+	str+= pretext+ '{';
+	var cc=0;
+	for (var p in obj2)
+	{
+		var fil = filter && filter(p,obj2[p]);
+		if( fil==1)
+		{
+			//do nothing
+		}
+		else if( typeof fil=='string')
+		{
+			str += (cc?',':'')+sep+pretext+'\t'+"'"+p+"'"+': '+fil;
+		}
+		else
+		{
+			if( obj2[p].constructor==Object )
+			{
+				str += (cc?',':'')+sep+F.to_text(obj2[p],p,sep,pretext+'\t',filter,TTL-1);
+			} else
+			{
+				str += (cc?',':'')+sep+pretext+'\t'+"'"+p+"'"+': ';
+				if( typeof obj2[p]=='string')
+					str += "'";
+				str += obj2[p];
+				if( typeof obj2[p]=='string')
+					str += "'";
+			}
+		}
+		cc=1;
+	}
+	str+= sep+pretext+ '}';
+	return str;
+}
+
+} //#endif
+
+}
+//----math.js----
+{
+if( typeof F=='undefined') F=new Object();
+if( typeof F.add=='undefined') //#ifndef
+{
+
+//
+//math helper functions-----
+//
+F.inbetween = function (x,L,R) //x in between L and R
+{
+	var l,r;
+	if ( L<=R)
+	{	l=L;
+		r=R;
+	}
+	else
+	{	l=R;
+		r=L;
+	}
+	return x>=l && x<=r;
+}
+F.round_d2 = function (I)
+{
+	return Math.round(I*100)/100;
+}
+F.negligible = function (M)
+{
+	return -0.00000001 < M && M < 0.00000001;
+}
+
+//
+//curves--------------------
+//
+F.bezier2 = function (A,C,B,steps) //degree 2 bezier
+{
+	var curve = new Array();
+	for( var i=0; i<steps; i++)
+	{
+		curve.push(F.bezier2_step(A,C,B, i,steps));
+	}
+	curve.push(B);
+	return curve;
+}
+F.bezier2_step = function (A,C,B, i,steps)
+{
+	var P={x:0,y:0};
+	P.x = getstep(getstep(A.x, C.x, i, steps), getstep(C.x, B.x, i, steps), i, steps);
+	P.y = getstep(getstep(A.y, C.y, i, steps), getstep(C.y, B.y, i, steps), i, steps);
+	return P;
+
+	function getstep(x1, x2, stepcount, numofsteps)
+	{
+		return ((numofsteps - stepcount) * x1 + stepcount * x2) / numofsteps;
+	}
+}
+
+//
+//vector math--------------
+//
+F.add = function (A,B) //A+B
+{
+	return {x:A.x+B.x, y:A.y+B.y};
+}
+F.sub = function (A,B) //A-B
+{
+	return {x:A.x-B.x, y:A.y-B.y};
+}
+F.sca = function (A,t) //scale
+{
+	return {x:A.x*t, y:A.y*t};
+}
+F.length = function (A)
+{
+	return Math.sqrt( A.x*A.x + A.y*A.y );
+}
+F.distance = function (p1,p2)
+{
+	return Math.sqrt( (p2.x-p1.x)*(p2.x-p1.x) + (p2.y-p1.y)*(p2.y-p1.y) );
+}
+F.negative = function (A)
+{
+	return {x:-A.x, y:-A.y};
+}
+F.normalize = function (A)
+{
+	return F.sca(A, 1/F.length(A));
+}
+F.perpen = function (A) //perpendicular: anti-clockwise 90 degrees
+{
+	return {x:-A.y, y:A.x};
+}
+F.signed_area = function (p1,p2,p3)
+{
+	var D = (p2.x-p1.x)*(p3.y-p1.y)-(p3.x-p1.x)*(p2.y-p1.y);
+	return D;
+}
+F.intersect = function ( P1,P2, //line 1
+			P3,P4)  //line 2
+{
+	//line-line intersection
+	//	return the intersection point of P1-P2 with P3-P4
+	var mua,mub;
+	var denom,numera,numerb;
+
+	denom  = (P4.y-P3.y) * (P2.x-P1.x) - (P4.x-P3.x) * (P2.y-P1.y);
+	numera = (P4.x-P3.x) * (P1.y-P3.y) - (P4.y-P3.y) * (P1.x-P3.x);
+	numerb = (P2.x-P1.x) * (P1.y-P3.y) - (P2.y-P1.y) * (P1.x-P3.x);
+
+	if ( negligible(numera) && negligible(numerb) && negligible(denom)) {
+		//meaning the lines coincide
+		return { x: (P1.x + P2.x) * 0.5,
+			y:  (P1.y + P2.y) * 0.5 };
+	}
+
+	if ( negligible(denom)) {
+		//meaning lines are parallel
+		return { x:0, y:0};
+	}
+
+	mua = numera / denom;
+	mub = numerb / denom;
+
+	return { x: P1.x + mua * (P2.x - P1.x),
+		y:  P1.y + mua * (P2.y - P1.y) };
+	//http://paulbourke.net/geometry/lineline2d/
+}
+
+} //#endif
+
+}
+//----states.js----
+{//states: nested state transition system, a Hierarchical State Machine ( HSM )
+/*	controls state transitions
+ */
+/*	require: F.js
+ */
+/*	sample state_config =
+ 	{
+		event:
+		{
+			entry: 'state1', //define the init state
+			entry: function(), // OR use an init function
+			{
+				return 'state1';
+			}
+		},
+
+		state1:
+		{
+			event:
+			{
+				'event1': 'state2',  //name of target state
+				//  on  :   to
+
+				'event2': function(state, //a reference to the `states` instance
+								event,p1,p2) //event and its parameters
+				{
+					alert(this.name); //gives 'state1'
+					alert(this.data.data_of_state1); //give 'hello'
+					return 'state2'; //the returned state name will cause a transition to that state, nothing will happen if returned null/undefined
+				} ,,,
+
+				entry: function(state,event,prev_state) //called on enter state, passing in previous state
+				{
+					//some init
+				},
+
+				exit: function, //called on leave state, passing in next state
+
+				'guard': function(state,event,p1,p2) //if you consult a particular event of a state, you get its return value without causing any state transition
+				{
+					return allow_transition(p1,p2);
+				},
+			},
+
+			data:
+			{	//memory associated with each state
+				data_of_state1: 'hello'
+			},
+
+			state1_1:
+			{
+				event:
+				{
+					'event1':'state1',   //transit to superstate
+					'event2':'state1_2', //to other state within a superstate
+					'event3':'state2',   //out of the immediate superstate
+				},
+			},
+
+			state1_2: { ,,, },
+
+		},
+
+		state2:
+		{
+			,,,
+		} ,,, //more states
+	};
+ */
+/*
+ The critical feature of hierarchy is:
+   -a state machine in a certain state is also in that state's superstate.
+   -an event/consult is propagated to the superstate of current state until handled.
+   -in a state transition, a machine must entry a state's superstate before entering that state.
+   -in a state transition, a machine must exit the current state before exiting the current state's superstate.
+ */
+if( typeof F=='undefined') F=new Object();
+if( typeof F.states=='undefined') //#ifndef
+{
+
+F.state_list=[];
+F.states = function (state_def)
+{
+	//[--constructor
+	//	no private member
+	//	this.state can be altered dynamically
+	this.state=state_def;
+
+	this.state.name='root'; //build an accessible tree
+	this.propagate_down(999,function(state,name,superstate){
+		state.name=name;
+		state.superstate=superstate;
+	});
+
+	this.evlay=new Array(20); //the array of delayed events
+	for( var i=0; i<this.evlay.length; i++)
+		this.evlay[i]={i:-1};
+
+	this.cur=[]; //cur defines the path of current state,
+			//e.g.   cur=['state1','state1_1','state1_1_1'];
+			//represents   state1-> state1_1-> state1_1_1(cur is here)
+	this.cur_name='root';
+	this.cur_state=this.state; //a reference to the current state in state_def
+	this.chain_event(true,this.cur,1,'entry',true,null);
+
+	F.state_list.push(this); //the list of state objects
+
+	this.log_enable=false;   //not log by default
+	this.log_filter=null;	//a function to return true to not log an item
+	this.log_size=100;
+	this.log=new Array(this.log_size); //log state transitions in form of
+		//[
+		// {type:'t', from:path, to:path},
+		// {type:'c', event:event, target:state, return:result},
+		//];
+	//--]
+}
+
+F.states.prototype.propagate_down=function(level,fun,node)
+{
+	if( level<=0)
+		return;
+
+	if(!node)
+		node=this.state;
+
+	for( var I in node)
+	{
+		if( this.valid_substate(I))
+		{
+			fun(node[I],I,node);
+			this.propagate_down(level-1,fun,node[I]);
+		}
+	}
+}
+
+F.states.prototype.propagate_up=function(level,fun,node)
+{
+	if(!node)
+		node=this.cur_state;
+
+	while(1)
+	{
+		if(level-- <= 0)
+			break;
+
+		fun(node);
+
+		if(node.superstate)
+			node = node.superstate;
+		else
+			break;
+	}
+}
+
+F.states.prototype.chain_event=function(allow_transition,chain,TTL,event,down,sub, arg)
+{
+	var result={ result:null, absorbed:false};
+
+	if( down)
+	{
+		var i=0;
+		if( sub) i=sub;
+		var I = this.state_at(chain.slice(0,i+1));
+	}
+	else
+	{
+		var i=chain.length-1;
+		var I = this.state_at(chain);
+	}
+	for(;;)
+	{
+		result = this.execute_event(event,I,arg);
+
+		if( result.absorbed)
+		{
+			if( allow_transition && result.result)
+				this.to(result.result);
+			if( --TTL <= 0)
+				break;
+		}
+
+		if( down)
+		{	//move down along tree
+			if( i>=chain.length-1) break;
+			if( I[chain[i+1]])
+				I=I[chain[i+1]];
+			else
+				break;
+			i++;
+		}
+		else
+		{	//move up
+			I=I.superstate;
+			if( i<=0) break;
+			if( sub && i<=sub) break;
+			i--;
+		}
+	}
+	return result; //return the most recent result
+}
+
+F.states.prototype.execute_event=function(event,state,arg)
+{
+	if( !arg)
+		arg=[];
+	var res={ result:null, absorbed:false};
+	if( state.event)
+	{
+		var tar = state.event[event];
+		if( tar)
+		{
+			res.absorbed=true;
+			if( tar.prototype)
+				//tar is a function object
+				res.result = tar.apply(state, [this,event].concat(arg)); //call event function
+			else    //tar is a string
+				res.result = tar;
+		}
+	}
+
+	if( this.log_enable)
+	{	//logging
+		var L = {type:'c', event:event, target:state.name, 'return':res};
+		if( !this.log_filter || !this.log_filter(L))
+		{
+			this.log.push(L);
+			this.log.shift();
+		}
+	}
+
+	return res;
+}
+
+F.states.prototype.event=function(event/*,arguments,,,*/)
+{
+	if( this.valid_event(event))
+	{
+		var chain=this.cur;
+		this.chain_event(true,chain,1,event,false,null, Array.prototype.slice.call(arguments,1));
+	}
+
+	for( var I=0; I<this.evlay.length; I++)
+	{
+		if( this.evlay[I].frame == event)
+		{
+			if( this.evlay[I].i > -1)
+				this.evlay[I].i--;
+			if( this.evlay[I].i===0)
+				this.event.apply(this, this.evlay[I].arg); //fire a delayed event
+		}
+	}
+	/* TODO: return true if state transition happened*/
+}
+
+F.states.prototype.event_delay=function(event,delay,frame/*,arguments,,,*/) //fire an event 'event' after 'delay' number of 'frame' events
+{
+	if( !this.valid_event(event))
+		return;
+	if( delay===0)
+	{
+		this.event.apply(this, [event].concat(Array.prototype.slice.call(arguments,3)) );
+	}
+	else
+	{
+		var res = F.arr_search( this.evlay, function(E){return E.i<=0;} );
+		if( res == -1)
+		{	//expand the array if all slots are full
+			this.evlay.push();
+			res = this.evlay.length-1;
+		}
+		this.evlay[res].event = event;
+		this.evlay[res].i = delay;
+		this.evlay[res].frame = frame;
+		this.evlay[res].arg = [event].concat(Array.prototype.slice.call(arguments,3)); //preserve arguments
+	}
+}
+
+F.states.prototype.consult=function(consultant,
+			state //[optional] state name
+			/*,arguments,,,*/) //[optional]
+{
+	if( !this.valid_event(consultant))
+		return null;
+	var chain;
+	if( !state)
+		chain=this.cur;
+	else
+		chain=this.search(state);
+	var result = this.chain_event(false,chain,1,consultant,false,null, Array.prototype.slice.call(arguments,2));
+	return result.result;
+}
+
+F.states.prototype.state_at=function(A) //return the state object of path array A
+{
+	var obj=this.state;
+	for( var i=0; i<A.length; i++)
+	{
+		obj=obj[A[i]];
+	}
+	return obj;
+}
+
+F.states.prototype.search=function(A, //search for the path of state A
+				node) //[optional] under node
+				//return an Array representing path
+{
+	var path=new Array();
+	if( node)
+		path.push(node.name);
+	else
+	{	//if not specified, search in root
+		node=this.state;
+	}
+
+	if( A=='root')
+	{
+		return [];
+	}
+	else if( node[A])
+	{
+		path.push(A);
+		return path;
+	}
+	else
+	{
+		for( var I in node)
+		{
+			if( this.valid_substate(I))
+			{
+				var subsearch = this.search(A, node[I], I);
+				if( subsearch)
+					return path.concat(subsearch);
+			}
+		}
+		return null;
+	}
+}
+
+F.states.prototype.valid_substate=function(S)
+{
+	return !(	S===null   ||
+			S=='event' ||
+			S=='name'  ||
+			S=='data'  ||
+			S=='superstate'||
+		0);
+}
+
+F.states.prototype.valid_event=function(E)
+{
+	return !(	E===null   ||
+			E=='entry' ||
+			E=='exit'  ||
+		0);
+}
+
+F.states.prototype.to=function(target_name)
+{
+	var prev=this.cur_state;
+	var A=this.cur;
+	var B=this.search(target_name);
+	if(!B)
+		return;
+	var a=0, b=0;
+	var target=B;
+	var target_state=this.state_at(target);
+
+	for( var ai=0,bi=0; ai<A.length && bi<B.length; ai++, bi++)
+	{
+		if( A[ai]===B[bi])
+		{
+			a++; b++;
+		}
+		else
+			break;
+	}
+
+	this.chain_event(false,A,999,'exit',false,a, [target_state]);
+		if( this.log_enable)
+		{	//logging
+			var L = {type:'t', from:A, to:B};
+			if( !this.log_filter || !this.log_filter(L))
+			{
+				this.log.push(L);
+				this.log.shift();
+			}
+		}
+	this.chain_event(false,B,999,'entry',true,b, [prev]);
+
+	this.cur=target;
+	this.cur_name=target_name;
+	this.cur_state=target_state;
+}
+
+F.states.prototype.show_log=function(
+	filter //[optional] return true to hide an item
+){
+	var str='(lastest at top)\n';
+	var L=this.log;
+	for( var i=L.length-1; i>=0; i--)
+	{
+		if( filter && filter(L[i]))
+				continue;
+		if( L[i].type=='t')
+			str+= 'transition from '+L[i].from+' to '+L[i].to+'\n';
+		else
+		{
+			str+= "call '"+L[i].event+"' of "+L[i].target+',';
+			if( !L[i]['return'].absorbed)
+				str+= ' not absorbed\n';
+			else
+				str+= ' returning '+L[i]['return'].result+'\n';
+		}
+	}
+	return str;
+}
+
+} //#endif
+
+}
+//----sprite.js----
+{//sprite system
+/*	display and control sprites on page using <div> tag
+ */
+/*	sample config for F_sprite
+	{
+		canvas: canvas,   //canvas *object*
+		wh: {x:100,y:100},// width and height
+		img:              //[optional] image list, can call `add_img()` later
+		{
+			'tag name':'image path',,,  //the first image is visible
+		},
+	}
+ */
+/*	require: style.css
+ */
+
+if( typeof F=='undefined') var F=new Object();
+if( typeof F.sprite=='undefined') //#ifndef
+{
+
+F.sp_count=0; //sprite count
+F.sprite = function (config)
+{
+	//constructor
+	//	no private member
+	//	config is one time only and should be dumped after constructor returns
+	this.ID=F.sp_count;
+	F.sp_count++;
+
+	this.el = document.createElement('div');
+	this.el.setAttribute('class','F_sprite');
+	this.el.id='sp'+this.ID;
+	config.canvas.appendChild(this.el);
+
+	this.img={};
+	this.cur_img=null;
+
+	this.set_wh(config.wh);
+	if( config.img)
+	for ( var I in config.img)
+	{
+		this.add_img(config.img[I], I);
+	}
+}
+F.sprite.prototype.set_wh=function(P)
+{
+	this.el.style.width=P.x+'px';
+	this.el.style.height=P.y+'px';
+}
+F.sprite.prototype.set_xy=function(P)
+{
+	this.el.style.left=P.x+'px';
+	this.el.style.top=P.y+'px';
+}
+F.sprite.prototype.set_z=function(z)
+{
+	this.el.style.zIndex=Math.round(z);
+}
+F.sprite.prototype.add_img=function(imgpath,name)
+{
+	var im = document.createElement('img');
+	im.setAttribute('class','F_sprite_img');
+	im.src=imgpath;
+	this.el.appendChild(im);
+
+	this.img[name]=im;
+	this.switch_img(name);
+	return im;
+}
+F.sprite.prototype.switch_img=function(name)
+{
+	var left,top;
+	for ( var I in this.img)
+	{
+		if( this.img[I].style.visibility=='visible')
+		{
+			left=this.img[I].style.left;
+			top =this.img[I].style.top;
+			break;
+		}
+	}
+	for ( var I in this.img)
+	{
+		if( I==name)
+		{
+			this.img[I].style.left=left;
+			this.img[I].style.top=top;
+			this.img[I].style.visibility='visible';
+		}
+		else
+		{
+			this.img[I].style.visibility='hidden';
+		}
+	}
+	this.cur_img=name;
+}
+F.sprite.prototype.remove=function()
+{
+	this.el.parentNode.removeChild(this.el);
+}
+
+//sprite animator
+/*	animate sprites
+ */
+/*	sample config for F_animator
+	{
+	x:0,y:0,     //top left margin of the frames
+	w:100, h:100,//width, height of a frame
+	gx:4,gy:4,   //define a gx*gy grid of frames
+	tar:         //target F_sprite
+	ani:         //animation sequence:
+	   null,     //if undefined or null, loop through top left to lower right, row by row
+	   [0,1,2,1,0],//use custom frame sequence
+	graph:       //graph:
+	   [[0,1],   //	a 2d array gx*gy sized
+	    [2,3]]   //		to store custom data for each frame
+	}
+ */
+F.animator=function (config)
+{
+	//constructor
+	//	no private member
+	//	multiple animator reference to the same config, except tar
+	this.config=config;
+	this.target=config.tar;
+	this.I=0;//current frame
+}
+F.animator.prototype.next_frame=function() //turn to the next frame, return the index of the frame just shown
+{
+	var c=this.config;
+	this.I++;
+	if (!c.ani)
+	{
+		if ( this.I==c.gx*c.gy)
+		{
+			this.I=0;
+		}
+		this.show_frame(this.I);
+	}
+	else
+	{
+		var fi=c.ani[this.I];
+		if ( this.I==c.ani.length)
+		{
+			this.I=0; fi=c.ani[0];
+		}
+		this.show_frame(fi);
+	}
+	return this.I;
+}
+F.animator.prototype.set_frame=function(i)
+{
+	this.I=i;
+	this.show_frame(i);
+}
+F.animator.prototype.show_frame=function(i)
+{
+	var c=this.config;
+	this.target.set_wh({x:c.w, y:c.h});
+	this.target.img[this.target.cur_img].style.left= -((i%c.gx)*c.w+c.x) +'px';
+	this.target.img[this.target.cur_img].style.top = -((Math.floor(i/c.gx))*c.h+c.y) +'px';
+}
+F.animator.prototype.get_at=function(i) //get the content of the graph at frame i
+{	//by default at the current frame
+	if( !i) i=this.I;
+	var c=this.config;
+	return c.graph[(i%c.gx)][(Math.floor(i/c.gx))];
+}
+
+//animator set
+/*	a helper function to constructor a set of animators
+	animator set is not a class. do NOT `var ani = new F.animator_set()` instead `var ani = F.animator_set()`
+ */
+/*	example set_config
+	{
+		'base': //default parameters, must be specified as base when calling F.animator_set(set_config,*base*)
+		{
+			x:0,y:0,     //top left margin of the frames
+			w:L, h:L,    //width, height of a frame
+			gx:4,gy:1,   //define a gx*gy grid of frames
+			tar:null,    //target F.sprite
+		},
+
+		'standing':
+		{	//change only values you want to
+			x:0,y:0,     //top left margin of the frames
+			gx:4,gy:1,   //define a gx*gy grid of frames
+		},,,
+	}
+ */
+F.animator_set = function(set_config, base)
+{
+	if(!set_config)
+		return null;
+	var A=new Object();
+
+	for( var I in set_config)
+	{
+		if( base) if( I==base)
+			continue;
+
+		if( base) if( set_config[base])
+		{
+			for( var J in set_config[base])
+				set_config[I][J] = set_config[base][J];
+		}
+
+		A[I]=new F.animator(set_config[I]);
+	}
+	return A;
+}
+
+} //#endif
+
+}
+//----combodec.js----
+{//require controller.js
+
+//combo detection system
+/*	maintains a clean sequence of pressed keys
+	  and fire event when combo detected
+ */
+/*	no requirment
+ */
+/*	sample config for F_combodec
+	{
+		rp:     //[optional] max repeat count of each key, unlimited if not stated
+		timeout://time before clearing the sequence buffer in terms of frames
+		comboout: //the max time interval between keys to make a combo
+		callback: //callback function when combo detected
+		no_repeat_key: true //eliminate repeated key strokes by browser, only works in firefox and chrome
+	};
+	var combo = [
+		{
+			name: 'blast ball',	//combo name
+			seq:  ['def','right','att'], //array of key sequence
+			interrupt: true, //[optional] if true, will prevent other combo extending the current combo
+		},,,
+	];
+*/
+
+if( typeof F=='undefined') F=new Object();
+if( typeof F.combodec=='undefined') //#ifndef
+{
+
+F.combodec = function (controller, config, combo)
+{
+	//constructor
+	//	no private member
+	//	be careful since multiple animator reference to the same config, except callback
+	var framec=1;
+	var outframe=0;
+	var outcombo=0;
+	this.con=controller;
+	this.seq=new Array();
+	this.config=config;
+	this.callback=config.callback;
+	this.combo=combo;
+
+	this.con.child.push(this);
+	//
+	this.key=function(K, down)
+	{
+		if(!down)
+			return;
+
+		var seq=this.seq;
+
+		var push=true;
+		if( this.config.rp)
+		{	//detect repeated keys
+			for (var i=seq.length-1, cc=1; i>=0 && seq[i]==K; i--,cc++)
+				if( cc>=this.config.rp[K])
+					push=false;
+		}
+
+		if( this.config.no_repeat_key)
+		{
+			if( this.con.state[K])
+				push=false;
+		}
+
+		outframe=framec+this.config.timeout;
+		outcombo=framec+this.config.comboout;
+
+		if( push)
+			seq.push(K);
+
+		if ( this.combo && push)
+		{	//detect combo
+			var C = this.combo;
+			for (var i in C)
+			{
+				var detected=true;
+				for (var j=seq.length-C[i].seq.length, k=0; j<seq.length; j++,k++)
+				{
+					if( C[i].seq[k] != seq[j])
+					{
+						detected=false;
+						break;
+					}
+				}
+				if( detected)
+				{
+					this.callback(C[i]);
+					if( C[i].interrupt)
+						this.seq.push('_');
+				}
+			}
+		}
+	}
+
+	this.clear_seq=function()
+	{
+		this.seq.length=0;
+	}
+
+	this.frame=function()
+	{
+		if( framec==outframe)
+			this.clear_seq();
+		if( framec==outcombo)
+			this.seq.push('_');
+		framec++;
+	}
+}
+
+} //#endif
+
+}
+//----collision.js----
+{//collision detection system
+/*	perform
+	-rectangle-rectangle intersect test
+	-triangle-triangle intersect test
+	-circle-circle intersect test
+	-line-line intersect test
+	-point in rectangle test
+ */
+/*	require: math.js
+ */
+
+if(typeof F=='undefined') F=new Object();
+if( typeof F.collision=='undefined') //#ifndef
+{
+
+F.collision = new Object();
+
+//rectangle-rectangle intersect test
+F.collision.rect=function(rect1,rect2) //rect1,rect2: object in form {left,top,right,bottom}
+{
+	if(rect1.bottom < rect2.top)	return false;
+	if(rect1.top > rect2.bottom)	return false;
+	if(rect1.right < rect2.left)	return false;
+	if(rect1.left > rect2.right)	return false;
+
+	return true;
+}
+F.collision.normalize_rect=function(rect)
+{
+	if( rect.left > rect.right && rect.top > rect.bottom)
+		return {left:rect.right, right:rect.left,
+			top:rect.bottom, bottom:rect.top}
+	else if( rect.left > rect.right)
+		return {left:rect.right, right:rect.left,
+			top:rect.top, bottom:rect.bottom}
+	else if( rect.top > rect.bottom)
+		return {left:rect.left, right:rect.right,
+			top:rect.bottom, bottom:rect.top}
+	else
+		return rect;
+}
+
+//triangle-triangle intersect test
+//	return true if triangle A touchs B,
+//	  including cases when one is completely contained in other
+F.collision.tri=function(A,B) //triangle A,B: array of points in form {x,y}
+{
+	/*I assume this a fast enough implementation
+	  it performs a max. of 18 cross products when the triangles do not intersect.
+	    if they do, there may be fewer calculations
+	*/
+	var aa=F.signed_area;
+	var I=[];
+	//line line intersect tests
+	var tested=0;
+	I.push( aa(A[0],A[1],B[0])>0, aa(A[0],A[1],B[1])>0,
+		aa(A[0],B[0],B[1])>0, aa(A[1],B[0],B[1])>0
+	);if(test())return true;
+	I.push(         I[1]        , aa(A[0],A[1],B[2])>0,
+		aa(A[0],B[1],B[2])>0, aa(A[1],B[1],B[2])>0
+	);if(test())return true;
+	I.push(         I[0]        ,         I[5]        ,
+		aa(A[0],B[0],B[2])>0, aa(A[1],B[0],B[2])>0
+	);if(test())return true;
+	I.push( aa(A[1],A[2],B[0])>0, aa(A[1],A[2],B[1])>0,
+			I[3]        , aa(A[2],B[0],B[1])>0
+	);if(test())return true;
+	I.push(         I[13]       , aa(A[1],A[2],B[2])>0,
+			I[7]        , aa(A[2],B[1],B[2])>0
+	);if(test())return true;
+	I.push(         I[12]       ,         I[17]       ,
+			I[11]       , aa(A[2],B[0],B[2])>0
+	);if(test())return true;
+	I.push( aa(A[0],A[2],B[0])>0, aa(A[0],A[2],B[1])>0,
+			I[2]        ,         I[15]
+	);if(test())return true;
+	I.push(         I[25]       , aa(A[0],A[2],B[2])>0,
+			I[6]        ,         I[19]
+	);if(test())return true;
+	I.push(         I[24]       ,         I[29]       ,
+			I[10]       ,         I[23]
+	);if(test())return true;
+
+	function test()
+	{
+		var i=tested; tested+=4;
+		return (I[i]!=I[i+1] && I[i+2]!=I[i+3]);
+	}
+
+	//point inside triangle test
+	var AinB=[ I[2]==I[6]&&I[6]==!I[10],   //true if A[0] is inside triangle B
+		   I[3]==I[7]&&I[7]==!I[11],   //  A[1]
+		   I[15]==I[19]&&I[19]==!I[23]]//  A[2]
+
+	var BinA=[ I[0]==I[12]&&I[12]==!I[24], //true if B[0] is inside triangle A
+		   I[1]==I[13]&&I[13]==!I[25], //  B[1]
+		   I[9]==I[21]&&I[21]==!I[33]];//  B[2]
+
+	if (AinB[0] && AinB[1] && AinB[2])  return true;
+	if (BinA[0] && BinA[1] && BinA[2])  return true;
+
+	return false;
+	//another possible implementation http://jgt.akpeters.com/papers/Moller97/tritri.html
+}
+
+//circle-circle intersect test
+F.collision.circle = function (A,B) //A,B: circle in form {center,radius},
+						// where center is in form {x,y}, radius is a number
+{
+	return (F.distance(A.center,B.center) <= A.radius+B.radius);
+}
+
+//line-line intersect test
+//	return true if line AB intersects CD
+F.collision.line = function (A,B,C,D) //A,B,C,D: points in form {x,y}
+{
+	var res = (F.signed_area(A,B,C)>0 != F.signed_area(A,B,D)>0) &&
+		  (F.signed_area(C,D,A)>0 != F.signed_area(C,D,B)>0);
+	return res;
+}
+
+//point in rectangle test
+F.collision.point_in_rect=function(P,R) //P: point in form {x,y}, R: object in form {left,top,right,bottom}
+{
+	return (F.inbetween(P.x,R.left,R.right) && F.inbetween(P.y,R.top,R.bottom));
+}
+
+} //#endif
+
+}
+//----controller.js----
+{//keyboard controller system
+/*	maintains a table of key states
+ */
+/*	require: F.js
+ */
+
+if( typeof F=='undefined') F=new Object();
+if( typeof F.master_controller=='undefined') //#ifndef
+{
+
+F.keydown = function(e)
+{
+	return F.master_controller.key(e,1);
+}
+F.keyup = function(e)
+{
+	return F.master_controller.key(e,0);
+}
+
+F.master_controller = (function()
+{
+	window.onkeydown = F.double_delegate(window.onkeydown, F.keydown);
+	window.onkeyup   = F.double_delegate(window.onkeydown, F.keyup);
+
+	var mas = new Object();
+	mas.child = [];
+	mas.key = function(e,down)
+	{
+		if (!e) e = window.event;
+		for (var I in this.child)
+		{
+			if ( this.child[I].key(e,down))
+				break;//if one controller catches a key, the next controller will never receive an event
+		}
+	}
+	return mas;
+}());
+
+//keyboard controller
+/*	sample config for F.controller (control keys)
+	{
+		up:'h', down:'n', left:'b', 'control name':'control key',,,
+	}
+	-each control key must be an alphabet
+	-F.controller doesnt care the name of each control
+*/
+/*	on the other hand, there can be other controllers with compatible definition and behavior,
+	(e.g. AI controller, network player controller, record playback controller)
+	-has the member variables `state`, `config`, `child`
+	-has the method `clear_states`
+	-behavior: call the `key` method of every member of `child` when keys arrive
+ */
+F.controller = function (config)
+{
+	this.state={};
+	this.config=config;
+	this.keycode={};
+	this.child=new Array(); //child system that has the method key('control name',down)
+	this.sync=false; //controllers can work in 2 modes, sync and async.
+			//if sync===false,
+			//  a key up-down event will be distributed to all child *immediately*
+			//if sync===true,
+			//  a key up-down event will be buffered, and must be fetch manually.
+	this.buf=new Array();
+
+	this.key=function(e,down) //interface to master_controller------
+	{
+		var caught=0;
+		for(var I in this.config)
+		{
+			if ( this.keycode[I]==e.keyCode)
+			{
+				if( this.sync===false)
+				{
+					if( this.child)
+						for(var J in this.child)
+							this.child[J].key(I,down);
+					this.state[I]=down;
+				}
+				else
+				{
+					this.buf.push([I,down]);
+				}
+				caught=1;
+				break;
+			}
+		}
+		return caught;
+	}
+
+	//interface to application--------------------------------------
+	this.clear_states=function()
+	{
+		for(var I in this.config)
+			this.state[I]=0;
+	}
+	this.fetch=function()
+	{
+		for( var i in this.buf)
+		{
+			var I=this.buf[i][0];
+			var down=this.buf[i][1];
+			if( this.child)
+				for(var J in this.child)
+					this.child[J].key(I,down);
+			this.state[I]=down;
+		}
+		this.buf=[];
+	}
+	this.flush=function()
+	{
+		this.buf=[];
+	}
+
+	//[--constructor
+	F.master_controller.child.push(this);
+	this.clear_states();
+	for(var I in this.config)
+	{
+		this.keycode[I] = F.keyname_to_keycode(this.config[I]);
+	}
+	//--]
+}
+
+F.keyname_to_keycode=function(A)
+{
+	var code;
+	if( A.length==1)
+	{
+		var a=A.charCodeAt(0);
+		if ( (a>='a'.charCodeAt(0) && a<='z'.charCodeAt(0)) || (a>='A'.charCodeAt(0) && a<='Z'.charCodeAt(0)) )
+		{
+			A=A.toUpperCase();
+			code=A.charCodeAt(0);
+		}
+		else if (a>='0'.charCodeAt(0) && a<='9'.charCodeAt(0))
+		{
+			code=A.charCodeAt(0);
+		}
+		else
+		{	//different browsers on different platforms are different for symbols
+			switch(A)
+			{
+				case '`': code=192; break;
+				case '-': code=189; break;
+				case '=': code=187; break;
+				case '[': code=219; break;
+				case ']': code=221; break;
+				case '\\': code=220; break;
+				case ';': code=186; break;
+				case "'": code=222; break;
+				case ',': code=188; break;
+				case '.': code=190; break;
+				case '/': code=191; break;
+				case ' ': code=32; break;
+			}
+		}
+	}
+	return code;
+}
+
+F.keycode_to_keyname=function(code)
+{
+	if( (code>='A'.charCodeAt(0) && code<='Z'.charCodeAt(0)) ||
+	    (code>='0'.charCodeAt(0) && code<='9'.charCodeAt(0)) )
+	{
+		return String.fromCharCode(code).toLowerCase();
+	}
+	else
+	{
+		return ''+code;
+	}
+}
+
+// http://www.quirksmode.org/js/keys.html
+// http://unixpapa.com/js/key.html
+} //endif
+
+}
+//----controller-recorder.js----
+{
+}
+//----bandit.js----
+{bandit={
+	"bmp": {
+		"name": "Bandit",
+		"head": "sprite\\sys\\bandit_f.bmp",
+		"small": "sprite\\sys\\bandit_s.bmp",
+		"file": [
+			{
+				"file(0-69)": "../../../LFrelease/sprite/bandit_0.png",
+				"mirror":"../../../LFrelease/sprite/bandit_0_mirror.png",
+				"w": 79,
+				"h": 79,
+				"row": 10,
+				"col": 7
+			},
+			{
+				"file(70-139)": "../../../LFrelease/sprite/bandit_1.png",
+				"mirror":"../../../LFrelease/sprite/bandit_1_mirror.png",
+				"w": 79,
+				"h": 79,
+				"row": 10,
+				"col": 7
+			}
+		],
+		"walking_frame_rate": 3,
+		"walking_speed": 4,
+		"walking_speedz": 2,
+		"running_frame_rate": 3,
+		"running_speed": 8,
+		"running_speedz": 1.3,
+		"heavy_walking_speed": 3,
+		"heavy_walking_speedz": 1.5,
+		"heavy_running_speed": 5,
+		"heavy_running_speedz": 0.8,
+		"jump_height": -16.299999,
+		"jump_distance": 8,
+		"jump_distancez": 3,
+		"dash_height": -11,
+		"dash_distance": 15,
+		"dash_distancez": 3.75,
+		"rowing_height": -2,
+		"rowing_distance": 5
+	},
+	"frame": {
+		"0": {
+			"name": "standing",
+			"pic": 0,
+			"state": 0,
+			"wait": 5,
+			"next": 1,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"bpoint": {
+				"x": 43,
+				"y": 38
+			},
+			"wpoint": {
+				"kind": 1,
+				"x": 23,
+				"y": 46,
+				"weaponact": 35,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 21,
+				"y": 18,
+				"w": 43,
+				"h": 62
+			}
+		},
+		"1": {
+			"name": "standing",
+			"pic": 1,
+			"state": 0,
+			"wait": 5,
+			"next": 2,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"bpoint": {
+				"x": 43,
+				"y": 38
+			},
+			"wpoint": {
+				"kind": 1,
+				"x": 22,
+				"y": 47,
+				"weaponact": 35,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 21,
+				"y": 18,
+				"w": 43,
+				"h": 62
+			}
+		},
+		"2": {
+			"name": "standing",
+			"pic": 2,
+			"state": 0,
+			"wait": 5,
+			"next": 3,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"bpoint": {
+				"x": 43,
+				"y": 38
+			},
+			"wpoint": {
+				"kind": 1,
+				"x": 22,
+				"y": 47,
+				"weaponact": 35,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 21,
+				"y": 18,
+				"w": 43,
+				"h": 62
+			}
+		},
+		"3": {
+			"name": "standing",
+			"pic": 3,
+			"state": 0,
+			"wait": 5,
+			"next": 999,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"bpoint": {
+				"x": 43,
+				"y": 40
+			},
+			"wpoint": {
+				"kind": 1,
+				"x": 22,
+				"y": 48,
+				"weaponact": 35,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 21,
+				"y": 18,
+				"w": 43,
+				"h": 62
+			}
+		},
+		"5": {
+			"name": "walking",
+			"pic": 4,
+			"state": 1,
+			"wait": 3,
+			"next": 999,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"bpoint": {
+				"x": 43,
+				"y": 37
+			},
+			"wpoint": {
+				"kind": 1,
+				"x": 25,
+				"y": 48,
+				"weaponact": 35,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"itr": {
+				"kind": 1,
+				"x": 40,
+				"y": 16,
+				"w": 25,
+				"h": 65,
+				"catchingact": "120 120",
+				"caughtact": "130 130"
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 28,
+				"y": 15,
+				"w": 27,
+				"h": 65
+			}
+		},
+		"6": {
+			"name": "walking",
+			"pic": 5,
+			"state": 1,
+			"wait": 3,
+			"next": 999,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 38,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"bpoint": {
+				"x": 42,
+				"y": 37
+			},
+			"wpoint": {
+				"kind": 1,
+				"x": 22,
+				"y": 46,
+				"weaponact": 35,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"itr": {
+				"kind": 1,
+				"x": 40,
+				"y": 16,
+				"w": 25,
+				"h": 65,
+				"catchingact": "120 120",
+				"caughtact": "130 130"
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 28,
+				"y": 15,
+				"w": 27,
+				"h": 65
+			}
+		},
+		"7": {
+			"name": "walking",
+			"pic": 6,
+			"state": 1,
+			"wait": 3,
+			"next": 999,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"bpoint": {
+				"x": 42,
+				"y": 37
+			},
+			"wpoint": {
+				"kind": 1,
+				"x": 22,
+				"y": 45,
+				"weaponact": 35,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"itr": {
+				"kind": 1,
+				"x": 40,
+				"y": 16,
+				"w": 25,
+				"h": 65,
+				"catchingact": "120 120",
+				"caughtact": "130 130"
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 28,
+				"y": 15,
+				"w": 27,
+				"h": 65
+			}
+		},
+		"8": {
+			"name": "walking",
+			"pic": 7,
+			"state": 1,
+			"wait": 3,
+			"next": 999,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 42,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"bpoint": {
+				"x": 45,
+				"y": 37
+			},
+			"wpoint": {
+				"kind": 1,
+				"x": 24,
+				"y": 44,
+				"weaponact": 35,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"itr": {
+				"kind": 1,
+				"x": 40,
+				"y": 16,
+				"w": 25,
+				"h": 65,
+				"catchingact": "120 120",
+				"caughtact": "130 130"
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 28,
+				"y": 15,
+				"w": 27,
+				"h": 65
+			}
+		},
+		"9": {
+			"name": "running",
+			"pic": 20,
+			"state": 2,
+			"wait": 3,
+			"next": 0,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"sound": "data\\003.wav",
+			"bpoint": {
+				"x": 47,
+				"y": 40
+			},
+			"wpoint": {
+				"kind": 1,
+				"x": 25,
+				"y": 41,
+				"weaponact": 25,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 25,
+				"y": 19,
+				"w": 38,
+				"h": 60
+			}
+		},
+		"10": {
+			"name": "running",
+			"pic": 21,
+			"state": 2,
+			"wait": 3,
+			"next": 0,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"bpoint": {
+				"x": 49,
+				"y": 40
+			},
+			"wpoint": {
+				"kind": 1,
+				"x": 46,
+				"y": 51,
+				"weaponact": 22,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 25,
+				"y": 19,
+				"w": 38,
+				"h": 60
+			}
+		},
+		"11": {
+			"name": "running",
+			"pic": 22,
+			"state": 2,
+			"wait": 3,
+			"next": 0,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"sound": "data\\004.wav",
+			"bpoint": {
+				"x": 49,
+				"y": 40
+			},
+			"wpoint": {
+				"kind": 1,
+				"x": 60,
+				"y": 44,
+				"weaponact": 21,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 25,
+				"y": 19,
+				"w": 38,
+				"h": 60
+			}
+		},
+		"12": {
+			"name": "heavy_obj_walk",
+			"pic": 23,
+			"state": 1,
+			"wait": 3,
+			"next": 0,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"bpoint": {
+				"x": 43,
+				"y": 38
+			},
+			"wpoint": {
+				"kind": 1,
+				"x": 42,
+				"y": 23,
+				"weaponact": 10,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 29,
+				"y": 15,
+				"w": 28,
+				"h": 64
+			}
+		},
+		"13": {
+			"name": "heavy_obj_walk",
+			"pic": 24,
+			"state": 1,
+			"wait": 3,
+			"next": 0,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 38,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"bpoint": {
+				"x": 42,
+				"y": 38
+			},
+			"wpoint": {
+				"kind": 1,
+				"x": 41,
+				"y": 22,
+				"weaponact": 10,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 29,
+				"y": 15,
+				"w": 28,
+				"h": 64
+			}
+		},
+		"14": {
+			"name": "heavy_obj_walk",
+			"pic": 25,
+			"state": 1,
+			"wait": 3,
+			"next": 0,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"bpoint": {
+				"x": 43,
+				"y": 38
+			},
+			"wpoint": {
+				"kind": 1,
+				"x": 42,
+				"y": 22,
+				"weaponact": 10,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 29,
+				"y": 15,
+				"w": 28,
+				"h": 64
+			}
+		},
+		"15": {
+			"name": "heavy_obj_walk",
+			"pic": 26,
+			"state": 1,
+			"wait": 3,
+			"next": 0,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 41,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"bpoint": {
+				"x": 45,
+				"y": 38
+			},
+			"wpoint": {
+				"kind": 1,
+				"x": 45,
+				"y": 22,
+				"weaponact": 10,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 29,
+				"y": 15,
+				"w": 28,
+				"h": 64
+			}
+		},
+		"16": {
+			"name": "heavy_obj_run",
+			"pic": 125,
+			"state": 2,
+			"wait": 3,
+			"next": 0,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"sound": "data\\003.wav",
+			"bpoint": {
+				"x": 41,
+				"y": 36
+			},
+			"wpoint": {
+				"kind": 1,
+				"x": 40,
+				"y": 22,
+				"weaponact": 10,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 29,
+				"y": 15,
+				"w": 28,
+				"h": 64
+			}
+		},
+		"17": {
+			"name": "heavy_obj_run",
+			"pic": 126,
+			"state": 2,
+			"wait": 3,
+			"next": 0,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"bpoint": {
+				"x": 40,
+				"y": 36
+			},
+			"wpoint": {
+				"kind": 1,
+				"x": 39,
+				"y": 21,
+				"weaponact": 10,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 29,
+				"y": 15,
+				"w": 28,
+				"h": 64
+			}
+		},
+		"18": {
+			"name": "heavy_obj_run",
+			"pic": 127,
+			"state": 2,
+			"wait": 3,
+			"next": 0,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"sound": "data\\004.wav",
+			"bpoint": {
+				"x": 41,
+				"y": 36
+			},
+			"wpoint": {
+				"kind": 1,
+				"x": 40,
+				"y": 21,
+				"weaponact": 10,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 29,
+				"y": 15,
+				"w": 28,
+				"h": 64
+			}
+		},
+		"19": {
+			"name": "heavy_stop_run",
+			"pic": 128,
+			"state": 15,
+			"wait": 7,
+			"next": 999,
+			"dvx": 2,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 34,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"sound": "data\\009.wav",
+			"bpoint": {
+				"x": 30,
+				"y": 42
+			},
+			"wpoint": {
+				"kind": 1,
+				"x": 22,
+				"y": 25,
+				"weaponact": 10,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 29,
+				"y": 15,
+				"w": 28,
+				"h": 64
+			}
+		},
+		"20": {
+			"name": "normal_weapon_atck",
+			"pic": 70,
+			"state": 3,
+			"wait": 1,
+			"next": 21,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 25,
+				"y": 42,
+				"weaponact": 35,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 27,
+				"y": 20,
+				"w": 32,
+				"h": 60
+			}
+		},
+		"21": {
+			"name": "normal_weapon_atck",
+			"pic": 71,
+			"state": 3,
+			"wait": 1,
+			"next": 22,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"sound": "data\\008.wav",
+			"wpoint": {
+				"kind": 1,
+				"x": 28,
+				"y": 22,
+				"weaponact": 31,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 30,
+				"y": 19,
+				"w": 28,
+				"h": 61
+			}
+		},
+		"22": {
+			"name": "normal_weapon_atck",
+			"pic": 72,
+			"state": 3,
+			"wait": 1,
+			"next": 23,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 16,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 50,
+				"y": 53,
+				"weaponact": 23,
+				"attacking": 1,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": [
+				{
+					"kind": 0,
+					"x": 17,
+					"y": 21,
+					"w": 23,
+					"h": 59
+				},
+				{
+					"kind": 0,
+					"x": 4,
+					"y": 64,
+					"w": 14,
+					"h": 15
+				},
+				{
+					"kind": 0,
+					"x": 36,
+					"y": 46,
+					"w": 20,
+					"h": 14
+				}
+			]
+		},
+		"23": {
+			"name": "normal_weapon_atck",
+			"pic": 73,
+			"state": 3,
+			"wait": 1,
+			"next": 999,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 40,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 73,
+				"y": 58,
+				"weaponact": 24,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": [
+				{
+					"kind": 0,
+					"x": 41,
+					"y": 19,
+					"w": 29,
+					"h": 61
+				},
+				{
+					"kind": 0,
+					"x": 25,
+					"y": 61,
+					"w": 17,
+					"h": 18
+				}
+			]
+		},
+		"25": {
+			"name": "normal_weapon_atck",
+			"pic": 74,
+			"state": 3,
+			"wait": 1,
+			"next": 26,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 51,
+				"y": 45,
+				"weaponact": 34,
+				"attacking": 0,
+				"cover": 1,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 29,
+				"y": 16,
+				"w": 29,
+				"h": 63
+			}
+		},
+		"26": {
+			"name": "normal_weapon_atck",
+			"pic": 75,
+			"state": 3,
+			"wait": 1,
+			"next": 27,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"sound": "data\\008.wav",
+			"wpoint": {
+				"kind": 1,
+				"x": 44,
+				"y": 42,
+				"weaponact": 32,
+				"attacking": 0,
+				"cover": 1,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 29,
+				"y": 16,
+				"w": 29,
+				"h": 63
+			}
+		},
+		"27": {
+			"name": "normal_weapon_atck",
+			"pic": 76,
+			"state": 3,
+			"wait": 1,
+			"next": 28,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 36,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 78,
+				"y": 55,
+				"weaponact": 24,
+				"attacking": 1,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": [
+				{
+					"kind": 0,
+					"x": 41,
+					"y": 21,
+					"w": 26,
+					"h": 58
+				},
+				{
+					"kind": 0,
+					"x": 27,
+					"y": 61,
+					"w": 18,
+					"h": 17
+				}
+			]
+		},
+		"28": {
+			"name": "normal_weapon_atck",
+			"pic": 77,
+			"state": 3,
+			"wait": 1,
+			"next": 999,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 22,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 10,
+				"y": 52,
+				"weaponact": 25,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 10,
+				"y": 23,
+				"w": 31,
+				"h": 55
+			}
+		},
+		"30": {
+			"name": "jump_weapon_atck",
+			"pic": 80,
+			"state": 3,
+			"wait": 1,
+			"next": 31,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 25,
+				"y": 19,
+				"weaponact": 30,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 27,
+				"y": 17,
+				"w": 39,
+				"h": 56
+			}
+		},
+		"31": {
+			"name": "jump_weapon_atck",
+			"pic": 81,
+			"state": 3,
+			"wait": 1,
+			"next": 32,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 19,
+			"centery": 91,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"sound": "data\\008.wav",
+			"wpoint": {
+				"kind": 1,
+				"x": 44,
+				"y": 12,
+				"weaponact": 33,
+				"attacking": 2,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 11,
+				"y": 32,
+				"w": 33,
+				"h": 43
+			}
+		},
+		"32": {
+			"name": "jump_weapon_atck",
+			"pic": 82,
+			"state": 3,
+			"wait": 1,
+			"next": 33,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 19,
+			"centery": 91,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 58,
+				"y": 49,
+				"weaponact": 24,
+				"attacking": 2,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 11,
+				"y": 32,
+				"w": 33,
+				"h": 43
+			}
+		},
+		"33": {
+			"name": "jump_weapon_atck",
+			"pic": 83,
+			"state": 3,
+			"wait": 4,
+			"next": 999,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 19,
+			"centery": 91,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 52,
+				"y": 57,
+				"weaponact": 25,
+				"attacking": 2,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 11,
+				"y": 32,
+				"w": 33,
+				"h": 43
+			}
+		},
+		"35": {
+			"name": "run_weapon_atck",
+			"pic": 84,
+			"state": 3,
+			"wait": 1,
+			"next": 36,
+			"dvx": 6,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 40,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 31,
+				"y": 14,
+				"weaponact": 31,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 28,
+				"y": 16,
+				"w": 34,
+				"h": 64
+			}
+		},
+		"36": {
+			"name": "run_weapon_atck",
+			"pic": 85,
+			"state": 3,
+			"wait": 1,
+			"next": 37,
+			"dvx": 4,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 26,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"sound": "data\\008.wav",
+			"wpoint": {
+				"kind": 1,
+				"x": 70,
+				"y": 41,
+				"weaponact": 22,
+				"attacking": 3,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": [
+				{
+					"kind": 0,
+					"x": 29,
+					"y": 38,
+					"w": 51,
+					"h": 20
+				},
+				{
+					"kind": 0,
+					"x": 9,
+					"y": 54,
+					"w": 45,
+					"h": 26
+				}
+			]
+		},
+		"37": {
+			"name": "run_weapon_atck",
+			"pic": 86,
+			"state": 3,
+			"wait": 6,
+			"next": 999,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 21,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 69,
+				"y": 59,
+				"weaponact": 24,
+				"attacking": 3,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 28,
+				"y": 16,
+				"w": 34,
+				"h": 64
+			}
+		},
+		"40": {
+			"name": "dash_weapon_atck",
+			"pic": 90,
+			"state": 3,
+			"wait": 1,
+			"next": 41,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 24,
+				"y": 14,
+				"weaponact": 30,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 25,
+				"y": 15,
+				"w": 40,
+				"h": 53
+			}
+		},
+		"41": {
+			"name": "dash_weapon_atck",
+			"pic": 91,
+			"state": 3,
+			"wait": 1,
+			"next": 42,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 21,
+			"centery": 89,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"sound": "data\\008.wav",
+			"wpoint": {
+				"kind": 1,
+				"x": 45,
+				"y": 12,
+				"weaponact": 33,
+				"attacking": 4,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 8,
+				"y": 32,
+				"w": 33,
+				"h": 45
+			}
+		},
+		"42": {
+			"name": "dash_weapon_atck",
+			"pic": 92,
+			"state": 3,
+			"wait": 1,
+			"next": 43,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 21,
+			"centery": 89,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 59,
+				"y": 50,
+				"weaponact": 24,
+				"attacking": 4,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 8,
+				"y": 32,
+				"w": 33,
+				"h": 45
+			}
+		},
+		"43": {
+			"name": "dash_weapon_atck",
+			"pic": 93,
+			"state": 3,
+			"wait": 8,
+			"next": 999,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 21,
+			"centery": 89,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 50,
+				"y": 55,
+				"weaponact": 25,
+				"attacking": 4,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 8,
+				"y": 32,
+				"w": 33,
+				"h": 45
+			}
+		},
+		"45": {
+			"name": "light_weapon_thw",
+			"pic": 94,
+			"state": 15,
+			"wait": 6,
+			"next": 46,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 11,
+				"y": 42,
+				"weaponact": 20,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": [
+				{
+					"kind": 0,
+					"x": 25,
+					"y": 22,
+					"w": 35,
+					"h": 57
+				},
+				{
+					"kind": 0,
+					"x": 10,
+					"y": 40,
+					"w": 20,
+					"h": 13
+				}
+			]
+		},
+		"46": {
+			"name": "light_weapon_thw",
+			"pic": 95,
+			"state": 15,
+			"wait": 1,
+			"next": 47,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 37,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"sound": "data\\008.wav",
+			"wpoint": {
+				"kind": 1,
+				"x": 44,
+				"y": 24,
+				"weaponact": 31,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 24,
+				"y": 22,
+				"w": 32,
+				"h": 57
+			}
+		},
+		"47": {
+			"name": "light_weapon_thw",
+			"pic": 96,
+			"state": 15,
+			"wait": 9,
+			"next": 999,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 25,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 102,
+				"y": 60,
+				"weaponact": 35,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 14,
+				"dvy": -4,
+				"dvz": 3
+			},
+			"bdy": [
+				{
+					"kind": 0,
+					"x": 10,
+					"y": 38,
+					"w": 54,
+					"h": 21
+				},
+				{
+					"kind": 0,
+					"x": 26,
+					"y": 55,
+					"w": 32,
+					"h": 26
+				}
+			]
+		},
+		"50": {
+			"name": "heavy_weapon_thw",
+			"pic": 27,
+			"state": 15,
+			"wait": 6,
+			"next": 51,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 16,
+				"y": 32,
+				"weaponact": 10,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 28,
+				"y": 19,
+				"w": 30,
+				"h": 62
+			}
+		},
+		"51": {
+			"name": "heavy_weapon_thw",
+			"pic": 28,
+			"state": 15,
+			"wait": 10,
+			"next": 999,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 34,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"sound": "data\\007.wav",
+			"wpoint": {
+				"kind": 1,
+				"x": 93,
+				"y": 37,
+				"weaponact": 10,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 8,
+				"dvy": -4,
+				"dvz": 2
+			},
+			"bdy": [
+				{
+					"kind": 0,
+					"x": 8,
+					"y": 39,
+					"w": 61,
+					"h": 23
+				},
+				{
+					"kind": 0,
+					"x": 19,
+					"y": 56,
+					"w": 30,
+					"h": 24
+				}
+			]
+		},
+		"52": {
+			"name": "sky_lgt_wp_thw",
+			"pic": 97,
+			"state": 15,
+			"wait": 6,
+			"next": 53,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 41,
+			"centery": 68,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 16,
+				"y": 30,
+				"weaponact": 20,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 22,
+				"y": 10,
+				"w": 40,
+				"h": 52
+			}
+		},
+		"53": {
+			"name": "sky_lgt_wp_thw",
+			"pic": 98,
+			"state": 15,
+			"wait": 1,
+			"next": 54,
+			"dvx": 0,
+			"dvy": -2,
+			"dvz": 0,
+			"centerx": 35,
+			"centery": 63,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"sound": "data\\008.wav",
+			"wpoint": {
+				"kind": 1,
+				"x": 50,
+				"y": 12,
+				"weaponact": 34,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": [
+				{
+					"kind": 0,
+					"x": 35,
+					"y": 10,
+					"w": 36,
+					"h": 23
+				},
+				{
+					"kind": 0,
+					"x": 15,
+					"y": 18,
+					"w": 30,
+					"h": 43
+				}
+			]
+		},
+		"54": {
+			"name": "sky_lgt_wp_thw",
+			"pic": 99,
+			"state": 15,
+			"wait": 9,
+			"next": 999,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 21,
+			"centery": 62,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 75,
+				"y": 65,
+				"weaponact": 23,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 12,
+				"dvy": 8,
+				"dvz": 3
+			},
+			"bdy": [
+				{
+					"kind": 0,
+					"x": 22,
+					"y": 15,
+					"w": 38,
+					"h": 38
+				},
+				{
+					"kind": 0,
+					"x": 3,
+					"y": 37,
+					"w": 34,
+					"h": 26
+				}
+			]
+		},
+		"55": {
+			"name": "weapon_drink",
+			"pic": 132,
+			"state": 17,
+			"wait": 3,
+			"next": 56,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 999,
+			"hit_j": 0,
+			"sound": "data\\042.wav",
+			"wpoint": {
+				"kind": 1,
+				"x": 53,
+				"y": 21,
+				"weaponact": 31,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 25,
+				"y": 26,
+				"w": 37,
+				"h": 53
+			}
+		},
+		"56": {
+			"name": "weapon_drink",
+			"pic": 133,
+			"state": 17,
+			"wait": 3,
+			"next": 57,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 999,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 52,
+				"y": 21,
+				"weaponact": 31,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 25,
+				"y": 26,
+				"w": 37,
+				"h": 53
+			}
+		},
+		"57": {
+			"name": "weapon_drink",
+			"pic": 134,
+			"state": 17,
+			"wait": 3,
+			"next": 58,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 999,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 51,
+				"y": 21,
+				"weaponact": 31,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 25,
+				"y": 26,
+				"w": 37,
+				"h": 53
+			}
+		},
+		"58": {
+			"name": "weapon_drink",
+			"pic": 133,
+			"state": 17,
+			"wait": 3,
+			"next": 55,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 999,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 52,
+				"y": 21,
+				"weaponact": 31,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 25,
+				"y": 26,
+				"w": 37,
+				"h": 53
+			}
+		},
+		"60": {
+			"name": "punch",
+			"pic": 10,
+			"state": 3,
+			"wait": 2,
+			"next": 61,
+			"dvx": 1,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"itr": {
+				"kind": 2,
+				"x": 26,
+				"y": 58,
+				"w": 37,
+				"h": 23,
+				"vrest": 1
+			},
+			"bdy": [
+				{
+					"kind": 0,
+					"x": 30,
+					"y": 18,
+					"w": 28,
+					"h": 60
+				},
+				{
+					"kind": 0,
+					"x": 23,
+					"y": 35,
+					"w": 37,
+					"h": 24
+				}
+			]
+		},
+		"61": {
+			"name": "punch",
+			"pic": 11,
+			"state": 3,
+			"wait": 3,
+			"next": 999,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"sound": "data\\007.wav",
+			"itr": {
+				"kind": 0,
+				"x": 49,
+				"y": 33,
+				"w": 30,
+				"h": 16,
+				"dvx": 2,
+				"bdefend": 16,
+				"injury": 20
+			},
+			"bdy": [
+				{
+					"kind": 0,
+					"x": 39,
+					"y": 19,
+					"w": 21,
+					"h": 61
+				},
+				{
+					"kind": 0,
+					"x": 51,
+					"y": 34,
+					"w": 26,
+					"h": 16
+				}
+			]
+		},
+		"65": {
+			"name": "punch",
+			"pic": 12,
+			"state": 3,
+			"wait": 2,
+			"next": 66,
+			"dvx": 1,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"itr": {
+				"kind": 2,
+				"x": 26,
+				"y": 58,
+				"w": 37,
+				"h": 23,
+				"vrest": 1
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 27,
+				"y": 17,
+				"w": 31,
+				"h": 63
+			}
+		},
+		"66": {
+			"name": "punch",
+			"pic": 13,
+			"state": 3,
+			"wait": 3,
+			"next": 999,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"sound": "data\\007.wav",
+			"itr": {
+				"kind": 0,
+				"x": 45,
+				"y": 34,
+				"w": 33,
+				"h": 14,
+				"dvx": 2,
+				"bdefend": 16,
+				"injury": 20
+			},
+			"bdy": [
+				{
+					"kind": 0,
+					"x": 28,
+					"y": 17,
+					"w": 29,
+					"h": 63
+				},
+				{
+					"kind": 0,
+					"x": 45,
+					"y": 37,
+					"w": 32,
+					"h": 11
+				}
+			]
+		},
+		"70": {
+			"name": "super_punch",
+			"pic": 37,
+			"state": 3,
+			"wait": 2,
+			"next": 71,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 48,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"bdy": {
+				"kind": 0,
+				"x": 22,
+				"y": 14,
+				"w": 30,
+				"h": 65
+			}
+		},
+		"71": {
+			"name": "super_punch",
+			"pic": 38,
+			"state": 3,
+			"wait": 2,
+			"next": 72,
+			"dvx": 4,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 41,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"bdy": {
+				"kind": 0,
+				"x": 17,
+				"y": 13,
+				"w": 31,
+				"h": 66
+			}
+		},
+		"72": {
+			"name": "super_punch",
+			"pic": 39,
+			"state": 3,
+			"wait": 2,
+			"next": 73,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 30,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"sound": "data\\007.wav",
+			"itr": {
+				"kind": 0,
+				"x": 35,
+				"y": 26,
+				"w": 44,
+				"h": 17,
+				"dvx": 13,
+				"dvy": -6,
+				"fall": 70,
+				"arest": 15,
+				"bdefend": 60,
+				"injury": 50
+			},
+			"bdy": [
+				{
+					"kind": 0,
+					"x": 17,
+					"y": 31,
+					"w": 32,
+					"h": 48
+				},
+				{
+					"kind": 0,
+					"x": 43,
+					"y": 35,
+					"w": 28,
+					"h": 18
+				}
+			]
+		},
+		"73": {
+			"name": "super_punch",
+			"pic": 104,
+			"state": 3,
+			"wait": 3,
+			"next": 999,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 30,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"bdy": [
+				{
+					"kind": 0,
+					"x": 17,
+					"y": 31,
+					"w": 32,
+					"h": 48
+				},
+				{
+					"kind": 0,
+					"x": 43,
+					"y": 35,
+					"w": 28,
+					"h": 18
+				}
+			]
+		},
+		"80": {
+			"name": "jump_attack",
+			"pic": 14,
+			"state": 3,
+			"wait": 2,
+			"next": 81,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 70,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"sound": "data\\007.wav",
+			"bdy": {
+				"kind": 0,
+				"x": 20,
+				"y": 18,
+				"w": 34,
+				"h": 61
+			}
+		},
+		"81": {
+			"name": "jump_attack",
+			"pic": 15,
+			"state": 3,
+			"wait": 6,
+			"next": 999,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 70,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"itr": {
+				"kind": 0,
+				"x": 37,
+				"y": 30,
+				"w": 36,
+				"h": 20,
+				"dvx": 2,
+				"arest": 15,
+				"bdefend": 16,
+				"injury": 35
+			},
+			"bdy": [
+				{
+					"kind": 0,
+					"x": 22,
+					"y": 19,
+					"w": 32,
+					"h": 60
+				},
+				{
+					"kind": 0,
+					"x": 45,
+					"y": 20,
+					"w": 28,
+					"h": 27
+				}
+			]
+		},
+		"85": {
+			"name": "run_attack",
+			"pic": 102,
+			"state": 3,
+			"wait": 4,
+			"next": 86,
+			"dvx": 6,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 31,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"bdy": [
+				{
+					"kind": 0,
+					"x": 19,
+					"y": 24,
+					"w": 35,
+					"h": 54
+				},
+				{
+					"kind": 0,
+					"x": 10,
+					"y": 36,
+					"w": 27,
+					"h": 15
+				}
+			]
+		},
+		"86": {
+			"name": "run_attack",
+			"pic": 103,
+			"state": 3,
+			"wait": 2,
+			"next": 87,
+			"dvx": 4,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 19,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"sound": "data\\007.wav",
+			"itr": {
+				"kind": 0,
+				"x": 19,
+				"y": 37,
+				"w": 61,
+				"h": 17,
+				"dvx": 10,
+				"fall": 70,
+				"arest": 15,
+				"bdefend": 16,
+				"injury": 50
+			},
+			"bdy": [
+				{
+					"kind": 0,
+					"x": 24,
+					"y": 36,
+					"w": 55,
+					"h": 19
+				},
+				{
+					"kind": 0,
+					"x": 8,
+					"y": 51,
+					"w": 38,
+					"h": 27
+				}
+			]
+		},
+		"87": {
+			"name": "run_attack",
+			"pic": 104,
+			"state": 3,
+			"wait": 3,
+			"next": 999,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 14,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"bdy": [
+				{
+					"kind": 0,
+					"x": 18,
+					"y": 36,
+					"w": 39,
+					"h": 24
+				},
+				{
+					"kind": 0,
+					"x": 2,
+					"y": 57,
+					"w": 41,
+					"h": 22
+				}
+			]
+		},
+		"90": {
+			"name": "dash_attack",
+			"pic": 106,
+			"state": 15,
+			"wait": 3,
+			"next": 91,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 38,
+			"centery": 73,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"bdy": [
+				{
+					"kind": 0,
+					"x": 24,
+					"y": 18,
+					"w": 25,
+					"h": 55
+				},
+				{
+					"kind": 0,
+					"x": 13,
+					"y": 36,
+					"w": 52,
+					"h": 18
+				}
+			]
+		},
+		"91": {
+			"name": "dash_attack",
+			"pic": 107,
+			"state": 15,
+			"wait": 20,
+			"next": 999,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 31,
+			"centery": 68,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"sound": "data\\007.wav",
+			"itr": {
+				"kind": 0,
+				"x": 27,
+				"y": 38,
+				"w": 53,
+				"h": 23,
+				"dvx": 12,
+				"fall": 70,
+				"arest": 20,
+				"bdefend": 60,
+				"injury": 70
+			},
+			"bdy": [
+				{
+					"kind": 0,
+					"x": 7,
+					"y": 19,
+					"w": 37,
+					"h": 45
+				},
+				{
+					"kind": 0,
+					"x": 22,
+					"y": 36,
+					"w": 50,
+					"h": 18
+				}
+			]
+		},
+		"95": {
+			"name": "dash_defend",
+			"pic": 111,
+			"state": 7,
+			"wait": 2,
+			"next": 0,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 21,
+				"y": 27,
+				"weaponact": 30,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": [
+				{
+					"kind": 0,
+					"x": 14,
+					"y": 19,
+					"w": 28,
+					"h": 36
+				},
+				{
+					"kind": 0,
+					"x": 28,
+					"y": 37,
+					"w": 24,
+					"h": 34
+				}
+			]
+		},
+		"100": {
+			"name": "rowing",
+			"pic": 66,
+			"state": 6,
+			"wait": 2,
+			"next": 101,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"sound": "data\\017.wav",
+			"wpoint": {
+				"kind": 1,
+				"x": 21,
+				"y": 44,
+				"weaponact": 22,
+				"attacking": 0,
+				"cover": 1,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			}
+		},
+		"101": {
+			"name": "rowing",
+			"pic": 65,
+			"state": 6,
+			"wait": 6,
+			"next": 0,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 18,
+				"y": 70,
+				"weaponact": 24,
+				"attacking": 0,
+				"cover": 1,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			}
+		},
+		"102": {
+			"name": "rowing",
+			"pic": 58,
+			"state": 6,
+			"wait": 2,
+			"next": 103,
+			"dvx": 7,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 42,
+				"y": 75,
+				"weaponact": 22,
+				"attacking": 0,
+				"cover": 1,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"itr": {
+				"kind": 7,
+				"x": 36,
+				"y": 54,
+				"w": 13,
+				"h": 25,
+				"vrest": 1
+			}
+		},
+		"103": {
+			"name": "rowing",
+			"pic": 59,
+			"state": 6,
+			"wait": 2,
+			"next": 104,
+			"dvx": 7,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 42,
+				"y": 45,
+				"weaponact": 31,
+				"attacking": 0,
+				"cover": 1,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"itr": {
+				"kind": 7,
+				"x": 36,
+				"y": 54,
+				"w": 13,
+				"h": 25,
+				"vrest": 1
+			}
+		},
+		"104": {
+			"name": "rowing",
+			"pic": 49,
+			"state": 6,
+			"wait": 2,
+			"next": 105,
+			"dvx": 7,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 30,
+				"y": 59,
+				"weaponact": 25,
+				"attacking": 0,
+				"cover": 1,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"itr": {
+				"kind": 7,
+				"x": 36,
+				"y": 54,
+				"w": 13,
+				"h": 25,
+				"vrest": 1
+			}
+		},
+		"105": {
+			"name": "rowing",
+			"pic": 58,
+			"state": 6,
+			"wait": 2,
+			"next": 219,
+			"dvx": 7,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 44,
+				"y": 74,
+				"weaponact": 22,
+				"attacking": 0,
+				"cover": 1,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"itr": {
+				"kind": 7,
+				"x": 36,
+				"y": 54,
+				"w": 13,
+				"h": 25,
+				"vrest": 1
+			}
+		},
+		"106": {
+			"name": "rowing",
+			"pic": 59,
+			"state": 6,
+			"wait": 2,
+			"next": 219,
+			"dvx": 7,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 42,
+				"y": 48,
+				"weaponact": 30,
+				"attacking": 0,
+				"cover": 1,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"itr": {
+				"kind": 7,
+				"x": 36,
+				"y": 54,
+				"w": 13,
+				"h": 25,
+				"vrest": 1
+			}
+		},
+		"107": {
+			"name": "rowing",
+			"pic": 49,
+			"state": 6,
+			"wait": 2,
+			"next": 219,
+			"dvx": 7,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 32,
+				"y": 59,
+				"weaponact": 25,
+				"attacking": 0,
+				"cover": 1,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"itr": {
+				"kind": 7,
+				"x": 36,
+				"y": 54,
+				"w": 13,
+				"h": 25,
+				"vrest": 1
+			}
+		},
+		"108": {
+			"name": "rowing",
+			"pic": 117,
+			"state": 6,
+			"wait": 3,
+			"next": 109,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 45,
+			"centery": 62,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"sound": "data\\017.wav",
+			"wpoint": {
+				"kind": 1,
+				"x": 39,
+				"y": 37,
+				"weaponact": 35,
+				"attacking": 0,
+				"cover": 1,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			}
+		},
+		"109": {
+			"name": "rowing",
+			"pic": 118,
+			"state": 6,
+			"wait": 6,
+			"next": 0,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 17,
+				"y": 38,
+				"weaponact": 35,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			}
+		},
+		"110": {
+			"name": "defend",
+			"pic": 56,
+			"state": 7,
+			"wait": 12,
+			"next": 999,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 39,
+				"y": 46,
+				"weaponact": 35,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 20,
+				"y": 19,
+				"w": 38,
+				"h": 60
+			}
+		},
+		"111": {
+			"name": "defend",
+			"pic": 57,
+			"state": 7,
+			"wait": 0,
+			"next": 110,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 36,
+				"y": 46,
+				"weaponact": 35,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 16,
+				"y": 19,
+				"w": 42,
+				"h": 60
+			}
+		},
+		"112": {
+			"name": "broken_defend",
+			"pic": 46,
+			"state": 8,
+			"wait": 2,
+			"next": 113,
+			"dvx": -2,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 8,
+				"y": 28,
+				"weaponact": 21,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"itr": {
+				"kind": 6,
+				"x": -9,
+				"y": 16,
+				"w": 85,
+				"h": 65,
+				"vrest": 1
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 5,
+				"y": 17,
+				"w": 64,
+				"h": 65
+			}
+		},
+		"113": {
+			"name": "broken_defend",
+			"pic": 47,
+			"state": 8,
+			"wait": 2,
+			"next": 114,
+			"dvx": -2,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 12,
+				"y": 45,
+				"weaponact": 20,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"itr": {
+				"kind": 6,
+				"x": -9,
+				"y": 16,
+				"w": 85,
+				"h": 65,
+				"vrest": 1
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 5,
+				"y": 17,
+				"w": 64,
+				"h": 65
+			}
+		},
+		"114": {
+			"name": "broken_defend",
+			"pic": 48,
+			"state": 8,
+			"wait": 2,
+			"next": 999,
+			"dvx": -2,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 22,
+				"y": 52,
+				"weaponact": 20,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"itr": {
+				"kind": 6,
+				"x": -9,
+				"y": 16,
+				"w": 85,
+				"h": 65,
+				"vrest": 1
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 5,
+				"y": 17,
+				"w": 64,
+				"h": 65
+			}
+		},
+		"115": {
+			"name": "picking_light",
+			"pic": 36,
+			"state": 15,
+			"wait": 5,
+			"next": 999,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"sound": "data\\009.wav",
+			"wpoint": {
+				"kind": 1,
+				"x": 38,
+				"y": 76,
+				"weaponact": 24,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 24,
+				"y": 43,
+				"w": 33,
+				"h": 37
+			}
+		},
+		"116": {
+			"name": "picking_heavy",
+			"pic": 36,
+			"state": 15,
+			"wait": 5,
+			"next": 117,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"sound": "data\\009.wav",
+			"wpoint": {
+				"kind": 1,
+				"x": 42,
+				"y": 79,
+				"weaponact": 10,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 24,
+				"y": 43,
+				"w": 33,
+				"h": 37
+			}
+		},
+		"117": {
+			"name": "picking_heavy",
+			"pic": 36,
+			"state": 15,
+			"wait": 5,
+			"next": 999,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 42,
+				"y": 75,
+				"weaponact": 10,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 24,
+				"y": 43,
+				"w": 33,
+				"h": 37
+			}
+		},
+		"120": {
+			"name": "catching",
+			"pic": 51,
+			"state": 9,
+			"wait": 5,
+			"next": 121,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 36,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"sound": "data\\015.wav",
+			"cpoint": {
+				"kind": 1,
+				"x": 67,
+				"y": 39,
+				"vaction": 131,
+				"throwvz": -842150451,
+				"hurtable": 1,
+				"throwinjury": -842150451,
+				"decrease": 7
+			},
+			"wpoint": {
+				"kind": 1,
+				"x": 54,
+				"y": 50,
+				"weaponact": 20,
+				"attacking": 0,
+				"cover": 1,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 19,
+				"y": 15,
+				"w": 28,
+				"h": 65
+			}
+		},
+		"121": {
+			"name": "catching",
+			"pic": 50,
+			"state": 9,
+			"wait": 0,
+			"next": 0,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"cpoint": {
+				"kind": 1,
+				"x": 61,
+				"y": 39,
+				"vaction": 130,
+				"aaction": 122,
+				"taction": -232,
+				"throwvz": -842150451,
+				"hurtable": 1,
+				"throwinjury": -842150451,
+				"decrease": -7
+			},
+			"wpoint": {
+				"kind": 1,
+				"x": 60,
+				"y": 42,
+				"weaponact": 35,
+				"attacking": 0,
+				"cover": 1,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 19,
+				"y": 15,
+				"w": 28,
+				"h": 65
+			}
+		},
+		"122": {
+			"name": "catching",
+			"pic": 51,
+			"state": 9,
+			"wait": 5,
+			"next": 123,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 38,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"cpoint": {
+				"kind": 1,
+				"x": 61,
+				"y": 39,
+				"vaction": 130,
+				"throwvz": -842150451,
+				"hurtable": 1,
+				"throwinjury": -842150451,
+				"decrease": 7
+			},
+			"wpoint": {
+				"kind": 1,
+				"x": 54,
+				"y": 48,
+				"weaponact": 20,
+				"attacking": 0,
+				"cover": 1,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 19,
+				"y": 15,
+				"w": 28,
+				"h": 65
+			}
+		},
+		"123": {
+			"name": "catching",
+			"pic": 52,
+			"state": 9,
+			"wait": 3,
+			"next": 121,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"sound": "data\\014.wav",
+			"cpoint": {
+				"kind": 1,
+				"x": 58,
+				"y": 38,
+				"injury": 15,
+				"vaction": 132,
+				"throwvz": -842150451,
+				"hurtable": 1,
+				"throwinjury": -842150451,
+				"decrease": 3
+			},
+			"wpoint": {
+				"kind": 1,
+				"x": 57,
+				"y": 46,
+				"weaponact": 35,
+				"attacking": 0,
+				"cover": 1,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 19,
+				"y": 15,
+				"w": 28,
+				"h": 65
+			}
+		},
+		"130": {
+			"name": "picked_caught",
+			"pic": 53,
+			"state": 10,
+			"wait": 3,
+			"next": 0,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"cpoint": {
+				"kind": 2,
+				"x": 41,
+				"y": 39,
+				"fronthurtact": 132,
+				"backhurtact": 131
+			},
+			"wpoint": {
+				"kind": 1,
+				"x": 31,
+				"y": 56,
+				"weaponact": 30,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 26,
+				"y": 14,
+				"w": 28,
+				"h": 66
+			}
+		},
+		"131": {
+			"name": "picked_caught",
+			"pic": 54,
+			"state": 10,
+			"wait": 3,
+			"next": 0,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"cpoint": {
+				"kind": 2,
+				"x": 41,
+				"y": 39,
+				"fronthurtact": 132,
+				"backhurtact": 132
+			},
+			"wpoint": {
+				"kind": 1,
+				"x": 26,
+				"y": 54,
+				"weaponact": 31,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 26,
+				"y": 14,
+				"w": 28,
+				"h": 66
+			}
+		},
+		"132": {
+			"name": "picked_caught",
+			"pic": 55,
+			"state": 10,
+			"wait": 3,
+			"next": 0,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"cpoint": {
+				"kind": 2,
+				"x": 41,
+				"y": 39,
+				"fronthurtact": 131,
+				"backhurtact": 131
+			},
+			"wpoint": {
+				"kind": 1,
+				"x": 39,
+				"y": 51,
+				"weaponact": 30,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 26,
+				"y": 14,
+				"w": 28,
+				"h": 66
+			}
+		},
+		"133": {
+			"name": "picked_caught",
+			"pic": 30,
+			"state": 10,
+			"wait": 3,
+			"next": 0,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"cpoint": {
+				"kind": 2,
+				"x": 33,
+				"y": 36
+			},
+			"wpoint": {
+				"kind": 1,
+				"x": 35,
+				"y": 46,
+				"weaponact": 22,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			}
+		},
+		"134": {
+			"name": "picked_caught",
+			"pic": 31,
+			"state": 10,
+			"wait": 3,
+			"next": 0,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"cpoint": {
+				"kind": 2,
+				"x": 37,
+				"y": 28
+			},
+			"wpoint": {
+				"kind": 1,
+				"x": 42,
+				"y": 32,
+				"weaponact": 21,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			}
+		},
+		"135": {
+			"name": "picked_caught",
+			"pic": 32,
+			"state": 10,
+			"wait": 3,
+			"next": 0,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"cpoint": {
+				"kind": 2,
+				"x": 31,
+				"y": 22
+			},
+			"wpoint": {
+				"kind": 1,
+				"x": 37,
+				"y": 43,
+				"weaponact": 21,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			}
+		},
+		"136": {
+			"name": "picked_caught",
+			"pic": 33,
+			"state": 10,
+			"wait": 3,
+			"next": 0,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"cpoint": {
+				"kind": 2,
+				"x": 27,
+				"y": 46
+			},
+			"wpoint": {
+				"kind": 1,
+				"x": 38,
+				"y": 39,
+				"weaponact": 33,
+				"attacking": 0,
+				"cover": 1,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			}
+		},
+		"137": {
+			"name": "picked_caught",
+			"pic": 34,
+			"state": 10,
+			"wait": 3,
+			"next": 0,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 71,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"cpoint": {
+				"kind": 2,
+				"x": 33,
+				"y": 68
+			},
+			"wpoint": {
+				"kind": 1,
+				"x": 33,
+				"y": 75,
+				"weaponact": 32,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			}
+		},
+		"138": {
+			"name": "picked_caught",
+			"pic": 35,
+			"state": 10,
+			"wait": 3,
+			"next": 0,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"cpoint": {
+				"kind": 2,
+				"x": 34,
+				"y": 54
+			},
+			"wpoint": {
+				"kind": 1,
+				"x": 38,
+				"y": 64,
+				"weaponact": 31,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			}
+		},
+		"139": {
+			"name": "picked_caught",
+			"pic": 40,
+			"state": 10,
+			"wait": 3,
+			"next": 0,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"cpoint": {
+				"kind": 2,
+				"x": 40,
+				"y": 36
+			},
+			"wpoint": {
+				"kind": 1,
+				"x": 22,
+				"y": 47,
+				"weaponact": 35,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			}
+		},
+		"140": {
+			"name": "picked_caught",
+			"pic": 41,
+			"state": 10,
+			"wait": 3,
+			"next": 0,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"cpoint": {
+				"kind": 2,
+				"x": 36,
+				"y": 38
+			},
+			"wpoint": {
+				"kind": 1,
+				"x": 26,
+				"y": 40,
+				"weaponact": 20,
+				"attacking": 0,
+				"cover": 1,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			}
+		},
+		"141": {
+			"name": "picked_caught",
+			"pic": 42,
+			"state": 10,
+			"wait": 3,
+			"next": 0,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"cpoint": {
+				"kind": 2,
+				"x": 44,
+				"y": 41
+			},
+			"wpoint": {
+				"kind": 1,
+				"x": 27,
+				"y": 37,
+				"weaponact": 23,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			}
+		},
+		"142": {
+			"name": "picked_caught",
+			"pic": 43,
+			"state": 10,
+			"wait": 3,
+			"next": 0,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"cpoint": {
+				"kind": 2,
+				"x": 46,
+				"y": 51
+			},
+			"wpoint": {
+				"kind": 1,
+				"x": 32,
+				"y": 50,
+				"weaponact": 26,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			}
+		},
+		"143": {
+			"name": "picked_caught",
+			"pic": 44,
+			"state": 10,
+			"wait": 3,
+			"next": 0,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 74,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"cpoint": {
+				"kind": 2,
+				"x": 45,
+				"y": 66
+			},
+			"wpoint": {
+				"kind": 1,
+				"x": 30,
+				"y": 74,
+				"weaponact": 24,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			}
+		},
+		"144": {
+			"name": "picked_caught",
+			"pic": 45,
+			"state": 10,
+			"wait": 3,
+			"next": 0,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"cpoint": {
+				"kind": 2,
+				"x": 42,
+				"y": 55
+			},
+			"wpoint": {
+				"kind": 1,
+				"x": 30,
+				"y": 67,
+				"weaponact": 25,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			}
+		},
+		"180": {
+			"name": "falling",
+			"pic": 30,
+			"state": 12,
+			"wait": 3,
+			"next": 0,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 39,
+				"y": 46,
+				"weaponact": 21,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"itr": {
+				"kind": 4,
+				"x": 21,
+				"y": 14,
+				"w": 29,
+				"h": 44,
+				"dvx": 2,
+				"fall": 70,
+				"vrest": 20,
+				"bdefend": 10,
+				"injury": 30
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 25,
+				"y": 25,
+				"w": 21,
+				"h": 20
+			}
+		},
+		"181": {
+			"name": "falling",
+			"pic": 31,
+			"state": 12,
+			"wait": 3,
+			"next": 0,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 43,
+				"y": 30,
+				"weaponact": 21,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"itr": [
+				{
+					"kind": 4,
+					"x": 15,
+					"y": 11,
+					"w": 42,
+					"h": 26,
+					"dvx": 2,
+					"fall": 70,
+					"vrest": 20,
+					"bdefend": 10,
+					"injury": 30
+				},
+				{
+					"kind": 4,
+					"x": 35,
+					"y": 30,
+					"w": 27,
+					"h": 29,
+					"dvx": 2,
+					"fall": 70,
+					"vrest": 20,
+					"bdefend": 10,
+					"injury": 30
+				}
+			],
+			"bdy": {
+				"kind": 0,
+				"x": 22,
+				"y": 20,
+				"w": 24,
+				"h": 23
+			}
+		},
+		"182": {
+			"name": "falling",
+			"pic": 32,
+			"state": 12,
+			"wait": 3,
+			"next": 0,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 38,
+				"y": 43,
+				"weaponact": 21,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"itr": {
+				"kind": 4,
+				"x": 13,
+				"y": 18,
+				"w": 46,
+				"h": 26,
+				"dvx": 2,
+				"fall": 70,
+				"vrest": 20,
+				"bdefend": 10,
+				"injury": 30
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 27,
+				"y": 22,
+				"w": 20,
+				"h": 18
+			}
+		},
+		"183": {
+			"name": "falling",
+			"pic": 33,
+			"state": 12,
+			"wait": 3,
+			"next": 0,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 40,
+				"y": 40,
+				"weaponact": 33,
+				"attacking": 0,
+				"cover": 1,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"itr": [
+				{
+					"kind": 4,
+					"x": 32,
+					"y": 18,
+					"w": 33,
+					"h": 27,
+					"dvx": 2,
+					"fall": 70,
+					"vrest": 20,
+					"bdefend": 10,
+					"injury": 30
+				},
+				{
+					"kind": 4,
+					"x": 10,
+					"y": 38,
+					"w": 38,
+					"h": 21,
+					"dvx": 2,
+					"fall": 70,
+					"vrest": 20,
+					"bdefend": 10,
+					"injury": 30
+				}
+			],
+			"bdy": {
+				"kind": 0,
+				"x": 22,
+				"y": 30,
+				"w": 27,
+				"h": 21
+			}
+		},
+		"184": {
+			"name": "falling",
+			"pic": 34,
+			"state": 12,
+			"wait": 3,
+			"next": 0,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 72,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 36,
+				"y": 74,
+				"weaponact": 32,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			}
+		},
+		"185": {
+			"name": "falling",
+			"pic": 35,
+			"state": 12,
+			"wait": 3,
+			"next": 0,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 37,
+				"y": 64,
+				"weaponact": 31,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			}
+		},
+		"186": {
+			"name": "falling",
+			"pic": 40,
+			"state": 12,
+			"wait": 3,
+			"next": 0,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 21,
+				"y": 45,
+				"weaponact": 34,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"itr": {
+				"kind": 4,
+				"x": 22,
+				"y": 12,
+				"w": 36,
+				"h": 50,
+				"dvx": 2,
+				"fall": 70,
+				"vrest": 20,
+				"bdefend": 10,
+				"injury": 30
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 31,
+				"y": 24,
+				"w": 25,
+				"h": 23
+			}
+		},
+		"187": {
+			"name": "falling",
+			"pic": 41,
+			"state": 12,
+			"wait": 3,
+			"next": 0,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 27,
+				"y": 42,
+				"weaponact": 20,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"itr": [
+				{
+					"kind": 4,
+					"x": 33,
+					"y": 6,
+					"w": 26,
+					"h": 46,
+					"dvx": 2,
+					"fall": 70,
+					"vrest": 20,
+					"bdefend": 10,
+					"injury": 30
+				},
+				{
+					"kind": 4,
+					"x": 26,
+					"y": 43,
+					"w": 21,
+					"h": 29,
+					"dvx": 2,
+					"fall": 70,
+					"vrest": 20,
+					"bdefend": 10,
+					"injury": 30
+				}
+			],
+			"bdy": {
+				"kind": 0,
+				"x": 28,
+				"y": 27,
+				"w": 24,
+				"h": 26
+			}
+		},
+		"188": {
+			"name": "falling",
+			"pic": 42,
+			"state": 12,
+			"wait": 3,
+			"next": 0,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 29,
+				"y": 35,
+				"weaponact": 22,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"itr": {
+				"kind": 4,
+				"x": 14,
+				"y": 29,
+				"w": 58,
+				"h": 23,
+				"dvx": 2,
+				"fall": 70,
+				"vrest": 20,
+				"bdefend": 10,
+				"injury": 30
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 30,
+				"y": 31,
+				"w": 24,
+				"h": 21
+			}
+		},
+		"189": {
+			"name": "falling",
+			"pic": 43,
+			"state": 12,
+			"wait": 3,
+			"next": 0,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 31,
+				"y": 50,
+				"weaponact": 25,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"itr": [
+				{
+					"kind": 4,
+					"x": 24,
+					"y": 27,
+					"w": 26,
+					"h": 28,
+					"dvx": 2,
+					"fall": 70,
+					"vrest": 20,
+					"bdefend": 10,
+					"injury": 30
+				},
+				{
+					"kind": 4,
+					"x": 37,
+					"y": 45,
+					"w": 31,
+					"h": 28,
+					"dvx": 2,
+					"fall": 70,
+					"vrest": 20,
+					"bdefend": 10,
+					"injury": 30
+				}
+			],
+			"bdy": {
+				"kind": 0,
+				"x": 30,
+				"y": 39,
+				"w": 23,
+				"h": 21
+			}
+		},
+		"190": {
+			"name": "falling",
+			"pic": 44,
+			"state": 12,
+			"wait": 3,
+			"next": 0,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 75,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 31,
+				"y": 74,
+				"weaponact": 24,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			}
+		},
+		"191": {
+			"name": "falling",
+			"pic": 45,
+			"state": 12,
+			"wait": 3,
+			"next": 0,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 29,
+				"y": 67,
+				"weaponact": 25,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			}
+		},
+		"200": {
+			"name": "ice",
+			"pic": 105,
+			"state": 15,
+			"wait": 2,
+			"next": 201,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 18,
+				"y": 45,
+				"weaponact": 20,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 10,
+				"y": 9,
+				"w": 55,
+				"h": 68
+			}
+		},
+		"201": {
+			"name": "ice",
+			"pic": 115,
+			"state": 13,
+			"wait": 90,
+			"next": 202,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 20,
+				"y": 55,
+				"weaponact": 35,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"itr": {
+				"kind": 14,
+				"x": 8,
+				"y": 6,
+				"w": 67,
+				"h": 73,
+				"vrest": 1
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 8,
+				"y": 6,
+				"w": 67,
+				"h": 73
+			}
+		},
+		"202": {
+			"name": "ice",
+			"pic": 105,
+			"state": 15,
+			"wait": 1,
+			"next": 182,
+			"dvx": -4,
+			"dvy": -3,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 18,
+				"y": 44,
+				"weaponact": 20,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 8,
+				"y": 6,
+				"w": 67,
+				"h": 73
+			}
+		},
+		"203": {
+			"name": "fire",
+			"pic": 100,
+			"state": 18,
+			"wait": 1,
+			"next": 204,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 42,
+				"y": 46,
+				"weaponact": 21,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"itr": {
+				"kind": 0,
+				"x": 22,
+				"y": 35,
+				"w": 26,
+				"h": 19,
+				"dvx": -6,
+				"dvy": -6,
+				"fall": 70,
+				"vrest": 10,
+				"bdefend": 16,
+				"injury": 30,
+				"effect": 20
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 22,
+				"y": 35,
+				"w": 26,
+				"h": 19
+			}
+		},
+		"204": {
+			"name": "fire",
+			"pic": 101,
+			"state": 18,
+			"wait": 1,
+			"next": 203,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 42,
+				"y": 46,
+				"weaponact": 21,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"itr": {
+				"kind": 0,
+				"x": 22,
+				"y": 35,
+				"w": 26,
+				"h": 19,
+				"dvx": -6,
+				"dvy": -6,
+				"fall": 70,
+				"vrest": 10,
+				"bdefend": 16,
+				"injury": 30,
+				"effect": 20
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 22,
+				"y": 35,
+				"w": 26,
+				"h": 19
+			}
+		},
+		"205": {
+			"name": "fire",
+			"pic": 110,
+			"state": 18,
+			"wait": 1,
+			"next": 206,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 30,
+				"y": 33,
+				"weaponact": 20,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"itr": {
+				"kind": 0,
+				"x": 22,
+				"y": 35,
+				"w": 26,
+				"h": 19,
+				"dvx": -6,
+				"dvy": -6,
+				"fall": 70,
+				"vrest": 10,
+				"bdefend": 16,
+				"injury": 30,
+				"effect": 20
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 22,
+				"y": 35,
+				"w": 26,
+				"h": 19
+			}
+		},
+		"206": {
+			"name": "fire",
+			"pic": 111,
+			"state": 18,
+			"wait": 1,
+			"next": 205,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 30,
+				"y": 33,
+				"weaponact": 20,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"itr": {
+				"kind": 0,
+				"x": 22,
+				"y": 35,
+				"w": 26,
+				"h": 19,
+				"dvx": -6,
+				"dvy": -6,
+				"fall": 70,
+				"vrest": 10,
+				"bdefend": 16,
+				"injury": 30,
+				"effect": 20
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 22,
+				"y": 35,
+				"w": 26,
+				"h": 19
+			}
+		},
+		"207": {
+			"name": "tired",
+			"pic": 69,
+			"state": 15,
+			"wait": 2,
+			"next": 0,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 42,
+				"y": 64,
+				"weaponact": 22,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": [
+				{
+					"kind": 0,
+					"x": 44,
+					"y": 28,
+					"w": 22,
+					"h": 37
+				},
+				{
+					"kind": 0,
+					"x": 28,
+					"y": 47,
+					"w": 28,
+					"h": 35
+				}
+			]
+		},
+		"210": {
+			"name": "jump",
+			"pic": 60,
+			"state": 4,
+			"wait": 1,
+			"next": 211,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 24,
+				"y": 53,
+				"weaponact": 35,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": [
+				{
+					"kind": 0,
+					"x": 33,
+					"y": 33,
+					"w": 20,
+					"h": 48
+				},
+				{
+					"kind": 0,
+					"x": 25,
+					"y": 50,
+					"w": 15,
+					"h": 29
+				}
+			]
+		},
+		"211": {
+			"name": "jump",
+			"pic": 61,
+			"state": 4,
+			"wait": 1,
+			"next": 212,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"sound": "data\\017.wav",
+			"wpoint": {
+				"kind": 1,
+				"x": 23,
+				"y": 54,
+				"weaponact": 20,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": [
+				{
+					"kind": 0,
+					"x": 15,
+					"y": 41,
+					"w": 48,
+					"h": 20
+				},
+				{
+					"kind": 0,
+					"x": 25,
+					"y": 55,
+					"w": 30,
+					"h": 27
+				}
+			]
+		},
+		"212": {
+			"name": "jump",
+			"pic": 62,
+			"state": 4,
+			"wait": 1,
+			"next": 0,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"bpoint": {
+				"x": 43,
+				"y": 27
+			},
+			"wpoint": {
+				"kind": 1,
+				"x": 25,
+				"y": 37,
+				"weaponact": 34,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": [
+				{
+					"kind": 0,
+					"x": 31,
+					"y": 15,
+					"w": 21,
+					"h": 64
+				},
+				{
+					"kind": 0,
+					"x": 18,
+					"y": 29,
+					"w": 48,
+					"h": 17
+				}
+			]
+		},
+		"213": {
+			"name": "dash",
+			"pic": 63,
+			"state": 5,
+			"wait": 8,
+			"next": 216,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"bpoint": {
+				"x": 58,
+				"y": 32
+			},
+			"wpoint": {
+				"kind": 1,
+				"x": 30,
+				"y": 39,
+				"weaponact": 25,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": [
+				{
+					"kind": 0,
+					"x": 46,
+					"y": 18,
+					"w": 22,
+					"h": 25
+				},
+				{
+					"kind": 0,
+					"x": 28,
+					"y": 29,
+					"w": 21,
+					"h": 33
+				},
+				{
+					"kind": 0,
+					"x": 13,
+					"y": 54,
+					"w": 18,
+					"h": 17
+				}
+			]
+		},
+		"214": {
+			"name": "dash",
+			"pic": 64,
+			"state": 5,
+			"wait": 8,
+			"next": 217,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"bpoint": {
+				"x": 27,
+				"y": 29
+			},
+			"wpoint": {
+				"kind": 1,
+				"x": 34,
+				"y": 41,
+				"weaponact": 21,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 18,
+				"y": 14,
+				"w": 19,
+				"h": 27
+			}
+		},
+		"215": {
+			"name": "crouch",
+			"pic": 60,
+			"state": 15,
+			"wait": 2,
+			"next": 999,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"sound": "data\\012.wav",
+			"wpoint": {
+				"kind": 1,
+				"x": 22,
+				"y": 54,
+				"weaponact": 35,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 26,
+				"y": 40,
+				"w": 29,
+				"h": 38
+			}
+		},
+		"216": {
+			"name": "dash",
+			"pic": 112,
+			"state": 5,
+			"wait": 2,
+			"next": 0,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"bpoint": {
+				"x": 56,
+				"y": 35
+			},
+			"wpoint": {
+				"kind": 1,
+				"x": 24,
+				"y": 37,
+				"weaponact": 25,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": [
+				{
+					"kind": 0,
+					"x": 42,
+					"y": 15,
+					"w": 24,
+					"h": 21
+				},
+				{
+					"kind": 0,
+					"x": 16,
+					"y": 30,
+					"w": 39,
+					"h": 37
+				}
+			]
+		},
+		"217": {
+			"name": "dash",
+			"pic": 113,
+			"state": 5,
+			"wait": 2,
+			"next": 0,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"bpoint": {
+				"x": 25,
+				"y": 32
+			},
+			"wpoint": {
+				"kind": 1,
+				"x": 31,
+				"y": 50,
+				"weaponact": 21,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 18,
+				"y": 13,
+				"w": 29,
+				"h": 51
+			}
+		},
+		"218": {
+			"name": "stop_running",
+			"pic": 114,
+			"state": 15,
+			"wait": 5,
+			"next": 999,
+			"dvx": 1,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"sound": "data\\009.wav",
+			"bpoint": {
+				"x": 35,
+				"y": 40
+			},
+			"wpoint": {
+				"kind": 1,
+				"x": 14,
+				"y": 50,
+				"weaponact": 35,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": [
+				{
+					"kind": 0,
+					"x": 17,
+					"y": 25,
+					"w": 30,
+					"h": 55
+				},
+				{
+					"kind": 0,
+					"x": 45,
+					"y": 47,
+					"w": 16,
+					"h": 32
+				}
+			]
+		},
+		"219": {
+			"name": "crouch2",
+			"pic": 60,
+			"state": 15,
+			"wait": 2,
+			"next": 999,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"sound": "data\\012.wav",
+			"wpoint": {
+				"kind": 1,
+				"x": 23,
+				"y": 53,
+				"weaponact": 35,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 26,
+				"y": 36,
+				"w": 29,
+				"h": 44
+			}
+		},
+		"220": {
+			"name": "injured",
+			"pic": 120,
+			"state": 11,
+			"wait": 2,
+			"next": 221,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 47,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 57,
+				"y": 48,
+				"weaponact": 35,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": [
+				{
+					"kind": 0,
+					"x": 47,
+					"y": 23,
+					"w": 23,
+					"h": 54
+				},
+				{
+					"kind": 0,
+					"x": 29,
+					"y": 41,
+					"w": 20,
+					"h": 37
+				}
+			]
+		},
+		"221": {
+			"name": "injured",
+			"pic": 121,
+			"state": 11,
+			"wait": 3,
+			"next": 999,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 44,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 56,
+				"y": 51,
+				"weaponact": 35,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": [
+				{
+					"kind": 0,
+					"x": 46,
+					"y": 23,
+					"w": 21,
+					"h": 56
+				},
+				{
+					"kind": 0,
+					"x": 30,
+					"y": 40,
+					"w": 17,
+					"h": 41
+				}
+			]
+		},
+		"222": {
+			"name": "injured",
+			"pic": 123,
+			"state": 11,
+			"wait": 2,
+			"next": 223,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 22,
+				"y": 56,
+				"weaponact": 35,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": [
+				{
+					"kind": 0,
+					"x": 11,
+					"y": 24,
+					"w": 39,
+					"h": 31
+				},
+				{
+					"kind": 0,
+					"x": 25,
+					"y": 53,
+					"w": 40,
+					"h": 27
+				}
+			]
+		},
+		"223": {
+			"name": "injured",
+			"pic": 124,
+			"state": 11,
+			"wait": 3,
+			"next": 999,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 21,
+				"y": 50,
+				"weaponact": 20,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": [
+				{
+					"kind": 0,
+					"x": 12,
+					"y": 23,
+					"w": 40,
+					"h": 37
+				},
+				{
+					"kind": 0,
+					"x": 27,
+					"y": 56,
+					"w": 36,
+					"h": 24
+				}
+			]
+		},
+		"224": {
+			"name": "injured",
+			"pic": 130,
+			"state": 11,
+			"wait": 2,
+			"next": 225,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 48,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 32,
+				"y": 53,
+				"weaponact": 35,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": [
+				{
+					"kind": 0,
+					"x": 32,
+					"y": 18,
+					"w": 28,
+					"h": 60
+				},
+				{
+					"kind": 0,
+					"x": 52,
+					"y": 38,
+					"w": 20,
+					"h": 19
+				}
+			]
+		},
+		"225": {
+			"name": "injured",
+			"pic": 131,
+			"state": 11,
+			"wait": 3,
+			"next": 999,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 27,
+				"y": 51,
+				"weaponact": 35,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 24,
+				"y": 18,
+				"w": 35,
+				"h": 63
+			}
+		},
+		"226": {
+			"name": "injured",
+			"pic": 120,
+			"state": 16,
+			"wait": 6,
+			"next": 227,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 58,
+				"y": 49,
+				"weaponact": 35,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"itr": {
+				"kind": 6,
+				"x": 6,
+				"y": 12,
+				"w": 85,
+				"h": 68,
+				"vrest": 1
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 27,
+				"y": 22,
+				"w": 42,
+				"h": 58
+			}
+		},
+		"227": {
+			"name": "injured",
+			"pic": 122,
+			"state": 16,
+			"wait": 6,
+			"next": 228,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 37,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 56,
+				"y": 51,
+				"weaponact": 35,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"itr": {
+				"kind": 6,
+				"x": 6,
+				"y": 12,
+				"w": 85,
+				"h": 68,
+				"vrest": 1
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 28,
+				"y": 24,
+				"w": 39,
+				"h": 57
+			}
+		},
+		"228": {
+			"name": "injured",
+			"pic": 121,
+			"state": 16,
+			"wait": 6,
+			"next": 229,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 56,
+				"y": 51,
+				"weaponact": 35,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"itr": {
+				"kind": 6,
+				"x": 6,
+				"y": 12,
+				"w": 85,
+				"h": 68,
+				"vrest": 1
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 28,
+				"y": 23,
+				"w": 37,
+				"h": 58
+			}
+		},
+		"229": {
+			"name": "injured",
+			"pic": 122,
+			"state": 16,
+			"wait": 6,
+			"next": 999,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 37,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 55,
+				"y": 51,
+				"weaponact": 35,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"itr": {
+				"kind": 6,
+				"x": 6,
+				"y": 12,
+				"w": 85,
+				"h": 68,
+				"vrest": 1
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 29,
+				"y": 26,
+				"w": 37,
+				"h": 53
+			}
+		},
+		"230": {
+			"name": "lying",
+			"pic": 34,
+			"state": 14,
+			"wait": 30,
+			"next": 219,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 72,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 35,
+				"y": 74,
+				"weaponact": 32,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			}
+		},
+		"231": {
+			"name": "lying",
+			"pic": 44,
+			"state": 14,
+			"wait": 30,
+			"next": 219,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 75,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 32,
+				"y": 74,
+				"weaponact": 24,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			}
+		},
+		"232": {
+			"name": "throw_lying_man",
+			"pic": 27,
+			"state": 9,
+			"wait": 7,
+			"next": 233,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"cpoint": {
+				"kind": 1,
+				"x": 28,
+				"y": 9,
+				"vaction": 135,
+				"throwvz": -842150451,
+				"throwinjury": -842150451,
+				"dircontrol": 1
+			},
+			"wpoint": {
+				"kind": 1,
+				"x": 20,
+				"y": 26,
+				"weaponact": 31,
+				"attacking": 0,
+				"cover": 0,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": {
+				"kind": 0,
+				"x": 28,
+				"y": 19,
+				"w": 30,
+				"h": 62
+			}
+		},
+		"233": {
+			"name": "throw_lying_man",
+			"pic": 28,
+			"state": 9,
+			"wait": 1,
+			"next": 234,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 45,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"sound": "data\\007.wav",
+			"cpoint": {
+				"kind": 1,
+				"x": 72,
+				"y": 53,
+				"vaction": 181,
+				"throwvx": 13,
+				"throwvy": -7,
+				"throwvz": 3,
+				"throwinjury": 30
+			},
+			"wpoint": {
+				"kind": 1,
+				"x": 41,
+				"y": 49,
+				"weaponact": 25,
+				"attacking": 0,
+				"cover": 1,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": [
+				{
+					"kind": 0,
+					"x": 8,
+					"y": 39,
+					"w": 61,
+					"h": 23
+				},
+				{
+					"kind": 0,
+					"x": 19,
+					"y": 56,
+					"w": 30,
+					"h": 24
+				}
+			]
+		},
+		"234": {
+			"name": "throw_lying_man",
+			"pic": 28,
+			"state": 9,
+			"wait": 10,
+			"next": 999,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 45,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"wpoint": {
+				"kind": 1,
+				"x": 41,
+				"y": 49,
+				"weaponact": 25,
+				"attacking": 0,
+				"cover": 1,
+				"dvx": 0,
+				"dvy": 0,
+				"dvz": 0
+			},
+			"bdy": [
+				{
+					"kind": 0,
+					"x": 8,
+					"y": 39,
+					"w": 61,
+					"h": 23
+				},
+				{
+					"kind": 0,
+					"x": 19,
+					"y": 56,
+					"w": 30,
+					"h": 24
+				}
+			]
+		},
+		"399": {
+			"name": "dummy",
+			"pic": 0,
+			"state": 0,
+			"wait": 0,
+			"next": 0,
+			"dvx": 0,
+			"dvy": 0,
+			"dvz": 0,
+			"centerx": 39,
+			"centery": 79,
+			"hit_a": 0,
+			"hit_d": 0,
+			"hit_j": 0,
+			"bdy": {
+				"kind": 0,
+				"x": 21,
+				"y": 18,
+				"w": 43,
+				"h": 62
+			}
+		}
+	}
+}
+
+}
+//----scene.js----
+{//scene in F.LF
+//	keeps a list a characters and items
+//	scrolling across the background
+/*	vol= //the volume format
+	{
+		x, y, z, //the reference point
+		vx, vy, vw, vh, //the volume defined with reference to (x,y,z)
+		zwidth	//zwidth spans into the +ve and -ve direction
+	}
+ */
+//require: F.core/collision.js, F.core/math.js
+
+if( typeof F=='undefined') F=new Object();
+if( typeof F.LF=='undefined') F.LF=new Object();
+if( typeof F.LF.scene=='undefined') //#ifndef
+{
+
+F.LF.scene = function(config)
+{
+	this.obj = new Array(); //all objects
+}
+
+F.LF.scene.prototype.add = function(C)
+{
+	this.obj.push(C);
+	C.id = this.obj.length-1;
+}
+
+F.LF.scene.prototype.query = function(volume, This) //return the all the objects whose `bdy` intersect with `volume`
+							//except `This`
+{
+	var result=[];
+	for ( var i in this.obj)
+	{
+		if( this.obj[i] === This)
+			continue;
+
+		var bdy = this.obj[i].bdy();
+		for( var j in bdy)
+		{
+			if( this.intersect( volume, bdy[j] ))
+			{
+				result.push( this.obj[i] );
+				break;
+			}
+		}
+	}
+	return result;
+}
+
+F.LF.scene.prototype.intersect = function(A,B) //return true if volume A and B intersect
+{
+	var AV={ left:A.x+A.vx, top:A.y+A.vy, right:A.x+A.vx+A.w, bottom:A.y+A.vy+A.h };
+	var BV={ left:B.x+B.vx, top:B.y+B.vy, right:B.x+B.vx+B.w, bottom:B.y+B.vy+B.h };
+
+	return ( F.collision.rect( AV, BV ) && F.collision.rect(
+	{ left:A.z-A.zwidth, top:0, right:A.z+A.zwidth, bottom:1 },
+	{ left:B.z-B.zwidth, top:0, right:B.z+B.zwidth, bottom:1 }
+	));
+}
+
+F.LF.scene.prototype.distance=function(A,B) //return the distance between object A and B, as measured at center points
+{
+	var dx= (A.x+A.centerx) - (B.x+B.centerx);
+	var dy= A.y - B.y;
+	var dz= (A.z+A.centery) - (B.z+B.centery);
+
+	return Math.sqrt(dx*dx+dy*dy+dz*dz);
+}
+
+} //#endif
+
+}
+//----F.LF/sprite.js----
+{//sprite-animator for LF2
+//	accept a bmp object (defined in data file) as config
+//	support switching frames between multiple image files
+//require: F.core/sprite.js
+
+if( typeof F=='undefined') F=new Object();
+if( typeof F.LF=='undefined') F.LF=new Object();
+if( typeof F.LF.sprite=='undefined') //#ifndef
+{
+
+F.LF.sprite=function(bmp, parent)
+{
+	var num_of_images = this.num_of_images = bmp.file.length;
+	var w = this.w = bmp.file[0].w+1;
+	var h = this.h = bmp.file[0].h+1;
+	var ani = this.ani = new Array();
+	this.dir = 'right';
+	this.cur_img = '0r';
+
+	var sp_con=
+	{
+		canvas: parent,
+		wh: {x:w,y:h},
+		img:{}
+	}
+	var sp = this.sp = new F.sprite(sp_con);
+
+	for( var i=0; i<bmp.file.length; i++)
+	{
+		var imgpath='';
+		for( var j in bmp.file[i])
+		{
+			if( typeof bmp.file[i][j] === 'string' &&
+			    j.indexOf('file')===0 )
+				imgpath = bmp.file[i][j];
+		}
+		if( imgpath==='')
+			alert( 'cannot find img path in data:\n'+JSON.stringify(bmp.file[i]) );
+		sp.add_img( imgpath, i+'r');
+		if( bmp.file[i]['mirror'])
+		{
+			sp.add_img( bmp.file[i]['mirror'], i+'l');
+		}
+		else
+		{
+			var ext=imgpath.lastIndexOf('.');
+			sp.add_img( imgpath.slice(0,ext)+'_mirror'+imgpath.slice(ext), i+'l');
+		}
+
+		var ani_con=
+		{
+			x:0,  y:0,   //top left margin of the frames
+			w:bmp.file[i].w+1, h:bmp.file[i].h+1,    //width, height of a frame
+			gx:bmp.file[i].row, gy:bmp.file[i].col,//define a gx*gy grid of frames
+			tar:sp     //target F.sprite
+		};
+		var ani_mirror_con=
+		{
+			x:(bmp.file[i].row-1)*(bmp.file[i].w+1),  y:0,
+			w:-bmp.file[i].w-1, h:bmp.file[i].h+1,
+			gx:bmp.file[i].row, gy:bmp.file[i].col,
+			tar:sp
+		};
+		ani[i+'r'] = new F.animator(ani_con);
+		ani[i+'l'] = new F.animator(ani_mirror_con);
+	}
+}
+
+F.LF.sprite.prototype.show_pic = function(I)
+{
+	var slot=0;
+	for( var k in this.ani)
+	{
+		var i = I - this.ani[k].config.gx * this.ani[k].config.gy;
+		if( i >= 0)
+		{
+			I = i;
+			slot++;
+		}
+	}
+	this.cur_img = slot + (this.dir==='right' ? 'r':'l');
+	this.ani[this.cur_img].set_frame(I);
+	this.sp.switch_img(this.cur_img);
+	this.w = this.ani[this.cur_img].config.w;
+	this.w = this.w > 0 ? this.w:-this.w;
+	this.h = this.ani[this.cur_img].config.h;
+}
+
+F.LF.sprite.prototype.switch_lr = function(dir) //switch to `dir`
+{
+	var I = this.ani[this.cur_img].I;
+	this.dir=dir;
+	this.cur_img = this.cur_img.slice(0,-1) + (this.dir==='right' ? 'r':'l');
+	this.sp.switch_img(this.cur_img);
+	this.ani[this.cur_img].set_frame(I);
+}
+
+F.LF.sprite.prototype.set_xy = function(P)
+{
+	this.sp.set_xy(P);
+}
+F.LF.sprite.prototype.set_z = function(Z)
+{
+	this.sp.set_z(Z);
+}
+
+} //#endif
+}
+//----character.js----
+{//character in F.LF
+/*	config=
+	{
+		controller,
+		scene //F.LF.scene object
+	}
+ */
+/*
+reference:
+-milestone
+http://home.i-cable.com/starskywong/en_progress1.html
+-interaction
+http://lf-empire.de/en/lf2-empire/data-changing/frame-elements/174-itr-interaction
+-effects
+http://www.lf-empire.de/en/lf2-empire/data-changing/reference-pages/181-effects
+ */
+
+if( typeof F=='undefined') F=new Object();
+if( typeof F.LF=='undefined') F.LF=new Object();
+if( typeof F.LF.character=='undefined') //#ifndef
+{
+
+F.LF.character = function(config)
+{
+	//data file
+	var dat = bandit;
+	this.name=dat.bmp.name;
+	this.type='character';
+	var This=this;
+
+	//---status-----------------------------------------------------
+	this.hp=100;
+	this.mp=100;
+	this.bdefend=0;
+	this.fall=0;
+
+	//the state variable
+	var _wait=1; //when wait decreases to zero, a frame transition happens
+	var _next=999; //next frame
+	var _lock=0;
+	//frame transitions are caused differently: going to the next frame, a combo is pressed, being hit, or being burnt
+	//  and they can all happen *at the same TU*, to determine which frame to go to,
+	//  each cause is given an authority which is used to resolve frame transition conflicts.
+	//  _lock=0 means unlocked
+	//  common authority values:
+	//0-9: natural
+	//     0: natural
+	// 1x: combo
+	//    10: move,defend,jump,punch
+	//    15: special move
+	// 2x: interactions
+	//    20: being punch
+	//    25: hit by special attack
+	// 3x: strong interactions
+	//    30: environmental
+	//    35: fire, ice, blast
+
+	//frame
+	var framePN=0; //previous frame number
+	var frameN=0; //current frame number
+	var frame=dat.frame[0]; //current frame object
+
+	//itr
+	var arest=[]; //a history of what have been hit by me recently
+
+	//---configurations---------------------------------------------
+	var log={enable: false};
+	if( log.enable)
+	{
+		log=document.getElementById('log');
+		log.enable=true;
+	}
+
+	//combo list
+	var combo_con = [
+		{ name:'left', seq:['left']},
+		{ name:'right', seq:['right']},
+		{ name:'def', seq:['def']},
+		{ name:'jump', seq:['jump']},
+		{ name:'att', seq:['att']},
+		{ name:'run', seq:['right','right']},
+		{ name:'run', seq:['left','left']},
+		{ name:'hit_Da', seq:['def','down','att']},
+		{ name:'hit_Fa', seq:['def','left','att']},
+		{ name:'hit_Fa', seq:['def','right','att']},
+		{ name:'hit_Ua', seq:['def','up','att']},
+		{ name:'hit_Dj', seq:['def','down','jump']},
+		{ name:'hit_Fj', seq:['def','left','jump']},
+		{ name:'hit_Fj', seq:['def','right','jump']},
+		{ name:'hit_Uj', seq:['def','up','jump']},
+		{ name:'hit_ja', seq:['def','jump','att']}
+	];
+	//combo detector config
+	var dec_con =
+	{
+		rp: {up:99,down:99,left:99,right:99,def:99,jump:99,att:99}, //the same key must repeat no more than X times
+		timeout:30, //time to clear buffer (approx. 1s in 30fps)
+		comboout:8, //the max time interval(in frames) between keys to make a combo
+		callback: combo_event, //callback function when combo detected
+		no_repeat_key: true //eliminate repeated key strokes by browser
+	}
+
+	//---internal state machines------------------------------------
+
+	function switch_dir_fun(e)
+	{
+		if( dir==='left' && e==='right')
+		{
+			dir='right';
+			sp.switch_lr('right');
+		}
+		else if( dir==='right' && e==='left')
+		{
+			dir='left';
+			sp.switch_lr('left');
+		}
+	}
+	var switch_dir=true;
+
+	function dirh()
+	{
+		return (dir==='left'?-1:1);
+	}
+
+	function dirv()
+	{
+		var d=0;
+		if( con.state.up)   d-=1;
+		if( con.state.down) d+=1;
+		return d;
+	}
+
+	var effect_state_config=
+	{
+		event:
+		{
+			entry: 'vanish'
+		},
+
+		active:
+		{
+			event:
+			{
+				'TU': function()
+				{
+					if( effect.effect===0) //mechanical injury
+					{
+						if( effect.i>=-1 && effect.i<=1)
+						{
+							sp.set_xy({x:ps.x + 2.5*effect.i, y:ps.y+ps.z}); //defined oscillation amplitude for effect 0
+							effect.i++;
+							if( effect.i>1)
+								effect.i=-1;
+						}
+						else
+							effect.i=-1;
+					}
+				},
+				'vanish': 'vanish'
+			}
+		},
+
+		vanish:
+		{
+			event:
+			{
+				entry: function(S)
+				{
+					sp.set_xy({x:ps.x, y:ps.y+ps.z});
+					S.event_delay('dvxyz',1,'TU');
+				},
+				'dvxyz': function()
+				{
+					ps.vx += effect.dvx;
+					ps.vy += effect.dvy;
+				},
+				'new': 'active'
+			}
+		}
+	}
+
+	//---set up-----------------------------------------------------
+
+	//sprite
+	var sp = new F.LF.sprite(dat.bmp, document.getElementById('stage'));
+
+	//position, velocity
+	var ps = this.ps = {x:0, y:0, z:0, vx:0, vy:0, vz:0};
+
+	//direction switcher
+	var dir='right';
+
+	//controller
+	var con = config.controller;
+	if( log.enable)
+		var pri_con = new F.controller({log:'g'});
+
+	//combodec
+	var dec = new F.combodec(con, dec_con, combo_con);
+
+	//scene object
+	var scene = config.scene;
+
+	//effect
+	var effect=
+	{
+		i:0,
+		state: new F.states(effect_state_config),
+		dvx:0, dvy:0,
+		effect:0
+	};
+
+	//---the processing pipeline------------------------------------
+
+	function frame_update() //generic update done at every frame
+	{
+		//show frame
+		sp.show_pic(frame.pic);
+
+		//velocity
+		ps.vx+= dirh() * frame.dvx;
+		ps.vz+= dirv() * frame.dvz;
+		ps.vy+= frame.dvy;
+
+		//wait for next frame
+		set_wait(frame.wait,0);
+		set_next(frame.next,0);
+
+		//state specific update
+		var tar=states[frame.state];
+		if( tar) tar('frame');
+	}
+
+	function state_update() //generic update done at every TU (30fps)
+	{
+		//state specific actions
+		var tar=states[frame.state];
+		if( tar) tar('TU'); //a TU event
+
+		//position
+		ps.x += ps.vx;
+		ps.z += ps.vz;
+		ps.y += ps.vy;
+		if( ps.y>0) ps.y=0; //never below the ground
+		sp.set_xy({x:ps.x, y:ps.y+ps.z}); //projection onto screen
+		sp.set_z(ps.z); //z ordering
+
+		if( ps.y===0) //only on the ground
+		{	//friction proportional to speed
+			ps.vx *= 0.74; //defined coefficient of friction
+			ps.vz *= 0.74;
+			if( ps.vx>-1 && ps.vx<1) ps.vx=0; //defined minimum speed
+			if( ps.vz>-1 && ps.vz<1) ps.vz=0;
+		}
+
+		if( ps.y<0) //gravity
+			ps.vy+= 1.7; //defined gravity
+
+		if( ps.y===0 && ps.vy>0)
+		{
+			ps.vy=0; //set to zero
+			ps.vx*=0.34; //defined friction when fell onto ground
+			ps.vz*=0.34;
+		}
+		else if( ps.y+ps.vy>=0 && ps.vy>0) //predict falling onto the ground
+		{
+			var tar=states[frame.state]; //state specific processing
+			if( tar) var result=tar('fall_onto_ground');
+
+			if( result !== undefined && result !== null)
+				frame_trans(result, 30);
+			else
+			{
+				switch (frameN)
+				{
+				case 212: //jumping
+					frame_trans(215, 30); //crouch
+					break;
+				default:
+					frame_trans(219, 30); //crouch2
+				}
+			}
+		}
+
+		//recovery
+		if( This.fall>0) This.fall-=0.5; //default fall recover constant
+		if( This.bdefend>0) This.bdefend-=1; //default bdefend recover constant
+
+		//arest (attack rest)
+		for( var I in arest)
+		{
+			if( arest[I] > 0)
+				arest[I]--;
+		}
+	}
+
+	var states= //state specific processing to different events-----
+	{
+		'0':function(event,K) //standing
+		{ switch (event) {
+			case 'TU':
+				var dx=0, dz=0; //to resolve key conflicts
+				if( con.state.up)   dz -=1;
+				if( con.state.down) dz +=1;
+				if( con.state.left) dx -=1;
+				if( con.state.right)dx +=1;
+				if( dx || dz)
+					frame_trans(5);
+			break;
+
+			case 'combo':
+				switch(K)
+				{
+				case 'run':
+					frame_trans(9, 10);
+				break;
+				case 'def':
+					frame_trans(110, 10);
+				break;
+				case 'jump':
+					frame_trans(210, 10);
+				break;
+				case 'att':
+					var vol=make_volume(dat.frame[61].itr); //punch, frame 61
+					if( vol.zwidth===0) vol.zwidth=12; //default zwidth for itr
+					var hit= scene.query(vol,This);
+					var to_punch=true;
+					for( var t in hit)
+					{
+						if( hit[t].cur_state()===16)
+						{
+							frame_trans(70, 10);
+							to_punch=false;
+							break;
+						}
+					}
+					if( to_punch===true)
+						frame_trans(Math.random()<0.5? 60:65, 10);
+				break;
+				}
+			break;
+		}},
+
+		'1':function(event,K) //walking
+		{ switch (event) {
+			case 'TU':
+				if(con.state.up)    ps.z-=dat.bmp.walking_speedz;
+				if(con.state.down)  ps.z+=dat.bmp.walking_speedz;
+				if(con.state.left)  ps.x-=dat.bmp.walking_speed;
+				if(con.state.right) ps.x+=dat.bmp.walking_speed;
+
+				var dx=0, dz=0; //to resolve key conflicts
+				if( con.state.up)   dz -=1;
+				if( con.state.down) dz +=1;
+				if( con.state.left) dx -=1;
+				if( con.state.right)dx +=1;
+				if( !dx && !dz)
+					frame_trans(999); //go back to standing
+			break;
+
+			case 'frame':
+				fu.oscillate(5,8);
+				set_wait(dat.bmp.walking_frame_rate);
+			break;
+
+			case 'combo':
+				//walking same as standing
+				states['0'](event,K);
+			break;
+		}},
+
+		'2':function(event,K) //running
+		{ switch (event) {
+			case 'TU':
+				//to maintain the velocity against friction
+				ps.vx= dirh() * dat.bmp.running_speed;
+				ps.vz= dirv() * dat.bmp.running_speedz;
+			break;
+
+			case 'frame':
+				fu.oscillate(9,11);
+				set_wait(dat.bmp.running_frame_rate);
+			break;
+
+			case 'state_entry':
+				switch_dir=false;
+			break;
+
+			case 'combo':
+				switch(K)
+				{
+				case 'left': case 'right':
+					if(K!=dir)
+					{
+						frame_trans(218, 10);
+					}
+					break;
+				case 'def':
+					frame_trans(102, 10);
+					break;
+				case 'jump':
+					frame_trans(213, 10);
+					break;
+				case 'att':
+					frame_trans(85, 10);
+					break;
+				}
+			break;
+		}},
+
+		'3':function(event,K) //punch, jump_attack, run_attack, ...
+		{ switch (event) {
+			case 'frame':
+				if( frameN===81) //jump_attack
+					set_next(212); //back to jump
+			break;
+
+			case 'TU':
+				interaction();
+			break;
+
+			case 'state_entry':
+				switch_dir=false;
+			break;
+			case 'state_exit':
+				switch_dir=true;
+				if(con.state.left) switch_dir_fun('left');
+				if(con.state.right) switch_dir_fun('right');
+			break;
+		}},
+
+		'4':function(event,K) //jump
+		{ switch (event) {
+			case 'frame':
+				if( frameN===212 && framePN===211)
+				{	//start jumping
+					var dx = 0;
+					if( con.state.left)  dx-= 1;
+					if( con.state.right) dx+= 1;
+					ps.vx= dx * dat.bmp.jump_distance;
+					ps.vz= dirv() * dat.bmp.jump_distancez;
+					ps.vy= dat.bmp.jump_height; //upward force
+				}
+			break;
+
+			case 'TU':
+				if( frameN===212) //is jumping
+				{
+					if( con.state.att)
+					{
+						frame_trans(80, 10);
+					}
+				}
+			break;
+		}},
+
+		'5':function(event,K) //dash
+		{ switch (event) {
+			case 'state_entry':
+				switch_dir=true;
+				ps.vx= dirh() * dat.bmp.dash_distance;
+				ps.vz= dirv() * dat.bmp.dash_distancez;
+				ps.vy= dat.bmp.dash_height;
+			break;
+
+			case 'combo':
+				if( K==='att')
+				{
+					if( dirh()==(ps.vx>0?1:-1)) //only if not turning back
+					{
+						frame_trans(90, 10);
+					}
+				}
+				if( K==='left' || K==='right')
+				{
+					if( K!=dir)
+					{
+						if( dirh()==(ps.vx>0?1:-1))
+						{//turn back
+							if( frameN===213) frame_trans(214, 0);
+							if( frameN===216) frame_trans(217, 0);
+						}
+						else
+						{//turn to front
+							if( frameN===214) frame_trans(213, 0);
+							if( frameN===217) frame_trans(216, 0);
+						}
+					}
+				}
+			break;
+		}},
+
+		'6':function(event,K) //rowing
+		{ switch (event) {
+			case 'state_entry':
+				switch_dir=false;
+			break;
+			case 'state_exit':
+				switch_dir=true;
+			break;
+		}},
+
+		'7':function(event,K) //defending
+		{ switch (event) {
+			case 'state_entry':
+				switch_dir=false;
+			break;
+			case 'state_exit':
+				switch_dir=true;
+			break;
+			case 'frame':
+				if( frameN===111) set_wait(_wait+4);
+			break;
+		}},
+
+		'8':function(event,K) //broken defend
+		{ switch (event) {
+			case 'frame':
+				if( frameN===112) set_wait(_wait+4);
+			break;
+		}},
+
+		'11':function(event,K) //injured
+		{ switch (event) {
+			case 'frame':
+				switch(frameN)
+				{
+					case 220: case 222: case 226:
+						set_wait(_wait+2);
+					break;
+				}
+			break;
+		}},
+
+		'12':function(event,K) //falling
+		{ switch (event) {
+			case 'state_entry':
+				switch_dir=false;
+			break;
+
+			case 'frame':
+				switch (frameN)
+				{
+					case 180:
+						set_next(181);
+						break;
+					case 181:
+						set_next(182);
+						break;
+					case 182:
+						set_next(183);
+						break;
+					//
+					case 186:
+						set_next(187);
+						break;
+					case 187:
+						set_next(188);
+						break;
+					case 188:
+						set_next(189);
+						break;
+				}
+			break;
+
+			case 'fall_onto_ground':
+				if( ps.vx*ps.vx + ps.vy*ps.vy > 200) //defined square of speed to bounce up again
+				{
+					ps.vy *= -0.4; //defined bounce up coefficient
+					if( 180 <= frameN && frameN <= 184)
+						return 185;
+					if( 186 <= frameN && frameN <= 190)
+						return 191;
+				}
+				if( 180 <= frameN && frameN <= 185)
+					return 230; //next frame
+				if( 186 <= frameN && frameN <= 191)
+					return 231;
+			break;
+
+			case 'combo':
+			break;
+		}},
+
+		'14':function(event,K) //lying
+		{ switch (event) {
+			case 'state_exit':
+				This.fall=0;
+				This.bdefend=0;
+				switch_dir=true;
+			break;
+		}},
+
+		'15':function(event,K) //stop_running, crouch, crouch2, dash_attack
+		{ switch (event) {
+			case 'TU':
+				interaction();
+			break;
+
+			case 'combo':
+				if( frameN===215) //only after jumping
+				{
+					if( K==='def')
+					{
+						frame_trans(102, 10);
+					}
+					if( K==='jump')
+					{
+						if( con.state.left || con.state.right)
+							frame_trans(213, 10);
+						else
+						{
+							set_wait(_wait+2, 10);
+							set_next(210, 10);
+						}
+					}
+				}
+			break;
+
+			case 'state_entry':
+				switch_dir=false;
+			break;
+			case 'state_exit':
+				switch_dir=true; //re-enable switch dir
+				if(con.state.left) switch_dir_fun('left');
+				if(con.state.right) switch_dir_fun('right');
+			break;
+		}},
+
+		'16':function(event,K) //injured 2 (dance of pain)
+		{ switch (event) {
+		}},
+
+		'x':function(event,K)
+		{ switch (event) {
+		}}
+	}
+
+	var fu= //frame related functions
+	{
+		da:{}, //data area
+		oscillate:function(a,b) //oscillate between frame a and b
+		{
+			if( typeof fu.da.i==='undefined' || fu.da.i<a || fu.da.i>b)
+			{
+				fu.da.up=true;
+				fu.da.i=a+1;
+			}
+			if( fu.da.i<b && fu.da.up)
+				set_next(fu.da.i++);
+			else if( fu.da.i>a && !fu.da.up)
+				set_next(fu.da.i--);
+			if( fu.da.i==b) fu.da.up=false;
+			if( fu.da.i==a) fu.da.up=true;
+		}
+	}
+
+	function interaction() //generic processing of frame interactions
+	{
+		var itr=frame.itr;
+		if( itr)
+		if( itr.kind===0)
+		{
+			var vol=make_volume(itr);
+			if( vol.zwidth===0) vol.zwidth=12; //default zwidth for itr
+			var hit= scene.query(vol,This);
+			for( var t in hit)
+			{
+				if( !arest[ hit[t].id ])
+				{
+					hit[t].hit(itr,This); //hit you!
+
+					//rest: cannot attack you again for some time
+					if( itr.arest) var rest=itr.arest;
+					if( itr.vrest) var rest=itr.vrest;
+					if( rest===undefined) var rest=7;
+					arest[ hit[t].id ] = rest;
+
+					if( frameN===61 || frameN===66) //if punch
+						set_wait(_wait+3, 10); // stalls for 3 TU
+					else if( frameN===72)
+						set_wait(_wait+4, 10);
+
+					//attack one enemy only //TODO: attack the closest
+					//by sorting the hit array according to distance
+					if( itr.arest) break;
+				}
+			}
+		}
+	}
+
+	function combo_event(kobj)
+	{
+		var K=kobj.name;
+		//combo event
+		var tar=states[frame.state];
+		if( tar) tar('combo',K);
+
+		if( K=='left' || K=='right')
+			if( switch_dir)
+				switch_dir_fun(K);
+	}
+
+	function frame_trans(F,au)
+	{
+		set_next(F,au);
+		set_wait(0,au);
+	}
+
+	function set_wait(value,au)
+	{
+		if(!au) au=0; //authority
+		if( au >= _lock)
+		{
+			_lock=au;
+			_wait=value;
+		}
+	}
+
+	function set_next(value,au)
+	{
+		if(!au) au=0; //authority
+		if( au >= _lock)
+		{
+			_lock=au;
+			_next=value;
+		}
+	}
+
+	function make_volume(O)
+	{
+		if( !O)
+			return {
+				x:ps.x, y:ps.y, z:ps.z,
+				vx:0, vy:0, w:0, h:0, zwidth:0
+			};
+
+		if( dir==='right')
+		{
+			return {x:ps.x, y:ps.y, z:ps.z,
+				vx: O.x,
+				vy: O.y,
+				w : O.w,
+				h : O.h,
+				zwidth: O.zwidth? O.zwidth:0
+			}
+		}
+		else
+		{
+			var vx = sp.w-O.x-O.w;
+			return {x:ps.x+vx, y:ps.y, z:ps.z,
+				vx: vx,
+				vy: O.y,
+				w : O.w,
+				h : O.h,
+				zwidth: O.zwidth? O.zwidth:0
+			}
+		}
+	}
+
+	function logg(X)
+	{
+		if( log.enable)
+		{
+			if( pri_con.state.log)
+			{
+				log.value+= X;
+				if( log.value.length>10000) log.value='';
+				log.scrollTop+=20;
+			}
+		}
+	}
+
+	//---external interface-----------------------------------------
+	this.TU=function()
+	{
+		//fetch inputs
+		con.fetch();
+
+		//state
+		state_update();
+
+		//effect
+		effect.state.event('TU');
+
+		//combo detector
+		dec.frame();
+	}
+	this.trans=function()
+	{
+		var oldlock=_lock;
+		_lock=0; //reset transition lock
+
+		if( _wait===0)
+		{
+			if( _next===0)
+			{
+				//do nothing
+			}
+			else
+			{
+				if( _next===999)
+					_next=0;
+				framePN=frameN;
+				frameN=_next;
+					var tar=states[frame.state];
+					if( tar) tar('frame_exit');
+
+				if(frame.state !== dat.frame[_next].state)
+				{ //state transition
+					var tar1=states[frame.state];
+					if( tar1) tar1('state_exit');
+					var tar2=states[dat.frame[_next].state];
+					if( tar2) tar2('state_entry');
+				}
+
+				frame=dat.frame[_next];
+				frame_update();
+
+				if( oldlock===10) //combo
+					if( _wait>0)
+						_wait-=1;
+			}
+		}
+		else
+			_wait--;
+	}
+	this.set_pos=function(x,y,z)
+	{
+		ps.x=x; ps.y=y; ps.z=z;
+	}
+	this.dirv=dirv;
+	this.dirh=dirh;
+	this.bdy=function() //return the array of bdy volume of the current frame
+	{
+		if( frame.bdy instanceof Array)
+		{ //many bdy
+			if( frame.bdy.length === 2)
+			{ //unroll the loop
+				return ([make_volume(frame.bdy[0]),
+					make_volume(frame.bdy[1])
+				]);
+			}
+			else if( frame.bdy.length === 3)
+			{ //unroll the loop
+				return ([make_volume(frame.bdy[0]),
+					make_volume(frame.bdy[1]),
+					make_volume(frame.bdy[2])
+				]);
+			}
+			else
+			{
+				var B=[];
+				for( var i in frame.bdy)
+				{
+					B.push( make_volume(frame.bdy[i]) );
+				}
+				return B;
+			}
+		}
+		else
+		{ //1 bdy only
+			return ([make_volume(frame.bdy)]);
+		}
+	}
+	this.cur_state=function()
+	{
+		return frame.state;
+	}
+	this.hit=function(itr, att) //I am being hit by attacker `att`!
+	{
+		//kind 0 itr
+		//only type 0 effect
+		effect.dvx = itr.dvx ? att.dirh()*itr.dvx:0;
+		effect.dvy = itr.dvy ? itr.dvy:0;
+		effect.effect = itr.effect? itr.effect:0; //default effect type
+
+		//injury
+		if( itr.injury)	this.health -= itr.injury;
+
+		if( frame.state===7 &&
+		    (att.ps.x > ps.x)===(dir==='right')) //attacked in front
+		{
+			if( itr.bdefend) this.bdefend += itr.bdefend;
+			if( this.bdefend>40) //defined defend break
+			{
+				frame_trans(112, 20);
+			}
+			else //an effective defence
+			{
+				frame_trans(111, 20);
+			}
+		}
+		else
+		{
+			if( itr.fall)	this.fall += itr.fall;
+				else	this.fall += 20; //default fall
+			this.bdefend = 45; //lose defend ability immediately
+
+			//fall
+			var fall=this.fall;
+			if ( 0<fall && fall<=20)
+				frame_trans(220, 20);
+			else if (20<fall && fall<=40)
+				frame_trans(Math.random()<0.5? 222:224, 20);
+			else if (40<fall && fall<60)
+				frame_trans(226, 20);
+			else if (60<=fall) //defined KO
+			{
+				if( (att.ps.x > ps.x)===(dir==='right')) //attacked in front
+					frame_trans(180, 20);
+				else
+					frame_trans(186, 20); //attacked in back
+
+				if( !itr.dvy) effect.dvy = -6.9; //default dvy when falling
+			}
+		}
+
+		//effect
+		effect.state.event('new');
+		var vanish=3;
+		switch( _next)
+		{
+			case 111: vanish=4; break;
+			case 112: vanish=5; break;
+		}
+		effect.state.event_delay('vanish', vanish, 'TU');
+	}
+}
+
+} //#endif
+
+}
+//----keychanger.js----
+{//a key changer utility for LF2
+//require: F.core/controller.js
+
+if( typeof F=='undefined') F=new Object();
+if( typeof F.LF=='undefined') F.LF=new Object();
+if( typeof F.LF.keychanger=='undefined') //#ifndef
+{
+
+F.LF.keychanger=function (append_at, controllers)
+{
+	append_at.style.textAlign='center';
+
+	for( var i=0; i<controllers.length; i++)
+	{
+		add_player(controllers[i], i);
+	}
+
+	//the ok button
+	var rule = create_at(append_at,'div');
+	rule.style.clear='both';
+	var ok = create_at(append_at,'button');
+	ok.innerHTML='close';
+	ok.style.width='120px';
+	ok.onclick= function()
+	{	//when click, the ok button will try to purge everything
+		ok.onclick= null;
+		append_at.parentNode.removeChild(append_at);
+	}
+
+	function add_player(con, num)
+	{
+		if( num!==0)
+		{
+			var sep=create_at(append_at, 'div');
+			sep.style.float='left';
+			sep.innerHTML='&nbsp;&nbsp;&nbsp;&nbsp;';
+		}
+
+		var table=create_at(append_at, 'table');
+		table.style.float='left';
+
+		var row=[];
+		row[0]=create_at(table, 'tr');
+		var head= add_cell(row[0],'player '+(num+1));
+		head.colSpan='2';
+
+		var i=1;
+		for( var I in con.config)
+		{
+			row[i]=create_at(table, 'tr');
+			add_pair(row[i],I);
+			i++;
+		}
+
+		F.LF.keychanger.active=false;
+
+		function add_pair(R,name)
+		{
+			add_cell(R,name);
+			var cell=add_cell(R, con.config[name]);
+			cell.onclick=function()
+			{
+				if( !F.LF.keychanger.active)
+				{
+					F.LF.keychanger.active=true;
+					var This=this;
+					This.style.backgroundColor= "#FAA";
+					var hold=window.onkeydown;
+					window.onkeydown=function(e)
+					{
+						if (!e) e = window.event;
+						var value=e.keyCode;
+						window.onkeydown=hold;
+						cell.innerHTML=F.keycode_to_keyname(value);
+						con.config[name]=F.keycode_to_keyname(value);
+						con.keycode[name]=value;
+						This.style.backgroundColor= "#EEE";
+						F.LF.keychanger.active=false;
+					}
+				}
+			}
+		}
+	}
+
+	function create_at(parent, tag, id)
+	{
+		var E = document.createElement(tag);
+		parent.appendChild(E);
+		if( id)
+			E.id = id;
+		return E;
+	}
+
+	function add_cell(row, content)
+	{
+		var td = create_at(row, 'td')
+		td.innerHTML= content;
+		td.style.border="1px solid #AAA";
+		td.style.backgroundColor= "#EEE";
+		td.style.fontFamily="monospace";
+		td.style.width='40px';
+		td.style.textAlign='center';
+		return td;
+	}
+}
+
+}
+
+}
+//----demo2.js----
+{function demoSep12() {
+
+//set up controller-------------
+var control_con =
+{
+	up:'i',down:'k',left:'j',right:'l',def:'h',jump:'y',att:'t'
+};
+var control_con2 =
+{
+	up:'w',down:'x',left:'a',right:'d',def:'z',jump:'q',att:'s'
+};
+var control = new F.controller(control_con);
+var control2 = new F.controller(control_con2);
+control.sync=true;
+control2.sync=true;
+
+//user interface----------------
+document.getElementById('speed').onclick=function()
+{
+	if( slow_motion===false)
+	{
+		this.innerHTML='normal';
+		slow_motion=true;
+	}
+	else
+	{
+		this.innerHTML='slow motion';
+		slow_motion=false;
+	}
+}
+var keychanger = document.getElementById('keychanger');
+F.LF.keychanger(keychanger, [control, control2]);
+keychanger.style.backgroundColor='#FFF';
+keychanger.style.visibility='visible';
+
+//set up scene------------------
+var scene = new F.LF.scene();
+
+//set up a character------------
+var character = new F.LF.character( {controller: control, scene:scene} ); //choose from `control` and `control_play`
+var character2 = new F.LF.character( {controller: control2, scene:scene} );
+scene.add( character); character.set_pos(400,0,150);
+scene.add( character2); character2.set_pos(250,0,50);
+
+//---run time-------------------
+var timer30 = setInterval(frame30,1000/30.8);
+var counter=0;
+var slow_motion=false;
+function frame30()
+{
+	if( counter++===14)
+		counter=0;
+	if( slow_motion && counter!==0) return;
+
+	character.TU();
+	character2.TU();
+	character.trans();
+	character2.trans();
+
+	calculate_fps(1);
+}
+
+function calculate_fps(mul)
+{
+	if(!this.t) this.t=0;
+	var ot=this.time;
+	this.time = new Date().getTime();
+	var diff = this.time-ot;
+}
+
+}
+}
+demoSep12();
+</script>
+</body>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<title>F.LF Main</title>
+
+<xmp theme="projectf">
+
+# F.LF
+<img style='float:right; margin-left:20px;' src="http://2.bp.blogspot.com/-k-My1B-YlaU/T8JUBAYpu9I/AAAAAAAAACI/OnCvkzFF5jw/s1600/logo_l1_s.png" height="80"/>
+### the open source LF2
+F.LF attempts a clean room implementation of the famous fighter game [LF2](http://lf2.net). The F stands for the effort of [Project F](http://project--f.blogspot.com).
+<span id='mess'><br>try the [latest demo](demo/demo4.html)</span>
+<div style='clear:both'></div>
+<iframe id='demo' src='' style='display:none; border:none; width:850px; height:650px;'></iframe>
+
+## Summary
+- motivation
+	- LF2 is the most amazing fighter game ___ever___
+	- had a global community of sprite and data changers
+	- &#9785; but LF2 is close sourced and sometimes limiting
+- with F.LF we can
+	- &#9998; have complete freedom to modify
+	- &#9993; no source code copyright issues
+	- &#9992; put in a web page, play anywhere
+	- &#9819; continue the legend
+- because F.LF is
+	- open source
+	- HTML5: works everywhere with a browser
+	- thriving for 99% compatibility with LF2
+- we are calling for [contributors](docs/contribute.html), if you are a:
+	- programmer
+		- great! you can help the development
+	- data and sprite changer
+		- great! you can create mod like what you did for LF2
+		- you can help testing and fixing bugs
+	- game designer and developer
+		- awesome! we are close to production ready so keep [in touch](mailto:f.projector@gmail.com)
+- read more
+	- [about the project](docs/project.html)
+	- [documentation set](docs/index.html)
+	- source code: main repository on [github/tyt2y3/F.LF](https://github.com/tyt2y3/F.LF/)
+
+</xmp>
+
+<script>
+setTimeout(function()
+{
+	if( window.innerWidth > 800)
+	{
+		var demo=document.getElementById('demo');
+		demo.src='demo/demo4.html?embed';
+		demo.style.display='';
+		document.getElementById('mess').style.display='none';
+	}
+},1200);
+</script>
+<script src="docs/projectfdocs.js"></script>
+<script src="docs/strapdown_0_2/strapdown.js"></script>
+</html>

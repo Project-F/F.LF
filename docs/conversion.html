@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<title>F.LF/sprite conversion guide</title>
+
+<xmp theme="projectf">
+# sprite conversion guide
+LF2 sprites are in bmp and must be converted to png for use with F.LF. If you are converting sprites that worked with LF2, it is strongly recommended to preserve the color palette, because
+
+- we preserve every detail of LF2
+- the converted png is the smallest, about half of bmp
+
+__mtPaint__ is the perfect tool for doing pixel arts, and most importantly it is open source (we always recommend open source tools). you can download it [here](http://mtpaint.sourceforge.net/).
+
+1.
+Open the bmp, and observe the color palette. from the following image we can see that index 255 is the black.
+
+2.
+click `File` then `Save As`. select the `File Format` as `png`, and set the `Transparency index` as the index of black. Here we use 255. Usually color palette is sorted by intensity and black is the last on the list.
+
+3.
+click `Ok`. That's it.
+
+![](http://3.bp.blogspot.com/-D8nm02DiylY/UW1QOEqL6qI/AAAAAAAAANA/pzrc5atgX5s/s1600/mtpaint-saveas.png)
+![](http://4.bp.blogspot.com/-NyJyzZwnyzA/UW1QOKfagSI/AAAAAAAAAM8/9zn-xexhUGw/s1600/mtpaint-saveas-result.png)
+</xmp>
+
+<script src="projectfdocs.js"></script>
+<script src="strapdown_0_2/strapdown.js"></script>
+</html>
