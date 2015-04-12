@@ -3,7 +3,7 @@
  * 
  * sprite-animator for LF2
 \*/
-define(['F.core/sprite','F.core/animator'], function (Fsprite, Fanimator)
+define(['LF/sprite-select','F.core/animator'], function (Fsprite, Fanimator)
 {
 
 /*\
@@ -53,7 +53,7 @@ function sprite (bmp, parent)
 	var sp_con=
 	{
 		canvas: parent,
-		wh: {x:w,y:h},
+		wh: {w:w,h:h},
 		img:{}
 	}
 	/*\
@@ -145,7 +145,7 @@ sprite.prototype.switch_lr = function(dir) //switch to `dir`
 	if( dir!==this.dir)
 	{
 		this.dir=dir;
-		this.sp.mirror(dir==='left');
+		this.sp.set_flipx(dir==='left');
 	}
 }
 /*\

@@ -1,4 +1,4 @@
-define(['F.core/util','F.core/sprite','F.core/support','LF/global'],function(Futil,Fsprite,Fsupport,global)
+define(['F.core/util','LF/sprite-select','F.core/support','LF/global'],function(Futil,Fsprite,Fsupport,global)
 {
 	var GA = global.application;
 
@@ -18,11 +18,11 @@ define(['F.core/util','F.core/sprite','F.core/support','LF/global'],function(Fut
 
 	/* config=
 	{
-		layers:, //DOM node, layers holder, append bg layers here
-		floor:,  //DOM node, livingobjects holder, scroll this to move camera
-		scrollbar:,
+		layers      //layers holder, append bg layers here
+		scrollbar   //if true, append scrollbar here
 		camerachase:{character:} //camera only chase these characters
-		standalone:,	//no match, background viewer only
+		standalone  //no match, background viewer only
+		onscroll    //
 	}*/
 	function background(config,data,id)
 	{
@@ -34,13 +34,13 @@ define(['F.core/util','F.core/sprite','F.core/support','LF/global'],function(Fut
 			$.width = 1500;
 			$.zboundary = [0,300];
 			$.height=$.zboundary[1]-$.zboundary[0];
-			$.shadow={x:0,y:0,img:''}
+			$.shadow={x:0,y:0,img:''};
 			return;
 		}
+		$.sprite_layer = config.layers;
 		$.layers=[];
 		$.timed_layers=[];
 		$.timer=0;
-		$.floor = config.floor;
 		$.data = data;
 		$.name = data.name.replace(/_/g,' ');
 		$.id = id;
@@ -52,10 +52,11 @@ define(['F.core/util','F.core/sprite','F.core/support','LF/global'],function(Fut
 			x:0,y:0, //offset x,y
 			img:data.shadow
 		};
-		if( Fsupport.css3dtransform)
-			$.dropframe = 0;
-		else
+		if( Fsprite.renderer==='DOM' && !Fsupport.css3dtransform)
 			$.dropframe = 1;
+		else
+			$.dropframe = 0;
+
 		(function(){
 			var sp = new Fsprite({img:data.shadow});
 			sp.img[0].addEventListener('load', onload, true);
@@ -67,9 +68,6 @@ define(['F.core/util','F.core/sprite','F.core/support','LF/global'],function(Fut
 			}
 		}());
 
-		if( $.floor)
-			$.floor.style.width=$.width+'px';
-
 		if( config.scrollbar)
 		{
 			var sc = document.createElement('div');
@@ -79,13 +77,15 @@ define(['F.core/util','F.core/sprite','F.core/support','LF/global'],function(Fut
 			child.style.width=$.width+'px';
 			child.className = 'backgroundScrollChild';
 			sc.appendChild(child);
-			config.layers.parentNode.appendChild(sc);
+			config.scrollbar.appendChild(sc);
 			sc.onscroll=function()
 			{
 				if( $.camera_locked)
 				{
 					$.camerax=sc.scrollLeft;
 					$.scroll(sc.scrollLeft);
+					if( config.onscroll)
+						config.onscroll();
 				}
 			}
 			sc.onmousedown=function()
@@ -115,11 +115,13 @@ define(['F.core/util','F.core/sprite','F.core/support','LF/global'],function(Fut
 			$.camera_locked = true;
 
 		//create layers
-		if( $.floor)
 		$.layers.push({
-			sp: new Fsprite({div:$.floor,type:'group'}),
+			sp: new Fsprite({canvas:config.layers,type:'group'}),
 			ratio:1
 		});
+		$.layers[0].sp.set_w($.width);
+		$.layers[0].sp.set_z(3000);
+		$.floor = $.layers[0].sp;
 		var LAY = Futil.group_elements(data.layer,'width');
 		for( var i in LAY)
 		{
@@ -139,38 +141,55 @@ define(['F.core/util','F.core/sprite','F.core/support','LF/global'],function(Fut
 					//if `rect` is defined, `pic` will only be a dummy
 					sp_config=
 					{
-						canvas: lay.sp.el,
-						wh: {x:dlay.width, y:dlay.height}
+						canvas: lay.sp,
+						wh: {w:dlay.width, h:dlay.height}
 					}
 				}
-				else if( dlay.pic)	
+				else if( dlay.pic)
 				{
 					sp_config=
 					{
-						canvas: lay.sp.el,
+						canvas: lay.sp,
 						wh: 'fit',
 						img: dlay.pic
 					}
 				}
 				var sp;
-				if( !dlay.loop)
-				{
+				if( !dlay.loop && !dlay.tile)
+				{	//single item
 					sp = new Fsprite(sp_config);
 					sp.set_x_y( dlay.x, correct_y(dlay));
+					sp.set_z(data.layer.indexOf(dlay));
 					if( dlay.rect)
-						sp.el.style.background=color_conversion(dlay.rect);
+						sp.set_bgcolor(color_conversion(dlay.rect));
 				}
 				else
-				{
-					sp = new Fsprite({canvas:lay.sp.el,type:'group'}); //holder
-					sp_config.canvas = sp.el;
+				{	//a horizontal array
+					sp = new Fsprite({canvas:lay.sp,type:'group'}); //holder
+					sp_config.canvas = sp;
 					sp.set_x_y(0,0);
-					for( var xx=dlay.x; xx<dlay.width; xx += dlay.loop)
+					sp.set_z(data.layer.indexOf(dlay));
+					var left, right, interval;
+					if( dlay.loop)
+					{
+						left = dlay.x;
+						right = dlay.width;
+						interval = dlay.loop;
+					}
+					else if( dlay.tile)
+					{
+						left = dlay.x-dlay.width*Math.abs(dlay.tile);
+						right = dlay.width+dlay.width*Math.abs(dlay.tile);
+						interval = dlay.width;
+					}
+					for( var k=-1, xx=left; xx<right; xx+=interval, k++)
 					{
 						var spi = new Fsprite(sp_config);
 						spi.set_x_y( xx, dlay.y);
 						if( dlay.rect)
-							spi.el.style.background=color_conversion(dlay.rect);
+							spi.set_bgcolor(color_conversion(dlay.rect));
+						if( dlay.tile<0)
+							spi.set_flipx(!(k%2===0));
 					}
 				}
 				if( dlay.cc)
@@ -189,9 +208,10 @@ define(['F.core/util','F.core/sprite','F.core/support','LF/global'],function(Fut
 			$.carousel = {
 				type: config.standalone.carousel,
 				dir: 1,
-				speed: 1
+				speed: 5
 			};
 			$.camera_locked = false;
+			$.standalone = config.standalone;
 		}
 
 		//a very strange bug for the scene 'HK Coliseum' must be solved by hard coding
@@ -238,7 +258,8 @@ define(['F.core/util','F.core/sprite','F.core/support','LF/global'],function(Fut
 				(b+(b>64||b===0?7:0))+
 				')';
 			if( lookup && computed!==lookup)
-				console.log('computed:'+computed,'correct:'+lookup);
+				if( 0) //debug info
+					console.log('computed:'+computed,'correct:'+lookup);
 			if( lookup)
 				return lookup;
 			else
@@ -246,13 +267,32 @@ define(['F.core/util','F.core/sprite','F.core/support','LF/global'],function(Fut
 		}
 	}
 
-	//return true if the moving object is leaving the scene
-	background.prototype.leaving=function(ps)
+	background.prototype.destroy=function()
 	{
 		var $=this;
-		var nx=ps.x+ps.vx,
-			ny=ps.y+ps.vy;
-		return (nx<0 || nx>$.width || ny<-600 || ny>100);
+		if( $.name==='empty background')
+			return;
+		if ( $.layers)
+		for( var i=0; i<$.layers.length; i++)
+			$.layers[i].sp.remove();
+		if ( $.timed_layers)
+		for( var i=0; i<$.timed_layers.length; i++)
+			$.timed_layers[i].sp.remove();
+		if( $.scrollbar)
+			$.scrollbar.parentNode.removeChild($.scrollbar);
+		if( $.sprite_layer)
+			$.sprite_layer.remove_all();
+	}
+
+	//return true if the moving object is leaving the scene
+	background.prototype.leaving=function(o, xt)
+	{
+		var $=this;
+		if( !xt)
+			xt = 0;
+		var nx=o.ps.sx+o.ps.vx,
+			ny=o.ps.sy+o.ps.vy;
+		return (nx+o.sp.width<0-xt || nx>$.width+xt || ny<-600 || ny>100);
 	}
 
 	//get an absolute position using a ratio, e.g. get_pos(0.5,0.5) is exactly the mid point
@@ -266,7 +306,14 @@ define(['F.core/util','F.core/sprite','F.core/support','LF/global'],function(Fut
 	{
 		var $=this;
 		for( var i=0; i<$.layers.length; i++)
-			$.layers[i].sp.set_x_y(-(X*$.layers[i].ratio),0);
+			$.layers[i].sp.set_x_y(round(-(X*$.layers[i].ratio)),0);
+		function round(x)
+		{
+			if( i===0)
+				return x|0;
+			else
+				return x;
+		}
 	}
 
 	var screenW=GA.window.width,
@@ -314,7 +361,7 @@ define(['F.core/util','F.core/sprite','F.core/support','LF/global'],function(Fut
 			else if( $.carousel.type==='linear')
 			{
 				var lastscroll = $.scrollbar.scrollLeft;
-				$.scrollbar.scrollLeft += $.width/200*$.carousel.speed*$.carousel.dir;
+				$.scrollbar.scrollLeft += $.carousel.speed*$.carousel.dir;
 				if( lastscroll === $.scrollbar.scrollLeft)
 					$.carousel.dir *= -1;
 				$.scroll($.scrollbar.scrollLeft);
@@ -330,6 +377,8 @@ define(['F.core/util','F.core/sprite','F.core/support','LF/global'],function(Fut
 			else
 				lay.sp.hide();
 		}
+		if( $.standalone)
+			$.standalone.canvas.render();
 		$.timer++;
 	}
 

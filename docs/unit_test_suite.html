@@ -60,6 +60,9 @@ While errors in dx,dy can be useful, it cannot meaningfully describe an overall 
 
 ## A note to fixing errors
 Since a computer simulation has infinite cases and unit testing is never exhaustive, it can only guarantee key aspects of the system have met expectation. It requires human's analysis and judgement to improve the engine systematically. One should not attempt eliminating errors exhaustively in a case-by-case, pixel-by-pixel manner. Instead, observe patterns, generalize. Think about the mechanisms.
+
+## Data logging
+Every time the test suite finish running all the cases, a result summary will be sent to [F.LF test log](https://docs.google.com/spreadsheet/lv?key=0AqAWO3FZ2ZFrdGZBa2xDNzdDeVdhNU9UQVMtaklpQXc&type=view&gid=0&f=false&sortcolid=20&sortasc=false&rowsperpage=250). Note that it will not include any personal information, and is completely anonymous. The summary includes file name, number of passed tests, number of finished tests and total error. If you wish to opt out of logging, append `'?no_log'` at the location bar.
 </xmp>
 
 <script src="projectfdocs.js"></script>

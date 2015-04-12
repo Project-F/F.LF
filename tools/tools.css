@@ -49,10 +49,10 @@ td
 	padding: 5px;
 	margin-bottom: 5px;
 }
-.canvas
+.window
 {
-position:relative;
-width:800px;
-height:300px;
-border:1px solid #000;
+	position:relative;
+	width:800px;
+	height:300px;
+	border:1px solid #000;
 }

@@ -1,3 +1,8 @@
+if( typeof exports !== 'undefined')
+{
+	exports.convert = convert_LF2_to_JSON;
+}
+
 function convert_LF2_to_JSON(input)
 {
 	var O={}; //object
@@ -164,58 +169,77 @@ function convert_LF2_to_JSON(input)
 			var I = V.slice(a,c);
 			O.frame[I]={};
 			O.frame[I].name = V.slice(c+1,d);
-			var e = gg(non_space_newline);
-			var f = g('\n');
-			addl(O.frame[I], V.slice(e,f));
-			//finished basic properties
 			for( ;;)
 			{
-				var l = gg(non_space_newline);
-				if( l >= b)
+				var tp = p;
+				var ta = gg(non_space_newline);
+				if( ta >= b)
 					break;
-				var m = g(':'); p+=1;//the':'
-				var pro = V.slice(l,m);
-				var n = gg(non_space_newline);
-				var o = g('\n');
-				var prop;
-				if( O.frame[I][pro]) //object already exist!
+				var tb = g(':');
+				p = tp;
+				var tag = V.slice(ta,tb);
+				var tend = V.indexOf(tag+'_end', tb);
+				if( tag.indexOf('_end')!==-1)
 				{
-					if( O.frame[I][pro].length>=2)
+					p = g(':')+1;
+				}
+				else if( !(a<tend && tend<=b))
+				{
+					//attributes
+					var e = gg(non_space_newline);
+					var f = g('\n');
+					addl(O.frame[I], V.slice(e,f));
+				}
+				else
+				{
+					//child object
+					var l = gg(non_space_newline);
+					if( l >= b)
+						break;
+					var m = g(':'); p+=1;//the':'
+					var pro = V.slice(l,m);
+					var n = gg(non_space_newline);
+					var o = g('\n');
+					var prop;
+					if( O.frame[I][pro]) //object already exist!
 					{
-						O.frame[I][pro].push({});
-						prop = O.frame[I][pro][O.frame[I][pro].length-1];
+						if( O.frame[I][pro].length>=2)
+						{
+							O.frame[I][pro].push({});
+							prop = O.frame[I][pro][O.frame[I][pro].length-1];
+						}
+						else
+						{
+							O.frame[I][pro] = [O.frame[I][pro],{}];
+							prop = O.frame[I][pro][1];
+						}
 					}
 					else
 					{
-						O.frame[I][pro] = [O.frame[I][pro],{}];
-						prop = O.frame[I][pro][1];
+						O.frame[I][pro]={};
+						prop = O.frame[I][pro];
 					}
-				}
-				else
-				{
-					O.frame[I][pro]={};
-					prop = O.frame[I][pro];
-				}
-				if( pro!=='sound')
-				{
-					addl(prop, V.slice(n,o));
+					if( pro!=='sound')
 					{
-						var op=p;
-						n = gg(non_space_newline);
-						o = g('\n');
-						if( V.slice(n,o).indexOf('_end')===-1)
+						addl(prop, V.slice(n,o));
 						{
-							addl(prop, V.slice(n,o));
+							var op=p;
+							n = gg(non_space_newline);
+							o = g('\n');
+							if( V.slice(n,o).indexOf('_end')===-1)
+							{
+								addl(prop, V.slice(n,o));
+							}
+							else
+								p=op;
 						}
-						else
-							p=op;
+						gg(non_space_newline); //the xxx_end tag
+						g(':'); p+=1;
 					}
-					gg(non_space_newline); //the xxx_end tag
-					g(':'); p+=1;
-				}
-				else
-				{
-					O.frame[I][pro] = trim(V.slice(n,o));
+					else
+					{
+						O.frame[I][pro] = trim(V.slice(n,o));
+					}
 				}
 			}
 			p = b; //go to the end point
@@ -384,7 +408,7 @@ function convert_LF2_to_JSON(input)
 				if( content.indexOf('.bmp')!==-1)
 					content = content.replace('/sys/','/').replace('.bmp','.png');
 				if( content.indexOf('.wav')!==-1)
-					content = content.replace('data/','soundpack/1/').replace('.wav','');
+					content = content.replace('data/','1/').replace('.wav','');
 				str += content;
 				if( typeof obj2[p]=='string')
 					str += '"';

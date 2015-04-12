@@ -18,7 +18,7 @@ var GC=Global.gameplay;
 \*/
 function mech(parent)
 {
-	var spec=parent.spec;
+	var spec=parent.match.spec;
 	if( spec[parent.id] && spec[parent.id].mass!==undefined && spec[parent.id].mass!==null)
 		this.mass=spec[parent.id].mass;
 	else
@@ -370,7 +370,7 @@ mech.prototype.dynamics= function()
 		this.sha.set_z(Math.floor(ps.sz-1));
 	}
 
-	if( ps.y===0) //only when on the ground
+	if( ps.y===0 && this.mass>0) //only when on the ground
 	{
 		//simple friction
 		if( ps.vx) ps.vx += (ps.vx>0?-1:1)*ps.fric;
@@ -408,6 +408,9 @@ mech.prototype.blocking_xz=function()
 		y: 0,
 		z: this.ps.vz
 	}
+
+	if( this.parent.type!=='character')
+		return false;
 
 	var body = this.body(null,null,offset);
 	for( var i=0; i<body.length; i++)

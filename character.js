@@ -12,6 +12,33 @@ function(livingobject, Global, Fcombodec, Futil, util)
 		{	var $=this;
 			switch (event) {
 			case 'frame':
+				//health reduce
+				if( $.frame.D.mp)
+				{
+					if( $.data.frame[$.frame.PN].next===$.frame.N)
+					{	//if this frame is transited by next of previous frame
+						if( $.frame.D.mp<0)
+						{
+							if( !$.match.F6_mode)
+								$.health.mp += $.frame.D.mp;
+							$.health.mp_usage -= $.frame.D.mp;
+							if( $.health.mp<0)
+							{
+								$.health.mp = 0;
+								$.trans.frame($.frame.D.hit_d);
+							}
+						}
+					}
+					else
+					{
+						var dmp = $.frame.D.mp%1000,
+							dhp = Math.floor($.frame.D.mp/1000)*10;
+						if( !$.match.F6_mode)
+							$.health.mp -= dmp;
+						$.health.mp_usage += dmp;
+						$.injury(dhp);
+					}
+				}
 				$.opoint();
 			break;
 			case 'TU':
@@ -21,7 +48,11 @@ function(livingobject, Global, Fcombodec, Futil, util)
 					$.post_interaction();
 
 				var ps=$.ps;
-				if( ps.y===0 && ps.vy>0) //fell onto ground
+				if( ps.y===0 && ps.vy===0 && $.frame.N===212 && $.frame.PN!==211)
+				{
+					$.trans.frame(999);
+				}
+				else if( ps.y===0 && ps.vy>0) //fell onto ground
 				{
 					var result = $.state_update('fell_onto_ground');
 					if( result)
@@ -50,40 +81,25 @@ function(livingobject, Global, Fcombodec, Futil, util)
 					}
 				}
 
-				//health reduce
-				if( $.frame.D.mp)
-				{
-					if( $.data.frame[$.frame.PN].next===$.frame.N)
-					{	//if this frame is transited by next of previous frame
-						if( $.frame.D.mp<0)
-						{
-							$.health.mp += $.frame.D.mp;
-							if( $.health.mp<0)
-							{
-								$.health.mp = 0;
-								$.trans.frame($.frame.D.hit_d);
-							}
-						}
-					}
-					else
-					{
-						var dmp = $.frame.D.mp%1000,
-							dhp = Math.floor($.frame.D.mp/1000)*10;
-						$.health.mp -= dmp;
-						$.health.hp -= dhp;
-					}
-				}
 				//health recover
 				//http://lf2.wikia.com/wiki/Health_and_mana
 				if( $.match.time.t%12===0)
-				if( $.health.hp < $.health.hp_bound)
-				{
+				if( 0 <= $.health.hp && $.health.hp < $.health.hp_bound)
 					$.health.hp++;
+
+				var heal_speed = 8;
+				if( $.health.hp >= 0 && $.effect.heal && $.effect.heal>0)
+				if( $.match.time.t%8===0)
+				{
+					if( $.health.hp+heal_speed <= $.health.hp_bound)
+						$.health.hp += heal_speed;
+					$.effect.heal -= heal_speed;
 				}
+
 				if( $.match.time.t%3===0)
 				if( $.health.mp < $.health.mp_full)
 				{
-					$.health.mp+= 1+Math.floor((500-($.health.hp<500?$.health.hp:500))/100);
+					$.health.mp+= 1+Math.floor(($.health.hp_full-($.health.hp<$.health.hp_full?$.health.hp:$.health.hp_full))/100);
 				}
 				//recovery
 				if( $.health.fall>0) $.health.fall += GC.recover.fall;
@@ -94,7 +110,7 @@ function(livingobject, Global, Fcombodec, Futil, util)
 				{
 					switch ($.combo_buffer.combo)
 					{
-						case 'def': case 'jump': case 'att': case 'run':
+						case 'def': case 'jump': case 'att': case 'left-left': case 'right-right':
 							$.combo_buffer.combo = null;
 						break;
 						//other combo is not cleared
@@ -110,7 +126,7 @@ function(livingobject, Global, Fcombodec, Futil, util)
 				switch(K)
 				{
 				case 'left': case 'right':
-				case 'run':
+				case 'left-left': case 'right-right':
 				break;
 				default:
 					//here is where D>A, D>J... etc handled
@@ -131,7 +147,7 @@ function(livingobject, Global, Fcombodec, Futil, util)
 			case 'state_exit':
 				switch ($.combo_buffer.combo)
 				{
-					case 'att': case 'run':
+					case 'left-left': case 'right-right':
 						//cannot transfer across states
 						$.combo_buffer.combo = null;
 					break;
@@ -167,8 +183,8 @@ function(livingobject, Global, Fcombodec, Futil, util)
 						}
 						else
 						{
-							if( K!=='jump') //walk
-								$.trans.frame(5); //TODO: select randomly from 5,6,7,8
+							if( K!=='jump')
+								$.trans.frame(5, 5);
 							if( dx) $.ps.vx=$.dirh()*($.data.bmp.walking_speed);
 							$.ps.vz=$.dirv()*($.data.bmp.walking_speedz);
 						}
@@ -177,7 +193,7 @@ function(livingobject, Global, Fcombodec, Futil, util)
 				}
 				switch(K)
 				{
-				case 'run':
+				case 'left-left': case 'right-right':
 					if( $.hold.obj && $.hold.obj.type==='heavyweapon')
 						$.trans.frame(16, 10);
 					else
@@ -231,13 +247,8 @@ function(livingobject, Global, Fcombodec, Futil, util)
 					var hit= $.scene.query(vol, $, {tag:'itr:6', not_team:$.team});
 					for( var t in hit)
 					{	//if someone is in my hitting scoope who has itr kind:6
-						var hit_itr=(hit[t].vol_itr(6))[0].data;
-						if( $.itr_rest_test( hit[t].uid, hit_itr))
-						{
-							$.trans.frame(70, 10); //I 'll use super punch!
-							$.itr_rest_update( hit[t].uid, hit_itr);
-							return 1;
-						}
+						$.trans.frame(70, 10); //I 'll use super punch!
+						return 1;
 					}
 					//
 					$.trans.frame($.match.random()<0.5? 60:65, 10);
@@ -283,9 +294,8 @@ function(livingobject, Global, Fcombodec, Futil, util)
 				{
 					if( dx) $.ps.vx=xfactor*$.dirh()*($.data.bmp.walking_speed);
 					$.ps.vz=$.dirv()*($.data.bmp.walking_speedz);
-					if( !dx && !dz && !$.statemem.transed)
+					if( !dx && !dz && $.trans.next()!==999)
 					{
-						$.statemem.transed=true;
 						$.trans.set_next(999); //go back to standing
 						$.trans.set_wait(1,1,2);
 					}
@@ -339,8 +349,8 @@ function(livingobject, Global, Fcombodec, Futil, util)
 			case 'combo':
 				switch(K)
 				{
-				case 'left': case 'right':
-					if(K!=$.ps.dir)
+				case 'left': case 'right': case 'left-left': case 'right-right':
+					if( K.split('-')[0] !== $.ps.dir)
 					{
 						if( $.hold.obj && $.hold.obj.type==='heavyweapon')
 							$.trans.frame(19, 10);
@@ -405,7 +415,8 @@ function(livingobject, Global, Fcombodec, Futil, util)
 			case 'frame':
 				if( $.frame.D.next===999 && $.ps.y<0)
 					$.trans.set_next(212); //back to jump
-
+				if( $.frame.N===253) //Woody's fly_crash
+					$.trans.set_wait(0);
 				$.id_update('state3_frame');
 			break;
 			case 'hit_stop':
@@ -457,8 +468,7 @@ function(livingobject, Global, Fcombodec, Futil, util)
 						}
 						else
 							$.trans.frame(80, 10); //jump attack
-						if( K==='att')
-							return 1; //key consumed
+						return 1; //key consumed
 					}
 				}
 			break;
@@ -468,9 +478,13 @@ function(livingobject, Global, Fcombodec, Futil, util)
 		{	var $=this;
 			switch (event) {
 			case 'state_entry':
-				$.ps.vx= $.dirh() * ($.data.bmp.dash_distance-1) * ($.frame.N===213?1:-1);
-				$.ps.vz= $.dirv() * ($.data.bmp.dash_distancez-1);
-				$.ps.vy= $.data.bmp.dash_height;
+				if( (9<=$.frame.PN && $.frame.PN<=11) || //if previous is running
+					($.frame.PN===215)) //or crouch
+				{
+					$.ps.vx= $.dirh() * ($.data.bmp.dash_distance-1) * ($.frame.N===213?1:-1);
+					$.ps.vz= $.dirv() * ($.data.bmp.dash_distancez-1);
+					$.ps.vy= $.data.bmp.dash_height;
+				}
 			break;
 
 			case 'combo':
@@ -612,8 +626,8 @@ function(livingobject, Global, Fcombodec, Futil, util)
 					//injury
 					if( $.frame.D.cpoint.injury)
 					{
-						$.catching.hit( $.frame.D.cpoint, $, {x:$.ps.x,y:$.ps.y,z:$.ps.z}, null);
-						$.trans.inc_wait(1, 10, 99); //lock until frame transition
+						if( $.attacked($.catching.hit($.frame.D.cpoint, $, {x:$.ps.x,y:$.ps.y,z:$.ps.z}, null)))
+							$.trans.inc_wait(1, 10, 99); //lock until frame transition
 					}
 					//cover
 					var cover = GC.default.cpoint.cover;
@@ -832,7 +846,7 @@ function(livingobject, Global, Fcombodec, Futil, util)
 			case 'fall_onto_ground':
 				if( $.caught_throwinjury>0)
 				{
-					$.injury(-$.caught_throwinjury);
+					$.injury($.caught_throwinjury);
 					$.caught_throwinjury = null;
 				}
 				var ps=$.ps;
@@ -869,8 +883,10 @@ function(livingobject, Global, Fcombodec, Futil, util)
 							$.trans.frame(100);
 						else
 							$.trans.frame(108);
-						$.ps.vx = 5; //magic number
-						if( $.ps.vz) $.ps.vz = 2;
+						if( $.ps.vx)
+							$.ps.vx = 5*($.ps.vx>0?1:-1); //magic number
+						if( $.ps.vz)
+							$.ps.vz = 2*($.ps.vz>0?1:-1); //magic number
 						return 1;
 					}
 				}
@@ -883,6 +899,8 @@ function(livingobject, Global, Fcombodec, Futil, util)
 			case 'state_entry':
 				$.health.fall=0;
 				$.health.bdefend=0;
+				if( $.health.hp <= 0)
+					$.die();
 			break;
 			case 'state_exit':
 				$.effect.timein=0;
@@ -984,6 +1002,53 @@ function(livingobject, Global, Fcombodec, Futil, util)
 			return 1;
 		}},
 
+		'400':function(event,K) //teleport to the nearest enemy
+		{	var $=this;
+			switch (event) {
+			case 'frame':
+				var targets = $.match.scene.query(null, $, {
+					not_team:$.team,
+					type:'character',
+					sort:'distance'
+				});
+				if( targets.length)
+				{
+					var en = targets[0];
+					$.ps.x = en.ps.x - 120*($.dirh());
+					$.ps.y = 0;
+					$.ps.z = en.ps.z;
+				}
+			break;
+		}},
+
+		'401':function(event,K) //teleport to the furthest teammate
+		{	var $=this;
+			switch (event) {
+			case 'frame':
+				var targets = $.match.scene.query(null, $, {
+					team:$.team,
+					type:'character',
+					sort:'distance'
+				});
+				targets.reverse();
+				if( targets.length)
+				{
+					var en = targets[0];
+					$.ps.x = en.ps.x + 60*($.dirh());
+					$.ps.y = 0;
+					$.ps.z = en.ps.z;
+				}
+			break;
+		}},
+
+		'1700':function(event,K) //heal
+		{	var $=this;
+			switch (event) {
+			case 'frame':
+				$.effect.heal = GC.effect.heal_max;
+			break;
+		}},
+
 		'x':function(event,K)
 		{	var $=this;
 			switch (event) {
@@ -1077,6 +1142,30 @@ function(livingobject, Global, Fcombodec, Futil, util)
 	//inherit livingobject
 	function character(config,data,thisID)
 	{
+		/*(function ()
+		{	//a small benchmark for make_array efficiency,
+			//for deep and davis,
+			//>>time to make_array of 1105 frames:15; x=33720
+			//>>time to make_array of 1070 frames:15; x=29960
+			var sta=new Date();
+			var ccc=0;
+			var x=0;
+			var tags={'itr':'itr','bdy':'bdy'};
+			for( var m=0; m<5; m++)
+			for( var j in data.frame)
+			{
+				ccc++;
+				for( var l in tags)
+				{
+					var obj = Futil.make_array(data.frame[j][l]);
+					for( var k=0; k<obj.length; k++)
+						x+=obj[k].x;
+				}
+			}
+			var fin=new Date();
+			console.log('time to make_array of '+ccc+' frames of '+data.bmp.name+':'+(fin-sta)+'; x='+x);
+		}());*/
+
 		var $=this;
 		// chain constructor
 		livingobject.call(this,config,data,thisID);
@@ -1102,8 +1191,15 @@ function(livingobject, Global, Fcombodec, Futil, util)
 						if( $.allow_switch_dir)
 							$.switch_dir(K);
 				}
-				$.combo_buffer.combo = K;
-				$.combo_buffer.timeout = 10;
+				if( $.combo_buffer.timeout===GC.combo.timeout &&
+					priority[K] < priority[$.combo_buffer.combo])
+				{	//combo clash in same frame, higher priority wins
+				}
+				else
+				{
+					$.combo_buffer.combo = K;
+					$.combo_buffer.timeout = GC.combo.timeout;
+				}
 			}
 			var dec_con = //combo detector
 			{
@@ -1118,22 +1214,37 @@ function(livingobject, Global, Fcombodec, Futil, util)
 				{ name:'def',	seq:['def'],	clear_on_combo:false},
 				{ name:'jump',	seq:['jump'],	clear_on_combo:false},
 				{ name:'att',	seq:['att'],	clear_on_combo:false},
-				{ name:'run',	seq:['right','right'],	maxtime:9},
-				{ name:'run',	seq:['left','left'],	maxtime:9}
+				{ name:'left-left', seq:['left','left'], maxtime:9},
+				{ name:'right-right', seq:['right','right'], maxtime:9},
+				{ name:'jump-att', seq:['jump','att'], maxtime:0, clear_on_combo:false}
 				//plus those defined in Global.combo_list
+				//priority grows downward
 			];
-			$.combodec = new Fcombodec($.con, dec_con, combo_list.concat(Global.combo_list));
+			combo_list = combo_list.concat(Global.combo_list);
+			$.combodec = new Fcombodec($.con, dec_con, combo_list);
+			var priority = {};
+			for( var i=0; i<combo_list.length; i++)
+			{
+				priority[combo_list[i].name] = i;
+			}
 		}
 		$.hold=
 		{
 			obj: null, //holding weapon
-			id: 0 //id of holding
 		};
 		$.health.bdefend=0;
 		$.health.fall=0;
 		$.health.hp=$.health.hp_full=$.health.hp_bound= $.proper('hp') || GC.default.health.hp_full;
+		$.health.hp_lost=0;
 		$.health.mp_full= GC.default.health.mp_full;
 		$.health.mp= GC.default.health.mp_start;
+		$.health.mp_usage=0;
+		$.stat=
+		{
+			attack:0,
+			picking:0,
+			kill:0
+		};
 		$.trans.frame=function(next,au)
 		{
 			if( next===0 || next===999)
@@ -1144,6 +1255,7 @@ function(livingobject, Global, Fcombodec, Futil, util)
 			}
 			var nextF = $.data.frame[next];
 			if( !nextF) return;
+			//check if mp is enough
 			var dmp=0;
 			if( nextF.mp>0)
 				dmp=nextF.mp%1000;
@@ -1160,7 +1272,14 @@ function(livingobject, Global, Fcombodec, Futil, util)
 	character.prototype.type = 'character';
 	character.prototype.states = states;
 	character.prototype.states_switch_dir = states_switch_dir;
-
+	
+	character.prototype.destroy = function()
+	{
+		var $=this;
+		livingobject.prototype.destroy.call(this);
+		//(handled by manager.js) remove combo listener to controller
+	}
+	
 	//to emit a combo event
 	character.prototype.combo_update = function()
 	{		
@@ -1174,6 +1293,7 @@ function(livingobject, Global, Fcombodec, Futil, util)
 		var $=this;
 		var K = $.combo_buffer.combo;
 		if(!K) K=null;
+		if( $.combo_buffer.combo==='jump-att') K='jump';
 
 		var tar1=$.states[$.frame.D.state];
 		if( tar1) var res1=tar1.call($,'combo',K);
@@ -1182,9 +1302,15 @@ function(livingobject, Global, Fcombodec, Futil, util)
 		if( tar2) var res2=tar2.call($,'combo',K);
 		if( tar1) tar1.call($,'post_combo');
 		if( tar2) tar2.call($,'post_combo');
-		if( res1 || res2 || //do not store if returned true
-			K==='left' || K==='right' || K==='up' || K==='down') //dir combos are not persistent
-			$.combo_buffer.combo = null;
+		if( $.combo_buffer.combo==='jump-att')
+		{
+			if( res1 || res2)
+				$.combo_buffer.combo = 'att'; //degrade
+		}
+		else
+			if( res1 || res2 || //do not store if returned true
+				K==='left' || K==='right' || K==='up' || K==='down') //dir combos are not persistent
+				$.combo_buffer.combo = null;
 	}
 
 	/** @protocol caller hits callee
@@ -1196,10 +1322,12 @@ function(livingobject, Global, Fcombodec, Futil, util)
 	character.prototype.hit=function(ITR, att, attps, rect)
 	{
 		var $=this;
-		var accepthit=false;
+		if( $.itr.vrest[att.uid])
+			return false;
 
-		var ef_dvx=0, ef_dvy=0, dhp=0;
-		if( $.cur_state()===10) //being caught
+		var accepthit=false;
+		var ef_dvx=0, ef_dvy=0, inj=0;
+		if( $.state()===10) //being caught
 		{
 			if( $.catching.caught_cpointhurtable())
 			{
@@ -1213,7 +1341,7 @@ function(livingobject, Global, Fcombodec, Futil, util)
 			else
 			{
 				accepthit=true;
-				dhp -= Math.abs(ITR.injury);
+				inj += Math.abs(ITR.injury);
 				if( ITR.injury>0)
 				{
 					$.effect_create(0, GC.effect.duration);
@@ -1226,7 +1354,7 @@ function(livingobject, Global, Fcombodec, Futil, util)
 				}
 			}
 		}
-		else if( $.cur_state()===14)
+		else if( $.state()===14)
 		{
 			//lying
 		}
@@ -1239,10 +1367,10 @@ function(livingobject, Global, Fcombodec, Futil, util)
 			ef_dvy = ITR.dvy ? ITR.dvy:0;
 			var effectnum = ITR.effect!==undefined?ITR.effect:GC.default.effect.num;
 
-			if( $.cur_state()===7 &&
+			if( $.state()===7 &&
 			    (attps.x > $.ps.x)===($.ps.dir==='right')) //attacked in front
 			{
-				if( ITR.injury)	dhp -= GC.defend.injury.factor * ITR.injury;
+				if( ITR.injury)	inj += GC.defend.injury.factor * ITR.injury;
 				if( ITR.bdefend) $.health.bdefend += ITR.bdefend;
 				if( $.health.bdefend > GC.defend.break_limit)
 				{	//broken defence
@@ -1254,12 +1382,14 @@ function(livingobject, Global, Fcombodec, Futil, util)
 				}
 				if( ef_dvx) ef_dvx += (ef_dvx>0?-1:1) * util.lookup_abs(GC.defend.absorb,ef_dvx);
 				ef_dvy = 0;
+				if( $.health.hp-inj<=0)
+					falldown();
 			}
 			else
 			{
 				if( $.hold.obj && $.hold.obj.type==='heavyweapon')
 					$.drop_weapon(0,0);
-				if( ITR.injury)	dhp -= ITR.injury; //injury
+				if( ITR.injury)	inj += ITR.injury; //injury
 				$.health.bdefend = 45; //lose defend ability immediately
 				fall();
 			}
@@ -1272,7 +1402,7 @@ function(livingobject, Global, Fcombodec, Futil, util)
 				case 112: vanish=4; break;
 			}
 			$.effect_create( effectnum, vanish, ef_dvx, ef_dvy);
-			$.visualeffect_create( effectnum, rect, (attps.x < $.ps.x), ($.health.fall>0?1:2));
+			$.visualeffect_create( effectnum, rect, (attps.x < $.ps.x), ($.health.fall>0?0:1), true);
 		}
 		function fall()
 		{
@@ -1281,10 +1411,12 @@ function(livingobject, Global, Fcombodec, Futil, util)
 			else
 				$.health.fall += GC.default.fall.value;
 			var fall=$.health.fall;
-			if ( 0<fall && fall<=20)
-				$.trans.frame(220, 20);
-			else if (20<fall && fall<=40 && $.ps.y<0)
+			if ($.ps.y<0 || $.ps.vy<0)
 				falldown();
+			else if ($.health.hp-inj<=0)
+				falldown();
+			else if ( 0<fall && fall<=20)
+				$.trans.frame(220, 20);
 			else if (20<fall && fall<=30)
 				$.trans.frame(222, 20);
 			else if (30<fall && fall<=40)
@@ -1298,27 +1430,62 @@ function(livingobject, Global, Fcombodec, Futil, util)
 		{
 			if( ITR.dvy===undefined) ef_dvy = GC.default.fall.dvy;
 			$.health.fall=0;
+			$.ps.vy=0;
 			var front = (attps.x > $.ps.x)===($.ps.dir==='right'); //attacked in front
 				 if( front && ITR.dvx < 0 && ITR.bdefend>=60)
-				$.trans.frame(186, 20);
+				$.trans.frame(186, 21);
 			else if( front)
-				$.trans.frame(180, 20);
+				$.trans.frame(180, 21);
 			else if(!front)
-				$.trans.frame(186, 20);
+				$.trans.frame(186, 21);
 
 			if( $.proper( $.effect_id(effectnum),'drop_weapon'))
 				$.drop_weapon(ef_dvx, ef_dvy);
 		}
 
-		if( dhp<0)
-			$.injury(dhp);
-		//if( accepthit) $.log('hit: next='+$.trans.next());
-		return accepthit;
+		$.injury(inj);
+		if( accepthit)
+		{
+			$.itr.attacker = att;
+			if( ITR && ITR.vrest)
+				$.itr.vrest[att.uid] = ITR.vrest;
+		}
+		if( accepthit)
+			return inj;
+		else
+			return false;
 	}
-	character.prototype.injury=function(dhp)
+	character.prototype.injury=function(inj)
 	{
-		this.health.hp+=dhp;
-		this.health.hp_bound+=Math.ceil(dhp*1/3);
+		var $=this;
+		$.health.hp -= inj;
+		$.health.hp_lost += inj;
+		$.health.hp_bound -= Math.ceil(inj*1/3);
+	}
+	character.prototype.heal=function(amount)
+	{
+		this.effect.heal = amount;
+		return true;
+	}
+	character.prototype.attacked=function(inj)
+	{
+		if( inj===false)
+			return false;
+		else if( inj===true)
+			return true;
+		else
+		{	//even if inj===0
+			this.stat.attack += inj;
+			return true;
+		}
+	}
+	character.prototype.killed=function()
+	{
+		this.stat.kill++;
+	}
+	character.prototype.die=function()
+	{
+		this.itr.attacker.killed();
 	}
 
 	//pre interaction is based on `itr` of next frame
@@ -1343,14 +1510,14 @@ function(livingobject, Global, Fcombodec, Futil, util)
 				{
 					if( hit[t].team !== $.team) //only catch other teams
 					if( hit[t].type==='character') //only catch characters
-					if( (ITR.kind===1 && hit[t].cur_state()===16) //you are in dance of pain
+					if( (ITR.kind===1 && hit[t].state()===16) //you are in dance of pain
 					 || (ITR.kind===3)) //super catch
-					if( $.itr_rest_test( hit[t].uid, ITR))
+					if( !$.itr.arest)
 					{
 						var dir = hit[t].caught_a(ITR,$,{x:$.ps.x,y:$.ps.y,z:$.ps.z});
 						if( dir)
 						{
-							$.itr_rest_update( hit[t].uid, ITR);
+							$.itr_arest_update(ITR);
 							if( dir==='front')
 								$.trans.frame(ITR.catchingact[0], 10);
 							else
@@ -1373,7 +1540,8 @@ function(livingobject, Global, Fcombodec, Futil, util)
 					if( hit[t].type==='lightweapon' || hit[t].type==='heavyweapon')
 					if( hit[t].pick($))
 					{
-						$.itr_rest_update( hit[t].uid, ITR);
+						$.stat.picking++;
+						$.itr_arest_update(ITR);
 						if( ITR.kind===2)
 						{
 							if( hit[t].type==='lightweapon')
@@ -1417,23 +1585,19 @@ function(livingobject, Global, Fcombodec, Futil, util)
 					if( !(hit[t].type==='character' && hit[t].team===$.team)) //cannot attack characters of same team
 					if( !(hit[t].type!=='character' && hit[t].team===$.team && hit[t].ps.dir===$.ps.dir)) //can only attack objects of same team if head on collide
 					if( ITR.effect===undefined || ITR.effect===0 || ITR.effect===1 ||
-						(ITR.effect===4 && hit[t].type==='specialattack' && hit[t].cur_state()===3000))
-					if( $.itr_rest_test( hit[t].uid, ITR))
-					if( hit[t].hit(ITR,$,{x:$.ps.x,y:$.ps.y,z:$.ps.z},vol))
+						(ITR.effect===4 && hit[t].type==='specialattack' && hit[t].state()===3000)) //reflect all specialattacks with state: 3000, weapons fly away, has no influence on other characters
+					if( !$.itr.arest)
+					if( $.attacked(hit[t].hit(ITR,$,{x:$.ps.x,y:$.ps.y,z:$.ps.z},vol)))
 					{	//hit you!
-						$.itr_rest_update( hit[t].uid, ITR);
-						$.log('hit:'+ITR.fall);
+						$.itr_arest_update(ITR);
+						//$.log('hit:'+ITR.fall);
 						//stalls
 						if( $.state_update('hit_stop'))
 							; //do nothing
 						else
 							switch ($.frame.N)
 							{
-								case 86: case 87:
-									$.effect_stuck(0,2);
-									$.trans.inc_wait(1);
-									break;
-								case 91:
+								case 86: case 87: case 91:
 									$.effect_stuck(0,2);
 									$.trans.inc_wait(1);
 									break;
@@ -1465,7 +1629,7 @@ function(livingobject, Global, Fcombodec, Futil, util)
 				}
 				if( act.hit!==null && act.hit!==undefined)
 				{
-					$.itr_rest_update( act.hit, act);
+					$.itr_arest_update(act);
 					//stalls
 					$.trans.inc_wait(GC.default.itr.hit_stop, 10);
 				}
@@ -1482,7 +1646,9 @@ function(livingobject, Global, Fcombodec, Futil, util)
 		var $=this;
 		if( $.frame.D.opoint)
 		{
-			$.match.create_object($.frame.D.opoint, $);
+			var ops = Futil.make_array($.frame.D.opoint);
+			for( var i in ops)
+				$.match.create_object(ops[i], $);
 		}
 	}
 
@@ -1517,7 +1683,7 @@ function(livingobject, Global, Fcombodec, Futil, util)
 	character.prototype.caught_a=function(ITR, att, attps)
 	{	//this is called when the catcher has an ITR with kind: 1
 		var $=this;
-		if( $.cur_state()===16) //I am in dance of pain
+		if( $.state()===16) //I am in dance of pain
 		{
 			if( (attps.x > $.ps.x)===($.ps.dir==='right'))
 				$.trans.frame(ITR.caughtact[0], 20);

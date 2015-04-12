@@ -4,11 +4,11 @@
  * a match is a generalization above game modes (e.g. VSmode, stagemode, battlemode)
 \*/
 
-define(['F.core/util','F.core/controller','F.core/sprite',
-'LF/factories','LF/scene','LF/background','LF/third_party/random','LF/util',
+define(['F.core/util','F.core/controller','LF/sprite-select',
+'LF/network','LF/factories','LF/scene','LF/background','LF/AI','LF/third_party/random','LF/util',
 'LF/global'],
 function(Futil,Fcontroller,Fsprite,
-factory,Scene,Background,Random,util,
+network,factory,Scene,Background,AI,Random,util,
 Global)
 {
 	var GA=Global.application;
@@ -17,97 +17,111 @@ Global)
 	 [ class ]
 	 |	config =
 	 |	{
-	 |	stage,  //the XZ plane to place all living objects
+	 |  manager,//the game manager
 	 |	state,  //the state machine handling various events in a match
-	 |	config, //default config for each object type
 	 |	package	//the content package
 	 |	}
 	\*/
 	function match(config)
 	{
 		var $=this;
-		$.stage = config.stage;
+		$.manager = config.manager;
 		$.state = config.state;
 		$.data = config.package.data;
-		$.spec = config.package.properties;
-		$.grouped_object = Futil.group_elements($.data.object,'type');
-		$.config = config.config;
-		if( !$.config)
-			$.config = {};
+		$.sound = config.manager.sound;
+		$.spec = $.data.properties.data;
 		$.time;
-		$.setup_UI();
 	}
 
 	match.prototype.create=function(setting)
 	{
-		/** setting={
-			player:
-			[
-				{
-					controller: control1,
-					id: 30,
-					team: 1
-				},
-				{
-					controller: control2,
-					id: 1,
-					team: 2
-				}
-			],
-			control: 'debug',
-			set:
-			{
-				weapon: true
-			},
-			background: {id:1}
-		} */
 		var $=this;
-		var char_list=[];
+		var object_ids=[],
+			AI_ids=[];
 		for( var i=0; i<setting.player.length; i++)
 		{
-			var name = util.filename(util.select_from($.grouped_object.character,{id:setting.player[i].id}).file);
-			var objects = util.select_from($.data.object,function(O){
-					if( !O.file) return;
-					var file = util.filename(O.file);
-					if( file.lastIndexOf('_')!==-1)
-						file = file.slice(0,file.lastIndexOf('_'));
-					return file===name;
-				});
-
-			/** if `deep.js` is of type character, any files matching `deep_*` will also be lazy loaded
-				here we have to load all characters and associated data files
-			 */
-			char_list = char_list.concat(Futil.extract_array(Futil.make_array(objects),'id').id);
+			//(lazy) now load all characters and associated data files
+			object_ids.push(setting.player[i].id);
+			object_ids = object_ids.concat(Futil.extract_array(util.select_from($.data.object,{id:setting.player[i].id}).pack,'id').id);
+			if( setting.player[i].controller.type==='AIscript')
+				AI_ids.push(setting.player[i].controller.id);
 		}
 		if( !setting.set) setting.set={};
 
+		$.gameover_state = false;
 		$.randomseed = $.new_randomseed();
 		$.create_scenegraph();
-		$.create_effects($.config.effects);
 		$.control = $.create_controller(setting.control);
-		$.create_background(setting.background);
-		$.tasks = []; //pending tasks
-
-		this.data.object.load(char_list,function()
+		$.functionkey_control = setting.control;
+		if( $.functionkey_control &&
+			$.functionkey_control.restart)
+			$.functionkey_control.restart();
+		if( $.manager.panel_layer)
 		{
+			$.panel=[];
+			for( var i=0; i<8; i++) $.panel[i]={};
+		}
+		$.overlay_message('loading');
+		$.tasks = []; //pending tasks
+		$.AIscript = [];
+		$.manager.canvas.render();
+
+		var already = false;
+		this.data.load({
+			'object':object_ids,
+			'background':setting.background?[setting.background.id]:[],
+			'AI':AI_ids
+		},function()
+		{	//when all necessary data files are loaded
+			$.create_background(setting.background);
+			$.create_effects();
 			if( setting.player)
 				$.create_characters(setting.player);
 			if( setting.set.weapon)
 				$.drop_weapons(setting.set.weapon);
-			$.create_timer();
+
+			Fsprite.masterconfig_set('onready',onready);
+			setTimeout(function(){onready()},8000); //assume it is ready after 8 seconds
 		});
+		function onready()
+		{
+			if( !already)
+			{	//all loading finished
+				already = true;
+				$.manager.overlay_mess.hide();
+				$.manager.summary.hide();
+				if( setting.set.demo_mode)
+				{
+					$.demo_mode=true;
+					$.overlay_message('demo');
+				}
+				$.create_timer();
+			}
+		}
 	}
 
 	match.prototype.destroy=function()
 	{
 		var $=this;
-		$.time.paused=true; //pause execution
-		clearInterval($.time.timer);
+		$.time.paused=true;
+		$.destroyed=true;
+		network.clearInterval($.time.timer);
 
-		$.for_all('destroy'); //destroy all objects
-		var e=$.stage; //clear the stage DOM node
-		while (e.lastChild)
-			e.removeChild(e.lastChild);
+		//destroy all objects
+		$.for_all('destroy');
+		$.background.destroy();
+		if( $.panel)
+		for( var i=0; i<$.panel.length; i++)
+		{
+			if( $.panel[i].hp)
+			{
+				$.panel[i].hp.remove();
+				$.panel[i].hp_bound.remove();
+				$.panel[i].mp.remove();
+				$.panel[i].mp_bound.remove();
+				$.panel[i].spic.remove();
+			}
+		}
 	}
 
 	match.prototype.log=function(mes)
@@ -115,44 +129,18 @@ Global)
 		console.log(this.time.t+': '+mes);
 	}
 
-	match.prototype.setup_UI=function()
-	{
-		var $=this;
-		if( util.div('pauseMessage'))
-		{
-			$.pause_mess = new Fsprite({
-				div: util.div('pauseMessage'),
-				img: $.data.UI.pause,
-				wh: 'fit'
-			});
-			$.pause_mess.hide();
-		}
-		if( util.div('panel'))
-		{
-			$.panel=[];
-			for( var i=0; i<8; i++)
-			{
-				var pane = new Fsprite({
-					canvas: util.div('panel'),
-					img: $.data.UI.panel.pic,
-					wh: 'fit'
-				});
-				pane.set_x_y($.data.UI.panel.pane_width*(i%4), $.data.UI.panel.pane_height*Math.floor(i/4));
-				$.panel.push(pane);
-			}
-		}
-	}
-
 	match.prototype.create_object=function(opoint, parent)
 	{
 		var $=this;
 		$.tasks.push({
 			task: 'create_object',
+			parent: parent,
 			opoint: opoint,
 			team: parent.team,
 			pos: parent.mech.make_point(opoint),
 			z: parent.ps.z,
-			dir: parent.ps.dir
+			dir: parent.ps.dir,
+			dvz: parent.dirv()*2
 		});
 	}
 
@@ -186,7 +174,7 @@ Global)
 			$fps: util.div('fps')
 		};
 		if( !$.time.$fps) $.calculate_fps = function(){};
-		$.time.timer = setInterval( function(){$.frame();}, 1000/30);
+		$.time.timer = network.setInterval( function(){return $.frame();}, 1000/30);
 	}
 
 	match.prototype.frame=function()
@@ -194,23 +182,46 @@ Global)
 		var $=this;
 		if( $.control)
 			$.control.fetch();
-
-		if( !$.time.paused)
+		if( !$.time.paused || $.time.paused==='F2')
 		{
+			for( var i in $.character)
+			{
+				$.character[i].con.fetch();
+				$.character[i].combodec.frame();
+			}
+			if( $.destroyed)
+				return;
 			$.TU_trans();
-			if( $.time.t%30===0)
-				$.calculate_fps(30);
+			if( $.time.t===0)
+				$.match_event('start');
+			$.time.t++;
+			$.manager.canvas.render();
+			$.calculate_fps();
+			
+			if( $.time.paused==='F2')
+				$.time.paused=true;
 		}
 		else
 		{
 			if( $.time.$fps)
 				$.time.$fps.value='paused';
 		}
-		if( $.time.t===0)
-			$.match_event('start');
-		$.time.t++;
+		return $.game_state();
 	}
-
+	
+	match.prototype.game_state=function()
+	{
+		var $=this;
+		var d={};
+		d.time = $.time.t;
+		for( var i in $.character)
+		{
+			var c = $.character[i];
+			d[i] = [c.ps.x,c.ps.y,c.ps.z,c.health.hp,c.health.mp];
+		}
+		return d;
+	}
+	
 	match.prototype.TU_trans=function()
 	{
 		var $=this;
@@ -218,8 +229,13 @@ Global)
 		$.process_tasks();
 		$.emit_event('TU');
 		$.background.TU();
-		if( $.panel)
-			$.show_hp();
+		$.sound.TU();
+		$.show_hp();
+		$.check_gameover();
+		var AI_frameskip = 3; //AI script runs at a lower framerate, and is still very reactive
+		if( $.time.t%AI_frameskip===0)
+			for( var i=0; i<$.AIscript.length; i++)
+				$.AIscript[i].TU();
 	}
 
 	match.prototype.match_event=function(E)
@@ -231,7 +247,7 @@ Global)
 	match.prototype.emit_event=function(E)
 	{
 		var $=this;
-		if( $.state && $.state.event) $.state.event.call(this, E);
+		$.match_event(E);
 		$.for_all(E);
 	}
 
@@ -261,13 +277,18 @@ Global)
 				if( T.opoint.oid)
 				{
 					var OBJ = util.select_from($.data.object,{id:T.opoint.oid});
+					if(!OBJ)
+					{
+						console.log('Object', T.opoint.oid, 'not exists');
+						break;
+					}
 					var config =
 					{
 						match: $,
 						team: T.team
 					};
 					var obj = new factory[OBJ.type](config, OBJ.data, T.opoint.oid);
-					obj.init(T.pos, T.z, T.dir, T.opoint);
+					obj.init(T);
 					var uid = $.scene.add(obj);
 					$[obj.type][uid] = obj;
 				}
@@ -282,24 +303,22 @@ Global)
 		}
 	}
 
-	match.prototype.calculate_fps=function(mul)
+	match.prototype.calculate_fps=function()
 	{
 		var $=this;
-		var ot=$.time.time;
-		$.time.time = new Date().getTime();
-		var diff = $.time.time-ot;
-		$.time.$fps.value = Math.round(1000/diff*mul)+'fps';
+		var mul = 10;
+		if( $.time.t%mul===0)
+		{
+			var ot=$.time.time;
+			$.time.time = new Date().getTime();
+			var diff = $.time.time-ot;
+			$.time.$fps.value = Math.round(1000/diff*mul)+'fps';
+		}
 	}
 
 	match.prototype.create_characters=function(players)
 	{
 		var $=this;
-		var pos=[
-			$.background.get_pos(0.55,0.5),
-			$.background.get_pos(0.45,0.5),
-			$.background.get_pos(0.40,0.5),
-			$.background.get_pos(0.60,0.5)
-		];
 		var char_config =
 		{
 			match: $,
@@ -309,40 +328,93 @@ Global)
 		for( var i=0; i<players.length; i++)
 		{
 			var player = players[i];
-			var pdata = util.select_from($.data.object,{id:player.id}).data;
-			char_config.controller = player.controller;
-			char_config.team = player.team;
+			var player_obj = util.select_from($.data.object,{id:player.id});
+			var pdata = player_obj.data;
+			preload_pack_images(player_obj);
+			var controller = setup_controller(player);
+			//create character
 			var char = new factory.character(char_config, pdata, player.id);
-			char.set_pos( pos[i].x, pos[i].y, pos[i].z); //TODO: proper player placements
+			if( controller.type==='AIcontroller')
+			{
+				var AIcontroller = util.select_from($.data.AI,{id:player.controller.id}).data;
+				$.AIscript.push(new AIcontroller(char,$,controller));
+			}
+			//positioning
+			var pos=$.background.get_pos($.random(),$.random());
+			char.set_pos( pos.x, pos.y, pos.z);
 			var uid = $.scene.add(char);
 			$.character[uid] = char;
 			//pane
 			if( $.panel)
+				create_pane(i);
+		}
+		function preload_pack_images(char)
+		{
+			for( var j=0; j<char.pack.length; j++)
 			{
-				var spic = new Fsprite({
-					canvas: $.panel[i].el,
-					img: pdata.bmp.small,
-					wh: 'fit'
-				});
-				spic.set_x_y($.data.UI.panel.x,$.data.UI.panel.y);
-				$.panel[i].uid = uid;
-				$.panel[i].hp_bound = new Fsprite({canvas: $.panel[i].el});
-				$.panel[i].hp_bound.set_x_y( $.data.UI.panel.hpx, $.data.UI.panel.hpy);
-				$.panel[i].hp_bound.set_w_h( $.data.UI.panel.hpw, $.data.UI.panel.hph);
-				$.panel[i].hp_bound.el.style.background = $.data.UI.panel.hp_dark;
-				$.panel[i].hp = new Fsprite({canvas: $.panel[i].el});
-				$.panel[i].hp.set_x_y( $.data.UI.panel.hpx, $.data.UI.panel.hpy);
-				$.panel[i].hp.set_w_h( $.data.UI.panel.hpw, $.data.UI.panel.hph);
-				$.panel[i].hp.el.style.background = $.data.UI.panel.hp_bright;
-				$.panel[i].mp_bound = new Fsprite({canvas: $.panel[i].el});
-				$.panel[i].mp_bound.set_x_y( $.data.UI.panel.mpx, $.data.UI.panel.mpy);
-				$.panel[i].mp_bound.set_w_h( $.data.UI.panel.mpw, $.data.UI.panel.mph);
-				$.panel[i].mp_bound.el.style.background = $.data.UI.panel.mp_dark;
-				$.panel[i].mp = new Fsprite({canvas: $.panel[i].el});
-				$.panel[i].mp.set_x_y( $.data.UI.panel.mpx, $.data.UI.panel.mpy);
-				$.panel[i].mp.set_w_h( $.data.UI.panel.mpw, $.data.UI.panel.mph);
-				$.panel[i].mp.el.style.background = $.data.UI.panel.mp_bright;
+				var obj = char.pack[j].data;
+				if( obj.bmp && obj.bmp.file)
+				{
+					for( var k=0; k<obj.bmp.file.length; k++)
+					{
+						var file = obj.bmp.file[k];
+						for( var m in file)
+						{
+							if( typeof file[m]==='string' && m.indexOf('file')===0)
+							{
+								Fsprite.preload_image(file[m]);
+							}
+						}
+					}
+				}
 			}
+		}
+		function setup_controller(player)
+		{
+			var controller;
+			switch (player.controller.type)
+			{
+				case 'AIscript':
+					controller = new AI.controller();
+				break;
+				default:
+					controller = player.controller;
+					controller.child.push($);
+			}
+			char_config.controller = controller;
+			char_config.team = player.team;
+			controller.sync = true;
+			return controller;
+		}
+		function create_pane(i)
+		{
+			var X = $.data.UI.data.panel.pane_width*(i%4),
+				Y = $.data.UI.data.panel.pane_height*Math.floor(i/4);
+			var spic = new Fsprite({
+				canvas: $.manager.panel_layer,
+				img: pdata.bmp.small,
+				xy: {x:X+$.data.UI.data.panel.x, y:Y+$.data.UI.data.panel.y},
+				wh: 'fit'
+			});
+			$.panel[i].uid = uid;
+			$.panel[i].name = player.name;
+			$.panel[i].spic = spic;
+			$.panel[i].hp_bound = new Fsprite({canvas: $.manager.panel_layer});
+			$.panel[i].hp_bound.set_x_y( X+$.data.UI.data.panel.hpx, Y+$.data.UI.data.panel.hpy);
+			$.panel[i].hp_bound.set_w_h( $.data.UI.data.panel.hpw, $.data.UI.data.panel.hph);
+			$.panel[i].hp_bound.set_bgcolor( $.data.UI.data.panel.hp_dark);
+			$.panel[i].hp = new Fsprite({canvas: $.manager.panel_layer});
+			$.panel[i].hp.set_x_y( X+$.data.UI.data.panel.hpx, Y+$.data.UI.data.panel.hpy);
+			$.panel[i].hp.set_w_h( $.data.UI.data.panel.hpw, $.data.UI.data.panel.hph);
+			$.panel[i].hp.set_bgcolor( $.data.UI.data.panel.hp_bright);
+			$.panel[i].mp_bound = new Fsprite({canvas: $.manager.panel_layer});
+			$.panel[i].mp_bound.set_x_y( X+$.data.UI.data.panel.mpx, Y+$.data.UI.data.panel.mpy);
+			$.panel[i].mp_bound.set_w_h( $.data.UI.data.panel.mpw, $.data.UI.data.panel.mph);
+			$.panel[i].mp_bound.set_bgcolor( $.data.UI.data.panel.mp_dark);
+			$.panel[i].mp = new Fsprite({canvas: $.manager.panel_layer});
+			$.panel[i].mp.set_x_y( X+$.data.UI.data.panel.mpx, Y+$.data.UI.data.panel.mpy);
+			$.panel[i].mp.set_w_h( $.data.UI.data.panel.mpw, $.data.UI.data.panel.mph);
+			$.panel[i].mp.set_bgcolor( $.data.UI.data.panel.mp_bright);
 		}
 	}
 
@@ -354,42 +426,125 @@ Global)
 			if( $.panel[i].uid!==undefined)
 			{
 				var ch = $.character[$.panel[i].uid],
-					hp = Math.floor(ch.health.hp/ch.health.hp_full*$.data.UI.panel.hpw);
-					hp_bound = Math.floor(ch.health.hp_bound/ch.health.hp_full*$.data.UI.panel.hpw);
+					hp = Math.floor(ch.health.hp/ch.health.hp_full*$.data.UI.data.panel.hpw);
+					hp_bound = Math.floor(ch.health.hp_bound/ch.health.hp_full*$.data.UI.data.panel.hpw);
 				if( hp<0) hp=0;
 				if( hp_bound<0) hp_bound=0;
 				$.panel[i].hp.set_w(hp);
 				$.panel[i].hp_bound.set_w(hp_bound);
-				$.panel[i].mp.set_w(Math.floor(ch.health.mp/ch.health.mp_full*$.data.UI.panel.mpw));
+				$.panel[i].mp.set_w(Math.floor(ch.health.mp/ch.health.mp_full*$.data.UI.data.panel.mpw));
+				if( ch.effect.heal && ch.effect.heal>0 && $.time.t%3==0)
+					$.panel[i].hp.set_bgcolor( $.data.UI.data.panel.hp_light);
+				else
+					$.panel[i].hp.set_bgcolor( $.data.UI.data.panel.hp_bright);
 			}
+		}
+	}
+
+	match.prototype.check_gameover=function()
+	{
+		var $=this;
+		var teams={};
+		for( var i=0; i<$.panel.length; i++)
+		{
+			if( $.panel[i].uid!==undefined)
+			{
+				var ch = $.character[$.panel[i].uid];
+				if( ch.health.hp>0)
+					teams[ch.team] = true;
+			}
+		}
+		if( Object.keys(teams).length<2)
+		{
+			if( !$.gameover_state)
+				$.gameover_state = $.time.t;
+			else
+				if( $.time.t == $.gameover_state + 30)
+					$.gameover();
+		}
+		else
+		{
+			if( $.gameover_state)
+			{
+				$.gameover_state = false;
+				$.gameover();
+			}
+		}
+	}
+
+	match.prototype.gameover=function()
+	{
+		var $=this;
+		if( $.gameover_state)
+		{
+			var info = [];
+			var teams = {};
+			for( var i=0; i<$.panel.length; i++)
+			{
+				if( $.panel[i].uid!==undefined)
+				{
+					var ch = $.character[$.panel[i].uid];
+					if( ch.health.hp>0)
+						teams[ch.team] = true;
+				}
+			}
+			for( var i=0; i<$.panel.length; i++)
+			{
+				if( $.panel[i].uid!==undefined)
+				{
+					var ch = $.character[$.panel[i].uid];
+					var alive = ch.health.hp>0;
+					var win = teams[ch.team];
+					//[ Icon, Name, Kill, Attack, HP Lost, MP Usage, Picking, Status ]
+					info.push([ch.data.bmp.small, $.panel[i].name, ch.stat.kill, ch.stat.attack, ch.health.hp_lost, ch.health.mp_usage, ch.stat.picking, (win?'Win':'Lose')+' ('+(alive?'Alive':'Dead')+')']);
+				}
+			}
+			$.manager.summary.set_info(info);
+			$.manager.summary.set_time('01:23');
+			$.manager.summary.show();
+			$.manager.sound.play('1/m_end');
+		}
+		else
+		{
+			$.manager.summary.hide();
+		}
+	}
+
+	match.prototype.key=function(K,down)
+	{
+		var $=this;
+		if( $.gameover_state)
+		{
+			if( down)
+			if( $.time.t > $.gameover_state + 60)
+			if( K==='att' || K==='jump')
+				$.F4();
 		}
 	}
 
 	match.prototype.create_effects=function(config)
 	{
 		var $=this;
-		var effects_config = config ? config :
-		{	//default effects config
-			init_size: 20
-		};
-		effects_config.match = $;
-		effects_config.stage = $.stage;
-
-		var param = Futil.extract_array( $.grouped_object.effects, ['data','id']);
-		$.effects[0] = new factory.effects ( effects_config, param.data, param.id);
-		$.visualeffect = $.effects[0];
+		var effects = Futil.extract_array( util.selectA_from($.data.object,{type:'effect'}), ['data','id']);
+		var broken  = util.select_from($.data.object,{type:'broken'});
+		var broken_list = Futil.group_elements( broken.data.broken_list, 'id');
+		$.visualeffect = $.effect[0] = new factory.effect( {match:$, stage:$.stage}, effects.data, effects.id);
+		$.brokeneffect = $.effect[1] = new factory.effect( {match:$, stage:$.stage, broken_list:broken_list}, broken.data,  broken.id);
 	}
 
 	match.prototype.drop_weapons=function(setup)
 	{
 		var $=this;
-		var A=$.background.get_pos(0.35,0.5),
-			B=$.background.get_pos(0.70,0.5),
-			C=$.background.get_pos(0.50,0.8);
-		A.y=B.y=C.y=-800;
-		$.create_weapon( 100, A);
-		$.create_weapon( 101, B);
-		$.create_weapon( 150, C);
+		var num=5;
+		var weapon_list=
+		 util.selectA_from($.data.object,{type:'lightweapon'}).concat
+		(util.selectA_from($.data.object,{type:'heavyweapon'}));
+		for( var i=0; i<num; i++)
+		{
+			var O=$.background.get_pos($.random(),$.random());
+			O.y=-800;
+			$.create_weapon(weapon_list[Math.floor(weapon_list.length*$.random())].id, O);
+		}
 	}
 
 	match.prototype.create_weapon=function(id,pos)
@@ -400,7 +555,7 @@ Global)
 		{
 			match: $
 		};
-		var object = util.select_from($.grouped_object[weapon],{id:id});
+		var object = util.select_from($.data.object,{id:id});
 		var wea = new factory[weapon]( wea_config, object.data, object.id);
 		wea.set_pos(pos.x,pos.y,pos.z);
 		var uid = $.scene.add(wea);
@@ -414,14 +569,25 @@ Global)
 		{
 			var bgdata = util.select_from($.data.background,{id:bg.id}).data;
 			$.background = new Background({
-				layers:util.div('background'),
-				floor:util.div('floor'),
-				scrollbar:true,
-				camerachase:{character:$.character}
+				layers: $.manager.background_layer,
+				scrollbar: $.manager.gameplay,
+				camerachase: {character:$.character},
+				onscroll: function(){ $.manager.canvas.render()}
 			},bgdata,bg.id);
+			$.stage = $.background.floor;
 		}
 		else
+		{
 			$.background = new Background(null); //create an empty background
+			$.stage = $.manager.canvas;
+		}
+	}
+
+	match.prototype.F4=function()
+	{
+		var $=this;
+		$.destroy();
+		$.manager.match_end();
 	}
 
 	match.prototype.F7=function()
@@ -438,7 +604,7 @@ Global)
 	match.prototype.new_randomseed=function()
 	{
 		var rand = new Random();
-		rand.seed_bytime();
+		rand.seed(897645324);
 		return rand;
 	}
 
@@ -447,24 +613,31 @@ Global)
 		return this.randomseed.next();
 	}
 
-	match.prototype.create_controller=function(allow)
+	match.prototype.overlay_message=function(mess)
+	{
+		var $=this;
+		$.manager.overlay_mess.show();
+		var item = $.data.UI.data.message_overlay[mess];
+		$.manager.overlay_mess.set_img_x_y(-item[0],-item[1]);
+		$.manager.overlay_mess.set_w_h(item[2],item[3]);
+	}
+
+	match.prototype.create_controller=function(funcon)
 	{
 		var $=this;
 		function show_pause()
 		{
+			if( !$) return;
 			if( $.time.paused)
-				$.pause_mess.show();
+				$.overlay_message('pause');
 		}
-		if( allow==='debug')
+		if( funcon)
 		{
-			var funkey_config =
-			{
-				'F1':'F1','F2':'F2','F3':'F3','F4':'F4','F5':'F5','F6':'F6','F7':'F7','F8':'F8','F9':'F9','F10':'F10'
-			};
-			var Fcon = new Fcontroller(funkey_config);
-			Fcon.child.push ({
+			funcon.sync=true;
+			funcon.child.push ({
 				key: function(I,down)
 				{
+					var opaused = $.time.paused; //original pause state
 					if( down)
 					{
 						switch (I)
@@ -477,27 +650,51 @@ Global)
 							break;
 
 							case 'F2':
-								if( $.time.paused)
-									$.TU_trans();
-								else
-									$.time.paused=true;
+								$.time.paused='F2';
 							break;
+
+							case 'esc':
+							case 'F4':
+								$.F4();
+							break;
+
+							case 'F6':
+								if( !$.F6_mode)
+									$.F6_mode=true;
+								else
+									$.F6_mode=false;
+							break;
+
 							case 'F7':
 								$.F7();
 							break;
 						}
-						if( $.time.paused)
+						if( (I==='F1' || I==='F2') && $.time.paused)
 						{
-							$.pause_mess.hide();
-							setTimeout(show_pause,2); //so that the 'pause' message blinks
+							$.manager.overlay_mess.hide();
+							setTimeout(show_pause,4); //so that the 'pause' message blinks
 						}
-						else
-							$.pause_mess.hide();
+						else if( !$.time.paused)
+						{
+							$.manager.overlay_mess.hide();
+						}
+						if( opaused !== $.time.paused)
+						{	//state change
+							if( $.time.paused)
+							{
+								if( funcon.paused)
+									funcon.paused(true);
+							}
+							else
+							{
+								if( funcon.paused)
+									funcon.paused(false);
+							}
+						}
 					}
 				}
 			});
-			Fcon.sync=true;
-			return Fcon;
+			return funcon;
 		}
 	}
 

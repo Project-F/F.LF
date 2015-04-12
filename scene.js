@@ -21,7 +21,7 @@ function scene (config)
 
 scene.prototype.add = function(C)
 {
-	this.uid++;
+	this.uid++; //starts from 1
 	C.uid = this.uid;
 	this.live[C.uid]=C;
 	return C.uid;
@@ -38,6 +38,7 @@ scene.prototype.remove = function(C)
 /*\
  * scene.query
  [ method ]
+ - volume (object)
  - exclude (object) or (array of objects)
  - where (object) what to intersect with
  * examples, can mixin the following properties
@@ -46,6 +47,7 @@ scene.prototype.remove = function(C)
  | {type:'character'} with character only
  | {not_team:1} exclude team
  | {filter:function}
+ | {sort:function} sort the result (ascending order) using the specified cost function
  = (array) all the objects whose volume intersect with the specified volume
 \*/
 scene.prototype.query = function(volume, exclude, where)
@@ -55,10 +57,10 @@ scene.prototype.query = function(volume, exclude, where)
 	if(!tag) tag='body';
 	var tagvalue=0;
 	var tag_split=tag.split(':');
-	tag = tag_split[0];
+	tag = 'vol_'+tag_split[0];
 	tagvalue = tag_split[1];
 
-	for ( var i in this.live)
+	for( var i in this.live)
 	{
 		var excluded=false;
 		if( exclude instanceof Array)
@@ -80,27 +82,52 @@ scene.prototype.query = function(volume, exclude, where)
 		if( excluded)
 			continue;
 
+		if( where.team && this.live[i].team !== where.team)
+			continue;
+
 		if( where.not_team && this.live[i].team === where.not_team)
 			continue;
 
 		if( where.type && this.live[i].type !== where.type)
 			continue;
 
+		if( where.not_type && this.live[i].type === where.not_type)
+			continue;
+
 		if( where.filter && !where.filter(this.live[i]))
 			continue;
 
-		if( this.live[i]['vol_'+tag])
+		if( volume===null)
 		{
-			var vol = this.live[i]['vol_'+tag](tagvalue);
+			result.push(this.live[i]);
+		}
+		else if( this.live[i][tag])
+		{
+			var vol = this.live[i][tag](tagvalue);
 			for( var j=0; j<vol.length; j++)
 			{
-				if( this.intersect( volume, vol[j]))
+				if( this.intersect(volume, vol[j]))
 				{
-					result.push( this.live[i] );
+					result.push(this.live[i]);
 					break;
 				}
 			}
 		}
+	}
+	if( where.sort)
+	{
+		if( where.sort==='distance' && !(exclude instanceof Array))
+		{	//sort according to distance from exclude
+			where.sort = function(obj)
+			{
+				var dx = obj.ps.x-exclude.ps.x;
+				var dz = obj.ps.z-exclude.ps.z;
+				return Math.sqrt(dx*dx+dz*dz);
+			}
+		}
+		result.sort(function(a,b){
+			return where.sort(a)-where.sort(b); //ascending order
+		});
 	}
 	return result;
 }

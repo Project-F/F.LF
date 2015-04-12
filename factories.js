@@ -7,8 +7,8 @@
  * this abstraction is to allow addition of new object types.
 \*/
 
-define(['LF/character','LF/weapon','LF/specialattack','LF/effects'],
-function(character,weapon,specialattack,effects)
+define(['LF/character','LF/weapon','LF/specialattack','LF/effect'],
+function(character,weapon,specialattack,effect)
 {
 	/** to manufacture an object a factory receives a config, `id` and `data`
 	*/
@@ -20,6 +20,6 @@ function(character,weapon,specialattack,effects)
 		//baseball: baseball,
 		//miscell: miscell,
 		//drinks: drinks,
-		effects: effects
+		effect: effect
 	}
 });

@@ -35,17 +35,15 @@ the JSON data in `manifest.js` is in the following schema:
 ```
 {
 	"data":"string/url-js",
-	"properties":"string/url-js",
 	"resourcemap":"string/url-js!optional"
 }
 ```
 
-`url-js` is the url to a file with `.js` extension.
+`url-js` is the url to a data file with `.js` extension.
 
 the entries are:
 
-- `data` is the url to the file `data.js`, corresponds to `data.txt` as found in LF2
-- `properties` is the url to the file `properties.js`, its format and usage is defined by __F.LF (extended standard)__
+- `data` is the url to the file `data.js`, corresponds to `data.txt` as found in LF2. F.LF extended its specification.
 - `resourcemap` is the url to the file `resourcemap.js`, its format and usage is defined by [__F.core__](http://tyt2y3.github.io/F.core/docs/docs.html#resourcemap). a resourcemap allows mapping from a canonical resource name (shorter and understandable) to the actual url (long and ugly), for example, consider an entry:
 `'squirrel.png':'http://imagehost.com/FtvJG6rAG2mdB8aHrEa8qXj8GtbYRpqrQs9F8X8.png'`
 
@@ -63,7 +61,18 @@ manifest.js
 resourcemap.js
 ```
 
-### example
+## data file format
+In F.LF, data file must be a valid javascript file with `.js` extension. The script content must be a JSON data structure surrounded by a define call, like:
+```
+define({
+	name: 'Dhip & Cale',
+	type: 'animal',
+	species: 'chipmunk'
+});
+```
+F.LF do not enforce the data structure to be strict JSON, that js style object literal is also accepted. Specifically, F.LF allows [properties without quotes](http://stackoverflow.com/questions/11233498/json-stringify-without-quotes-on-properties).
+
+## example
 it is always easier to learn from examples. check out the package `LF2_19` in the [release channel](https://github.com/tyt2y3/LFrelease/tree/master/LF2_19).
 </xmp>
 

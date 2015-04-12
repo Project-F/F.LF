@@ -14,6 +14,7 @@ G.application={};
 var GA = G.application;
 GA.window={};
 GA.window.width=794;
+GA.window.wide_width=1000;
 GA.window.height=550;
 GA.viewer={};
 GA.viewer.height=400;
@@ -31,10 +32,10 @@ G.combo_list = [
 	{ name:'D>A', seq:['def','right','att'], clear_on_combo:false},
 	{ name:'DvA', seq:['def','down','att']},
 	{ name:'D^A', seq:['def','up','att']},
-	{ name:'DvJ', seq:['def','down','jump']},
-	{ name:'D^J', seq:['def','up','jump']},
 	{ name:'D<J', seq:['def','left','jump']},
 	{ name:'D>J', seq:['def','right','jump']},
+	{ name:'DvJ', seq:['def','down','jump']},
+	{ name:'D^J', seq:['def','up','jump']},
 	{ name:'D<AJ', seq:['def','left','att','jump']},
 	{ name:'D>AJ', seq:['def','right','att','jump']},
 	{ name:'DJA', seq:['def','jump','att']}
@@ -44,41 +45,58 @@ G.combo_tag =
 	'def':'hit_d',
 	'jump':'hit_j',
 	'att':'hit_a',
-	'D>A':'hit_Fa',
 	'D<A':'hit_Fa',
+	'D>A':'hit_Fa',
 	'DvA':'hit_Da',
 	'D^A':'hit_Ua',
+	'D<J':'hit_Fj',
+	'D>J':'hit_Fj',
 	'DvJ':'hit_Dj',
 	'D^J':'hit_Uj',
-	'D>J':'hit_Fj',
-	'D<J':'hit_Fj',
 	'D<AJ':'hit_Fj',
 	'D>AJ':'hit_Fj',
 	'DJA':'hit_ja'
 };
+G.combo_priority =
+{	//larger number is higher priority
+	'up':0,'down':0,'left':0,'right':0,'def':0,'jump':0,'att':0,'run':0,
+	'D>A':1, 'D<A':1, 'DvA':1, 'D^A':1,
+	'DvJ':1, 'D^J':1, 'D>J':1, 'D<J':1, 'D<AJ':1, 'D>AJ':1, 'DJA':1
+};
 
-G.lazyload = function(O) //return true to delay loading of data files
+G.lazyload = function(folder,O) //return true to delay loading of data files
 {
-	if( !this.character_list)
-		this.character_list={};
-	if( O.type==='character')
+	if( folder==='object')
 	{
-		var file = util.filename(O.file);
-		this.character_list[file] = true;
-		return true; //delay loading of all character files
+		if( !this.character_list)
+			this.character_list={};
+		if( O.type==='character')
+		{
+			var file = util.filename(O.file);
+			this.character_list[file] = true;
+			return true; //delay loading of all character files
+		}
+		else if( O.type)
+		{
+			var file = util.filename(O.file);
+			if( file.lastIndexOf('_')!==-1)
+				file = file.slice(0,file.lastIndexOf('_'));
+			/** delay loading of all character prefixed files. consider,
+				{id: 1, type:'character', file:'data/deep.js'},
+				{id:203, type:'specialattack', file:'data/deep_ball.js'}
+				as `deep.js` is of type character, any files matching `deep_*` will also be lazy loaded
+			*/
+			if( this.character_list[file])
+				return true;
+		}
 	}
-	else
+	else if( folder==='background')
 	{
-		var file = util.filename(O.file);
-		if( file.lastIndexOf('_')!==-1)
-			file = file.slice(0,file.lastIndexOf('_'));
-		/** delay loading of all character prefixed files. consider,
-			{id: 1, type:'character', file:'data/deep.js'},
-			{id:203, type:'specialattack', file:'data/deep_ball.js'}
-			as `deep.js` is of type character, any files matching `deep_*` will also be lazy loaded
-		*/
-		if( this.character_list[file])
-			return true;
+		return true;
+	}
+	else if ( folder==='AI')
+	{
+		return true;
 	}
 	return false;
 };
@@ -144,6 +162,7 @@ GC.recover.bdefend= -0.5; //bdefend recover constant
 GC.effect={};
 GC.effect.num_to_id= 300; //convert effect num to id
 GC.effect.duration= 3; //default effect lasting duration
+GC.effect.heal_max= 100; //the max hp that can be recovered by healing effects
 
 GC.character={};
 GC.character.bounceup={}; //bounce up during fall
@@ -156,12 +175,13 @@ GC.character.bounceup.absorb= //how much dvx to absorb when bounce up
 	9:1,
 	14:4,
 	20:10,
-	40:20
+	40:20,
+	60:30
 }
 
 GC.defend={};
 GC.defend.injury={};
-GC.defend.injury.factor= 0.1; //defined defend injury factor
+GC.defend.injury.factor= 0.1; //defined defend injury factor; meaning only that portion of injury will be done for an effective defence
 GC.defend.break_limit= 40; //defined defend break
 GC.defend.absorb= //how much dvx to absorb when defence is broken
 {	//look up table
@@ -172,6 +192,7 @@ GC.defend.absorb= //how much dvx to absorb when defence is broken
 GC.fall={};
 GC.fall.KO= 60; //defined KO
 GC.fall.wait180= //the wait of 180 depends on effect.dvy
+//meaing the stronger the dvy, the longer it waits
 {	//lookup
 	//dvy:wait
 	7:1,
@@ -195,8 +216,8 @@ GC.friction.fell=    //defined friction at the moment of fell onto ground
 	25:9 //guess entry
 }
 
+//physics
 GC.min_speed= 1; //defined minimum speed
-
 GC.gravity= 1.7; //defined gravity
 
 GC.weapon={};
@@ -214,14 +235,14 @@ GC.weapon.hit={}; //when a weapon hit others
 GC.weapon.hit.vx= -3; //absolute speed
 GC.weapon.hit.vy= 0;
 
-//GC.weapon.gain.factor.x= 1.1; //when a weapon is being hit at rest
-//GC.weapon.gain.factor.y= 1.8;
-
 GC.weapon.reverse={}; //when a weapon is being hit while travelling in air
 GC.weapon.reverse.factor={};
 GC.weapon.reverse.factor.vx= -0.4;
 GC.weapon.reverse.factor.vy= -2;
 GC.weapon.reverse.factor.vz= -0.4;
+
+GC.combo={};
+GC.combo.timeout=10; //how many TUs a combo will still be effective after being fired
 
 GC.unspecified= -842150451; //0xCDCDCDCD, one kind of HEX label
 

@@ -12,8 +12,8 @@ test_cases: [
 	scenario:
 	{	//2 players interactions
 		player: [
-			{ id: 1, team: 1},
-			{ id: 30, team: 2}
+			{ datanum: 1, team: 1},
+			{ datanum: 0, team: 2}
 		]
 	},
 	cases: [
@@ -21,7 +21,7 @@ test_cases: [
 		setup: function(match)
 		{
 			match.character[1].set_pos(300,0,200);
-			match.character[2].set_pos(440,0,200);
+			match.character[2].set_pos(435,0,200);
 		},
 		player: [
 		[	//Deep
@@ -315,7 +315,7 @@ test_cases: [
 			{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},
 			{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},
 		]]
-	}
+	} //*/
 	]
 }
 ]});
