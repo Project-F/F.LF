@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<body>
+<div id='text'></div>
+<script>
+if( window.localStorage)
+{
+	if( !window.localStorage.getItem('visited'))
+		window.localStorage.setItem('visited',0);
+	else
+		window.localStorage.setItem('visited',parseInt(window.localStorage.getItem('visited'))+1);
+	document.getElementById('text').innerHTML = 'You have visited this page '+window.localStorage.getItem('visited')+' times.';
+}
+</script>
+</body>

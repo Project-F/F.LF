@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<head></head>
+<body>
+<textarea id='texter'>
+</textarea>
+<script>
+/** this file is for testing various javascripts tricks
+ */
+
+/* //OOP
+var F_ = (function(){
+	return {
+		hello: function(mes)
+		{
+			alert('hello '+mes);
+		},
+	}
+}());
+F_.object = function (r)
+{
+	this.public_property=r;
+	var private_property=r+1;
+}
+F_.object.prototype.say = function()
+{
+	F_.hello(this.public_property+' '+private_property);
+}
+var mod = new F_.object(2);
+mod.say();*/
+
+/* //execution context of eval
+function F()
+{
+	var pri=10;
+	this.pub=11;
+	hello.apply(this,[]);
+	eval("alert('pri='+pri)");
+}
+function hello()
+{
+	alert('this.pub='+this.pub)
+}
+var f=new F();*/
+
+/* //the `this` reference
+var F=
+{
+	x: 11
+};
+function G()
+{
+	alert(this.x);
+}
+G.apply(F);*/
+
+/* //undefined property
+var A={};
+var B={x:A.x, y:22};
+for( var I in B)
+	alert(B[I]);
+*/
+
+/* //matching location
+var str=window.location.href;
+if( str.indexOf('http://www') !== -1)
+{
+	alert('yes');
+}*/
+
+/* //class extension
+function A()
+{
+	var scoope=
+	{
+		x:22
+	}
+	extend(scoope);
+	scoope.say();
+}
+function extend(S)
+{
+	S.say=function(){
+		alert(S.x);
+	}
+}
+var a=new A();*/
+
+/* //pointers
+var a={x:1};
+var b={x:2};
+var pointer=a;
+var hold=pointer;
+pointer=b;
+alert(pointer.x+' '+hold.x);
+*/
+
+/* //object property delete
+var a={};
+a[1]='1';
+a[2]='2';
+a[3]='3';
+delete a[2];
+alert(JSON.stringify(a));
+*/
+
+/* //object property set
+var a={};
+a.b.c='hi';
+alert(a.b.c);
+*/
+
+/* //differentiated class
+function master(type)
+{
+	return function(i) //the inner class
+	{
+		if( type==='a')
+			this.x='hello'+i;
+		if( type==='b')
+			this.x='world'+i;
+		
+		this.say=function()
+		{
+			console.log(this.x);
+		}
+	}
+}
+var A=master('a');
+var B=master('b');
+var a1 = new A(1);
+a1.say();
+var a2 = new A(2);
+a2.say();
+var b = new B(0);
+b.say(); */
+
+/* //regex
+var tex = document.getElementById('texter');
+var     rlink = /(^|\s)@([\w\.\_\$]*[\w\_\$])/g,
+        ramp = /&(?!\w+;|#\d+;|#x[\da-f]+;)/gi,
+		rantiwrap = /^<([^>]+)>(.*)<\/\1>$/;
+tex.value = tex.value.replace(rantiwrap, "$2").replace(ramp, '<em class="amp">&amp;</em>').replace(rlink, '$1<a href="#$2" class="dr-link">$2</a>'); */
+</script>
+</body>

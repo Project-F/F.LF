@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<head></head>
+<body>
+primitive demo of sprite animation via css
+<div style='position:absolute; width:100px; height:100px; overflow:hidden;'>
+	<img id='sp1' src='test_sprite.png' style='position:absolute;'/>
+</div>
+<script>
+sp1 = document.getElementById('sp1');
+w = 100;// each cell is 100x100 px
+h = 100;//
+Gx = 4; // makes a 4x4 grid
+Gy = 4; //
+I = 0;
+TIMER = setInterval(onEnterFrame,400);
+
+function onEnterFrame()
+{
+	if ( I==Gx*Gy)
+		I=0;
+	
+	sp1.style.left= -(I%Gx)*w+'px';
+	sp1.style.top = -(Math.floor(I/Gy))*h+'px';
+	
+	I++;
+}
+</script>
+</body>

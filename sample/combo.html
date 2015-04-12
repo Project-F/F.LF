@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<head>
+<meta http-equiv='content-type' content='text/html; charset=UTF-8'>
+</head>
+<body>
+<div id='combo' style='color:red'></div><br>
+<div id='seq'></div><br>
+<pre id='info' style='line-height:150%;'></pre>
+
+<script data-main="../../" src="require.js"></script>
+
+<script>
+requirejs(['F.core/controller','F.core/combodec'], function(controller,combodec)
+{
+
+var con_fg = {up:'h',down:'n',left:'b',right:'m',def:'v',jump:'f',att:'d'};
+var con = new controller(con_fg);
+
+var dec_config =
+{
+	rp: {up:1,down:1,left:2,right:2,def:3,jump:1,att:5}, //the same key must repeat no more than X times
+	timeout:72, //in a 72 fps key control system, approx. 1s
+	comboout:36,//the max time interval(in frames) between keys to make a combo
+	callback: print,    //callback function when combo detected
+}
+var combo = [
+	{ name:'氣功波', seq:['def','right','att']},
+	{ name:'氣功波', seq:['def','left','att']},
+	{ name:'超級氣功波', seq:['def','right','att','att','att','att','att']},
+	{ name:'超級氣功波', seq:['def','left','att','att','att','att','att']},
+	{ name:'橫格', seq:['def','right','jump']},
+	{ name:'橫格', seq:['def','left','jump']},
+	{ name:'上攻', seq:['def','up','att']},
+	{ name:'下攻', seq:['def','down','att']},
+	{ name:'上格', seq:['def','up','jump']},
+	{ name:'下格', seq:['def','down','jump']},
+	{ name:'大絕', seq:['up','down','left','right','def','jump','att']}
+];
+var dec = new combodec(con, dec_config, combo);
+
+//--
+
+var seq = document.getElementById('seq');
+var com = document.getElementById('combo');
+
+var TIMER = setInterval(onEnterFrame,1000/72); //72 fps
+function onEnterFrame()
+{
+	dec.frame(); //must supply frame events to detector
+	var str='';
+	for( var i=0; i<dec.seq.length; i++)
+		str+=(i===0?'':',')+dec.seq[i].k;
+	seq.innerHTML=str;
+}
+
+function print(combo) //callback function when combo detected
+{
+	var str=combo.name+' '+combo.seq.toString()+'<br>';
+	com.innerHTML+=str;
+}
+
+var str='controller='+JSON.stringify(con_fg);
+str+='\n'+'combo='+JSON.stringify(combo).replace(/},/g,'},\n').replace('[','[\n').replace('}]','}\n]');
+document.getElementById('info').innerHTML=str;
+
+});
+</script>
+</body>

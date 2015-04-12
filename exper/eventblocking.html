@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<head></head>
+<body>
+<script>
+var time=0;
+var log=[];
+
+document.onkeydown=function(e)
+{
+	log.push(time);
+}
+
+var endtime = new Date().getTime()+10000;
+
+function longoperation1() {
+	time++;
+	while(new Date().getTime() < endtime);
+	alert(log.join(','));
+}
+
+function longoperation2() {
+	time++;
+	if(new Date().getTime() < endtime)
+		setTimeout(longoperation2,0);
+	else
+		alert(log.join(','));
+}
+
+longoperation2();
+</script>
+the principle is, a long operation should be splitted into chunks,
+in order to provide time gaps to the browser to fire events.
+</body>

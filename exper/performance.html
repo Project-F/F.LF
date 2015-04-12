@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<head></head>
+<body>
+LIM=<input id="LIM" onchange="LIM=this.value;run();" />
+<pre id="text"></pre>
+<script>
+var text=document.getElementById('text');
+var lim_text=document.getElementById('LIM');
+var LIM=10000;
+lim_text.value=LIM;
+function perform(code)
+{
+	text.innerHTML+=code;
+	var sta=new Date();
+	eval(code);
+	var fin=new Date();
+	text.innerHTML+='\n '+(fin-sta)+'ms\t|';
+	for(var i=0; i<fin-sta; i+= 10)
+	text.innerHTML+='-';
+	text.innerHTML+='|\n\n';
+}
+function run()
+{
+	text.innerHTML='';
+
+	text.innerHTML+= "---base case\n";
+	perform("for(var i=0; i < LIM; i++){}");
+
+	text.innerHTML+= "VS loop down\n";
+	perform("for(var i = LIM; i > 0; i--){}");
+
+	/*
+	text.innerHTML+= "---array operations\n";
+	perform("var A=[]; for(var i=0; i < LIM; i++) A.push(i);");
+	perform("var A=[]; for(var i=0; i < LIM; i++) A.unshift(i);");
+	perform("var A=new Array(LIM); for(var i=0; i < LIM; i++) A.pop();");
+	perform("var A=new Array(LIM); for(var i=0; i < LIM; i++) A.shift();");
+	perform("var A=[]; for(var i=0; i < LIM; i++) A=A.concat([i]);");
+	perform("var A=new Array(10); for(var i=0; i < LIM; i++){ A.push(i); A.shift();}");
+	perform("var A=[]; for(var i=0; i < LIM; i++){ A=[i];}");
+	*/
+
+	/*
+	text.innerHTML+= "---no if\n";
+	perform("for( var i=0, j=0; i < LIM; i++){ j+=i/2;}");
+	text.innerHTML+= "VS an useless if\n";
+	perform("for( var i=0, j=0; i < LIM; i++){ if(i*i>i) j+=i/2;}");
+	*/
+
+	text.innerHTML+= "---creating objects dynamically\n";
+	perform("for(var i=0; i < LIM; i++){"+'\n'+
+	"var a={w:i,x:2*i,y:3*i,z:i*i};}");
+
+	text.innerHTML+= "VS look up in a predefined table\n";
+	perform("var A=[];"+'\n'+
+	"for(var i=0; i < 100; i++){ A.push({w:i,x:2*i,y:3*i,z:i*i});}"+'\n'+
+	"for(var i=0; i < LIM; i++){ var a=A[i%100];}");
+
+	text.innerHTML+= "---calling functions\n";
+	perform("function A(i,j){return i+j+5;}"+'\n'+
+	"for(var i=0, j=0; i < LIM; i++){ j=A(i,j);}");
+
+	text.innerHTML+= "VS inline\n";
+	perform(
+	"for(var i=0, j=0; i < LIM; i++){ j+=i+5;}");
+
+	/*
+	text.innerHTML+= "\n";
+	perform(""+'\n'+
+	"for(var i=0; i < LIM; i++){ }");
+	*/
+}
+run();
+</script>
+</body>

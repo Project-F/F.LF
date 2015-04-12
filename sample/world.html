@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<head></head>
+<body>
+<style>
+#canvas
+{
+	position: absolute;
+	left:0px;
+	top:0px;
+	width: 700px;
+	height: 500px;
+	border: 1px solid black;
+}
+</style>
+<div id='canvas'></div>
+<script data-main="../../" src="require.js"></script>
+<script>
+/** This is the demo of project-view operations of `world.js` of F.core.
+	This sample might include too much of unrelated code (even longer than world.js),
+	but this should be the best of most basic 3d graphics
+ */
+requirejs(['F.core/world','./raphael-min.js'], function(World)
+{
+	/** drawer is a helper class to provide moveTo, lineTo functions on top of raphael*/
+	function drawer(rl)
+	{
+		var T=this;
+		T.rl=rl;
+		T.canx=0; T.cany=0;
+		T.linestring=["","","","",""];
+		T.linecolor=["#000","#F00","#0F0","#00B","#AAA"];
+		T.moveTo=function(P,C)
+		{
+			if ( C==null) {C=4;}
+			T.linestring[C] += " M "+P.x+","+P.y;
+		}
+		T.lineTo=function(P,C)
+		{
+			if ( C==null) {C=4;}
+			T.linestring[C] += " L "+P.x+","+P.y;
+		}
+		T.drawpoint=function(P,s,C)
+		{
+			if (!s) {s=2;}
+			if (C==null) {C=0;}
+			T.moveTo({x:P.x-s, y:P.y-s},C);
+			T.lineTo({x:P.x+s, y:P.y+s},C);
+			T.moveTo({x:P.x-s, y:P.y+s},C);
+			T.lineTo({x:P.x+s, y:P.y-s},C);
+			T.moveTo({x:P.x,   y:P.y}  ,C);
+		}
+		T.drawpath=function()
+		{
+			for ( var i=0; i<5; i++)
+				T.rl.path( T.linestring[i]).attr( {stroke: T.linecolor[i], "stroke-width": 1});
+			T.linestring=["","","","",""];
+		}
+		T.fillpath=function(i)
+		{
+			T.rl.path( T.linestring[i]).attr( {fill: T.linecolor[i]});
+			T.linestring[i]="";
+		}
+	}
+
+	//-------------------------------------------------------------------------------//
+
+	/** WPD stands for Web Physics Demonstrator originally,
+		here most work is adapted from http://webphydemo.blogspot.com/
+	 */
+	function WPD(world)
+	{
+		var This=this;
+		this.W=world;
+		this.P=this.W.P;
+		this.V=[]; //vectors
+		this.pp=this.W.pp;
+		this.line=[ /*{a,b,c}*/ ];
+		this.rl = Raphael('canvas');
+		this.drawer = new drawer(this.rl);
+		this.addvector(0,0,0,0); //origin
+
+		This.timer=setInterval(function()
+		{
+			This.frame();
+		},1000/10);
+	}
+	WPD.prototype.addvector=function(x,y,z,o)
+	{
+		if( o===undefined) o=-1;
+		this.V.push({x:x,y:y,z:z,o:o});
+		this.P.push({x:0,y:0,z:0});
+		return this.P.length-1;
+	}
+	WPD.prototype.addline=function(a,b,c)
+	{
+		this.line.push({a:a,b:b,c:c});
+		return this.line.length-1;
+	}
+	WPD.prototype.frame=function()
+	{
+		if( this.update) //external update function
+			this.update();
+
+		//put all vectors to world.P for projection
+		for( var i=0; i<this.V.length; i++)
+		{
+			if( this.V[i].o===-1)
+			{	//is a point
+				this.P[i].x = this.V[i].x;
+				this.P[i].y = this.V[i].y;
+				this.P[i].z = this.V[i].z;
+			}
+			else
+			{
+				//add the vectors to their origin
+				this.P[i].x = this.P[this.V[i].o].x + this.V[i].x;
+				this.P[i].y = this.P[this.V[i].o].y + this.V[i].y;
+				this.P[i].z = this.P[this.V[i].o].z + this.V[i].z;
+			}
+		}
+		this.W.project_all();
+		this.W.view_all();
+
+		this.redraw();
+		if( this.draw) //external draw function
+			this.draw();
+
+		if( this.update && this.redraw && window.location.href.match(/static/))
+			clearInterval(this.timer);
+	}
+	WPD.prototype.redraw=function()
+	{
+		var This=this;
+		this.rl.clear(); // clear canvas
+		// draw lines
+		for( var i=0; i<this.line.length; i++)
+		{
+			line(this.pp[this.line[i].a], this.pp[this.line[i].b], this.line[i].c);
+		}
+		// draw vectors as arrows
+		for( var i=0; i<this.V.length; i++)
+		{
+			if( this.V[i].o===-1)
+				continue;
+			arrow(this.pp[this.V[i].o], this.pp[i]);
+		}
+		// execute draw operation
+		this.drawer.drawpath();
+		// helpers
+		function line(a,b,c)
+		{
+			This.drawer.moveTo(a,c);
+			This.drawer.lineTo(b,c);
+		}
+		function arrow( a,b)
+		{
+			var scale=1;
+			var ax=a.x, ay=a.y, bx=b.x, by=b.y;
+			var dx=bx-ax, dy=by-ay;
+			if( Math.sqrt(dx*dx+dy*dy) < 200)
+				scale=2;
+			if( Math.sqrt(dx*dx+dy*dy) < 20)
+				scale=6;
+			bx=ax+scale*dx;
+			by=ay+scale*dy;
+			line({x:ax,y:ay},{x:bx,y:by},0);
+			//
+			var R=0.85; var K=0.05;
+			vx=ay-by;
+			vy=bx-ax;
+			var acx=(bx-ax)*R+ax;
+			var acy=(by-ay)*R+ay;
+			//
+			This.drawer.moveTo({x:acx+vx*K,y:acy+vy*K},0)
+			This.drawer.lineTo({x:bx,y:by},0);
+			This.drawer.lineTo({x:acx-vx*K,y:acy-vy*K},0);
+		}
+	}
+	//vector operations
+	WPD.prototype.add=function(i,j,k)
+	{	//Vk=Vi+Vj;
+		this.V[k].x = this.V[i].x+this.V[j].x;
+		this.V[k].y = this.V[i].y+this.V[j].y;
+		this.V[k].z = this.V[i].z+this.V[j].z;
+	}
+	WPD.prototype.sub=function(i,j,k)
+	{	//Vk=Vi-Vj;
+		this.V[k].x = this.V[i].x-this.V[j].x;
+		this.V[k].y = this.V[i].y-this.V[j].y;
+		this.V[k].z = this.V[i].z-this.V[j].z;
+	}
+	WPD.prototype.scale=function(i,R,o)
+	{
+		this.V[o].x = this.V[i].x *R;
+		this.V[o].y = this.V[i].y *R;
+		this.V[o].z = this.V[i].z *R;
+	}
+	WPD.prototype.distance=function(i,j)
+	{
+		var dx=this.V[i].x-this.V[j].x;
+		var dy=this.V[i].y-this.V[j].y;
+		var dz=this.V[i].z-this.V[j].z;
+		return Math.sqrt(dx*dx+dy*dy+dz*dz);
+	}
+	WPD.prototype.vectorlength=function(i)
+	{
+		var dx=this.V[i].x;
+		var dy=this.V[i].y;
+		var dz=this.V[i].z;
+		return Math.sqrt(dx*dx+dy*dy+dz*dz);
+	}
+	WPD.prototype.normalize=function(i,o)
+	{
+		var len=this.vectorlength(i);
+		this.V[o].x = this.V[i].x/len;
+		this.V[o].y = this.V[i].y/len;
+		this.V[o].z = this.V[i].z/len;
+	}
+	WPD.prototype.addmagnitude=function(i,K,o)
+	{
+		this.scale( i, 1+K/this.vectorlength(i), o);
+	}
+	WPD.prototype.getx=function(i) { return this.V[i].x; }
+	WPD.prototype.gety=function(i) { return this.V[i].y; }
+	WPD.prototype.getz=function(i) { return this.V[i].z; }
+	WPD.prototype.screenx=function(i) { return this.pp[i].x; }
+	WPD.prototype.screeny=function(i) { return this.pp[i].y; }
+
+	//-------------------------------------------------------------------------------//
+
+	function addaxis(w)
+	{
+		w.addvector(20,0,0);
+		w.addvector(0,20,0);
+		w.addvector(0,0,20);
+		w.addline( 0,1,1);
+		w.addline( 0,2,2);
+		w.addline( 0,3,3);
+	}
+	function addviewplane(w)
+	{
+		var gridsize=10;
+		var INF=gridsize;
+		var gridden=gridsize/5;
+		var Z=0;
+		for ( var i=0; i<=gridsize/gridden; i++){
+			w.addline( w.addvector( i*gridden, 0, Z), w.addvector( i*gridden, INF, Z), 4);
+			w.addline( w.addvector( INF, i*gridden, Z), w.addvector( 0, i*gridden, Z), 4);
+		}
+		for ( var i=0; i<=gridsize/gridden; i++){
+			w.addline( w.addvector( i*gridden, Z, 0), w.addvector( i*gridden, Z, INF), 4);
+			w.addline( w.addvector( INF, Z, i*gridden), w.addvector( 0, Z, i*gridden), 4);
+		}
+		for ( var i=0; i<=gridsize/gridden; i++){
+			w.addline( w.addvector( Z, i*gridden, 0), w.addvector( Z, i*gridden, INF), 4);
+			w.addline( w.addvector( Z, INF, i*gridden), w.addvector( Z, 0, i*gridden), 4);
+		}
+	}
+
+	var mousedown=false;
+	document.onmousedown=function()
+	{
+		mousedown=true;
+	}
+	document.onmouseup=function()
+	{
+		mousedown=false;
+	}
+	document.onmousemove=function(e)
+	{
+		e=e?e:event;
+		var x=e.clientX;
+		var y=e.clientY;
+		if( mousedown && world && this.lastx)
+		{
+			world.tho+= (this.lastx-x)*0.2;
+			world.thp+= (this.lasty-y)*0.2;
+		}
+		this.lastx=x;
+		this.lasty=y;
+	}
+
+	//-------------------------------------------------------------------------------//
+
+	var world = new World();
+	var wpd = new WPD(world);
+	{
+		//wpd user code
+		
+		//viewport setup
+		addaxis(wpd);
+		addviewplane(wpd);
+		world.tho=30;
+		world.thp=60;
+		world.zoom=30;
+		world.pan.x-=100;
+		
+		//pendulum setup
+		var gravity = -2;
+		var pin = wpd.addvector(5,5,10);	//pin used to fix the string
+		var bX = wpd.addvector(5,4,2); 		//ball
+		var bV = wpd.addvector( 0,0,0,bX);		//the velocity
+		var bA = wpd.addvector( 0,0,0,bX);		//the acceleration
+		var bT = wpd.addvector( 0,0,0,bX);		//tension
+		var bW = wpd.addvector( 0,0,gravity,bX);//weight
+		wpd.addline( pin,bX,0);					//add a line between the bob and the pin
+		var bobD = wpd.distance(pin,bX);		//the length of the string
+		var bobM = 1; //mass
+		
+		//dynamics
+		wpd.update = function()
+		{
+			var nbobD = wpd.distance(pin,bX);
+			var sintho = (wpd.gety(bX) - wpd.gety(pin))/nbobD;
+			var costho = (wpd.getz(bX) - wpd.getz(pin))/nbobD;
+			//
+			wpd.sub(pin,bX,bT);			//get the tension vector of the pendulum
+			wpd.normalize(bT,bT);		//normalize the vector
+			wpd.scale(bT,bobM*gravity*costho,bT); //bT = mg*cos(theta)
+			wpd.addmagnitude(bT, bobM*wpd.vectorlength(bV)*wpd.vectorlength(bV)/nbobD, bT);
+				//bT += mv*v/r  as a result of circular motion
+			//
+			var corr = nbobD/bobD;		//to correct the length of the pendulum
+			wpd.scale(bT,Math.sqrt(corr),bT);
+			//
+			wpd.add(bT,bW,bA);		//bA = bW+bT
+			wpd.add(bA,bV,bV);		//bV = bV+bA	
+			wpd.add(bV,bX,bX);		//bX = bX+bV
+		}
+		wpd.draw = function()
+		{
+			wpd.rl.circle(wpd.screenx(bX),wpd.screeny(bX),25).attr( {stroke:'#000'});
+		}
+	}
+});
+</script>
+</body>

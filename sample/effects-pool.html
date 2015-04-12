@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<head>
+<style>
+.box
+{
+	width: 30px;
+	height: 30px;
+	float: left;
+	border: 1px solid #FFF;
+	font-size: 12px;
+}
+</style>
+</head>
+
+<body>
+<button id='create-btn'>create effect</button> imagine the followings are instances of explosions, flame or sound effects
+<div id='holder'></div>
+
+<script data-main="../../" src="require.js"></script>
+<script>
+
+requirejs(['F.core/effects-pool'], function(Effects_pool)
+{
+	function box_effect(speed)
+	{
+		//constructor
+		var box = this.box = document.createElement('div');
+		box.className = 'box';
+		document.getElementById('holder').appendChild(box);
+		this.speed=speed;
+		this.die();
+	}
+	box_effect.prototype.born=function()
+	{
+		this.color=
+		{
+			r:180, g:180, b:255
+		}
+		this.update();
+	}
+	box_effect.prototype.TU=function()
+	{
+		// update
+		this.color.b -= this.speed;
+		this.color.r += this.speed;
+		this.update();
+
+		// I die
+		if( this.color.b <= 180 || this.color.r >= 255)
+			this.parent.die(this);
+	}
+	box_effect.prototype.die=function()
+	{
+		this.color=
+		{
+			r:180, g:180, b:180
+		}
+		this.update();
+	}
+	box_effect.prototype.update=function()
+	{
+		this.box.style.backgroundColor= 'rgb('+this.color.r+','+this.color.g+','+this.color.b+')';
+	}
+	//
+	var ef_config=
+	{
+		circular: true, //either true or false will work for this example, but circular is slightly more efficient
+		init_size: 5,
+		batch_size: 5,
+		max_size: 100,
+		construct: function()
+		{
+			return new box_effect(1);
+		}
+	};
+	var effects = new Effects_pool(ef_config);
+	//
+	setInterval(function()
+	{
+		effects.call_each('TU');
+	}, 1000/20);
+
+	setInterval(function()
+	{
+		//sort
+		for( var i=0; i<effects.pool.length; i++)
+		{
+			var B=effects.pool[i];
+			B.box.innerHTML=i;
+			var par=B.box.parentNode;
+			par.removeChild(B.box);
+			par.appendChild(B.box);
+		}
+	}, 1000);
+	//
+	var create_btn = document.getElementById('create-btn');
+	create_btn.onclick=function()
+	{
+		effects.create();
+	}
+
+});
+</script>
+</body>

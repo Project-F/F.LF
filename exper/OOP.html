@@ -1,0 +1,50 @@
+<body>
+To demonstrate prototypal object oriented programming in javascript.<br>
+You can also read the document on <a href="https://developer.mozilla.org/en-US/docs/JavaScript/Introduction_to_Object-Oriented_JavaScript">developer.mozilla.org</a>
+<script>
+// define the Person Class
+function Person(name)
+{
+	if( !name) return;
+	this.name=name;
+}
+
+Person.prototype.walk = function(){
+	console.log(this.name+' says: I am walking!');
+};
+Person.prototype.sayHello = function(){
+	console.log(this.name+' says hello');
+};
+
+// define the Student class
+function Student(name) {
+	// Call the parent constructor
+	Person.call(this,name);
+}
+
+// inherit Person
+Student.prototype = new Person();
+
+// correct the constructor pointer because it points to Person
+Student.prototype.constructor = Student;
+
+// replace the sayHello method
+Student.prototype.sayHello = function(){
+	console.log(this.name+' says: hi, I am a student');
+}
+
+// add sayGoodBye method
+Student.prototype.sayGoodBye = function(){
+	console.log(this.name+' says goodBye');
+}
+
+var student1 = new Student('John');
+student1.sayHello(); //John says: hi, I am a student
+student1.walk(); //John says: I am walking!
+student1.sayGoodBye(); //John says goodBye
+
+// check inheritance
+console.log(student1 instanceof Person); // true 
+console.log(student1 instanceof Student); // true
+</script>
+</body>

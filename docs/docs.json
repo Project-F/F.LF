@@ -1,0 +1,16 @@
+{
+    "title": "F.core",
+    "output": "docs.html",
+    "scripts": [ "analytics.js" ],
+	"files":
+	[{
+		"path": "more.js",
+		"link": "https://github.com/tyt2y3/F.core/blob/master/docs/more.js"
+	}],
+    "directory":
+    [{
+    	"path": "../",
+    	"link": "https://github.com/tyt2y3/F.core/blob/master",
+    	"extension": [".js"]
+    }]
+}

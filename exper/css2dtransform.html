@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<head>
+<style>
+#box
+{
+	position: absolute;
+	border: 1px solid black;
+	width: 100px;
+	height: 100px;
+}
+</style>
+</head>
+
+<body>
+<div id='box'>Box</div>
+<script>
+var box=document.getElementById('box');
+box.x=0;
+
+setInterval(function()
+{
+	box.x+=10;
+	//box.style.left=box.x+'px';
+	box.style['WebkitTransform'] = 'translate('+box.x+'px,'+0+'px)';
+	if( box.x>500)
+		box.x=0;
+}, 1000/30);
+</script>
+</body>

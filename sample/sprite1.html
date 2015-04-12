@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<head>
+<meta http-equiv='content-type' content='text/html; charset=UTF-8'>
+</head>
+<body style='background:#CCC;'>
+DOM sprite implementation<br>
+Basic sprite animation with manually mirrored sprite sheet
+<button id='mirror'>mirror</button>
+<div id='canvas'></div>
+
+<script data-main="../../" src="require.js"></script>
+<script>
+requirejs(['F.core/sprite-dom','F.core/animator'], function(sprite,animator)
+{
+
+var sp1_config=
+{
+	canvas: document.getElementById('canvas'),
+	wh: {x:100,y:100},
+	img: 
+	{
+		'0': 'test_sprite.png',
+		'1': 'test_sprite_mirror.png'
+	}
+}
+sp1 = new sprite(sp1_config);
+sp1.set_xy({x:150, y:100});
+sp1.switch_img('0');
+
+var sp1_an_config=
+{
+	x:0,y:0,     //top left margin of the frames
+	w:100, h:100,//width, height of a frame
+	gx:4,gy:4,   //define a gx*gy grid of frames
+	tar:sp1      //target F_sprite
+}
+sp1_an = new animator(sp1_an_config);
+sp1_an.set_frame(9); //frame count from 0, top left corner
+
+var x = 0;
+TIMER = setInterval(onEnterFrame,1000/4); //4 fps
+function onEnterFrame()
+{
+	sp1_an.next_frame();
+	sp1.set_xy({x:x, y:100});
+	x+=50;
+	if( x>800)
+		x=0;
+}
+
+document.getElementById('mirror').onclick=function()
+{
+	sp1_an.flip_x = !sp1_an.flip_x;
+	if( sp1_an.flip_x===false)
+		sp1.switch_img('0');
+	else
+		sp1.switch_img('1');
+}
+
+});
+</script>
+</body>

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<head>
+<meta http-equiv='content-type' content='text/html; charset=UTF-8'>
+</head>
+
+<body>
+<pre id='output'></pre>
+
+<script data-main="../../" src="require.js"></script>
+<script>
+requirejs(['F.core/support'], function(support)
+{
+	var out=document.getElementById('output');
+	out.innerHTML=JSON.stringify(support,null,' ');
+});
+</script>
+</body>

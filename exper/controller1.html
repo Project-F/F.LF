@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<head>
+<style>
+.key
+{
+	width:60px; height:60px; background-color:#CCC; float:left; margin:2px 2px 2px 2px;
+}
+</style>
+</head>
+<body>
+<div id='keycode'>keycode:</div>
+<div class='key' id='k27'>Esc</div>
+<div class='key' id='k112'>F1</div>
+<div class='key' id='k113'>F2</div>
+<div class='key' id='k114'>F3</div>
+<div class='key' id='k115'>F4</div>
+<div class='key' id='k116'>F5</div>
+<div class='key' id='k117'>F6</div>
+<div class='key' id='k118'>F7</div>
+<div class='key' id='k119'>F8</div>
+<div class='key' id='k120'>F9</div>
+<div class='key' id='k121'>F10</div>
+<div class='key' id='k122'>F11</div>
+<div class='key' id='k123'>F12</div>
+<div class='key' id='k19' style='width:90px'>Break</div>
+<div style='clear:both'></div>
+<div class='key' id='k192'>~<br>`</div>
+<div class='key' id='k49'>1</div>
+<div class='key' id='k50'>2</div>
+<div class='key' id='k51'>3</div>
+<div class='key' id='k52'>4</div>
+<div class='key' id='k53'>5</div>
+<div class='key' id='k54'>6</div>
+<div class='key' id='k55'>7</div>
+<div class='key' id='k56'>8</div>
+<div class='key' id='k57'>9</div>
+<div class='key' id='k48'>0</div>
+<div class='key' id='k109'>_<br>-</div>
+<div class='key' id='k61'>+<br>=</div>
+<div class='key' id='k8' style='width:90px'>backspace</div>
+<div style='clear:both'></div>
+<div class='key' id='k9' style='width:90px'>tab</div>
+<div class='key' id='k81'>Q</div>
+<div class='key' id='k87'>W</div>
+<div class='key' id='k69'>E</div>
+<div class='key' id='k82'>R</div>
+<div class='key' id='k84'>T</div>
+<div class='key' id='k89'>Y</div>
+<div class='key' id='k85'>U</div>
+<div class='key' id='k73'>I</div>
+<div class='key' id='k79'>O</div>
+<div class='key' id='k80'>P</div>
+<div class='key' id='k219'>{<br>[</div>
+<div class='key' id='k221'>}<br>]</div>
+<div class='key' id='k220'>|<br>\</div>
+<div style='clear:both'></div>
+<div class='key' id='k20' style='width:110px'>caps lock</div>
+<div class='key' id='k65'>A</div>
+<div class='key' id='k83'>S</div>
+<div class='key' id='k68'>D</div>
+<div class='key' id='k70'>F</div>
+<div class='key' id='k71'>G</div>
+<div class='key' id='k72'>H</div>
+<div class='key' id='k74'>J</div>
+<div class='key' id='k75'>K</div>
+<div class='key' id='k76'>L</div>
+<div class='key' id='k186'>:<br>;</div>
+<div class='key' id='k222'>"<br>'</div>
+<div class='key' id='k13' style='width:105px'>enter</div>
+<div style='clear:both'></div>
+<div class='key' id='k16l' style='width:130px'>shift</div>
+<div class='key' id='k90'>Z</div>
+<div class='key' id='k88'>X</div>
+<div class='key' id='k67'>C</div>
+<div class='key' id='k86'>V</div>
+<div class='key' id='k66'>B</div>
+<div class='key' id='k78'>N</div>
+<div class='key' id='k77'>M</div>
+<div class='key' id='k188'><br>,</div>
+<div class='key' id='k190'><br>.</div>
+<div class='key' id='k191'>?<br>/</div>
+<div class='key' id='k16r' style='width:150px'>shift</div>
+<div style='clear:both'></div>
+<div class='key' id='k17l' style='width:90px'>ctrl</div>
+<div class='key' id='k18l' style='width:90px'>alt</div>
+<div class='key' id='k32' style='width:550px'></div>
+<div class='key' id='k18r' style='width:90px'>alt</div>
+<div class='key' id='k17r' style='width:90px'>ctrl</div>
+<div style='clear:both'></div>
+
+<script>
+window.onkeydown=keydown;
+window.onkeyup=keyup;
+
+//block F1 key in IE
+if( 'onhelp' in window)
+{
+	window.onhelp = function(){
+		return false;
+	}
+}
+
+function keydown(e){ key(e,1) };
+function keyup  (e){ key(e,0) };
+function key(e,down)
+{
+	if (!e) e = window.event;
+	var el = document.getElementById('k'+e.keyCode);
+	if (el)
+		el.style.backgroundColor = down? '#FCC':'#CCC';
+
+	if ( e.keyCode==16 || e.keyCode==17 || e.keyCode==18)
+	{	//for l and r ctrl,alt,shift
+		var el = document.getElementById('k'+e.keyCode+'l');
+		el.style.backgroundColor = down? '#FCC':'#CCC';
+		    el = document.getElementById('k'+e.keyCode+'r');
+		el.style.backgroundColor = down? '#FCC':'#CCC';
+	}
+	document.getElementById('keycode').innerHTML='keycode: '+e.keyCode;
+	//the follow section blocks some browser-native key events, including ctrl+f and F1~F12
+	e.cancelBubble = true;
+	e.returnValue = false;
+	if (e.stopPropagation)
+	{
+		e.stopPropagation();
+		e.preventDefault();
+	}
+	return false;
+}
+</script>
+<span style='font-size:16pt;'>
+This webpage shows the strange behaviour of key events in different browsers. For most cheap keyboard, no more than 3 keys can be pressed down simultaneously.<br>
+Some keys remain red when released, as no corresponding keyup event is received. Some keys are never highlighted because the keycode is inconsistent across browsers. Alpha numeric keys are the only safe default set, but by letting the user to set manually, any key can be used.<br>
+It is impossible to override some browser's special function key and operating system's key combination, like alt+tab or ctrl+tab, but some including F1~F12 and ctrl+f can be overrided.<br>
+</span>
+
+</body>

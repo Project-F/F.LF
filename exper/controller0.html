@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<head></head>
+<body>
+<div id='sp1' style='position:absolute; left:100px; top:100px; width:40px; height:40px; border:1px solid black;'></div>
+<script>
+sp1 = document.getElementById('sp1');
+SPD = 10;
+
+document.addEventListener("keydown", keydown, true);
+function keydown(e)
+{
+	if (!e) e = window.event;
+	switch( e.keyCode)
+	{
+		case 37://left
+		sp1.style.left=parseInt(sp1.style.left)-SPD+'px';
+		break;
+		case 38://up
+		sp1.style.top=parseInt(sp1.style.top)-SPD+'px';
+		break;
+		case 39://right
+		sp1.style.left=parseInt(sp1.style.left)+SPD+'px';
+		break;
+		case 40://down
+		sp1.style.top=parseInt(sp1.style.top)+SPD+'px';
+		break;
+	}
+}
+</script>
+primitive demo of keyboard control<br>
+However you observer that you cannot move left and up simultaneously
+</body>
