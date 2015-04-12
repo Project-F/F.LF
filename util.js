@@ -36,22 +36,6 @@ css: function (filename)
 	head.appendChild(link);
 },
 
-/**
- * util.double_delegate
- * double delegate a function
- [ method ]
- * [reference](http://roberthahn.ca/articles/2007/02/02/how-to-use-window-onload-the-right-way/)
- */
-double_delegate: function (function1, function2)
-{
-	return function() {
-	if (function1)
-		function1.apply(this,Array.prototype.slice.call(arguments));
-	if (function2)
-		function2.apply(this,Array.prototype.slice.call(arguments));
-	}
-},
-
 /*\
  * util.make_array
  [ method ]
@@ -144,16 +128,15 @@ extend_object: function (obj1, obj2)
 {
 	for (var p in obj2)
 	{
-		if ( typeof obj2[p]=='object' )
+		if ( typeof obj2[p]==='object' )
 		{
-			obj1[p] = arguments.callee((obj1[p]?obj1[p]:{}), obj2[p]);
+			obj1[p] = arguments.callee((obj1[p]?obj1[p]:(obj2[p] instanceof Array?[]:{})), obj2[p]);
 		} else
 		{
 			obj1[p] = obj2[p];
 		}
 	}
 	return obj1;
-	// http://stackoverflow.com/questions/122102/what-is-the-most-efficient-way-to-clone-a-javascript-object
 },
 
 /*\
@@ -287,10 +270,13 @@ group_elements: function(arr,key)
 	var group={};
 	for( var i=0; i<arr.length; i++)
 	{
-		var gp=arr[i][key];
-		if( !group[gp])
-			group[gp]=[];
-		group[gp].push(arr[i]);
+		if( arr[i][key])
+		{
+			var gp=arr[i][key];
+			if( !group[gp])
+				group[gp]=[];
+			group[gp].push(arr[i]);
+		}
 	}
 	return group;
 },

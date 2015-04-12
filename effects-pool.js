@@ -1,11 +1,6 @@
 /*\
- * effect_pool
- * an effects pool manages a pool of effect instances using a circular array.
- * - each `effect` instance have the same life time, starting by `born` and end upon `die`.
- * - effect that born earlier should always die earlier
- * - when the pool is full, it can optionally expands
- * 
- * this is particularly useful in creating game effects.
+ * effects_pool
+ * an effects pool manages a pool of effect instances, which is particularly useful in creating game effects.
  * say, you have an explosion visual effect that would be created 30 times per second
  * , that frequent object constructions create an overhead.
  * 
@@ -13,15 +8,29 @@
  * - each effect instance will be injected a `parent` property
  *  which is a reference to the containing effects pool,
  *  so that an instance can die spontaneously
+ * - when the pool is full, it can optionally expands
+ * 
+ * there are two flavors:
+ * 
+ * __circular=true__
+ * - all `effect` instances have the same life time, starting by `born` and end upon `die`
+ * - effect that born earlier should always die earlier
+ * - the most efficient object management
+ * 
+ * __circular=false__
+ * - each `effect` instance has different life span
+ * - must specify target when `die` is called
+ * - less efficient object management
 \*/
 
 define(function()
 {
 /*\
- * effect_pool
+ * effects_pool
  [ class ]
  - config (object)
  * {
+ -  circular (bool)
  -  init_size (number)
  -  batch_size (number)
  -  max_size (number)
@@ -29,6 +38,7 @@ define(function()
  * }
  | var ef_config=
  | {
+ |  circular: true,
  | 	init_size: 5,
  | 	batch_size: 5,
  | 	max_size: 100,
@@ -41,7 +51,16 @@ define(function()
  * [example](../sample/effects-pool.html)
  # <iframe src="../sample/effects-pool.html" width="800" height="100"></iframe>
 \*/
-function efpool(config)
+function effects_pool(config)
+{
+	if( config.circular)
+		return new crpool(config);
+	else
+		return new lnpool(config);
+}
+
+//circular effects pool
+function crpool(config)
 {
 	this.pool=[]; //let it be a circular pool
 	this.S=0; //start pivot
@@ -49,16 +68,6 @@ function efpool(config)
 	this.full=false;
 	this.config=config;
 	this.livecount=0;
-
-	if( config.new_arg)
-	{
-		if( config.new_arg instanceof Array)
-			this.new_arg = config.new_arg;
-		else
-			this.new_arg = [config.new_arg];
-	}
-	else
-		this.new_arg = [];
 
 	for( var i=0; i<config.init_size; i++)
 	{
@@ -68,20 +77,18 @@ function efpool(config)
 }
 
 /*\
- * effect_pool.create
+ * effects_pool.create
  [ method ]
  * activate an effect by calling `born`
  - arg (any) args will be passed through to `born`
  = (boolean) false if not okay
  = (object) reference to the new born effect if okay
  > Details
- * if the pool is full (all instances of effects are active) and __after__ expanding
- * the size is still smaller than or equal to `config.max_size`,
- * will expand the pool by size `config.batch_size`
+ * if the pool is full (all instances of effects are active) and __after__ expanding the size is still smaller than or equal to `config.max_size`, will expand the pool by size `config.batch_size`
  * 
  * if the pool is full and not allowed to expand, return false immediately
 \*/
-efpool.prototype.create=function(/*arg*/) //arguments will be passed through
+crpool.prototype.create=function(/*arg*/) //arguments will be passed through
 {
 	if( this.full)
 	{
@@ -122,20 +129,21 @@ efpool.prototype.create=function(/*arg*/) //arguments will be passed through
 }
 
 /*\
- * effect_pool.die
+ * effects_pool.die
  [ method ]
- * deactivate the oldest effect instance by calling `die`
- - arg (any) args will be passed through to `die`
+ * killing an effect instance
+ - target (object) if pool is circular, this parameter is ignored, and the oldest effect instance will be killed
+ - arg (any) extra args will be passed through to `die`
  = (object) a reference to the instance that died
  = (undefined) if there is actually no active effect
 \*/
-efpool.prototype.die=function(/*arg*/) //arguments will be passed through
+crpool.prototype.die=function(target /*,arg*/)
 {
 	if( this.livecount > 0)
 	{
 		var oldS=this.S;
 		if( this.pool[this.S].die)
-			this.pool[this.S].die.apply ( this.pool[this.S], arguments);
+			this.pool[this.S].die.apply( this.pool[this.S], Array.prototype.slice.call(arguments,1));
 
 		if( this.S < this.pool.length-1)
 			this.S++;
@@ -151,16 +159,18 @@ efpool.prototype.die=function(/*arg*/) //arguments will be passed through
 }
 
 /*\
- * effect_pool.for_each
+ * effects_pool.for_each
  [ method ]
- * iterate through all active instances, in the order of oldest to youngest
+ * iterate through all active instances.
+ * 
+ * (if the pool is circular, in the order of oldest to youngest)
  - fun (function) iterator function, if return value is 'break', will break the loop
-| efpool.for_each(function(e)
+| crpool.for_each(function(e)
 | {
 |		e.hi();
 | })
 \*/
-efpool.prototype.for_each=function(fun)
+crpool.prototype.for_each=function(fun)
 {
 	if( this.livecount===0)
 	{
@@ -188,13 +198,15 @@ efpool.prototype.for_each=function(fun)
 }
 
 /*\
- * effect_pool.call_each
+ * effects_pool.call_each
  [ method ]
- * call a method of each active instance, in the order of oldest to youngest
+ * call a method of each active instance
+ * 
+ * (if the pool is circular, in the order of oldest to youngest)
  - fun_name (string) method name
  - arg (any) extra args will be passed through
 \*/
-efpool.prototype.call_each=function(fun_name /*, arg*/)
+crpool.prototype.call_each=function(fun_name /*, arg*/)
 {
 	if( this.pool[0][fun_name])
 	{
@@ -206,5 +218,101 @@ efpool.prototype.call_each=function(fun_name /*, arg*/)
 	}
 }
 
-return efpool;
+//linear effects pool
+function lnpool(config)
+{
+	this.pool=[];
+	this.alive=[];//state array
+	this.config=config;
+	this.livecount=0;
+	
+	for( var i=0; i<config.init_size; i++)
+	{
+		this.pool[i] = config.construct();
+		this.pool[i].parent = this;
+		this.alive[i] = false;
+	}
+}
+
+lnpool.prototype.create=function(/*arg*/)
+{
+	var freeslot = this.alive.indexOf(false);
+	if( freeslot===-1)
+	{	//pool is full
+		if( this.pool.length + this.config.batch_size <= this.config.max_size)
+		{	//expand the pool
+			var args1=[ this.pool.length, 0],
+				args2=[ this.pool.length, 0];
+			for( var i=0; i<this.config.batch_size; i++)
+			{
+				args1[i+2] = this.config.construct();
+				args1[i+2].parent = this;
+				args2[i+2] = false;
+			}
+			this.pool.splice.apply( this.pool, args1);
+			this.alive.splice.apply( this.alive, args2);
+			if( this.S!==0)
+				this.S += this.config.batch_size;
+		}
+		else
+			return false;
+	}
+	
+	freeslot = this.alive.indexOf(false);
+	var baby = this.pool[freeslot];
+	this.alive[freeslot] = true;
+	this.livecount++;
+	baby.born.apply( baby, arguments);
+	return baby;
+}
+
+lnpool.prototype.die=function(target /*,arg*/)
+{
+	var e = this.pool.indexOf(target);
+	if( e===-1 || !this.alive[e])
+	{
+		console.log('wrong target');
+		return false;
+	}
+	target.die.apply( target, Array.prototype.slice.call(arguments,1));
+	this.alive[e] = false;
+	this.livecount--;
+	return target;
+}
+
+lnpool.prototype.for_each=function(fun)
+{
+	if( this.livecount===0)
+	{
+		//completely empty
+	}
+	else
+	{
+		for( var i=0; i<this.pool.length; i++)
+		{
+			if( this.alive[i])
+				if( fun( this.pool[i])==='break')
+					break;
+		}
+	}
+}
+
+lnpool.prototype.call_each=function(fun_name /*,arg*/)
+{
+	if( this.livecount===0)
+	{
+		//completely empty
+	}
+	else
+	{
+		for( var i=0; i<this.pool.length; i++)
+		{
+			if( this.alive[i])
+				if( this.pool[i][fun_name])
+					this.pool[i][fun_name].apply(this.pool[i], Array.prototype.slice.call(arguments,1));
+		}
+	}
+}
+
+return effects_pool;
 });

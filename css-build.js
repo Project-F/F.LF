@@ -1,19 +1,17 @@
-/*\
- * css-build
- * plugin builder for requirejs optimization
-\*/
+/**	plugin builder for requirejs optimization
+ */
 
 define(function() {
 
 	var fs = require.nodeRequire('fs');
 
-	function loadfile (url) {
+	function loadfile (url, callback) {
 		var file = fs.readFileSync(url, 'utf8');
 		//Remove BOM (Byte Mark Order) from utf8 files if it is there.
 		if (file.indexOf('\uFEFF') === 0) {
 			file = file.substring(1);
 		}
-		return file;
+		callback(file);
 	};
 
 	function strip (content) {
@@ -29,7 +27,9 @@ define(function() {
 		load: function (name, require, load, config) {
 			//console.log('css-build: load: '+name);
 			load(true);
-			buildMap[name]=strip( loadfile(requirejs.toUrl(name)));
+			loadfile(config.baseUrl+name,function(F){
+				buildMap[name]=strip(F);
+			});
 		},
 
 		write: function (pluginName, moduleName, write, config) {
@@ -58,7 +58,7 @@ define(function() {
 			write(
 				"define('"+pluginName+'!'+moduleName+"', ['"+pluginName+"-embed'], \n"+
 				"function(embed)\n{\n"+
-					"\tembed(\n\t'"+buildMap[moduleName]+"'\n\t);\n"+
+					"\tembed(\n\t'"+buildMap[moduleName].replace(/'/g, "\\'")+"'\n\t);\n"+
 					"\treturn true;\n"+
 				"});\n"
 			);

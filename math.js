@@ -223,6 +223,11 @@ intersect: function ( P1,P2,P3,P4)
 
 	return { x: P1.x + mua * (P2.x - P1.x),
 		y:  P1.y + mua * (P2.y - P1.y) };
+
+	function negligible (M)
+	{
+		return -0.00000001 < M && M < 0.00000001;
+	}
 }
 
 };

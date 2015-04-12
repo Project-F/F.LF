@@ -38,12 +38,12 @@ function animator (config)
 	\*/
 	this.I=0;
 	/*\
-	 * animator.horimirror
+	 * animator.flip_x
 	 [ property ]
 	 - (boolean) true: mirrored, false: normal
 	 * usually a sprite character is drawn to face right and mirrored to face left. hmirror mode works with sprites that is flipped horizontally __as a whole image__.
 	\*/
-	this.horimirror=false; //horizontal mirror
+	this.flip_x=false; //horizontal mirror
 	if( !config.borderright)  config.borderright=0;
 	if( !config.borderbottom) config.borderbottom=0;
 	if( !config.borderleft)  config.borderleft=0;
@@ -127,7 +127,7 @@ animator.prototype.show_frame=function(i)
 	var left,top;
 	left= -((i%c.gx)*c.w+c.x+c.borderleft);
 	top = -((Math.floor(i/c.gx))*c.h+c.y+c.bordertop);
-	if( this.horimirror)
+	if( this.flip_x)
 		left= -this.target.img[this.target.cur_img].naturalWidth-left+c.w-c.borderleft-c.borderright;
 	this.target.set_w_h(
 		c.w-c.borderleft-c.borderright,
@@ -175,6 +175,8 @@ animator.set=function(set_config, base)
 {
 	if(!set_config)
 		return null;
+	if(!base)
+		base = 'base';
 	var A=new Object();
 
 	for( var I in set_config)

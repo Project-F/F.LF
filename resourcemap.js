@@ -78,6 +78,32 @@ define(['F.core/util'],function(Futil){
 		}
 		return url || res;
 	}
+	/*\
+	 * resourcemap.fallback
+	 [ method ]
+	 - res (string) resource name
+	 - level (number) fallback level
+	 = (string) resource url
+	 * if the first url failed, fallback to lower priority url.
+	 * `fallback(res,0)` will return same result as `get(res)`.
+	 * if no such level exists, return undefined.
+	\*/
+	mapper.prototype.fallback=function(res,level)
+	{
+		level+=1;
+		var rr, ll=0;
+		for( var i=0; i<this.map.length; i++)
+		{
+			rr = this.map[i].fallback(res,level-ll);
+			if( rr)
+			{
+				ll += rr.l;
+				if( ll===level)
+					return rr.url;
+			}
+		}
+		return undefined;
+	}
 
 	/** individual map instances
 	 */
@@ -106,6 +132,26 @@ define(['F.core/util'],function(Futil){
 			{
 				var url = this.map.get && this.map.get(res);
 				if( url) return url;
+			}
+		}
+		return null;
+	}
+	submap.prototype.fallback=function(res,level)
+	{
+		if( this.enable)
+		{
+			if( this.map.resource && this.map.resource[res] && level===1)
+				return {
+					l: 1,
+					url: this.map.resource[res]
+				}
+			else if( level===2)
+			{
+				var url = this.map.get && this.map.get(res);
+				if( url) return {
+					l: 2,
+					url: url
+				}
 			}
 		}
 		return null;

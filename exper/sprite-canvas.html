@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<head></head>
+<body>
+primitive demo of sprite animation via canvas<br>
+<canvas id='canvas'></canvas>
+<script>
+var canvas = document.getElementById('canvas')
+canvas.width = 800;
+canvas.height = 600;
+var ctx = canvas.getContext('2d');
+ctx.scale(-1,1);
+var img = new Image();
+img.src = 'test_sprite.png';
+x = 0;
+y = 0;
+w = 100;// each cell is 100x100 px
+h = 100;//
+Gx = 4; // makes a 4x4 grid
+Gy = 4; //
+I = 0;
+TIMER = setInterval(onEnterFrame,400);
+
+function onEnterFrame()
+{
+	if ( I==Gx*Gy)
+		I=0;
+	
+	ctx.drawImage(img,
+		/*source*/ (I%Gx)*w, (Math.floor(I/Gy))*h, w, h,
+		/* dest */ -x-w, y, w, h);
+	
+	I++;
+}
+</script>
+</body>

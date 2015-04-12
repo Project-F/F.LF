@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<head>
+<meta http-equiv='content-type' content='text/html; charset=UTF-8'>
+</head>
+<body style='background:#CCC;'>
+DOM sprite implementation<br>
+Basic sprite animation with css 2d/3d transform mirror
+<button id='flip'>flip</button>
+<div id='canvas'></div>
+
+<script data-main="../../" src="require.js"></script>
+<script>
+requirejs(['F.core/sprite-dom','F.core/animator'], function(sprite,animator)
+{
+
+var sp1_config=
+{
+	canvas: document.getElementById('canvas'),
+	wh: {x:100,y:100},
+	img: 'test_sprite.png'
+}
+sp1 = new sprite(sp1_config);
+sp1.set_xy({x:150, y:100});
+
+var sp1_an_config=
+{
+	x:0,y:0,     //top left margin of the frames
+	w:100, h:100,//width, height of a frame
+	gx:4,gy:4,   //define a gx*gy grid of frames
+	tar:sp1      //target F_sprite
+}
+sp1_an = new animator(sp1_an_config);
+sp1_an.set_frame(9); //frame count from 0, top left corner
+
+var x = 0;
+TIMER = setInterval(onEnterFrame,1000/4); //4 fps
+function onEnterFrame()
+{
+	sp1_an.next_frame();
+	sp1.set_xy({x:x, y:100});
+	x+=50;
+	if( x>800)
+		x=0;
+}
+
+document.getElementById('flip').onclick=function()
+{
+	if( !sp1.x_flipped && !sp1.y_flipped) //00
+		sp1.set_flipx(true);
+	else if( sp1.x_flipped && !sp1.y_flipped) //10
+		sp1.set_flipy(true);
+	else if( sp1.x_flipped && sp1.y_flipped) //11
+		sp1.set_flipx(false);
+	else if( !sp1.x_flipped && sp1.y_flipped) //01
+		sp1.set_flipy(false);
+}
+
+});
+</script>
+</body>

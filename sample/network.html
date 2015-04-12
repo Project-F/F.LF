@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<title>Project F P2P example</title>
+<meta name='viewport' content='width=device-width, user-scalable=no'>
+<style>
+#canvas
+{
+	position:absolute;
+	left:0px;
+	top:0px;
+	right:0px;
+	bottom:0px;
+}
+.ball
+{
+	position:absolute;
+	width:50px;
+	height:50px;
+	border-radius:25px;
+}
+#ball1
+{
+	background:#FAA;
+}
+#ball2
+{
+	background:#AAF;
+}
+</style>
+</head>
+<body>
+<div id='canvas'>
+<div id='ball1' class='ball'></div>
+<div id='ball2' class='ball'></div>
+</div>
+<input type='text' id='fps'><br>
+<textarea id='console-log' style='width:300px;height:400px;'></textarea>
+<script src='peer.js'></script>
+<script src='../network.js'></script>
+<script>
+(function (network)
+{
+	var param = get_query();
+	//networking part
+	if( param.active)
+		network.setup_peer('peerjs',location.origin,true,'debug-id1','debug-id2');
+	else
+		network.setup_peer('peerjs',location.origin,false,'debug-id2','debug-id1');
+	
+	network.setInterval(frame,1000/30); //30fps
+	
+	//gaming code
+	var canvas = document.getElementById('canvas'),
+		ball1 = document.getElementById('ball'+(param.active?1:2)),
+		ball2 = document.getElementById('ball'+(param.active?2:1)),
+		mousex = 100,
+		mousey = 100;
+	ball1.style.left = '100px';
+	ball1.style.top = '100px';
+	ball2.style.left = '100px';
+	ball2.style.top = '100px';
+	document.addEventListener('touchmove', touchmove, false);
+	document.addEventListener('mousemove', mousemove, false);
+	function mousemove(e)
+	{
+		e=e?e:event;
+		mousex=e.clientX;
+		mousey=e.clientY;
+	}
+	function touchmove(e)
+	{
+		var touches = e.touches;
+		if( touches.length>0)
+		{
+			mousex = touches[0].clientX;
+			mousey = touches[0].clientY;
+		}
+		event.preventDefault();
+	}
+	function frame(time,data)
+	{
+		var ox = parseInt(ball1.style.left),
+			oy = parseInt(ball1.style.top);
+		ball1.style.left=mousex+'px';
+		ball1.style.top=mousey+'px';
+		if( data)
+		{
+			ball2.style.left=data.vx+parseInt(ball2.style.left)+'px';
+			ball2.style.top=data.vy+parseInt(ball2.style.top)+'px';
+			if( parseInt(ball2.style.left)!==data.x ||
+				parseInt(ball2.style.top)!==data.y)
+				alert('synchronization error!');
+			calculate_fps(30);
+		}
+		return {
+			x:mousex,
+			y:mousey,
+			vx:mousex-ox,
+			vy:mousey-oy
+		};
+	}
+	
+	//util
+	function get_query()
+	{
+		var param = window.location.href.split('/').pop(),
+			query = {};
+		if( param.indexOf('?')!==-1)
+		{
+			var param = param.split('?').pop().split('&');
+			for( var i=0; i<param.length; i++)
+			{
+				pp = param[i].split('=');
+				if( pp.length===1)
+					query[pp[0]] = 1;
+				if( pp.length===2)
+					query[pp[0]] = pp[1];
+			}
+		}
+		return query;
+	}
+	var calculate_fps = (function(){
+		var time;
+		var itr=0;
+		var fps=document.getElementById('fps');
+		return function (skip)
+		{
+			if( (itr++) % skip===0)
+			{
+				var ot=time;
+				time = new Date().getTime();
+				var diff = time-ot;
+				fps.value = Math.round(1000/diff*skip)+'fps';
+			}
+		}
+	}());
+}(Fcore_network));
+</script>
+</body>
+</html>

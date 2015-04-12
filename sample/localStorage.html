@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<head>
+<meta http-equiv='content-type' content='text/html; charset=UTF-8'>
+</head>
+
+<body>
+<pre id='output'></pre>
+
+<script data-main="../../" src="require.js"></script>
+<script>
+requirejs(['F.core/support'], function(support)
+{
+	var out=document.getElementById('output');
+	if( support.localStorage)
+	{
+		if( !support.localStorage.getItem('visited'))
+			support.localStorage.setItem('visited',0);
+		else
+			support.localStorage.setItem('visited',parseInt(support.localStorage.getItem('visited'))+1);
+		out.innerHTML = 'You have visited this page '+support.localStorage.getItem('visited')+' times.';
+	}
+});
+</script>
+</body>

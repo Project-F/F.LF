@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<head>
+<meta name='viewport' content='width=device-width, user-scalable=no'>
+<style>
+#circle
+{
+	position:absolute;
+	width:100px;
+	height:100px;
+	background:#AFA;
+	border-radius:50px;
+}
+#container
+{
+	position:absolute;
+	left:0px; top:0px;
+}
+.key
+{
+	position:absolute;
+	background:#A0A;
+	border:1px solid black;
+	opacity:0.2;
+}
+</style>
+</head>
+<body>
+<div id='circle' style='left:100px; top:100px;'></div>
+<div id='container'>
+	<div id='k_up' class='key'></div>
+	<div id='k_down' class='key'></div>
+	<div id='k_left' class='key'></div>
+	<div id='k_right' class='key'></div>
+</div>
+<script>
+var keys={'k_up':{},'k_down':{},'k_left':{},'k_right':{}};
+var touches=[];
+
+function update()
+{
+	for( var k in keys)
+	{
+		$(k).style.background = '';
+		for (i=0; i<touches.length; i++)
+		{
+			var T=touches[i];
+			if( point_in_rect(T.clientX,T.clientY,keys[k]))
+			{
+				$(k).style.background = '#AAF';
+				move(k);
+			}
+		}
+	}
+}
+setInterval(update,1000/30);
+function move(k)
+{
+	var SPD = 4;
+	switch (k)
+	{
+		case 'k_up':
+			$('circle').style.top=parseInt($('circle').style.top)-SPD+'px';
+		break;
+		case 'k_down':
+			$('circle').style.top=parseInt($('circle').style.top)+SPD+'px';
+		break;
+		case 'k_left':
+			$('circle').style.left=parseInt($('circle').style.left)-SPD+'px';
+		break;
+		case 'k_right':
+			$('circle').style.left=parseInt($('circle').style.left)+SPD+'px';
+		break;
+	}
+}
+function touch_fun(event) {
+	touches = event.touches;
+	event.preventDefault();
+}
+document.addEventListener('touchstart', touch_fun, false);
+document.addEventListener('touchmove', touch_fun, false);
+document.addEventListener('touchenter', touch_fun, false);
+document.addEventListener('touchend', touch_fun, false);
+document.addEventListener('touchleave', touch_fun, false);
+document.addEventListener('touchcancel', touch_fun, false);
+
+window.addEventListener('resize', resize, false);
+resize();
+function resize()
+{
+	w = window.innerWidth;
+	h = window.innerHeight;
+	set_wh($('container'),w,h);
+	var size = 0.5;
+	var R = 0.8;
+	size = size*(w<h?w:h);
+	keys['k_up'].left = 0;
+	keys['k_up'].top = h/2-size;
+	keys['k_up'].right = keys['k_up'].left+size*2;
+	keys['k_up'].bottom = keys['k_up'].top+size*R;
+	keys['k_down'].left = 0;
+	keys['k_down'].top = h/2+size*(1-R);
+	keys['k_down'].right = keys['k_down'].left+size*2;
+	keys['k_down'].bottom = keys['k_down'].top+size*R;
+	keys['k_left'].left = 0;
+	keys['k_left'].top = h/2-size;
+	keys['k_left'].right = keys['k_left'].left+size*R;
+	keys['k_left'].bottom = keys['k_left'].top+size*2;
+	keys['k_right'].left = size+size*(1-R);
+	keys['k_right'].top = h/2-size;
+	keys['k_right'].right = keys['k_right'].left+size*R;
+	keys['k_right'].bottom = keys['k_right'].top+size*2;
+	set_wh($('k_up'),size*2,size*R);
+	set_wh($('k_down'),size*2,size*R);
+	set_wh($('k_left'),size*R,size*2);
+	set_wh($('k_right'),size*R,size*2);
+	set_xy($('k_up'),keys['k_up'].left,keys['k_up'].top);
+	set_xy($('k_down'),keys['k_down'].left,keys['k_down'].top);
+	set_xy($('k_left'),keys['k_left'].left,keys['k_left'].top);
+	set_xy($('k_right'),keys['k_right'].left,keys['k_right'].top);
+}
+
+function inbetween(x,L,R)
+{
+	var l,r;
+	if ( L<=R)
+	{	l=L;
+		r=R;
+	}
+	else
+	{	l=R;
+		r=L;
+	}
+	return x>=l && x<=r;
+}
+function point_in_rect(Px,Py,R)
+{
+	return (inbetween(Px,R.left,R.right) && inbetween(Py,R.top,R.bottom));
+}
+function set_xy(el,x,y)
+{
+	el.style.left = x+'px';
+	el.style.top = y+'px';
+}
+function set_wh(el,w,h)
+{
+	el.style.width = w+'px';
+	el.style.height = h+'px';
+}
+function $(id)
+{
+	return document.getElementById(id);
+}
+</script>
+</body>

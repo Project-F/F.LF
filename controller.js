@@ -1,16 +1,6 @@
 define(function()
 {
 
-function keydown(e)
-{
-	return master_controller.key(e,1);
-}
-
-function keyup(e)
-{
-	return master_controller.key(e,0);
-}
-
 //block F1 key in IE
 if( 'onhelp' in window)
 {
@@ -19,41 +9,41 @@ if( 'onhelp' in window)
 	}
 }
 
-var master_controller = (function()
-{
-	if (document.addEventListener){
-		document.addEventListener("keydown", keydown, true);
-		document.addEventListener("keyup", keyup, true);
-	} else if (document.attachEvent){
-		document.attachEvent("keydown", keydown);
-		document.attachEvent("keyup", keyup);
-	} else {
-		//window.onkeydown = F.double_delegate(window.onkeydown, keydown);
-		//window.onkeyup   = F.double_delegate(window.onkeydown, keyup);
-	}
+if (document.addEventListener){
+	document.addEventListener("keydown", keydown, true);
+	document.addEventListener("keyup", keyup, true);
+} else if (document.attachEvent){
+	document.attachEvent("keydown", keydown);
+	document.attachEvent("keyup", keyup);
+}
+function keydown(e) { return master_controller.key(e,1); }
+function keyup(e) { return master_controller.key(e,0); }
 
-	var mas = new Object();
-	mas.child = [];
-	mas.key = function(e,down)
+var master_controller = {};
+master_controller.block=true;
+master_controller.child = [];
+master_controller.key = function(e,down)
+{
+	if (!e) e = window.event;
+	for (var I in this.child)
 	{
-		if (!e) e = window.event;
-		for (var I in this.child)
-		{
-			if ( this.child[I].key(e.keyCode,down))
-				break;//if one controller catches a key, the next controller will never receive an event
-		}
+		if ( this.child[I].key(e.keyCode,down))
+			break;//if one controller catches a key, the next controller will never receive an event
+	}
+	if( master_controller.block)
+	{
 		//the follow section blocks some browser-native key events, including ctrl+f and F1~F12
 		e.cancelBubble = true;
-		e.returnValue = false;
-		if (e.stopPropagation)
+		if( e.returnValue)
+			e.returnValue = false;
+		if( e.stopPropagation)
 		{
 			e.stopPropagation();
 			e.preventDefault();
 		}
 		return false;
 	}
-	return mas;
-}());
+}
 
 /*\
  * controller
@@ -141,7 +131,7 @@ function controller (config)
 	/*\
 	 * controller.zppendix
 	 * on the other hand, there can be other controllers with compatible definition and behavior,
-	 * (e.g. AI controller, network player controller, record playback controller)
+	 * (e.g. touch controller, AI controller, network player controller, record playback controller)
 	 * - has the properties `state`, `config`, `child`, `sync`
 	 * - behavior: call the `key` method of every member of `child` when keys arrive
 	 * - has the method `clear_states`, `fetch` and `flush`
@@ -151,6 +141,36 @@ function controller (config)
 	\*/
 }
 
+/*\
+ * controller.block
+ o static function
+ [ method ]
+ - block (bool) if true, will block all other keydown/up event listeners
+\*/
+controller.block = function(bool)
+{
+	master_controller.block = bool;
+}
+
+/*\
+ * controller.destroy
+ [ method ]
+ * destroy a controller; do not listen to key events any more
+\*/
+controller.prototype.destroy = function()
+{
+	var ii = master_controller.child.indexOf(this);
+	if( ii!==-1)
+		master_controller.child.splice(ii,1);
+}
+
+/*\
+ * controller.type
+ [ property ]
+ - (string)
+ * value=`keyboard`
+\*/
+controller.prototype.type = 'keyboard';
 
 /*\
  * controller.key
@@ -203,16 +223,16 @@ controller.prototype.clear_states=function()
 \*/
 controller.prototype.fetch=function()
 {
-	for( var i in this.buf)
+	for( var i=0; i<this.buf.length; i++)
 	{
 		var I=this.buf[i][0];
 		var down=this.buf[i][1];
 		if( this.child)
-			for(var J in this.child)
-				this.child[J].key(I,down);
+			for(var j=0; j<this.child.length; j++)
+				this.child[j].key(I,down);
 		this.state[I]=down;
 	}
-	this.buf=[];
+	this.buf.length=0;
 }
 /*\
  * controller.flush
@@ -237,6 +257,8 @@ controller.keyname_to_keycode=
 controller.prototype.keyname_to_keycode=
 function(A)
 {
+	if( typeof A==='number')
+		return A;
 	var code;
 	if( A.length==1)
 	{

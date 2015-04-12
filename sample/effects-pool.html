@@ -47,7 +47,7 @@ requirejs(['F.core/effects-pool'], function(Effects_pool)
 
 		// I die
 		if( this.color.b <= 180 || this.color.r >= 255)
-			this.parent.die();
+			this.parent.die(this);
 	}
 	box_effect.prototype.die=function()
 	{
@@ -64,6 +64,7 @@ requirejs(['F.core/effects-pool'], function(Effects_pool)
 	//
 	var ef_config=
 	{
+		circular: true, //either true or false will work for this example, but circular is slightly more efficient
 		init_size: 5,
 		batch_size: 5,
 		max_size: 100,

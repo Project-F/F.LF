@@ -144,7 +144,7 @@ combodec.prototype.key=function(K, down)
 			else for (var k=0; j<seq.length; j++,k++)
 			{
 				if( C[i].seq[k] !== seq[j].k ||
-					(C[i].maxtime && seq[seq.length-1].t-seq[j].t>C[i].maxtime))
+					(C[i].maxtime!==null && C[i].maxtime!==undefined && seq[seq.length-1].t-seq[j].t>C[i].maxtime))
 				{
 					detected=false;
 					break;
