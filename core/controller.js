@@ -101,16 +101,12 @@ function controller (config)
 	this.child=new Array();
 	/*\
 	 * controller.sync
-	 * controllers can work in 2 modes, sync and async
 	 [ property ]
-	 * if `sync===false`, a key up-down event will be dispatched to all child **immediately**.
+	 * shall always be true
 	 * 
-	 * if `sync===true`, a key up-down event will be buffered, and must be `fetch` manually.
-	 * there are very good reasons to architect your game in synchronous mode
-	 * - time-determinism; see [http://project--f.blogspot.hk/2013/04/time-model-and-determinism.html](http://project--f.blogspot.hk/2013/04/time-model-and-determinism.html)
-	 * - never drop keys; see [http://project--f.blogspot.hk/2012/11/keyboard-controller.html](http://project--f.blogspot.hk/2012/11/keyboard-controller.html)
+	 * all key events are buffered, and must be `fetch` manually
 	\*/
-	this.sync=false;
+	this.sync=true;
 	/*\
 	 * controller.buf
 	 [ property ]
@@ -132,12 +128,10 @@ function controller (config)
 	 * controller.zppendix
 	 * on the other hand, there can be other controllers with compatible definition and behavior,
 	 * (e.g. touch controller, AI controller, network player controller, record playback controller)
-	 * - has the properties `state`, `config`, `child`, `sync`
+	 * - has the properties `state`, `config`, `child`
 	 * - behavior: call the `key` method of every member of `child` when keys arrive
 	 * - has the method `clear_states`, `fetch` and `flush`
-	 * - behavior: if `sync` is true, the controller should buffer key inputs,
-	 * and only dispatch to child when `fetch` is called,
-	 * and flush the buffer when `flush` is called
+	 * - behavior: the controller should buffer key inputs, and only dispatch to child when `fetch` is called, and flush the buffer when `flush` is called
 	\*/
 }
 
@@ -168,7 +162,7 @@ controller.prototype.destroy = function()
  * controller.type
  [ property ]
  - (string)
- * value=`keyboard`
+ * value=`'keyboard'`
 \*/
 controller.prototype.type = 'keyboard';
 

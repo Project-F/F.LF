@@ -10,13 +10,13 @@ Basic sprite animation with css 2d/3d transform mirror
 
 <script data-main="../../" src="require.js"></script>
 <script>
-requirejs(['F.core/sprite-dom','F.core/animator'], function(sprite,animator)
+requirejs(['core/sprite-dom','core/animator'], function(sprite,animator)
 {
 
 var sp1_config=
 {
 	canvas: document.getElementById('canvas'),
-	wh: {x:100,y:100},
+	wh: {w:100,h:100},
 	img: 'test_sprite.png'
 }
 sp1 = new sprite(sp1_config);

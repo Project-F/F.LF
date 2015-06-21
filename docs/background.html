@@ -1,12 +1,103 @@
 <!DOCTYPE html>
 <html>
-<title>F.LF/ref/background.js</title>
-
-<xmp theme="projectf">
+<title>F.LF/background.js</title>
+<script src="projectfdocs.js"></script>
+<xmp>
 # background.js
 
-</xmp>
+## Introduction
+LF2 has a parallax horizontal scrolling background system that can create quite some impressive scenes. However the floor is completely flat, and provides no inclination, levels or holes. (Which is obviously great suggestions to further development.
 
-<script src="projectfdocs.js"></script>
-<script src="strapdown_0_2/strapdown.js"></script>
+## Parallax
+When a scene is scrolled, the foreground (floor and all objects on the floor) scrolls accordingly. Layers of the background scroll too, but each at different speed. Theoretically, objects that are more distant move slower. So the sky barely moves, the mountain a little bit, but the rail just behind the road moves greatly, as the view point moves.
+
+### Equation
+F.LF background scrolling follows a simple rule. Each layer has a `width` property, which determines the ratio it scrolls relative to the foreground. The equation is:
+```
+ratio = (layer_width - window_width)/(scene_width - window_width)
+```
+So when layer_width equals scene_width, ratio=1, it scrolls exactly with the foreground. When layer_width equals window_width, ratio=0, it stands completely still.
+
+## Specification
+
+### Scene object
+- `name`: `string` scene name
+- `width`: `number` scene width
+- `zboundary`: `[z1, z2]` scene depth
+- `shadow`: `path/to/image.png`
+- `shadowsize`: `[w, h]`
+- `layer`: `array of layer objects`
+
+### Layer object
+
+#### required
+- `pic`: `path/to/image.png`
+- `x`: `number`
+- `y`: `number`
+- `width`: `number`
+
+#### optionals
+
+##### fill
+> This property is not recommeded for use in production. It is only to aid prototyping (creating a scene with dummies).
+
+When the rect property is present, it regards the layer as a rectangle and fills the space inside `(x, y, width, heigth)`. 
+
+- `rect`: `color` e.g. `'#FF0000'`
+- `height`: `number`
+
+##### loop
+- `loop`: `number` interval
+
+The layer repeats itself horizontally, starting from `x`, every `loop` pixels until `width`
+```
+Image=\\
+loop=10
+    \\          \\          \\
+    ^           ^           ^
+    x           x+loop      x+loop*2
+```
+
+##### tile
+- `tile`: `integer`
+
+The layer repeats itself horizontally, from `x` as center, to both directions, seamlessly, `tile` number of times, producing `2*|tile|+1` images. If `tile` is negative, then the image will mirror alternatively.
+```
+Image=\\
+tile=2
+\\\\\\\\\\
+    ^
+    x (center)
+```
+```
+Image=\\
+tile=-2
+\\//\\//\\
+    ^
+    x (center)
+```
+
+##### animation
+- `cc`: `number` period
+- `c1`: `number`
+- `c2`: `number`
+
+The animation repeats every `cc` frames, and this layer is visible only during between time `c1` and `c2` (inclusive).
+```
+cc = 8
+c1 = 2
+c2 = 4
+Time     0 1 2 3 4 5 6 7
+visible      X X X
+```
+So a 3 frame animation can be created like this:
+```
+
+Time     0 1 2 3 4 5 6 7
+Layer1   X X
+Layer2       X X X
+Layer3             X X X
+```
+
+</xmp>
 </html>

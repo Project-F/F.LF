@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
-<title>F.LF/ref/loader</title>
-
-<xmp theme="projectf">
+<title>F.LF/loader</title>
+<script src="projectfdocs.js"></script>
+<xmp>
 # loader.js
 ### Reference
 
@@ -11,30 +11,23 @@ loader is a requirejs plugin that loads content packages. the specification of F
 ## Usage
 
 ```
-requirejs(['LF/loader!anystring'],function(){...});
+requirejs(['LF/loader!path/to/package'],function(){...});
 ```
 
 ## mechanism
 
 #### 1 flf-config
-loader expects that a flf-config element exists in the html document. it is a `<pre>` tag with id `flf-config` containing a JSON data structure. example:
+loader expects that a flf-config element exists in the html document. it is a `<pre>` tag with id `flf-config` containing a JSON data structure:
 ```
-{
-	"location":"path/to/LF", //resource location. will be used as base url
-	"package":"LF2_19" //path to the package relative to the base url
-}
+<pre id='flf-config' style='display:none'>
+{"root":"../","package":"../LF2_19"}
+</pre>
 ```
-the location can be 'local', i.e. relative to the html file. it can also be 'remote', where it can be an arbitrary location following a `http` protocol.
+- root is the project root relative to the html file
+- package is the location of content package, it can be relative to root, or at a remote location
 
 #### 2 load package
-`manifest.js` under the package directory is loaded and checked against the schema:
-
-```
-{
-	"data":"string/url-js",
-	"resourcemap":"string/url-js!optional"
-}
-```
+`manifest.js` under the package directory is loaded. package content is then loaded afterwards.
 
 #### 2.1 load data
 load the specified data list, typically named `data.js`.
@@ -52,7 +45,7 @@ data.js:
 	]
 }
 /*after*/
-returned data:
+loaded data:
 {
 	object:
 	[
@@ -63,18 +56,15 @@ returned data:
 ```
 
 ##### lazy loading
-if global.lazyload is defined, a function `load()` is inserted to `package.data` 
-with the following use:
+if `loader_config.lazyload` is defined, every object defined by `data.js` will be passed to `loader_config.lazyload`, and `loader_config.lazyload` shall return `true` if it wants to __not__ load the data file at this moment. the `data` property of that object will then be marked `'lazy'` in this case. if `loader_config.lazyload` returns falsy or `loader_config.lazyload` is not defined, the data file will be loaded immediately.
+
 ```
-function load
-(sets,  //sets of data files to load
-ready)  //callback when all requested files are loaded
+loader_config.lazyload = function(folder,O)
 {
-	//the function is async
+	if( folder==='object' && O.type==='character')
+		return true; //delay loading of all character files
 }
 ```
-
-every object defined by `data.js` will be passed to `global.lazyload`, and `global.lazyload` shall return `true` if it wants to __not__ load the data file at this moment. the `data` property of that object will then be marked `'lazy'` in this case. if `global.lazyload` returns falsy or `global.lazyload` is not defined, the data file will be loaded immediately, and the `data` property of that object will contain the structure defined by the js file `file`. other properties defined by `data.js` are copied as is.
 
 later, if the data files are wanted, one should call for example
 ```
@@ -85,44 +75,17 @@ function ()
 });
 ```
 
-##### F.LF lazy loading scheme
-- character data files are not loaded during startup, and are only being loaded when a match starts, only if that characters are being selected. note, as defined by `global.lazyload`:
-```
-delay loading of all character prefixed files. consider,
-{id: 1, type:'character', file:'data/deep.js'},
-{id:203, type:'specialattack', file:'data/deep_ball.js'}
-as `deep.js` is of type character, any files matching `deep_*` will also be lazy loaded
-```
-- background data files will only be loaded for a specific match
-
 #### 2.2 load resourcemap
 if defined, load the specified resourcemap, typically named `resourcemap.js`.
 
-#### return
-the loader plugin is __blocking__, and will only return when all data files are loaded. the returned structure is like:
+#### 3 return
+the loader plugin is __blocking__, and will only return when all data files are loaded.
 ```
-package:
+/*loaded module*/
 {
-	data:
-	{
-		object: [
-			{id:30, type:'character', data:{...}},
-			...
-		],
-		background:[
-			...
-		],
-		...
-	}
-	resourcemap:
-	{
-		...
-	},
-	location: '../../LFrelease/LF2_19/' //location of the package relative to the html file
+	"data": {/*data tree*/},
+	"resourcemap": {/*content of resourcemap.js*/}
 }
 ```
 </xmp>
-
-<script src="projectfdocs.js"></script>
-<script src="strapdown_0_2/strapdown.js"></script>
 </html>

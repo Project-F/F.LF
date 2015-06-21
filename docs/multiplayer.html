@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<title>F.LF/multiplayer</title>
+<script src="projectfdocs.js"></script>
+<xmp>
+# Player vs player (PvP)
+Multiplayer in F.LF is limited to network synchronization between 2 peers. It is backed by F.Lobby PvP technology, which utilizes a client-server architecture.
+
+## Local usage
+
+### starting servers
+
+#### web server
+F.LF itself must be served via `http:`, not `file:`. Any simple web server works, for example:
+```
+$ cd F.LF
+$ python -m SimpleHTTPServer
+```
+
+#### F.Lobby
+With node.js installed,
+```
+$ cd F.Lobby
+$ nodejs index.js --public
+```
+> The public flag means accept connections from any domain in your local network. As long as it does not serve the public, it should be safe.
+
+### running F.LF
+Start F.LF from your local web server. Click `network game`. In the server list, selects `third party server`. Enter `http://localhost:8001` (or whatever port F.Lobby is listening). Click `Connect`.
+
+### peering
+Enter a name and login. Speak. Click on a name to send a connection request. Click `Yes`. A dialog box should appear at the other player's window. If he accepted by also clicking `Yes`, then the Lobby window will close, and the 2 peers will attempt to make a connection. The message window will print `handshake success` at last if everything is okay. Click `OK` and `game start`.
+
+From now on the game runs like normal, but is perfectly synchronized with its peer. Shall the network lags, framerate will drop. If a peer closes, the connection is lost and cannot be recovered.
+
+</xmp>
+</html>

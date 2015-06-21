@@ -11,114 +11,63 @@
 	color:#FFF; padding:0 10px; border-radius:5px; background: #CC0;
 }
 </style>
-
-<xmp theme="projectf">
+<script src="projectfdocs.js"></script>
+<xmp>
 
 # Architecture
 
-### Overview
-The open LF2 project is divided into three repositories, [F.core](https://github.com/tyt2y3/F.core), [F.LF](https://github.com/tyt2y3/F.LF) and [LFrelease](https://github.com/tyt2y3/LFrelease). F.LF is the game engine which implements ___the LF2 standard___ and provides gaming functionalities. F.core provides the engine components to build a HTML5 game. F.LF should be deployable on a web server taking advantage of latest web technology, while still playable on a local file system. LFrelease contains material (sprites,data,sound,etc) converted from original LF2. Such division is to ensure that F.LF is 100% original work containing no third party copyrighted material.
+Project F.LF is divided into two repositories, [F.LF]() and [LF2_19](). F.LF is the game engine which implements ___the LF2 standard___ and provides gaming functionalities. LF2_19 contains material (sprites, data, sound, etc) converted from original LF2. Such that F.LF is source code only and contains no third party copyrighted material. 
 
-Let's have a top-down walk through the modules.
+F.LF should be deployable on a web server taking advantage of latest web technology, while still playable on a local file system.
 
-- `global.js` defines the global parameters
-- `loader.js` is to load data files in a content package
-- `packages.js` list the available content packages
-- `keychanger.js` is a small utility to change keys of a controller
-- `util.js` contains miscellaneous utility functions
-- `match.js` is a generalization above game modes (e.g. VSmode, stagemode, battlemode)
-	the life time of a `match` object represents the course of a match, from start when weapon drops to end all opponents killed.
-	- `factories.js` is responsible to list all available classes to `match` as `match` does not depend on object classes directly.
-	- `character.js` is a generalization of all LF2 characters. `properties.js` specifies the exact property of a character
-	- `weapon.js` is a generalization of `heavyweapon` and `lightweapon`.
-		- `livingobject.js` is a base class. `character` and `weapon` each derive from `livingobject`, adding their specialized properties and methods.
-			- `sprite.js` is a class to handle sprite animation needs in LF2.
-			- `mechanics.js` is a state-less helper class to process all mechanics of `livingobject`.
-	- `specialattack.js` is a generalization of all projectiles. 
-	- `effects.js` handles all the visual effects.
-	- `scene.js` maintains a graph of all livingobjects in the scene. collision detection is done by a scene query where livingobject query for intersection with other objects on the scene.
-	- `background.js` creates and maintains a background. also responsible for camera movement.
-
-### Considerations
 F.LF is to be hackable. The architecture answers yes to the following questions:
 
-- can I customize behavior by changing only few parameters in a single place?
-- can I extend functionality by wrapping over existing code?
-- can I append a new component by adding an entry to a list?
+- can I customize behavior by changing a parameter in a config file?
+- can I create a new component by adding an entry to a list?
 - can I replace a module by implementing one with same interface?
 
 ### HTML5
+
+#### Desktop
 The officially supported desktop browsers are latest Chrome, Firefox and IE. F.LF is tested in each of these browsers before release. Legacy browser versions will not be supported. Under the current state of the art, Chrome gives the best performance, with IE10 the second, and Firefox sometimes lag.
 
-As mobile devices are getting more powerful and mobile browsers more mature, mobile HTML5 support is on the list. The officially supported platform is Galaxy S3+Chrome. This is a baseline, and lower end devices will not be supported.
+#### Mobile
+The officially supported platform is Galaxy S3+Chrome. This is a baseline, and lower end devices will not be supported.
 
 for more see [HTML5.html](HTML5.html).
 
 <a id='roadmap'></a>
 # Roadmap
 
-here lists the unimplemented features.
+Here lists the unimplemented features.
 
 ### the LF2 standard
-- living objects
-	- shadow <span class='green'>done</span>
 - characters
-	- mostly implemented, except
-	- opoint <span class='green'>done</span>
-	- health and mana system <span class='green'>done</span>
+	- support all LF2 1.9 characters (currently only Bandit, Deep, John, Dennis, Woody and Davis are implmented)
 - weapons
 	- stick, hoe and stone implemented
-- specialattack <span class='green'>done</span>
 - drinks
-- baseball, miscell (Criminal, etc, broken_weapon)
-- effects (blood,fire,etc)
-	- effect type 0,1 implemented
-- background <span class='green'>done</span>
+- specialattack
+	- of the remaining characters
+- effects
+	- fire and ice
 
 ### engine components
-- AI <span class='yellow'>in progress</span>
-	- possibly mimick the [AI script design](http://www.lf-empire.de/forum/showthread.php?tid=7946) <span class='green'>done</span>
-	- can port from existing code (great!)
-- networking
-	- networking architecture
-		- protocol
-		- technology (webSocket, webRTC?) <span class='green'>done</span>
-	- server implementation <span class='green'>done</span>
-- sound
 - record & playback
 	- data format
 	- standalone player
+	- platform to upload
 
 ### application
 - game modes
-	- VS mode
-		- health panel
-		- F1~F10 function keys
 	- stage mode
 	- (extended) story mode
-- interface <span class='yellow'>in progress</span>
-	- mimic original LF2 interface
-- content pack <span class='green'>done</span>
-- content loader <span class='green'>done</span>
-	- currently, we use a requirejs plugin to load data files all at once during startup.
-	- however, this will increase startup time and waste bandwidth
-	- we would like to have a content loader which load resources on demand (lazy loading), at the start of a match.
-
-### software engineering
-- build system
-	- possibly [grunt](http://gruntjs.com/). the current build system is based on linux shell script, which is not platform independent and not javascript oriented.
-- automated test suite <span class='yellow'>in progress</span>
-	- to develope a test suite specifically for F.LF. to test against the specification of:
-		- frame transition sequence
-		- movement (position difference)
-	- the F.LF test suite is <span class='green'>done</span>
-	- LF2 test suite can be done by [AI scripting](http://www.lf-empire.de/forum/showthread.php?tid=7946)
 
 ### documentation compilation
 - the LF2 standard <span class='yellow'>in progress</span>
 - hands on F.LF
 
-# engineering process
+# Engineering process
 
 ### Clean room implementation
 F.LF attempts a clean room implementation of LF2. A quote from [Wikipedia](http://en.wikipedia.org/wiki/Clean_room_design)
@@ -139,12 +88,11 @@ The bottom line is, no trade secret or proprietary source code can enter the F.L
 
 ### Collaboration model
 - [github help/fork & pull](https://help.github.com/articles/using-pull-requests)
-- in normal circumstances, changes to `F.core` should be avoided.
 - do development on dev branchs and pull `origin/master` frequently. resolve conflicts as soon as possible.
 - [dchelimsky/Topic Branches](https://github.com/dchelimsky/rspec/wiki/Topic-Branches)
 - only make pull request on topic branches, that is, branch with only one important change.
 
-	> you can cherry-pick the important updates to a separate branch and make a pull request on that branch (try [this](http://stackoverflow.com/questions/5256021/send-a-pull-request-on-github-for-only-latest-commit)). or try using one branch for each topic in the first place (`docs` branch for documentation, `test` branch for test cases).
+	> you can cherry-pick the important updates to a separate branch and make a pull request on that branch (try [this](http://stackoverflow.com/questions/5256021/send-a-pull-request-on-github-for-only-latest-commit))
 - only make pull request when reasonable progress is being made
 	- program code should be functional and slightly tested
 - do not include personal code playground or unrelated files in a pull request.
@@ -159,20 +107,10 @@ Both processes produce a pair of specification and implementation as the end pro
 
 ### Test Driven Development
 
-A unit test suite is specifically developed for F.LF to simulate keyborad input and compare the output with a designated data set. Implementation of a new feature should be associated with a test case. The test result is a measurement of compatibility with LF2, and will be a good measurement if there are enough test cases. The automated testing should be run frequently to ensure code changes do not break previsouly working cases.
-
-for more information, read [unit_test_suite](unit_test_suite.html).
+A unit test suite is specifically developed for F.LF to measure compatibility with LF2. The automated testing should be run frequently to ensure code changes do not break previsouly working cases. For more information, read [unit_test_suite](unit_test_suite.html).
 
 ### Build system
-F.LF employs [requirejs](http://requirejs.org/) for dependency management, and takes advantage of requirejs's optimization tool `r.js` to combine and minify all scripts together into a single script file. However, only scripts from `F.core` and `F.LF` are combined, without any from content packages. content scripts (such as data files) are loaded dynamically.
+F.LF employs [requirejs](http://requirejs.org/) for dependency management, and takes advantage of requirejs's optimization tool `r.js` to combine and minify all scripts together into a single script file. However, only program scripts are combined, content scripts (such as data files) are loaded dynamically.
 
-#### building
-- in `F/LF/tools`, run `./make_demo.sh` to build demos to `LFrelease`.
-- in `F/LF/tools`, run `./make_docs.sh` to copy the documentation to `LFrelease`.
-- in `F/LFrelease`, run `./make_release.sh` to commit and push changes.
-after pushing to branch `gh-pages`, the demo will be live at ` http://your-github-username.github.io/LFrelease/demo/demo4.html`
 </xmp>
-
-<script src="projectfdocs.js"></script>
-<script src="strapdown_0_2/strapdown.js"></script>
 </html>

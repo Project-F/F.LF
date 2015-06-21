@@ -1,6 +1,6 @@
 //a key changer utility
 
-define(['F.core/controller','F.core/util'], function (Fcontroller,Futil)
+define(['core/controller','core/util'], function (Fcontroller,Futil)
 {
 
 /*\

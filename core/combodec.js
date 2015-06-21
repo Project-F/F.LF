@@ -43,8 +43,8 @@ define( function(){
 |	{
 |		alert(combo);
 |	}
+ * 
  * [example](../sample/combo.html)
- # <iframe src="../sample/combo.html" width="800" height="500"></iframe>
 \*/
 function combodec (controller, config, combo)
 {

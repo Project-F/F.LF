@@ -10,13 +10,13 @@ Basic sprite animation with manually mirrored sprite sheet
 
 <script data-main="../../" src="require.js"></script>
 <script>
-requirejs(['F.core/sprite-dom','F.core/animator'], function(sprite,animator)
+requirejs(['core/sprite-dom','core/animator'], function(sprite,animator)
 {
 
 var sp1_config=
 {
 	canvas: document.getElementById('canvas'),
-	wh: {x:100,y:100},
+	wh: {w:100,h:100},
 	img: 
 	{
 		'0': 'test_sprite.png',

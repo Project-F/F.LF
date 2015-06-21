@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
 <title>F.LF/unit test suite</title>
-
-<xmp theme="projectf">
+<script src="projectfdocs.js"></script>
+<xmp>
 # unit test suite
 ### usage guide
 use it at [tools/unit_test_suite](../tools/unit_test_suite.html)
@@ -44,9 +44,6 @@ Just one question, how do I optain the frame number and movement data from LF2? 
 in [frame_encode](https://drive.google.com/folderview?id=0B6AWO3FZ2ZFrNEVCVnZBaE9NYUU&usp=sharing), there contains specially frame encoded characters, that the data file and sprite is altered in a way that the each frame uses a unique `pic`, and each pic has a number on the top left corner showing the current frame number. to be used with 1.9 or 2.0.
 <div style='clear:both'></div>
 
-#### knowing the position difference
-[`tools/moving_object_detector.html`](../tools/moving_object_detector.html) is a tool to detect object movement over a non-uniform background.
-
 ## Interpreting the results
 Below is a sample section of the result table
 <img src="https://docs.google.com/drawings/d/12M0X6qu923YSdDuZde1dSOqzksFc4v_zL_LFfgmsR1Q/pub?w=830&amp;h=359">
@@ -64,7 +61,4 @@ Since a computer simulation has infinite cases and unit testing is never exhaust
 ## Data logging
 Every time the test suite finish running all the cases, a result summary will be sent to [F.LF test log](https://docs.google.com/spreadsheet/lv?key=0AqAWO3FZ2ZFrdGZBa2xDNzdDeVdhNU9UQVMtaklpQXc&type=view&gid=0&f=false&sortcolid=20&sortasc=false&rowsperpage=250). Note that it will not include any personal information, and is completely anonymous. The summary includes file name, number of passed tests, number of finished tests and total error. If you wish to opt out of logging, append `'?no_log'` at the location bar.
 </xmp>
-
-<script src="projectfdocs.js"></script>
-<script src="strapdown_0_2/strapdown.js"></script>
 </html>

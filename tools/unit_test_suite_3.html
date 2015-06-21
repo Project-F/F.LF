@@ -12,8 +12,8 @@ test_cases: [
 	scenario:
 	{	//2 players interactions
 		player: [
-			{ datanum: 2, team: 1},
-			{ datanum: 0, team: 2}
+			{ id:11, team: 1},
+			{ id:30, team: 2}
 		]
 	},
 	cases: [
@@ -36,7 +36,7 @@ test_cases: [
 			{f:282,dx:3},{f:282,dx:2},{f:282,dx:1},{f:282,dx:0},
 			{f:0,dx:0}
 		],
-		[	//Deep
+		[	//Bandit
 			{f:[0,1,2,3],k:'left'},{f:[0,1,2,3]},{f:[0,1,2,3]},{f:[0,1,2,3]},
 			{f:220,dx:0},{f:220,dx:0},{f:220,dx:0},{f:220,dx:0},
 			{f:220,dx:7},{f:221,dx:6},{f:221,dx:5},{f:220,dx:4},

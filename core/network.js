@@ -1,331 +1,220 @@
 /*\
- * network
- * network: p2p networking library. supports webSocket and webRTC (via peerjs)
+ * network: p2p networking
+ * system layer
 \*/
 
-(function (window) {
-
-if( typeof define !=='undefined')
-	define([],define_module);
-else
-	window.Fcore_network = define_module();
-
-function define_module()
+define(function()
 {
-	var timer_callback,
-		target_interval,
-		next_frame,
-		messenger = {},
-		lasttime = new Date().getTime(),
-		buffer = [];
-	var monitor = {},
-		success_callback;
-	monitor.log = monitor.error = function(){};
-
-	function configer(config)
+	var This;
+	(function reset()
 	{
-		if( config.monitor)
-			monitor = config.monitor;
-		if( config.success)
-			success_callback = config.success;
-	}
+		This = {
+			already: 0,
+			conn: 0,
+			time: 0,
+			timer: 0,
+			timer_callback: 0,
+			target_interval: 0,
+			lasttime: new Date().getTime(),
+			//
+			frame: {
+				buffer: []
+			},
+			transfer: {
+				obj: {}
+			},
+			messenger: {}
+		};
+	}());
+
 	function set_interval(a,b)
 	{
-		if( !timer_callback)
+		if( This.timer_callback)
 		{
-			timer_callback = a;
-			target_interval = b;
-			if( target_interval>=30)
-				target_interval-=1; //make it slightly faster
-			return setInterval(frame,target_interval*0.5);
+			console.error('only one timer can be active at a time. please `clearInterval` before setting a new one.');
+			return;
 		}
-		else
-			console.log('network: error: only one timer can be active at a time. please `clearInterval` before setting a new one.');
+		This.timer_callback = a;
+		This.target_interval = b;
+		This.timer = setInterval(frame, This.target_interval*0.5);
+		return This.timer;
 	}
 	function clear_interval(a)
 	{
-		clearInterval(a);
-		timer_callback = null;
+		if( !This.timer || This.timer !== a)
+		{
+			console.error('wrong timer id '+a);
+			return;
+		}
+		clearInterval(This.timer);
+		This.timer = null;
+		This.timer_callback = null;
 	}
 	function frame() //timer frame
 	{
-		if( timer_callback)
-		if( buffer[0])
+		if( This.timer_callback)
+		if( This.frame.buffer[0])
 		{
 			var newtime = new Date().getTime(),
-				diff = newtime-lasttime;
-			if( diff > target_interval-5) //too slow
+				diff = newtime-This.lasttime;
+			if( diff > This.target_interval-5) //too slow
 			{
-				var result = timer_callback(buffer[0].time,buffer[0].data,next_frame);
-				lasttime = newtime;
-				buffer.shift();
-				if( result)
-					next_frame(result);
+				if( This.frame.buffer[0].time !== This.time-1 && This.time !== 0)
+					This.monitor.on('sync_error');
+				var result = This.timer_callback(This.frame.buffer[0].time,This.frame.buffer[0].data,channels.frame.send);
+				This.lasttime = newtime;
+				This.frame.buffer.shift();
+				This.time++;
 			}
 		}
 	}
-	function dataframe(time,data)
+	var channels=
 	{
-		buffer.push({time:time,data:data});
-		frame();
-	}
-	messenger.send=function(mess)
-	{
-		if( !messenger.send_buffer)
-			messenger.send_buffer = [];
-		messenger.send_buffer.push(mess);
-	}
-	function messenger_ready()
-	{
-		if( messenger.sender)
+		'frame':
 		{
-			messenger.send = messenger.sender;
-			delete messenger.sender;
-		}
-		if( messenger.send_buffer)
-		{
-			for( var i=0; i<messenger.send_buffer.length; i++)
-				messenger.send(messenger.send_buffer[i]);
-			delete messenger.send_buffer;
-		}
-	}
-	function onmessage(mess)
-	{
-		if( messenger.receiver)
-			if( messenger.receiver instanceof Array)
-				for( var i=0; i<messenger.receiver.length; i++)
-					if( messenger.receiver[i].onmessage)
-						messenger.receiver[i].onmessage(mess);
-	}
-	
-	function setup_peer(transport,host,key,active,id1,id2)
-	{
-		if( transport==='peerjs')
-			setup_peerjs(host,key,active,id1,id2);
-		else if( transport==='websocket')
-			setup_websocket(host,key,active,id1,id2);
-	}
-	
-	function setup_websocket(host,key,active,id1,id2)
-	{
-		host = host.replace(/^http/,'ws')+'/peer';
-		if( !id1 || !id2)
-		{
-			monitor.error('invalid id.');
-			return false;
-		}
-		var time = 0,
-			connected,
-			ws; //connection
-		connectws();
-		
-		next_frame=function(data)
-		{
-			ws.send(JSON.stringify({name:id1,target:id2,t:time,d:data}));
-		}
-		messenger.sender=function(mess)
-		{
-			ws.send(JSON.stringify({name:id1,target:id2,mm:mess}));
-		}
-		
-		function connectws()
-		{
-			var retry;
-			var num_tried=0;
-			ws = new WebSocket(host);
-			ws.onopen=function()
+			send: function(data)
 			{
-				monitor.log('web socket opened');
-				ws.send(JSON.stringify({open:'open',name:id1}));
-				retry = setInterval(function(){
-					monitor.log('initiate handshake...');
-					if( retry)
-						ws.send(JSON.stringify({name:id1,target:id2,m:'hi'})); //handshake
-					if( num_tried++ >=9)
-					{
-						clearInterval(retry);
-						retry = null;
-						monitor.error('peer connection failed');
-					}
-				},1000);
-			}
-			ws.onclose=function()
+				This.conn.send({
+					'f': {t:This.time, d:data}
+				});
+			},
+			receive: function(data)
 			{
-				monitor.log('socket closed');
+				var time = data.t;
+				var data = data.d;
+				This.frame.buffer.push({time:time,data:data});
+				frame();
 			}
-			ws.onmessage=function(mess)
+		},
+		'messenger':
+		{
+			send: sender('messenger'),
+			receive: function(mess)
 			{
-				var data = JSON.parse(mess.data);
-				if( data.m==='hi')
-				{
-					ws.send(JSON.stringify({name:id1,target:id2,m:'hi back'})); //handshake
-				}
-				else if( data.m==='hi back')
-				{
-					if( data.name===id2 && !connected) //verify id
-					{
-						monitor.log('handshake success');
-						connected = data.name;
-						if( retry)
-						{
-							clearInterval(retry);
-							retry = null;
-						}
-						dataframe(time,data.d);
-						messenger_ready();
-						success_callback();
-					}
-					else
-					{
-						monitor.error('unknown peer');
-					}
-				}
-				else if( data.mm)
-				{
-					onmessage(data.mm);
-				}
-				else if( connected)
-				{
-					time++;
-					dataframe(time,data.d);
-				}
-			}
-		}
-	}
-	
-	function setup_peerjs(host,key,active,id1,id2)
-	{
-		if( !id1 || !id2)
-		{
-			monitor.error('invalid id.');
-			return false;
-		}
-		var open_once = false,
-			time = 0,
-			connected,
-			peer = new Peer(id1, {host:host,debug:3,key:key,logFunction:logfun}),
-			conn; //connection
-		
-		function logfun()
-		{
-			var err = false;
-			var copy = Array.prototype.slice.call(arguments);
-			copy.unshift('PeerJS: ');
-			for (var i = 0, l = copy.length; i < l; i++){
-				if (copy[i] instanceof Error) {
-				copy[i] = '(' + copy[i].name + ') ' + copy[i].message;
-				err = true;
-				}
-			}
-			err ? monitor.error.apply(console, copy) : monitor.log.apply(console, copy);
-		}
-		
-		next_frame=function(data)
-		{
-			conn.send(JSON.stringify({t:time,d:data}));
-		}
-		messenger.sender=function(mess)
-		{
-			conn.send(JSON.stringify({mm:mess}));
-		}
-		
-		peer.on('open', function(id) {
-			if( !open_once)
-			{
-				open_once = true;
-				if( active)
-					active_connect();
+				if( This.messenger.receiver)
+					This.messenger.receiver.onmessage(mess);
 				else
-					passive_connect();
+					console.warn('dropping message! '+mess);
 			}
+		},
+		'transfer':
+		{
+			send: sender('transfer'),
+			receive: function(data)
+			{
+				var name = data.name;
+				var data = data.data;
+				var receive = This.transfer.obj[name];
+				if(!receive)
+				{
+					console.error('no such receiver');
+					return;
+				}
+				receive(data);
+				This.transfer.obj[name] = null;
+			}
+		}
+	};
+	function transfer(name, send, receive)
+	{
+		if( This.transfer.obj[name])
+		{
+			console.error('name '+name+' used already');
+			return;
+		}
+		This.transfer.obj[name] = receive;
+		channels.transfer.send({name:name, data:send()});
+	}
+	function teardown()
+	{
+		if( !This.already)
+		{
+			console.error('not yet setup');
+			return;
+		}
+		clear_interval(This.timer);
+		reset();
+	}
+	function sender(name)
+	{
+		name = name.charAt(0);
+		return function(data)
+		{
+			var obj = {};
+			obj[name] = data;
+			This.conn.send(obj);
+		}
+	}
+	function setup(config, monitor)
+	{
+		if( This.already)
+		{
+			console.error('setup already');
+			return;
+		}
+		This.already = true;
+		This.monitor = monitor;
+		requirejs([get_host(config.server.address)+config.server.library],function(transport)
+		{
+			transport.setup(config, handler);
+			network.teardown=function()
+			{
+				transport.teardown();
+				teardown();
+			};
 		});
 		
-		function active_connect()
-		{
-			//initiate a connection
-			var retry, num_tried=0, success=false;
-			retry = setInterval(function()
-			{
-				if( success) return;
-				conn = peer.connect(id2);
-				conn.on('close', function(){
-					monitor.log('connection closed');
-				});
-				conn.on('error', function(e){
-					monitor.error(e);
-				});
-				conn.on('open', function(){
-					success = true;
-					conn.send(JSON.stringify({m:'hi',id:id1})); //handshake
-				});
-				conn.on('data', ondata);
-				
-				if( num_tried++ >=9)
-				{
-					clearInterval(retry);
-					retry = null;
-					monitor.error('failed to connect to peer '+id2);
-				}
-			},2000);
-		}
+		var id1 = config.param.id1,
+			id2 = config.param.id2;
+		if(!monitor)
+			monitor = {on:function(){}};
 		
-		function passive_connect()
-		{
-			//received a connection
-			peer.on('connection', function(connect) {
-				conn = connect;
-				conn.on('close', function(){
-					monitor.log('connection closed');
-				});
-				conn.on('error', function(e){
-					monitor.error(e);
-				});
-				conn.on('data', ondata);
-			});
-		}
-		
-		function ondata(json)
-		{
-			var data = JSON.parse(json);
-			if( data.m==='hi')
+		var handler = {
+			on:function(event, data)
 			{
-				conn.send(JSON.stringify({name:id1,target:id2,m:'hi back'})); //handshake
-			}
-			else if( data.m==='hi back')
-			{
-				if( data.name===id2 && !connected) //verify id
+				switch (event)
 				{
-					monitor.log('handshake success');
-					connected = data.name;
-					dataframe(time,data.d);
-					messenger_ready();
-					success_callback();
-				}
-				else
-				{
-					monitor.error('unknown peer');
-					conn.close();
+					case 'open':
+						This.conn = data;
+						This.messenger.send = channels.messenger.send;
+						channels.frame.send();
+						monitor.on('open');
+					break;
+					case 'close':
+						monitor.on('close');
+					break;
+					case 'log':
+						monitor.on('log', data);
+					break;
+					case 'error':
+						monitor.on('error', data);
+					break;
+					case 'data':
+						for( var ch in channels)
+						{
+							var c = ch.charAt(0);
+							if( data[c])
+								channels[ch].receive(data[c]);
+						}
+					break;
 				}
 			}
-			else if( data.mm)
-			{
-				onmessage(data.mm);
-			}
-			else if( connected)
-			{
-				time++;
-				dataframe(time,data.d);
-			}
-		}
+		};
 	}
-	
-	return {
-		config:configer,
-		setup_peer:setup_peer,
+	function get_host(ppp)
+	{
+		if( ppp.charAt(ppp.length-1)!=='/')
+			ppp+='/';
+		return ppp;
+	}
+
+	var network = {
+		setup:setup,
+		teardown:null,
 		setInterval:set_interval,
 		clearInterval:clear_interval,
-		messenger:messenger
-	}
-}
-
-}(window));
+		messenger:This.messenger,
+		transfer:transfer
+	};
+	return network;
+});

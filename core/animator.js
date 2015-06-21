@@ -22,9 +22,7 @@ define(function()
 | }
  * multiple animators reference to the same config, so dont play with it in runtime
  *
- * [example](../sample/sprite.html)
- # <iframe src="../sample/sprite.html" width="400" height="250"></iframe>
- # <img src="../sample/test_sprite.png" width="300">
+ * [example](../sample/sprite1.html)
 \*/
 function animator (config)
 {

@@ -310,7 +310,7 @@ var PR=win['PR']={'createSimpleLexer':createSimpleLexer,'registerLangHandler':re
 ;(function(window, document) {
 
   // Hide body until we're done fiddling with the DOM
-  document.body.style.display = 'none';
+  //document.body.style.display = 'none';
 
   //////////////////////////////////////////////////////////////////////
   //

@@ -1,23 +1,27 @@
 <!DOCTYPE html>
 <html>
 <title>F.LF/HTML5</title>
-
-<xmp theme="projectf">
+<script src="projectfdocs.js"></script>
+<xmp>
 # HTML5 technology
-features survey and usage
 
-## Requirements
-The officially supported browsers are latest Chrome, Firefox and IE. F.LF is tested in each of these browsers before release. Legacy browser versions will not be supported. Under the current state of the art, Chrome gives the best performance, with IE10 the second, and Firefox sometimes lag.
+## Platforms
 
-### distribution
+#### Desktop
+The officially supported desktop browsers are latest Chrome, Firefox and IE. F.LF is tested in each of these browsers before release. Legacy browser versions will not be supported. Under the current state of the art, Chrome gives the best performance, with IE10 the second, and Firefox sometimes lag.
+
+#### Mobile
+The officially supported platform is Galaxy S3+Chrome. This is a baseline, and lower end devices will not be supported.
+
+#### Flash
+If possible, HTML5 features should be used. Flash fallback is not necessary, and should be avoided at all costs.
+
+### Distribution
 F.LF will be distributed online and offline.
 #### online
 When played online, F.LF should loads instantly following a lazy loading scheme, by loading only what is needed and until it is needed.
 #### offline
 F.LF should be able to run as a standalone application offline, without the need of a local HTTP server.
-
-### Flash
-If possible, HTML5 features should be used. Flash fallback is not necessary, and should be avoided at all costs.
 
 ## Graphics
 
@@ -25,7 +29,7 @@ If possible, HTML5 features should be used. Flash fallback is not necessary, and
 PNG with transparency is well supported by all browsers. Image rotation, scaling and mirror is also well supported **A**cross **A**ll **M**ajor **B**rowsers (Chrome, Firefox, IE) (AAMB).
 
 #### graphics engine
-The current graphics engine of F.LF is based on F.core which is DOM based. DOM animation is slow, that *was* true a few years ago. Today, Webkit and IE has excellent hardware acceleration for CSS 3d transform, making DOM animation (nearly) as fast as Canvas, at least on desktop. Still, Firefox is not so good at DOM animation and sometimes lags. A canvas based graphics engine *may* give better performance, that F.LF should consider supporting a canvas graphics backend. EaselJS or KineticJS may seem to be good choices.
+F.LF supports two rendering backend, DOM (css transformation) and canvas. Canvas is used by default.
 
 ## Sound
 
@@ -47,19 +51,21 @@ Keyboard input in browsers is good enough for gaming. Key conflict or key drop i
 The HTML5 gamepad API is in draft. In the future F.LF may be able to support gamepad.
 
 #### on-screen gamepad
-Quite a number of high end mobile devices can already run F.LF smoothly. However they will need an on-screen gamepad. We do not aware of any good ones, if you have one, please tell.
+F.LF supports touchscreen gameplay by an overlay on-screen gamepad.
 
 ## Local storage
 Local storage works AAMB in HTTP. Only in IE, local storage does not work locally (`C:\`) because of security convention. That's why cookie is still needed to emulate local storage.
 
-## JSON loading
+## Networking
+
+### JSON loading
 JSON loading works AAMB in HTTP in same origin, but not locally. The only way to load data files locally is to load files as `.js`, which magically works across origin. Though javascript loading is less secure, this will be the only way until Cross Origin JSON arrived.
 
-## Web socket
-Flash actually has a quite good socket interface. Web socket is still preliminary, though many example applications are already developed. Socket.io is a nice abstraction library. Socket functionality is vital to multiplayer gaming. But F.LF has a long roadmap, which multiplayer will not be reached soon.
+### Web socket
+Web socket support is good AAMB. It even works on mobile browsers. F.LF now supports multiplayer via web socket.
+
+### Web RTC
+Web RTC support is still preliminary, which [PeerJS](http://peerjs.com/) is a very good support library. F.LF now has experimental support of multiplayer via PeerJS.
 
 </xmp>
-
-<script src="projectfdocs.js"></script>
-<script src="strapdown_0_2/strapdown.js"></script>
 </html>

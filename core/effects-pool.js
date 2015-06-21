@@ -117,7 +117,6 @@ crpool.prototype.create=function(/*arg*/) //arguments will be passed through
 
 	if( this.E === this.S || (this.S===0 && this.E===this.pool.length))
 	{
-		//console.log('effects pool full');
 		this.full=true;
 	}
 

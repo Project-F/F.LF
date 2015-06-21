@@ -1,0 +1,447 @@
+.LFroot
+{
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	overflow: hidden;
+	position:absolute;
+	left:0px; top:0px;
+	width:100%; height:100%;
+	font-family:Arial,sans;
+	font-size:18px;
+}
+.container
+{
+	position:absolute;
+	left:0px; top:0px;
+}
+.extra_UI
+{
+	position:absolute;
+	left:0; top:0;
+	width:804px; height:590px;
+	pointer-events:none;
+}
+.extra_UI.maximized
+{
+	width:100%; height:100%;
+}
+.maximized .frontpage_content
+{
+	position:absolute;
+	left:0; top:60px;
+	right:0; bottom:0;
+	margin:auto;
+	width:794px;
+	height:550px;
+}
+.frontpage_text
+{
+	position:absolute;
+	font-family:Helvetica,sans-serif;
+	font-weight:bold;
+	font-size:13.3px;
+	letter-spacing:0.25px;
+	line-height:20px;
+	color:#5077d0;
+	text-align:left;
+	padding:0 8px 5px 8px;
+	z-index:10;
+}
+.frontpage_text a
+{
+	text-decoration:none;
+	color:#5077d0;
+}
+.frontpage_text .number
+{
+	letter-spacing:0.5px;
+}
+.window
+{
+	position:relative;
+	border:5px solid #676767;
+	width:794px;
+	height:550px;
+}
+.window > div, .canvas
+{
+	position:absolute;
+	left:0; top:0;
+	right:0; bottom:0;
+}
+.bgviewer .window
+{
+	height:400px;
+}
+.wideWindow .window
+{
+	height:422px;
+}
+.maximized .window
+{
+	border: none;
+}
+.window_caption
+{
+	position:relative;
+	top:0px;
+	width:794px; height:30px;
+	border:5px solid #676767;
+	border-width:0 5px;
+	background:#676767;
+	z-index:10;
+}
+.window_caption_title
+{
+	font-family:"Segoe UI",Arial,sans;
+	font-size:20px;
+	color:#FFF;
+	width:90%;
+	text-align:center;
+	padding:2px 0px 5px 50px;
+	text-shadow:0px 0px 5px #AAA;
+}
+.window_caption_button_bar
+{
+	position:absolute;
+	top:0px; right:0px;
+	height:100%;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+.window_caption_button_bar > *
+{
+	background:#1878ca;
+	/* blue:#1878ca, red:#c74f4f; */
+	float:right;
+	width:auto; height:85%;
+	padding:0 10px 0 10px;
+	margin-right:10px;
+	text-align:center;
+	text-decoration:none;
+	font-size:10px;
+	color:#FFF;
+	cursor:pointer;
+}
+.window_caption_button_bar > *:hover
+{
+	background:#248ce5;
+}
+.unisym
+{
+	font-family: Arial Unicode MS, FreeSerif, serif;
+	font-size: 18px;
+}
+.ProjectFbutton
+{
+	background:#7c547c;
+}
+.ProjectFbutton a
+{
+	text-decoration:none;
+	color:#FFF;
+}
+.ProjectFbutton:hover
+{
+	background:#9d6e9d;
+}
+.gameplay
+{
+}
+.panel
+{
+	position:absolute;
+	left:0; top:0;
+	width:100%; height:128px;
+	z-index:2;
+}
+.background
+{
+	position:absolute;
+	left:0; top:0;
+	width:100%; height:550px;
+	z-index:-1;
+	overflow:hidden;
+}
+.maximized .background
+{
+	overflow:visible;
+}
+.bgviewer .background
+{
+	top:-128px;
+}
+.top_status
+{
+	position:absolute;
+	background:#000;
+	left:0; top:106px;
+	width:100%; height:22px;
+	line-height:22px;
+	font-family:"MS PMincho",monospace;
+	font-size:14px;
+	font-weight:bold;
+	color:#FFF;
+}
+.top_status button
+{
+	padding:0 10px;
+}
+.wideWindow .top_status
+{
+	opacity: 0.5;
+}
+.bottom_status
+{
+	position:absolute;
+	bottom:0px;
+	width:100%; height:22px;
+	line-height:22px;
+	background:#000;
+	text-align:right;
+}
+.fps
+{
+	float:left;
+	border:none;
+	background:none;
+	width:50px;
+	color:#FFF;
+	padding:0 5px 0 5px;
+}
+.footnote
+{
+	font-family:"MS PMincho",monospace;
+	font-size:12px;
+	text-shadow: 0px -1px 2px #666, 1px 0px 2px #666, 0px 2px 2px #666, -2px 0px 2px #666;
+	letter-spacing:2px;
+	color:#FFF;
+}
+.backgroundScroll
+{
+	position:absolute;
+	width:100%;
+	top:550px;
+	overflow-x:scroll;
+	overflow-y:hidden;
+}
+.maximized .backgroundScroll
+{
+	display:none;
+}
+.wideWindow .backgroundScroll
+{
+	top:422px;
+}
+.backgroundScrollChild
+{
+	position:absolute;
+	left:0; top:0;
+	height:1px;
+}
+.bgviewer .backgroundScroll
+{
+	top:400px;
+	z-index:10;
+}
+.window .dialog_holder
+{
+	position:absolute;
+	left:0; top:0;
+	width:100%; height:100%;
+}
+.dialog_holder
+{
+	pointer-events:none;
+}
+.dialog_holder > div
+{
+	position:absolute;
+	left:0; top:0;
+	right:0; bottom:0;
+	margin:auto;
+	pointer-events:auto;
+}
+.alert_box
+{
+	height: 100px;
+	width: 300px;
+	padding: 20px;
+	text-align: center;
+	background: rgba(50,50,50,0.8);
+	color: #FFF;
+	box-shadow: 0 0 20px rgb(50,50,50);
+}
+.alert_box > button
+{
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+    font-weight: bold;
+    padding: 4px 12px;
+    background: rgba(255,255,255,1);
+    border-radius: 5px;
+}
+.touch_control_holder
+{
+	position:absolute;
+	left:0px; top:0px;
+}
+.touch_controller_button
+{
+	position:absolute;
+	border:2px solid rgba(170, 255, 255, 0.5);
+	display:table;
+	color:#FFF;
+	font-size:20px;
+	opacity:0.5;
+    transition:left 0.5s;
+}
+.touch_controller_button > span
+{
+	display:table-cell;
+	vertical-align:middle;
+	text-align:center;
+}
+.projectFmessage
+{
+	display:none;
+}
+.character_selection
+{
+}
+.settings
+{
+	font-size:16px;
+}
+.textbox, .settings
+{
+	font-family:Helvetica,sans-serif;
+	font-weight:bold;
+	color:#FFF;
+}
+.textbox
+{
+	text-align:center;
+	font-size:13px;
+}
+.keychanger
+{
+	position:absolute;
+	left:70px; top:160px;
+	text-align:center;
+}
+.keychanger td
+{
+	background: #000;
+	width: 120px;
+}
+.settings .note
+{
+	color:#5a77d8;
+}
+.network_game_menu
+{
+	position:absolute;
+	left:180px; top:230px;
+}
+.server_select, .network_game button, .network_game input
+{
+	background:#1e337a;
+	font-family:Helvetica,sans-serif;
+	font-weight:bold;
+	font-size:14px;
+	color:#FFF;
+	border:1px solid #FFF;
+	padding:10px 20px;
+}
+.server_select
+{
+	width:250px;
+}
+.network_game button
+{
+	width:95px;
+}
+.server_address
+{
+	width:410px;
+}
+.network_log
+{
+	width:445px;
+	height:200px;
+	text-align:left;
+	background:none;
+	border:none;
+	color:#FFF;
+	font-family:monospace;
+	font-size:14px;
+	resize:none;
+}
+.enable_sound
+{
+	position:absolute;
+	left:120px; top:400px;
+	width:280px;
+	z-index:2;
+}
+.character_selection_textbox
+{
+    transition:color 0.1s;
+}
+.menu_dialog_textbox
+{
+	text-align:left;
+	padding-left:5px;
+}
+.lobby
+{
+	position:absolute;
+    left:0; top:0; right:0; bottom:0;
+	display: flex;
+	flex-flow: column nowrap;
+	justify-content: center;
+	align-content: center;
+	align-items: center;
+	z-index:10;
+}
+.lobby > *
+{
+	width:100%;
+}
+.lobby_window
+{
+	flex: 1 1 auto;
+	border: none;
+}
+.lobby .header
+{
+	height:50px;
+	min-height:50px;
+	background:#444466;
+	font-size:15px;
+	line-height:50px;
+}
+.lobby .nav
+{
+	padding-left: 10px;
+}
+.lobby .nav > a
+{
+	color:#FFF;
+	padding:10px;
+	text-decoration:none;
+	border:1px solid white;
+	cursor:pointer;
+}
+.lobby .nav > a:hover
+{
+	background:#449;
+}

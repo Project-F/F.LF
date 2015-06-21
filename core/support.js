@@ -105,7 +105,7 @@ define(function()
 		support.prefix = dom;
 		support.prefix_dom = dom;
 		support.prefix_css = '-'+pre+'-';
-		support.prefix_js = pre[0].toUpperCase() + pre.substr(1);
+		support.prefix_js = pre.toLowerCase();
 		//--]
 	}());
 

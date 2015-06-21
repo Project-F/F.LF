@@ -12,8 +12,8 @@ test_cases: [
 	scenario:
 	{	//2 players interactions
 		player: [
-			{ datanum: 1, team: 1},
-			{ datanum: 0, team: 2}
+			{ id: 1, team: 1},
+			{ id:30, team: 2}
 		]
 	},
 	cases: [
@@ -291,7 +291,7 @@ test_cases: [
 		setup: function(match)
 		{
 			match.character[1].set_pos(300,0,200);
-			match.character[2].set_pos(556,0,200); //530
+			match.character[2].set_pos(530,0,200); //actual: 530
 		},
 		player: [
 		[	//Deep

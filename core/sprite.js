@@ -1,10 +1,9 @@
 /*\
  * sprite
  [ class ]
- * - retained sprite rendering
- * - sprites are managed by a scene graph
- * - a sprite can have multiple sprite sheet images
- * - supports horizontal and vertical mirror rendering
+ * - DOM and canvas implementation
+ * - a sprite can have multiple sprite sheets
+ * - supports horizontal and vertical mirroring
 \*/
 
 // interface specification
@@ -43,7 +42,7 @@
 |
 |		config:
 |		{
-|			'F.core/sprite':
+|			'core/sprite':
 |			{
 |				baseUrl: '../sprites/',
 |				resourcemap: {...}, //OR use a resource map
@@ -66,8 +65,8 @@
  [ method ]
  o static method
  * convert a resource name to a full url
- - res (string)
- = (string)
+ - res (string) resource name
+ = (string) full url
 \*/
 /*\
  * sprite.preload_image
@@ -86,10 +85,10 @@
  * {
  - canvas (object) DOM node for sprites rendering. depending on the implementation, must be a `div` or `canvas` element; __or__ it can be a sprite group
  * properties below are optional
- - wh     (object) width and height, __or__
+ - wh     (object) `{w,h}` width and height, __or__
  - wh     (string) 'fit' fit to image size, __or__
- - xy     (object) position, __or__
- - xywh   (object) position and size
+ - xy     (object) `{x,y}` position, __or__
+ - xywh   (object) `{x,y,w,h}` position and size
  - img    (object) image list
  - { name (string) image path }; __or__
  - img    (string) if you have only one image. in this case the image will be named '0'
@@ -170,7 +169,7 @@
  * sprite.set_wh
  [ method ]
  * set width and height
- - P (object) `{x,y}`
+ - P (object) `{w,h}`
 \*/
 /*\
  * sprite.set_w_h
@@ -286,7 +285,7 @@
  * if previously removed, attach back to previous sprite group
  * 
  * an antagonist pair with @sprite.remove
- o OR if I am a sprite group
+ o if I am a sprite group
  - sp (object) sprite to be attached to me
 \*/
 

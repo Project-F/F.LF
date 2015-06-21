@@ -1,15 +1,19 @@
 (function (){
 
-var flf_config = {"location":"../../","package":"LFrelease/LF2_19"};
+var flf_config = {"root":"../","package":"../LF2_19"};
 requirejs.config(
 {
-	baseUrl: flf_config.location
+	baseUrl: flf_config.root,
+	paths:
+	{
+		'LF/sprite-select': 'core/sprite-dom'
+	}
 });
 
-requirejs(['LF/sprite-select','F.core/util','F.core/math','F.core/resourcemap',
+requirejs(['LF/sprite-select','core/util','core/math','core/resourcemap',
 'LF/sprite','LF/match','LF/soundpack','LF/loader!'+flf_config.package,'LF/global','LF/util',
 'test_cases',
-'F.core/css!LF/tools/tools.css'],
+'core/css!tools/tools.css'],
 function(Fsprite,Futil,Fmath,Fresourcemap,
 Sprite,Match,Soundpack,package,global,util,
 test_cases){
@@ -36,6 +40,8 @@ test_cases){
 	}());
 	
 	//setup resource map
+	package.path = util.normalize_path(flf_config.package);
+	package.location = util.normalize_path(flf_config.root+flf_config.package);
 	util.organize_package(package);
 	var resourcemap = new Fresourcemap(util.setup_resourcemap(package));
 	Fsprite.masterconfig_set('resourcemap',resourcemap);

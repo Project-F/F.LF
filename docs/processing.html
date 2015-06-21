@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
 <title>F.LF/processing</title>
-
-<xmp theme="projectf">
+<script src="projectfdocs.js"></script>
+<xmp>
 # processes <-> living objects
 
 ### as processes
@@ -73,9 +73,7 @@ an `opoint` creates an object. this is done by calling `this.match.create_object
 Any frame transition caused by any event is delayed until the end of a TU to take effect. this is to maintain determinism to allow synchronization over network. As a consequence, there can be many frame transition _attempts_ in a TU.
 To resolve frame transition conflicts, F.LF introduces __frame transition lock__. Each attempt in causing a frame transition will set a lock to its authority, and late comers can only override the frame transition if they have a higher or equal value than the current lock.
 
-> the following is completely speculation, and have little to no evidence from LF2.
-
-taken from `livingobject.js`
+taken from `livingobject.js`:
 ```
 function frame_transistor($)
 {
@@ -103,7 +101,4 @@ function frame_transistor($)
 ```
 ![](https://docs.google.com/drawings/pub?id=1AumTGB6--R7ExI2xYIjyxjyEKxmOZAhRHG83EUEJBAo&w=692&h=451)
 </xmp>
-
-<script src="projectfdocs.js"></script>
-<script src="strapdown_0_2/strapdown.js"></script>
 </html>

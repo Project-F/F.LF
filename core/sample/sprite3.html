@@ -9,13 +9,13 @@ Canvas sprite implementation
 
 <script data-main="../../" src="require.js"></script>
 <script>
-requirejs(['F.core/sprite-canvas','F.core/animator'], function(sprite,animator)
+requirejs(['core/sprite-canvas','core/animator'], function(sprite,animator)
 {
 var canvas = new sprite({canvas: document.getElementById('canvas')});
 var sp1_config=
 {
 	canvas: canvas,
-	wh: {x:100,y:100},
+	wh: {w:100,h:100},
 	img: 'test_sprite.png'
 }
 sp1 = new sprite(sp1_config);

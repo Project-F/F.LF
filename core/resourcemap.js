@@ -3,7 +3,7 @@
  * 
  * a resourcemap allows mapping from a canonical resource name (shorter and understandable) to the actual url (long and ugly)
 \*/
-define(['F.core/util'],function(Futil){
+define(['core/util'],function(Futil){
 
 	/*\
 	 * resourcemap
