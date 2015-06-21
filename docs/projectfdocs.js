@@ -19,12 +19,10 @@ document.addEventListener('DOMContentLoaded', function() {
 	var xmp = document.getElementsByTagName('xmp')[0];
 	xmp.style.display='none';
 	xmp.setAttribute('theme', 'projectf');
+	var script = document.createElement('script');
+	script.src = 'strapdown_0_2/strapdown.js';
+	document.head.appendChild(script);
 });
-
-var script = document.createElement('script');
-script.src = 'strapdown_0_2/strapdown.js';
-script.async = 1;
-document.head.appendChild(script);
 
 (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
 (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
