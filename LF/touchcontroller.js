@@ -87,6 +87,10 @@ define(['LF/util'],function(util)
 				offy = h/2;
 				h = w/16*9*1.5;
 			}
+			else
+			{
+				offy = h/5;
+			}
 			sizeA*=h;
 			sizeB*=h;
 			sizeC*=h;
@@ -136,13 +140,13 @@ define(['LF/util'],function(util)
 				offx = 0;
 			if( h>w)
 			{
-				offy = h/3.5;
-				offx = -w/4;
+				offx = -w/10;
+				offy = h/2.5;
 			}
 			if( pause)
 			{	//expand the collection
-				var Fleft = w/3-size/2+offx,
-					Ftop = h/4.5-size/2+offy;
+				var Fleft = h/10-size/2+offx,
+					Ftop = h/10-size/2+offy;
 				this.set_button_pos({
 					'F1':[ Fleft,            Ftop, size, size],
 					'F2':[ Fleft+size*1.5,   Ftop, size, size],
@@ -153,16 +157,16 @@ define(['LF/util'],function(util)
 				{
 					if( !$.hidden)
 						show($.button[i]);
-					$.button[i].disabled=30; //disable for 30 frames
+					$.button[i].disabled=10; //disable for 10 frames
 				}
 			}
 			else
 			{	//collapse
 				this.set_button_pos({
-					'F1': [ w/2-size/2, h/4.5-size/2+offy, size, size],
-					'F2': [ w/2-size/2, h/4.5-size/2+offy, size, size],
-					'F4': [ w/2-size/2, h/4.5-size/2+offy, size, size],
-					'F7': [ w/2-size/2, h/4.5-size/2+offy, size, size]
+					'F1': [ h/10-size/2, h/10-size/2+offy, size, size],
+					'F2': [ h/10-size/2, h/10-size/2+offy, size, size],
+					'F4': [ h/10-size/2, h/10-size/2+offy, size, size],
+					'F7': [ h/10-size/2, h/10-size/2+offy, size, size]
 				});
 				if( !$.hidden)
 					show($.button['F1']);

@@ -218,6 +218,12 @@ function Manager(package, buildinfo)
 		Fsprite.masterconfig_set('resourcemap',resourcemap);
 		Fsprite_dom.masterconfig_set('resourcemap',resourcemap);
 		
+		//icon
+		var icon = document.createElement('link');
+		icon.rel = 'icon'
+		icon.href = Fsprite.resolve_resource(package.data.icon);
+		document.head.appendChild(icon);
+		
 		//sound
 		if( settings.support_sound && settings.enable_sound)
 			manager.sound = new Soundpack({
