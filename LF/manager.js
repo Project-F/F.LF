@@ -61,7 +61,7 @@ function Manager(package, buildinfo)
 		{
 			if( Fsupport.css2dtransform)
 			{
-				if( window.innerHeight < 400)
+				if( window.innerWidth < 400 || window.innerHeight < 400)
 				{
 					var fullscreen = getFeature(document.body, 'requestFullscreen');
 					var fullscreen_state = getFeature(document, 'fullscreenElement');
@@ -131,7 +131,7 @@ function Manager(package, buildinfo)
 		}
 		support_touch=true;
 		
-		var settings_format_version=1.00001;
+		var settings_format_version=1.00002;
 		settings=
 		{
 			version:settings_format_version,
@@ -152,7 +152,7 @@ function Manager(package, buildinfo)
 			],
 			server:
 			{
-				'F.LF official server':'http://flf-lodge.herokuapp.com'
+				'Project F Official Lobby':'http://lobby.projectf.hk'
 			},
 			support_sound:false,
 			enable_sound:true
@@ -672,7 +672,7 @@ function Manager(package, buildinfo)
 								if( this.status===200)
 								{
 									var server = JSON.parse(this.responseText);
-									if( server.name!=='F.LF official server')
+									if( !settings.server[server.name])
 										settings.server[server.name] = server_address;
 									manager.UI_list.lobby.start(server);
 									manager.switch_UI('lobby');
@@ -1376,8 +1376,15 @@ function Manager(package, buildinfo)
 		var demax = ratio===1;
 		if( window_state.maximized)
 		{
+			var landscape = false;
+			//if( window.innerWidth < 400 && window.innerWidth < window.innerHeight)
+				//landscape = true;
 			var last_window_state_wide = window_state.wide;
-			var want_wide = window.innerWidth/window.innerHeight > 15/9;
+			var want_wide;
+			if( !landscape)
+				want_wide = window.innerWidth/window.innerHeight > 15/9;
+			else
+				want_wide = window.innerHeight/window.innerWidth > 15/9;
 			if( want_wide)
 			{
 				if( window_state.allow_wide && !window_state.wide)
@@ -1393,7 +1400,6 @@ function Manager(package, buildinfo)
 				window_state.wide=false;
 				util.container.classList.remove('wideWindow');
 			}
-			
 			var fratio = ratio;
 			if( typeof ratio!=='number')
 			{
@@ -1401,8 +1407,16 @@ function Manager(package, buildinfo)
 					height = parseInt(window.getComputedStyle(util.container,null).getPropertyValue('height'));
 				this.width = width;
 				if( height>100) this.height = height;
-				var ratioh = window.innerHeight/this.height,
-					ratiow = window.innerWidth/this.width;
+				if( !landscape)
+				{
+					var ratioh = window.innerHeight/this.height;
+					var ratiow = window.innerWidth/this.width;
+				}
+				else
+				{
+					var ratioh = window.innerHeight/this.width;
+					var ratiow = window.innerWidth/this.height;
+				}
 				ratio = ratioh<ratiow? ratioh:ratiow;
 				fratio = ratio;
 				ratio = Math.floor(ratio*100)/100;
@@ -1412,14 +1426,19 @@ function Manager(package, buildinfo)
 				manager.UI_list['frontpage'].demax(demax);
 			}
 			if( !ratio) return;
-			var canx = window.innerWidth/2-parseInt(window.getComputedStyle(util.container,null).getPropertyValue('width'))/2*ratio;
+			var canx=0, cany=0;
+			if( !landscape)
+				canx = window.innerWidth/2-parseInt(window.getComputedStyle(util.container,null).getPropertyValue('width'))/2*ratio;
+			else
+				cany = window.innerHeight/2-parseInt(window.getComputedStyle(util.container,null).getPropertyValue('width'))/2*ratio;
 			if( demax) canx=0;
 			if( Fsupport.css3dtransform)
 			{
 				util.container.style[Fsupport.css3dtransform+'Origin']= '0 0';
 				util.container.style[Fsupport.css3dtransform]=
-					'translate3d('+canx+'px,0,0) '+
-					'scale3d('+ratio+','+ratio+',1.0) ';
+					'translate3d('+canx+'px,'+cany+'px,0) '+
+					'scale3d('+ratio+','+ratio+',1.0) '+
+					(landscape?'translateX('+(window_state.wide?450:580)+'px) rotateZ(90deg) ':'');
 			}
 			else if( Fsupport.css2dtransform)
 			{
