@@ -53,7 +53,8 @@ test_cases){
 	var manager =
 	{
 		canvas:get_canvas(),
-		sound:new Soundpack(null)
+		sound:new Soundpack(null),
+		random:function(){return 1}
 	};
 	var passing_delta = 10;
 	var case_start_delay = 30;
