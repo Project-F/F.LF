@@ -125,11 +125,6 @@ function Manager(package, buildinfo)
 			control:null,
 			player:[]
 		};
-		var support_touch=false;
-		if(('ontouchstart' in window) || window.DocumentTouch && document instanceof DocumentTouch) {
-			support_touch=true;
-		}
-		support_touch=true;
 		
 		var settings_format_version=1.00002;
 		settings=
@@ -154,11 +149,8 @@ function Manager(package, buildinfo)
 			{
 				'Project F Official Lobby':'http://lobby.projectf.hk'
 			},
-			support_sound:false,
-			enable_sound:true
+			support_sound:false
 		};
-		if( support_touch)
-			settings.control[0].type='touch';
 		if( Fsupport.localStorage)
 		{
 			if( Fsupport.localStorage.getItem('F.LF/settings'))
@@ -173,43 +165,53 @@ function Manager(package, buildinfo)
 			session.player[i] = settings.player[i];
 		}
 		
+		//touch
+		document.addEventListener('touchstart', ontouch, false);
+		function ontouch()
+		{
+			settings.control[0].type = 'touch';
+			session.control[0] = controllers.touch.c;
+			session.control.f = controllers.touch.f;
+			document.removeEventListener('touchstart', ontouch, false);
+		}
+		
 		//control
 		var functionkey_config = { 'esc':'esc','F1':'F1','F2':'F2','F3':'F3','F4':'F4','F5':'F5','F6':'F6','F7':'F7','F8':'F8','F9':'F9','F10':'F10' };
 		controllers=
 		{
-			keyboard:{
+			keyboard:
+			{
 				c0: new Fcontroller(settings.control[0].config),
 				c1: new Fcontroller(settings.control[1].config),
 				f: new Fcontroller(functionkey_config)
 			},
-			touch:support_touch?{
+			touch:
+			{
 				c: new Touchcontroller({layout:'gamepad'}),
 				f: new Touchcontroller({layout:'functionkey'})
-			}:null
+			}
 		};
-		Touchcontroller.enable(false);
-		if( controllers.touch)
-		{
-			controllers.touch.c.hide();
-			controllers.touch.f.hide();
-		}
+		controllers.touch.c.hide();
+		controllers.touch.f.hide();
 		session.control=
 		{
-			'0': controllers.keyboard.c0,
-			'1': controllers.keyboard.c1,
 			f: controllers.keyboard.f,
 			length: 2,
 			my_offset: 0
 		};
-		if( settings.control[0].type==='touch')
+		for( var i=0; i<session.control.length; i++)
 		{
-			session.control[0] = controllers.touch.c;
-			session.control.f = controllers.touch.f;
-		}
-		else if( settings.control[1].type==='touch')
-		{
-			session.control[1] = controllers.touch.c;
-			session.control.f = controllers.touch.f;
+			switch (settings.control[i].type)
+			{
+				case 'keyboard':
+					session.control[i] = controllers.keyboard['c'+i];
+					break;
+				case 'touch':
+					session.control[i] = controllers.touch.c;
+					session.control.f = controllers.touch.f;
+					console.log(session.control.f.type);
+					break;
+			}
 		}
 		
 		//setup resource map
@@ -225,26 +227,25 @@ function Manager(package, buildinfo)
 		document.head.appendChild(icon);
 		
 		//sound
-		if( settings.support_sound && settings.enable_sound)
+		if( !settings.support_sound)
+		{
+			manager.sound = new Soundpack(null);
+			Soundpack.support(function(features)
+			{
+				settings.support_sound = true;
+				setup_sound();
+			});
+		}
+		else
+		{
+			setup_sound();
+		}
+		function setup_sound()
+		{
 			manager.sound = new Soundpack({
 				packs: package.data.sound,
 				resourcemap: resourcemap
 			});
-		else
-			manager.sound = new Soundpack(null);
-		if( !settings.support_sound)
-		{
-			hide(util.div('enable_sound'));
-			Soundpack.support(function(features)
-			{
-				settings.support_sound = true;
-				show(util.div('enable_sound'));
-			});
-		}
-		util.div('enable_sound_checkbox').checked = settings.enable_sound;
-		util.div('enable_sound_checkbox').onchange=function()
-		{
-			settings.enable_sound = this.checked;
 		}
 		
 		//rand
@@ -503,25 +504,19 @@ function Manager(package, buildinfo)
 						}
 						type.onclick=function()
 						{
-							if( controllers.touch)
-							{
-								if( session.control[num].type==='keyboard')
-								{
-									if( session.control[session.control.my_offset+(num-session.control.my_offset===0?1:0)].type!=='touch')
-									{	//switch to touch
-										settings.control[num].type = 'touch';
-										session.control[num] = controllers.touch.c;
-										session.control.f = controllers.touch.f;
-									}
-								}
-								else
-								{	//switch to keyboard
-									settings.control[num].type = 'keyboard';
-									session.control[num] = controllers.keyboard['c'+num];
-									session.control.f = controllers.keyboard.f;
-								}
-								update();
+							if( session.control[num].type==='keyboard')
+							{	//switch to touch
+								settings.control[num].type = 'touch';
+								session.control[num] = controllers.touch.c;
+								session.control.f = controllers.touch.f;
 							}
+							else
+							{	//switch to keyboard
+								settings.control[num].type = 'keyboard';
+								session.control[num] = controllers.keyboard['c'+num];
+								session.control.f = controllers.keyboard.f;
+							}
+							update();
 						}
 					}
 					function add_changer(R,name)
@@ -531,13 +526,26 @@ function Manager(package, buildinfo)
 						cell.onclick=function()
 						{
 							if( session.control[num].type==='keyboard')
-							if( !change_active)
 							{
-								change_active=true;
-								target=this;
-								target.style.color='#000';
-								target.style.backgroundColor='#FFF';
-								document.addEventListener('keydown', keydown, true);
+								if( !change_active)
+								{
+									change_active=true;
+									target=this;
+									target.style.color='#000';
+									target.style.backgroundColor='#FFF';
+									document.addEventListener('keydown', keydown, true);
+								}
+								else
+								{
+									if( target)
+									{
+										target.style.color='';
+										target.style.backgroundColor='';
+										target=null;
+										change_active=false;
+									}
+									document.removeEventListener('keydown', keydown, true);
+								}
 							}
 						}
 						function keydown(e)
@@ -1147,7 +1155,9 @@ function Manager(package, buildinfo)
 									return;
 									case 3: break; //Background
 									case 4: break; //Difficulty
-									case 5: break; //Exit
+									case 5: //Exit
+										manager.switch_UI('frontpage');
+									break;
 								}
 								if( this.dialog.active_item===3)
 									step2_key.call(this,i,'right');
@@ -1563,18 +1573,11 @@ function Manager(package, buildinfo)
 				Touchcontroller.enable(true);
 			}
 		}
-		
-		//sound
-		if( settings.support_sound && settings.enable_sound && manager.sound.dummy)
-			manager.sound = new Soundpack({
-				packs: package.data.sound,
-				resourcemap: resourcemap
-			});
-		else if( !settings.enable_sound && !manager.sound.dummy)
-			manager.sound = new Soundpack(null);
-		manager.sound.play('1/m_ok');
+		if( session.control.f.show)
+			session.control.f.show();
 		
 		//start
+		manager.sound.play('1/m_ok');
 		manager.match_end();
 		manager.switch_UI('character_selection');
 	}
