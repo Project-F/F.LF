@@ -9,13 +9,8 @@ if( 'onhelp' in window)
 	}
 }
 
-if (document.addEventListener){
-	document.addEventListener("keydown", keydown, true);
-	document.addEventListener("keyup", keyup, true);
-} else if (document.attachEvent){
-	document.attachEvent("keydown", keydown);
-	document.attachEvent("keyup", keyup);
-}
+document.addEventListener("keydown", keydown, true);
+document.addEventListener("keyup", keyup, true);
 function keydown(e) { return master_controller.key(e,1); }
 function keyup(e) { return master_controller.key(e,0); }
 
@@ -32,15 +27,8 @@ master_controller.key = function(e,down)
 	}
 	if( master_controller.block)
 	{
-		//the follow section blocks some browser-native key events, including ctrl+f and F1~F12
-		e.cancelBubble = true;
-		if( e.returnValue)
-			e.returnValue = false;
-		if( e.stopPropagation)
-		{
-			e.stopPropagation();
-			e.preventDefault();
-		}
+		//block browser-native key events, including ctrl+f and F1~F12
+		e.preventDefault();
 		return false;
 	}
 }

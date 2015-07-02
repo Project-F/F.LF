@@ -116,15 +116,9 @@ function key(e,down)
 		    el = document.getElementById('k'+e.keyCode+'r');
 		el.style.backgroundColor = down? '#FCC':'#CCC';
 	}
-	document.getElementById('keycode').innerHTML='keycode: '+e.keyCode;
-	//the follow section blocks some browser-native key events, including ctrl+f and F1~F12
-	e.cancelBubble = true;
-	e.returnValue = false;
-	if (e.stopPropagation)
-	{
-		e.stopPropagation();
-		e.preventDefault();
-	}
+	document.getElementById('keycode').innerHTML=(down?'d ':'u ')+'keycode: '+e.keyCode;
+	//block browser-native key events, including ctrl+f and F1~F12
+	e.preventDefault();
 	return false;
 }
 </script>
