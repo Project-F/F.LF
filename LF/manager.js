@@ -1361,8 +1361,7 @@ function Manager(package, buildinfo)
 					{
 						return new Fsprite({
 							div:util.div('gameplay'),
-							type:'group',
-							bgcolor:'#676767'
+							type:'group'
 						});
 					}
 					else if( Fsprite.renderer==='canvas')
