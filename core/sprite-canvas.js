@@ -68,7 +68,7 @@ function sprite (config)
 	this.img={};
 	this.cur_img=null;
 	this.x=0; this.y=0; this.z=0;
-	this.w=100; this.h=100;
+	this.w=0; this.h=0;
 	this.img_x=0; this.img_y=0;
 	
 	if( config.wh==='fit')
@@ -111,24 +111,25 @@ function sprite (config)
 
 sprite.prototype.set_wh=function(P)
 {
-	if( defined(P.w) && defined(P.h))
-		this.set_w_h(P.w,P.h);
-	else
-		console.log('sprite:wrong set_wh parameters');
-	function defined(x) { return x!==null && x!==undefined }
+	this.set_w_h(P.w,P.h);
 }
 sprite.prototype.set_w_h=function(w,h)
 {
-	this.w = w;
-	this.h = h;
+	this.w = this.ow = w;
+	this.h = this.oh = h;
 }
 sprite.prototype.set_w=function(w)
 {
-	this.w = w;
+	this.w = this.ow = w;
 }
 sprite.prototype.set_h=function(h)
 {
-	this.h = h;
+	this.h = this.oh = h;
+}
+sprite.prototype.clip_to_cur_img=function()
+{
+	this.w = Math.min(this.ow, this.img[this.cur_img].naturalWidth);
+	this.h = Math.min(this.oh, this.img[this.cur_img].naturalHeight);
 }
 sprite.prototype.set_xy=function(P)
 {
@@ -176,8 +177,6 @@ sprite.prototype.add_img=function(imgpath,name)
 	sprite._loading++;
 	img.onload = function()
 	{
-		if( !this.naturalWidth) this.naturalWidth=this.width;
-		if( !this.naturalHeight) this.naturalHeight=this.height;
 		if( This.fit_to_img)
 			This.set_w_h(this.naturalWidth,this.naturalHeight);
 		img.onload = null;
@@ -214,6 +213,7 @@ sprite.prototype.remove_img=function(name)
 sprite.prototype.switch_img=function(name)
 {
 	this.cur_img = name;
+	this.clip_to_cur_img();
 }
 sprite.prototype.set_img_xy=function(P)
 {
@@ -240,10 +240,12 @@ sprite.prototype.render=function(ctx)
 		var globalAlpha = ctx.globalAlpha;
 		ctx.globalAlpha *= this.opacity;
 	}
-	if( this.img[this.cur_img])
+	if( this.img[this.cur_img] && this.w && this.h)
+	{
 		ctx.drawImage(this.img[this.cur_img],
 			/*source*/ -this.img_x, -this.img_y, this.w, this.h,
 			/* dest */ this.x_flipped?-this.x-this.w:this.x, this.y_flipped?-this.y-this.h:this.y, this.w, this.h);
+	}
 	if( this.text)
 	{
 		ctx.font = this.font;
@@ -310,11 +312,7 @@ function sprite_group(config)
 }
 sprite_group.prototype.set_wh=function(P)
 {
-	if( defined(P.w) && defined(P.h))
-		this.set_w_h(P.w,P.h);
-	else
-		console.log('sprite:wrong set_wh parameters');
-	function defined(x) { return x!==null && x!==undefined }
+	this.set_w_h(P.w,P.h);
 }
 sprite_group.prototype.set_w_h=function(w,h)
 {
