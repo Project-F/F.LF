@@ -118,18 +118,19 @@ scene.prototype.query = function(volume, exclude, where)
 	{
 		if( where.sort==='distance' && !(exclude instanceof Array))
 		{	//sort according to distance from exclude
-			where.sort = function(obj)
-			{
-				var dx = obj.ps.x-exclude.ps.x;
-				var dz = obj.ps.z-exclude.ps.z;
-				return Math.sqrt(dx*dx+dz*dz);
-			}
+			where.sort = distance_sort_fun;
 		}
 		result.sort(function(a,b){
 			return where.sort(a)-where.sort(b); //ascending order
 		});
 	}
 	return result;
+}
+function distance_sort_fun(obj)
+{
+	var dx = obj.ps.x-exclude.ps.x;
+	var dz = obj.ps.z-exclude.ps.z;
+	return Math.sqrt(dx*dx+dz*dz);
 }
 
 //return true if volume A and B intersect
