@@ -1,0 +1,9 @@
+{
+    "title": "F.Lobby/network.js",
+    "output": "network_docs.html",
+    "files":
+    [{
+    	"path": "../network.js",
+    	"link": ""
+    }]
+}

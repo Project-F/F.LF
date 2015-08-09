@@ -1,6 +1,92 @@
 /*\
- * network: p2p networking
- * system layer
+ * network
+ * PvP networking library, to be used on top of F.Lobby
+\*/
+
+/*\
+ * network.setup
+ [ method ]
+ - config (object) `{server, param}` (accquired from F.Lobby)
+ - monitor (object) `{on:function}`
+ * 
+ * report status events by calling `monitor.on(event, data)`
+ > open
+ * when connection opens
+ > close
+ * when connection closes
+ > log, mess
+ * logging information
+ > error, mess
+ * connection error
+ > sync_error
+ * network.js sync error
+\*/
+
+/*\
+ * network.teardown
+ [ method ]
+ * teardown
+\*/
+
+/*\
+ * network.setInterval
+ [ method ]
+ - frame (function)
+ - interval (number) in miliseconds
+ = (number) timer_id
+ > synchronized frame
+ * Each frame call is synchronized across the two peers, with facility provided to maintain two identical game worlds. If network condition permits, the target framerate will be maintained.
+ * 
+ * `frame` will be called with:
+ - time (number) integer
+ - data (object) data sent from the other side
+ - send (function) send data to the other side
+ * example:
+| function frame(time, data, send)
+| {
+| 	if( time===0) {
+| 		// start
+| 	} else {
+| 		// do something with data
+| 	}
+| 	//send synchronization data
+| 	send({..});
+| }
+\*/
+
+/*\
+ * network.clearInterval
+ [ method ]
+ - timer_id (number)
+ *
+\*/
+
+/*\
+ * network.messenger
+ [ property ]
+ * in-game messenging
+ * 
+ * this property is like:
+ - send (function)
+ | network.messenger.send('hello');
+ - receiver (object) you provide this object
+ |	network.messenger.receiver = {
+ |		onmessage: function(mess) {}
+ |	};
+\*/
+
+/*\
+ * network.transfer
+ [ method ]
+ * named data exchange. both sides have to call with same name.
+ - name (string)
+ - sender (function) should return the data to be sent
+ - receiver (function) callback when data is received
+ * example:
+| network.transfer(
+| 'game_config',
+| function() { return {..} },
+| function(data) { apply(data) });
 \*/
 
 define(function()

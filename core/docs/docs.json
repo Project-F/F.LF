@@ -4,7 +4,7 @@
     "directory":
     [{
     	"path": "../",
-    	"link": "../core",
+    	"link": "../",
     	"extension": [".js"]
     }]
 }
