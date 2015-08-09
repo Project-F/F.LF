@@ -59,12 +59,12 @@ define(function()
 				diff = newtime-This.lasttime;
 			if( diff > This.target_interval-5) //too slow
 			{
-				if( This.frame.buffer[0].time !== This.time-1 && This.time !== 0)
+				if( This.frame.buffer[0].time !== This.time)
 					This.monitor.on('sync_error');
+				This.time++;
 				var result = This.timer_callback(This.frame.buffer[0].time,This.frame.buffer[0].data,channels.frame.send);
 				This.lasttime = newtime;
 				This.frame.buffer.shift();
-				This.time++;
 			}
 		}
 	}
