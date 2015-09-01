@@ -28,7 +28,7 @@ function ( Global, Sprite, Mech, AI, util, Fsprite, Futil)
 		//identity
 		$.name=data.bmp.name;
 		$.uid=-1; //unique id, set by scene
-		$.id=thisID; //character id, specify tactical behavior. accept values from 0~99
+		$.id=thisID; //object id
 		$.data=data;
 		$.team=config.team;
 		$.statemem = {}; //state memory, will be cleared on every state transition
@@ -73,7 +73,7 @@ function ( Global, Sprite, Mech, AI, util, Fsprite, Futil)
 		$.itr=
 		{
 			arest: 0, //attack rest - time until the attacker can do a single hit again
-			vrest:[], //victim rest - time until a character can be hit again
+			vrest:{}, //victim rest - time until a character can be hit again
 		};
 		$.effect=
 		{
@@ -98,7 +98,8 @@ function ( Global, Sprite, Mech, AI, util, Fsprite, Futil)
 	livingobject.prototype.destroy = function()
 	{
 		this.sp.destroy();
-		this.shadow.remove();
+		if( this.shadow)
+			this.shadow.remove();
 	}
 
 	livingobject.prototype.log = function(mes)
@@ -131,7 +132,7 @@ function ( Global, Sprite, Mech, AI, util, Fsprite, Futil)
 
 		//state generic then specific update
 		$.state_update('frame');
-		
+
 		if( $.frame.D.sound)
 			$.match.sound.play($.frame.D.sound);
 	}
@@ -153,6 +154,23 @@ function ( Global, Sprite, Mech, AI, util, Fsprite, Futil)
 		if( $.frame.D.dvx===550) $.ps.vx = 0;
 		if( $.frame.D.dvy===550) $.ps.vy = 0;
 		if( $.frame.D.dvz===550) $.ps.vz = 0;
+	}
+
+	livingobject.prototype.whirlwind_force = function(rect)
+	{
+		var $=this;
+		//lift
+		$.ps.vy -= 2/$.mech.mass;
+		//centripetal force
+		var cx = rect.x+rect.vx+rect.w*0.5; //center
+		var cz = rect.z;
+		$.ps.vx -= sign($.ps.x-cx)*2/$.mech.mass;
+		$.ps.vz -= sign($.ps.z-cz)*0.5/$.mech.mass;
+
+		function sign(x)
+		{
+			return x>0?1:-1;
+		}
 	}
 
 	//update done at every TU (30fps)
@@ -298,6 +316,21 @@ function ( Global, Sprite, Mech, AI, util, Fsprite, Futil)
 		return this.mech.body();
 	}
 
+	livingobject.prototype.vol_itr=function(kind)
+	{
+		var $=this;
+		if( $.frame.D.itr)
+			return $.mech.body(
+				$.frame.D.itr, //make volume from itr
+				function (obj) //filter
+				{
+					return obj.kind==kind; //use type conversion comparison
+				}
+			);
+		else
+			return $.mech.body_empty();
+	}
+
 	livingobject.prototype.state=function()
 	{
 		return this.frame.D.state;
@@ -335,6 +368,17 @@ function ( Global, Sprite, Mech, AI, util, Fsprite, Futil)
 				$.effect.timeout=duration;
 			}
 			$.effect.num = num;
+			if( $.proper(efid,'frame_transition'))
+			{
+				if( $.state()===$.proper(efid,'frame_transition_not_state'))
+					return;
+				$.trans.frame($.proper(efid,'frame_transition'), $.proper(efid,'frame_transition_power'), 99);
+			}
+			if( $.proper(efid,'sound'))
+			{
+				var sounds = Futil.make_array($.proper(efid,'sound'));
+				$.match.sound.play(sounds[Math.floor($.match.random()*sounds.length)]);
+			}
 		}
 	}
 
@@ -361,6 +405,14 @@ function ( Global, Sprite, Mech, AI, util, Fsprite, Futil)
 			z: rect.z>$.ps.z ? rect.z:$.ps.z
 		}
 		$.match.visualeffect.create(efid,pos,variant,with_sound);
+	}
+
+	livingobject.prototype.brokeneffect_create=function(id)
+	{
+		var $=this;
+		var static_body = $.vol_body()[0];
+		for( var i=0; i<8; i++)
+			$.match.brokeneffect.create(320,{x:$.ps.x,y:0,z:$.ps.z},id,i,static_body);
 	}
 
 	//animate back and forth between frame a and b
@@ -476,14 +528,13 @@ function ( Global, Sprite, Mech, AI, util, Fsprite, Futil)
 		//  each cause is given an authority which is used to resolve frame transition conflicts.
 		//  lock=0 means unlocked
 		//  common authority values:
-		//0-9: natural
-		//     0: natural
+		//  0: natural
 		// 10: move,defend,jump,punch,catching,caught
 		// 11: special moves
 		// 15: environmental interactions
 		// 2x: interactions
 		//    20: being punch
-		//    25: hit by special attack
+		//    21: fall
 		// 3x: strong interactions
 		//    30: in effect type 0
 		//    35: blast
@@ -588,6 +639,7 @@ function ( Global, Sprite, Mech, AI, util, Fsprite, Futil)
 				{
 					if( next===1000)
 					{
+						$.state_update('destroy');
 						$.match.destroy_object($);
 						return;
 					}

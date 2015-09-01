@@ -49,6 +49,7 @@ var GC=Global.gameplay;
 			case 'die':
 				$.trans.frame($.frame.D.hit_d);
 			break;
+
 			}
 			$.states['300X'].call($, event, K);
 		},
@@ -94,16 +95,49 @@ var GC=Global.gameplay;
 		'3000':function(event, ITR, att, attps, rect)
 		{	var $=this;
 			switch (event) {
+
 			case 'hit_others':
+				if( ITR.effect===3 && att.type==='specialattack' && att.state()===3000 && att.frame.D.itr.effect!==3)
+					//freeze ball hit another non freeze ball
+					return;
+				if( ITR.effect!==3 && att.type==='specialattack' && att.frame.D.itr.effect===3)
+				{	//non freeze ball hit another freeze ball
+					$.ps.vx = 0;
+					$.trans.frame(1000);
+					$.match.create_object({kind: 1, x: 41, y: 50, action: 0, dvx: 0, dvy: 0, oid: 209, facing: 0}, att);
+					return true;
+				}
 				$.ps.vx = 0;
 				$.trans.frame(10);
 			break;
+
 			case 'hit': //hit by others
-				if( att.type==='specialattack' && ITR.kind===0)
+				if( $.frame.D.itr.kind===14) //ice column
 				{
-					$.ps.vx = 0;
-					$.trans.frame(20);
+					$.trans.set_wait(0,20); //go to break frame
 					return true;
+				}
+				if( att.team===$.team && att.ps.dir===$.ps.dir)
+					//can only attack objects of same team if head on collide
+					return false;
+				if( $.frame.D.itr.effect===3 && att.type==='specialattack' && att.state()===3000 && att.frame.D.itr.effect!==3)
+					//freeze ball hit by non freeze ball
+					return true;
+				if( att.type==='specialattack')
+				{
+					if( $.frame.D.itr.effect!==3 && ITR.effect===3)
+					{	//non freeze ball hit by freeze ball
+						$.ps.vx = 0;
+						$.trans.frame(1000);
+						$.match.create_object({kind: 1, x: 41, y: 50, action: 0, dvx: 0, dvy: 0, oid: 209, facing: 0}, att);
+						return true;
+					}
+					if( ITR.kind===0)
+					{
+						$.ps.vx = 0;
+						$.trans.frame(20);
+						return true;
+					}
 				}
 				if( ITR.kind===0 ||
 					ITR.kind===9) //itr:kind:9 can deflect all balls
@@ -114,6 +148,12 @@ var GC=Global.gameplay;
 					$.trans.trans(); $.TU_update(); $.trans.trans(); $.TU_update(); //transit and update immediately
 					return true;
 				}
+			break;
+
+			case 'state_exit':
+				//ice column broke
+				if( $.match.broken_list[$.id])
+					$.brokeneffect_create($.id);
 			break;
 		}},
 
@@ -164,6 +204,14 @@ var GC=Global.gameplay;
 						$.health.hp = 0;
 					return true;
 				}
+			break;
+		}},
+
+		'15':function(event,K) //whirlwind
+		{	var $=this;
+			switch (event) {
+			case 'TU':
+				$.ps.vx = $.dirh() * $.frame.D.dvx;
 			break;
 		}},
 
@@ -233,12 +281,15 @@ var GC=Global.gameplay;
 		for( var j in ITR)
 		{	//for each itr tag
 			var vol=$.mech.volume(ITR[j]);
-			vol.zwidth = 0;
+			if( !vol.zwidth)
+				vol.zwidth = 0;
 			var hit= $.scene.query(vol, $, {tag:'body'});
 			for( var k in hit)
 			{	//for each being hit
 				if( ITR[j].kind===0 ||
-					ITR[j].kind===9) //shield
+					ITR[j].kind===9 || //shield
+					ITR[j].kind===15 || //whirlwind
+					ITR[j].kind===16) //whirlwind
 				{
 					if( !(hit[k].type==='character' && hit[k].team===$.team)) //cannot attack characters of same team
 					if( !(ITR[j].kind===0 && hit[k].type!=='character' && hit[k].team===$.team && hit[k].ps.dir===$.ps.dir)) //kind:0 can only attack objects of same team if head on collide
@@ -246,7 +297,7 @@ var GC=Global.gameplay;
 					if( $.attacked(hit[k].hit(ITR[j],$,{x:$.ps.x,y:$.ps.y,z:$.ps.z},vol)))
 					{	//hit you!
 						$.itr_arest_update(ITR);
-						$.state_update('hit_others', null, hit[k]);
+						$.state_update('hit_others', ITR[j], hit[k]);
 						if( ITR[j].arest)
 							break; //attack one enemy only
 						if( hit[k].type==='character' && ITR[j].kind===9)

@@ -62,6 +62,8 @@ effect_set.prototype.create=function(id,A,B,C,D)
 {
 	if( this.efs[id])
 		this.efs[id].create(A,B,C,D);
+	else
+		console.error('no such effect id '+id);
 }
 
 effect_set.prototype.TU=function()
@@ -182,10 +184,12 @@ effect.prototype.born=function(P,N,S,R)
 			var slot = S%$.broken_list[N].length;
 			sf = $.broken_list[N][slot].frame;
 		}
+		$.with_sound=true;
 		$.mass=1;
 		if( !R) R = {w:50,h:50};
 		P.x += $.match.random()*R.w*1.2-$.width;
-		$.ps.vy = -1-$.match.random()*R.h*0.25;
+		P.y -= $.match.random()*R.h;
+		$.ps.vy = -4;
 	}
 	$.frame=sf;
 	$.frameD=$.dat.frame[$.frame];

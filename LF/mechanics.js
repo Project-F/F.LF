@@ -333,10 +333,15 @@ mech.prototype.dynamics= function()
 	var fD=this.frame.D;
 	var GC=Global.gameplay;
 
-	if( !this.blocking_xz()) //blocked by obstacle
+	if( !this.blocking_xz())
 	{
 		ps.x += ps.vx;
 		ps.z += ps.vz;
+	}
+	else
+	{	//blocked by obstacle
+		ps.x += ps.vx * 0.1;
+		ps.z += ps.vz * 0.1;
 	}
 	if( this.floor_xbound)
 	{

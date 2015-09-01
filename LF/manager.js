@@ -1706,7 +1706,7 @@ function Manager(package, buildinfo)
 					use:true,
 					name:'CRUSHER',
 					type:'computer',
-					selected:5,
+					selected:6,
 					selected_AI:0,
 					team:1
 				},

@@ -74,7 +74,9 @@ function(livingobject, Global, Fcombodec, Futil, util)
 						$.trans.frame(result, 15);
 					else
 					{
-						if( $.frame.N===212) //jumping
+						if( $.state()===13) //frozen
+							; //do nothing
+						else if( $.frame.N===212) //jumping
 							$.trans.frame(215, 15); //crouch
 						else
 							$.trans.frame(219, 15); //crouch2
@@ -894,6 +896,14 @@ function(livingobject, Global, Fcombodec, Futil, util)
 			return 1; //always return true so that `jump` is not re-fired next frame
 		}},
 
+		'13':function(event,K) //frozen
+		{	var $=this;
+			switch (event) {
+			case 'state_exit':
+				$.brokeneffect_create(212);
+			break;
+		}},
+
 		'14':function(event,K) //lying
 		{	var $=this;
 			switch (event) {
@@ -1134,7 +1144,7 @@ function(livingobject, Global, Fcombodec, Futil, util)
 		'10':false,
 		'11':false,
 		'12':false,
-		'13':true,
+		'13':false,
 		'14':false,
 		'15':false,
 		'16':false
@@ -1323,7 +1333,7 @@ function(livingobject, Global, Fcombodec, Futil, util)
 	character.prototype.hit=function(ITR, att, attps, rect)
 	{
 		var $=this;
-		if( $.itr.vrest[att.uid])
+		if( !$.itr_vrest_test(att.uid))
 			return false;
 
 		var accepthit=false;
@@ -1359,14 +1369,18 @@ function(livingobject, Global, Fcombodec, Futil, util)
 		{
 			//lying
 		}
-		else
+		else if( ITR.kind===undefined || //default
+				 ITR.kind===0 || //normal
+				 ITR.kind===4) //falling
 		{
-			//kind 0 ITR
 			accepthit=true;
 			var compen = $.ps.y===0? 1:0; //magic compensation
 			ef_dvx = ITR.dvx ? att.dirh()*(ITR.dvx-compen):0;
 			ef_dvy = ITR.dvy ? ITR.dvy:0;
 			var effectnum = ITR.effect!==undefined?ITR.effect:GC.default.effect.num;
+
+			if( effectnum===30 && $.state()===13) //I am frozen with effect 'weak ice'
+				return false;
 
 			if( $.state()===7 &&
 			    (attps.x > $.ps.x)===($.ps.dir==='right')) //attacked in front
@@ -1403,7 +1417,18 @@ function(livingobject, Global, Fcombodec, Futil, util)
 				case 112: vanish=4; break;
 			}
 			$.effect_create( effectnum, vanish, ef_dvx, ef_dvy);
-			$.visualeffect_create( effectnum, rect, (attps.x < $.ps.x), ($.health.fall>0?0:1), true);
+			if( $.proper(effectnum+GC.effect.num_to_id,'visual_effect'))
+				$.visualeffect_create(effectnum, rect, (attps.x < $.ps.x), ($.health.fall>0?0:1), true);
+		}
+		else if( ITR.kind===15)
+		{
+			$.whirlwind_force(rect);
+		}
+		else if( ITR.kind===16)
+		{
+			$.trans.frame(200, 38);
+			inj = ITR.injury;
+			accepthit=true;
 		}
 		function fall()
 		{
@@ -1412,7 +1437,9 @@ function(livingobject, Global, Fcombodec, Futil, util)
 			else
 				$.health.fall += GC.default.fall.value;
 			var fall=$.health.fall;
-			if ($.ps.y<0 || $.ps.vy<0)
+			if( $.state()==13)
+				falldown();
+			else if ($.ps.y<0 || $.ps.vy<0)
 				falldown();
 			else if ($.health.hp-inj<=0)
 				falldown();
@@ -1448,8 +1475,7 @@ function(livingobject, Global, Fcombodec, Futil, util)
 		if( accepthit)
 		{
 			$.itr.attacker = att;
-			if( ITR && ITR.vrest)
-				$.itr.vrest[att.uid] = ITR.vrest;
+			$.itr_vrest_update(att.uid, ITR);
 		}
 		if( accepthit)
 			return inj;
@@ -1470,12 +1496,10 @@ function(livingobject, Global, Fcombodec, Futil, util)
 	}
 	character.prototype.attacked=function(inj)
 	{
-		if( inj===false)
-			return false;
-		else if( inj===true)
+		if( inj===true)
 			return true;
-		else
-		{	//even if inj===0
+		else if( inj > 0)
+		{
 			this.stat.attack += inj;
 			return true;
 		}
@@ -1584,8 +1608,7 @@ function(livingobject, Global, Fcombodec, Futil, util)
 				for( var t in hit)
 				{
 					if( !(hit[t].type==='character' && hit[t].team===$.team)) //cannot attack characters of same team
-					if( !(hit[t].type!=='character' && hit[t].team===$.team && hit[t].ps.dir===$.ps.dir)) //can only attack objects of same team if head on collide
-					if( ITR.effect===undefined || ITR.effect===0 || ITR.effect===1 ||
+					if( ITR.effect===undefined || ITR.effect===0 || ITR.effect===1 || //basic hit
 						(ITR.effect===4 && hit[t].type==='specialattack' && hit[t].state()===3000)) //reflect all specialattacks with state: 3000, weapons fly away, has no influence on other characters
 					if( !$.itr.arest)
 					if( $.attacked(hit[t].hit(ITR,$,{x:$.ps.x,y:$.ps.y,z:$.ps.z},vol)))
@@ -1652,6 +1675,12 @@ function(livingobject, Global, Fcombodec, Futil, util)
 		}
 	}
 
+	character.prototype.hold_weapon=function(wea)
+	{
+		var $=this;
+		$.hold.obj = wea;
+	}
+
 	character.prototype.drop_weapon=function(dvx,dvy)
 	{
 		var $=this;
@@ -1660,21 +1689,6 @@ function(livingobject, Global, Fcombodec, Futil, util)
 			$.hold.obj.drop(dvx,dvy);
 			$.hold.obj=null;
 		}
-	}
-
-	character.prototype.vol_itr=function(kind)
-	{
-		var $=this;
-		if( $.frame.D.itr)
-			return $.mech.body(
-				$.frame.D.itr, //make volume from itr
-				function (obj) //filter
-				{
-					return obj.kind==kind; //use type conversion comparison
-				}
-			);
-		else
-			return [];
 	}
 
 	/** inter-living objects protocol: catch & throw

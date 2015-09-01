@@ -72,9 +72,7 @@ function weapon(type)
 				$.trans.frame(1000);
 				if( $.data.bmp.weapon_broken_sound)
 					$.match.sound.play($.data.bmp.weapon_broken_sound);
-				var static_body = $.mech.body($.data.frame[0].bdy)[0];
-				for( var i=0; i<8; i++)
-					$.match.brokeneffect.create(320,{x:$.ps.x,y:0,z:$.ps.z},$.id,i,static_body);
+				$.brokeneffect_create($.id);
 			break;
 		}},
 
@@ -152,6 +150,15 @@ function weapon(type)
 	typeweapon.prototype.type = type;
 	typeweapon.prototype.states = states;
 
+	typeweapon.prototype.init=function(T)
+	{
+		var $=this;
+		if( T.opoint.kind===2)
+		{
+			T.parent.hold_weapon($);
+			$.pick(T.parent);
+		}
+	}
 	typeweapon.prototype.interaction=function()
 	{
 		var $=this;
@@ -214,6 +221,12 @@ function weapon(type)
 			return false;
 		if( $.itr.vrest[att.uid])
 			return false;
+
+		if( ITR.kind===15)
+		{
+			$.whirlwind_force(rect);
+			return true;
+		}
 
 		var accept=false;
 		if( $.light)
@@ -430,22 +443,6 @@ function weapon(type)
 		if( obj.type==='heavyweapon' || obj.type==='lightweapon')
 			newrest *= 2; //double the rest time for weapon-weapon hit
 		$.itr.vrest[uid] = newrest;
-	}
-
-	typeweapon.prototype.vol_itr=function(kind)
-	{
-		function match_kind(obj)
-		{
-			return obj.kind==kind; //use type conversion comparison
-		}
-		var $=this;
-		if( $.frame.D.itr)
-			return $.mech.body(
-				$.frame.D.itr, //make volume from itr
-				match_kind //select only matched kind
-			);
-		else
-			return $.mech.body_empty();
 	}
 
 	typeweapon.prototype.attacked=function(inj)

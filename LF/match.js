@@ -274,26 +274,23 @@ Global)
 		switch (T.task)
 		{
 		case 'create_object':
-			if( T.opoint.kind===1)
+			if( T.opoint.oid)
 			{
-				if( T.opoint.oid)
+				var OBJ = util.select_from($.data.object,{id:T.opoint.oid});
+				if(!OBJ)
 				{
-					var OBJ = util.select_from($.data.object,{id:T.opoint.oid});
-					if(!OBJ)
-					{
-						console.log('Object', T.opoint.oid, 'not exists');
-						break;
-					}
-					var config =
-					{
-						match: $,
-						team: T.team
-					};
-					var obj = new factory[OBJ.type](config, OBJ.data, T.opoint.oid);
-					obj.init(T);
-					var uid = $.scene.add(obj);
-					$[obj.type][uid] = obj;
+					console.error('Object', T.opoint.oid, 'not exists');
+					break;
 				}
+				var config =
+				{
+					match: $,
+					team: T.team
+				};
+				var obj = new factory[OBJ.type](config, OBJ.data, T.opoint.oid);
+				obj.init(T);
+				var uid = $.scene.add(obj);
+				$[obj.type][uid] = obj;
 			}
 		break;
 		case 'destroy_object':
@@ -533,9 +530,9 @@ Global)
 		var $=this;
 		var effects = Futil.extract_array( util.selectA_from($.data.object,{type:'effect'}), ['data','id']);
 		var broken  = util.select_from($.data.object,{type:'broken'});
-		var broken_list = Futil.group_elements( broken.data.broken_list, 'id');
+		$.broken_list = Futil.group_elements( broken.data.broken_list, 'id');
 		$.visualeffect = $.effect[0] = new factory.effect( {match:$, stage:$.stage}, effects.data, effects.id);
-		$.brokeneffect = $.effect[1] = new factory.effect( {match:$, stage:$.stage, broken_list:broken_list}, broken.data,  broken.id);
+		$.brokeneffect = $.effect[1] = new factory.effect( {match:$, stage:$.stage, broken_list:$.broken_list}, broken.data,  broken.id);
 	}
 
 	match.prototype.drop_weapons=function(setup)
@@ -543,8 +540,10 @@ Global)
 		var $=this;
 		var num=5;
 		var weapon_list=
-		 util.selectA_from($.data.object,{type:'lightweapon'}).concat
-		(util.selectA_from($.data.object,{type:'heavyweapon'}));
+		util.selectA_from($.data.object,function(o)
+		{
+			return 100 <= o.id && o.id < 200;
+		});
 		for( var i=0; i<num; i++)
 		{
 			var O=$.background.get_pos($.random(),$.random());
