@@ -28,6 +28,7 @@ function onEnterFrame()
 	for ( var I in list)
 	{
 		var con=list[I].con;
+        con.fetch();
 		var sp =list[I].sp;
 
 		if(con.state.up)
