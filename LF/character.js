@@ -1527,7 +1527,10 @@ function(livingobject, Global, Fcombodec, Futil, util)
 			break;
 			case 3: case 30: //ice
 				$.drop_weapon(ef_dvx, ef_dvy);
-				$.trans.frame(200, 38);
+				if( $.state()!==13)
+					$.trans.frame(200, 38);
+				else
+					$.trans.frame(182, 21);
 				if ($.state()===13)
 					$.match.sound.play('1/066');
 				else
