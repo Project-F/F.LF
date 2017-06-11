@@ -30,7 +30,7 @@ function effect_set(config,DATA,ID) //DATA and ID are arrays
 				circular: true,
 				init_size: 5,
 				batch_size: 5,
-				max_size: 100,
+				max_size: 200,
 				construct: function()
 				{
 					return new effect(config,DATA[i],ID[i]);
@@ -187,14 +187,15 @@ effect.prototype.born=function(P,N,S,R)
 			sf = $.broken_list[N][slot].frame;
 		}
 		$.with_sound=true;
-		if (N===302)
+		if (N===302) //flame
 			$.mass=0;
 		else
 			$.mass=1;
 		if( !R) R = {w:50,h:50};
 		P.x += $.match.random()*R.w*1.2-$.width;
 		P.y -= $.match.random()*R.h;
-		$.ps.vy = -4;
+		$.ps.vx = ($.match.random()-0.5)*R.w*0.5;
+		$.ps.vy = $.match.random()*2-4;
 	}
 	$.frame=sf;
 	$.frameD=$.dat.frame[$.frame];

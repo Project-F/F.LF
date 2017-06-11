@@ -401,7 +401,7 @@ function ( Global, Sprite, Mech, AI, util, Fsprite, Futil)
 		var static_body = $.vol_body()[0];
 		if( !num) num = 8;
 		for( var i=0; i<num; i++)
-			$.match.brokeneffect.create(320,{x:$.ps.x,y:0,z:$.ps.z},id,i,static_body);
+			$.match.brokeneffect.create(320,{x:$.ps.x,y:$.ps.y,z:$.ps.z},id,i,static_body);
 	}
 
 	//animate back and forth between frame a and b

@@ -552,6 +552,15 @@ Global)
 		}
 	}
 
+	match.prototype.destroy_weapons=function()
+	{
+		var $=this;
+		for( var i in $.lightweapon)
+			$.lightweapon[i].health.hp = 0;
+		for( var i in $.heavyweapon)
+			$.heavyweapon[i].health.hp = 0;
+	}
+
 	match.prototype.create_weapon=function(id,pos)
 	{
 		var $=this;
@@ -675,6 +684,14 @@ Global)
 
 							case 'F7':
 								$.F7();
+							break;
+
+							case 'F8':
+								$.drop_weapons();
+							break;
+
+							case 'F9':
+								$.destroy_weapons();
 							break;
 						}
 						if( (I==='F1' || I==='F2') && $.time.paused)
