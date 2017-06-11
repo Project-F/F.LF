@@ -1684,11 +1684,14 @@ function(livingobject, Global, Fcombodec, Futil, util)
 							canhit = false;
 					break;
 					case 4:
-						if( !(hit[t].type!=='character' && hit[t].state()===3000)) //reflect all specialattacks with state: 3000, weapons fly away, has no influence on other characters
+						if( !(hit[t].type!=='character' && hit[t].state()===3000)) //reflect all specialattacks with state: 3000, has no influence on other characters
 							canhit = false;
 					break;
 					case 21: case 22: //burning
 						if( $.state()===18 && hit[t].team===$.team) //cannot burn teammates
+							canhit = false;
+					case 20:
+						if( hit[t].type!=='character')
 							canhit = false;
 					break;
 					}
