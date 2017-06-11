@@ -30,7 +30,7 @@ function effect_set(config,DATA,ID) //DATA and ID are arrays
 				circular: true,
 				init_size: 5,
 				batch_size: 5,
-				max_size: 30,
+				max_size: 100,
 				construct: function()
 				{
 					return new effect(config,DATA[i],ID[i]);
@@ -91,6 +91,7 @@ function effect(config,data,id)
 	this.id=id;
 	this.sp = new Sprite(this.dat.bmp, config.stage);
 	this.sp.hide();
+	this.state;
 	this.frame;
 	this.frameD;
 	this.wait=-1;
@@ -140,17 +141,18 @@ effect.prototype.TU=function()
 			if( $.frameD.sound)
 				$.match.sound.play($.frameD.sound);
 	}
-	if( $.wait===0)
+	if( $.wait===0 || $.state===9998)
 	{
 		if( $.next===999)
 			$.next=0;
-		else if( $.next===1000)
+		else if( $.next===1000 || $.state===9998)
 		{
 			$.parent.die($);
 			return ;
 		}
 		$.frame=$.next;
 		$.frameD=$.dat.frame[$.frame];
+		$.state=$.frameD.state;
 		$.frame_update=true;
 	}
 	else
@@ -185,7 +187,10 @@ effect.prototype.born=function(P,N,S,R)
 			sf = $.broken_list[N][slot].frame;
 		}
 		$.with_sound=true;
-		$.mass=1;
+		if (N===302)
+			$.mass=0;
+		else
+			$.mass=1;
 		if( !R) R = {w:50,h:50};
 		P.x += $.match.random()*R.w*1.2-$.width;
 		P.y -= $.match.random()*R.h;
@@ -193,6 +198,7 @@ effect.prototype.born=function(P,N,S,R)
 	}
 	$.frame=sf;
 	$.frameD=$.dat.frame[$.frame];
+	$.state=$.frameD.state;
 	$.frame_update=true;
 	$.ps.x = P.x;
 	$.ps.y = P.y;

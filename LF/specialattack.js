@@ -45,6 +45,11 @@ var GC=Global.gameplay;
 				if( $.bg.leaving($, 200)) //only when leaving far
 					$.trans.frame(1000); //destroy
 			break;
+			
+			case 'hit':
+			case 'hit_others':
+				$.match.sound.play($.data.bmp.weapon_broken_sound);
+			break;
 
 			case 'die':
 				$.trans.frame($.frame.D.hit_d);

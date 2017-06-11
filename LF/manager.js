@@ -254,7 +254,7 @@ function Manager(package, buildinfo)
 			return randomseed.next();
 		}
 		randomseed = new Random();
-		randomseed.seed(824163579);
+		randomseed.seed(824163577);
 		
 		//prepare
 		char_list = util.select_from(package.data.object,{type:'character'});
@@ -1706,7 +1706,7 @@ function Manager(package, buildinfo)
 					use:true,
 					name:'CRUSHER',
 					type:'computer',
-					selected:6,
+					selected:7,
 					selected_AI:0,
 					team:1
 				},
@@ -1714,7 +1714,7 @@ function Manager(package, buildinfo)
 					use:true,
 					name:'dumbass',
 					type:'computer',
-					selected:0,
+					selected:5,
 					selected_AI:2,
 					team:2
 				}

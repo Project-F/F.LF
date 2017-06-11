@@ -852,6 +852,7 @@ function(livingobject, Global, Fcombodec, Futil, util)
 					$.caught_throwinjury = null;
 				}
 				var ps=$.ps;
+				$.match.sound.play('1/016');
 				//console.log('speed:'+$.mech.speed()+', vx:'+ps.vx+', vy:'+ps.vy);
 				if( $.mech.speed() > GC.character.bounceup.limit.xy ||
 					ps.vy > GC.character.bounceup.limit.y)
@@ -861,6 +862,8 @@ function(livingobject, Global, Fcombodec, Futil, util)
 						util.lookup_abs(GC.character.bounceup.absorb,ps.vz)
 					);
 					ps.vy = -GC.character.bounceup.y;
+					if( 203 <= $.frame.N && $.frame.N <= 206)
+						return 185;
 					if( 180 <= $.frame.N && $.frame.N <= 185)
 						return 185;
 					if( 186 <= $.frame.N && $.frame.N <= 191)
@@ -868,8 +871,10 @@ function(livingobject, Global, Fcombodec, Futil, util)
 				}
 				else
 				{
-					if( 180 <= $.frame.N && $.frame.N <= 185)
+					if( 203 <= $.frame.N && $.frame.N <= 206)
 						return 230; //next frame
+					if( 180 <= $.frame.N && $.frame.N <= 185)
+						return 230;
 					if( 186 <= $.frame.N && $.frame.N <= 191)
 						return 231;
 				}
@@ -995,6 +1000,19 @@ function(livingobject, Global, Fcombodec, Futil, util)
 		'16':function(event,K) //injured 2 (dance of pain)
 		{	var $=this;
 			switch (event) {
+		}},
+
+		'18':function(event,K) //burning
+		{	var $=this;
+			switch (event) {
+			case 'frame':
+				$.brokeneffect_create(302, 1);
+			break;
+			case 'fall_onto_ground':
+				$.brokeneffect_create(302);
+			case 'fell_onto_ground':
+				return $.states['12'].call($,event,K);
+			break;
 		}},
 
 		'301':function(event,K) //deep specific
@@ -1337,6 +1355,7 @@ function(livingobject, Global, Fcombodec, Futil, util)
 			return false;
 
 		var accepthit=false;
+		var defended=false;
 		var ef_dvx=0, ef_dvy=0, inj=0;
 		if( $.state()===10) //being caught
 		{
@@ -1375,14 +1394,18 @@ function(livingobject, Global, Fcombodec, Futil, util)
 		{
 			accepthit=true;
 			var compen = $.ps.y===0? 1:0; //magic compensation
-			ef_dvx = ITR.dvx ? att.dirh()*(ITR.dvx-compen):0;
+			var attdir = att.ps.vx===0?att.dirh():(att.ps.vx>0?1:-1);
+			ef_dvx = ITR.dvx ? attdir*(ITR.dvx-compen):0;
 			ef_dvy = ITR.dvy ? ITR.dvy:0;
 			var effectnum = ITR.effect!==undefined?ITR.effect:GC.default.effect.num;
 
-			if( effectnum===30 && $.state()===13) //I am frozen with effect 'weak ice'
+			if( $.state()===13 && effectnum===30) //frozen characters are immune to effect 30 'weak ice'
 				return false;
 
-			if( $.state()===7 &&
+			if( $.state()===18 && (effectnum===20 || effectnum===21)) //burning characters are immune to effect 20/21 'weak fire'
+				return false;
+
+			if( $.state()===7 && //defend
 			    (attps.x > $.ps.x)===($.ps.dir==='right')) //attacked in front
 			{
 				if( ITR.injury)	inj += GC.defend.injury.factor * ITR.injury;
@@ -1399,6 +1422,8 @@ function(livingobject, Global, Fcombodec, Futil, util)
 				ef_dvy = 0;
 				if( $.health.hp-inj<=0)
 					falldown();
+				else
+					defended = true;
 			}
 			else
 			{
@@ -1417,8 +1442,7 @@ function(livingobject, Global, Fcombodec, Futil, util)
 				case 112: vanish=4; break;
 			}
 			$.effect_create( effectnum, vanish, ef_dvx, ef_dvy);
-			if( $.proper(effectnum+GC.effect.num_to_id,'visual_effect'))
-				$.visualeffect_create(effectnum, rect, (attps.x < $.ps.x), ($.health.fall>0?0:1), true);
+			posteffect(effectnum);
 		}
 		else if( ITR.kind===15)
 		{
@@ -1466,9 +1490,53 @@ function(livingobject, Global, Fcombodec, Futil, util)
 				$.trans.frame(180, 21);
 			else if(!front)
 				$.trans.frame(186, 21);
-
-			if( $.proper( $.effect_id(effectnum),'drop_weapon'))
+		}
+		function posteffect(effectnum)
+		{
+			if (defended)
+			{
+				switch (effectnum)
+				{
+				case 0: //normal hit
+				case 1: //blood
+					$.match.sound.play('1/002');
+				break;
+				}
+				return;
+			}
+			switch (effectnum)
+			{
+			case 0: //normal hit
+			case 1: //blood
+				switch( $.trans.next())
+				{
+					case 180: case 186:
+						$.drop_weapon(ef_dvx, ef_dvy);
+					break;
+				}
+				$.visualeffect_create(effectnum, rect, (attps.x < $.ps.x), ($.health.fall>0?0:1), true);
+			break;
+			case 2: //fire
+			case 21:
+			case 22:
+			case 23:
 				$.drop_weapon(ef_dvx, ef_dvy);
+			case 20:
+				$.trans.frame(203, 36);
+				$.match.sound.play('1/070');
+			break;
+			case 3: case 30: //ice
+				$.drop_weapon(ef_dvx, ef_dvy);
+				$.trans.frame(200, 38);
+				if ($.state()===13)
+					$.match.sound.play('1/066');
+				else
+					$.match.sound.play('1/065');
+			break;
+			case 4:
+				$.drop_weapon(ef_dvx, ef_dvy);
+			break;
+			}
 		}
 
 		$.injury(inj);
@@ -1605,11 +1673,33 @@ function(livingobject, Global, Fcombodec, Futil, util)
 			switch (ITR.kind)
 			{
 			case 0: //normal attack
+			case 4: //falling
 				for( var t in hit)
 				{
-					if( !(hit[t].type==='character' && hit[t].team===$.team)) //cannot attack characters of same team
-					if( ITR.effect===undefined || ITR.effect===0 || ITR.effect===1 || //basic hit
-						(ITR.effect===4 && hit[t].type==='specialattack' && hit[t].state()===3000)) //reflect all specialattacks with state: 3000, weapons fly away, has no influence on other characters
+					var canhit = true;
+					switch (ITR.effect)
+					{
+					case 0: case 1:
+						if( hit[t].type==='character' && hit[t].team===$.team) //cannot attack characters of same team
+							canhit = false;
+					break;
+					case 4:
+						if( !(hit[t].type!=='character' && hit[t].state()===3000)) //reflect all specialattacks with state: 3000, weapons fly away, has no influence on other characters
+							canhit = false;
+					break;
+					case 21: case 22: //burning
+						if( $.state()===18 && hit[t].team===$.team) //cannot burn teammates
+							canhit = false;
+					break;
+					}
+					if( ITR.kind===4)
+					{
+						if( $.itr.attacker.uid === hit[t].uid || //does not hit who blown you away
+							($.itr.attacker.parent && $.itr.attacker.parent.uid === hit[t].uid) || //specialattack
+							($.itr.attacker.hold && $.itr.attacker.hold.pre && $.itr.attacker.hold.pre.uid === hit[t].uid)) //weapon
+							canhit = false;
+					}
+					if( canhit)
 					if( !$.itr.arest)
 					if( $.attacked(hit[t].hit(ITR,$,{x:$.ps.x,y:$.ps.y,z:$.ps.z},vol)))
 					{	//hit you!

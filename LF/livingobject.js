@@ -249,7 +249,7 @@ function ( Global, Sprite, Mech, AI, util, Fsprite, Futil)
 			if( !$.dead)
 			{
 				$.state_update('die');
-				$.dead = true
+				$.dead = true;
 			}
 
 		if( $.bg.leaving($))
@@ -349,8 +349,7 @@ function ( Global, Sprite, Mech, AI, util, Fsprite, Futil)
 			var efid= num+GC.effect.num_to_id;
 			if( $.proper(efid,'oscillate'))
 				$.effect.oscillate=$.proper(efid,'oscillate');
-			if( $.proper(efid,'cant_move'))
-				$.effect.stuck=true;
+			$.effect.stuck=true;
 			if( dvx!==undefined)
 				$.effect.dvx = dvx;
 			if( dvy!==undefined)
@@ -368,17 +367,6 @@ function ( Global, Sprite, Mech, AI, util, Fsprite, Futil)
 				$.effect.timeout=duration;
 			}
 			$.effect.num = num;
-			if( $.proper(efid,'frame_transition'))
-			{
-				if( $.state()===$.proper(efid,'frame_transition_not_state'))
-					return;
-				$.trans.frame($.proper(efid,'frame_transition'), $.proper(efid,'frame_transition_power'), 99);
-			}
-			if( $.proper(efid,'sound'))
-			{
-				var sounds = Futil.make_array($.proper(efid,'sound'));
-				$.match.sound.play(sounds[Math.floor($.match.random()*sounds.length)]);
-			}
 		}
 	}
 
@@ -407,11 +395,12 @@ function ( Global, Sprite, Mech, AI, util, Fsprite, Futil)
 		$.match.visualeffect.create(efid,pos,variant,with_sound);
 	}
 
-	livingobject.prototype.brokeneffect_create=function(id)
+	livingobject.prototype.brokeneffect_create=function(id,num)
 	{
 		var $=this;
 		var static_body = $.vol_body()[0];
-		for( var i=0; i<8; i++)
+		if( !num) num = 8;
+		for( var i=0; i<num; i++)
 			$.match.brokeneffect.create(320,{x:$.ps.x,y:0,z:$.ps.z},id,i,static_body);
 	}
 
