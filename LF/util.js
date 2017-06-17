@@ -177,21 +177,26 @@ util.location_parameters=function()
 	return query;
 }
 
+/* the work to 'organize' the package is to create a 'pack' of dependency for each character.
+   because under the current lazy loading scheme, all specialattacks are not loaded initially,
+   instead are loaded only when a game starts and such data files are needed.
+   however there is no dependency syntax in the current data file structure,
+   such that we just guess by naive name matching.
+   this is the reason for the quirky henry_louis_rudolf_wind.js
+ */
 util.organize_package=function(package)
 {
 	for( var i=0; i<package.data.object.length; i++)
 	{
 		if( package.data.object[i].type==='character')
 		{
-			//if `deep.js` is of type character, select all files matching `deep_*`
+			//if `deep.js` is of type character, select all objects which `file` contains `deep`
 			var name = util.filename(package.data.object[i].file);
 			var objects = util.selectA_from(package.data.object,function(O){
 				if( !O.file) return false;
 				var file = util.filename(O.file);
 				if( file===name) return false;
-				if( file.lastIndexOf('_')!==-1)
-					file = file.slice(0,file.lastIndexOf('_'));
-				return file===name;
+				return file.indexOf(name)!==-1;
 			});
 			package.data.object[i].pack = objects; //each character has a specialattack pack
 		}

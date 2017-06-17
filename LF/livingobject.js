@@ -529,6 +529,7 @@ function ( Global, Sprite, Mech, AI, util, Fsprite, Futil)
 		//    35: blast
 		//    36: fire
 		//    38: ice
+		var switch_dir_after_trans; //a negative next value causes a switch dir after frame transition
 
 		this.frame=function(F,au)
 		{
@@ -589,6 +590,11 @@ function ( Global, Sprite, Mech, AI, util, Fsprite, Futil)
 				lockout=out;
 				if( out===99)
 					lockout=wait;
+				if( value<0)
+				{
+					value=-value;
+					switch_dir_after_trans=true;
+				}
 				next=value;
 			}
 		}
@@ -660,6 +666,7 @@ function ( Global, Sprite, Mech, AI, util, Fsprite, Futil)
 
 						$.state_update('state_entry');
 
+						if(!switch_dir_after_trans)
 						if( $.allow_switch_dir && !old_switch_dir)
 						{
 							if( $.con)
@@ -668,6 +675,12 @@ function ( Global, Sprite, Mech, AI, util, Fsprite, Futil)
 								if($.con.state.right) $.switch_dir('right');
 							}
 						}
+					}
+
+					if( switch_dir_after_trans)
+					{
+						switch_dir_after_trans=false;
+						$.switch_dir($.ps.dir==='right'?'left':'right');
 					}
 
 					$.frame_update();
