@@ -1390,7 +1390,8 @@ function(livingobject, Global, Fcombodec, Futil, util)
 		}
 		else if( ITR.kind===undefined || //default
 				 ITR.kind===0 || //normal
-				 ITR.kind===4) //falling
+				 ITR.kind===4 || //falling
+				 ITR.kind===9) //reflective shield
 		{
 			accepthit=true;
 			var compen = $.ps.y===0? 1:0; //magic compensation
