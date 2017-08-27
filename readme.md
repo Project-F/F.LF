@@ -2,7 +2,7 @@
 
 F.LF is an open source implementation of [LF2](http://lf2.net) engineered from the ground up (aka clean room implementation) for the modern web.
 
-![mobile-screenshot](http://lh3.googleusercontent.com/xyWjOFXTlezMzDldMqRIPshN7i9ez3VAXbdaW2t-t18=w1600)
+<img src="http://lh3.googleusercontent.com/xyWjOFXTlezMzDldMqRIPshN7i9ez3VAXbdaW2t-t18=w1600" width="600">
 
 ## Features
 - Cross platform HTML5: mobile & desktop
