@@ -15,6 +15,14 @@ F.LF is an open source implementation of [LF2](http://lf2.net) engineered from t
 - Scriptable and selectable AI
 - data files are converted from original dat to json in a similar format. so data changing concepts remain
 
+## Run F.LF 
+- [Video Tutorial: Run F.LF on Linux](https://www.youtube.com/watch?v=pdIfLtkQWZ0)
+- Here're the steps to run F.LF on Windows
+  - run the command: "git clone https://github.com/Project-F/F.LF"
+  - inside local F.LF folder, run the command "git clone https://github.com/Project-F/LF2_19", this will create LF2_19 on local for the required game asset.
+  - inside local F.LF folder, run the command "python -m SimpleHTTPServer" or any other web server you know. in my case, this web server ran at the port 8080 locally.
+  - go to http://localhost:8080/ or whatever local port your web server is using.
+
 ## About
 ![projectFlogo](https://lh3.googleusercontent.com/s-mgvVhKBx_3LSiyo-O5NMc642XSPXu6WAvK-7awdp8=w150)
 
