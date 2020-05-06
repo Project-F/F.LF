@@ -15,6 +15,16 @@ F.LF is an open source implementation of [LF2](http://lf2.net) engineered from t
 - Scriptable and selectable AI
 - data files are converted from original dat to json in a similar format. so data changing concepts remain
 
+## Install
+
+The two repositories [F.LF](https://github.com/Project-F/F.LF) and [LF2_19](https://github.com/Project-F/LF2_19), must be named and placed as below:
+
+```
+ F
+ |--F.LF
+ |--LF2_19
+ ```
+
 ## About
 ![projectFlogo](https://lh3.googleusercontent.com/s-mgvVhKBx_3LSiyo-O5NMc642XSPXu6WAvK-7awdp8=w150)
 
@@ -23,4 +33,4 @@ Project F has three ultimate goals:
 2. A codebase for more creativity
 3. Promote the fighter game genre and open source movement
 
-### Start reading the documentation on [projectf.hk](http://www.projectf.hk/F.LF/docs/project.html)
+### Start reading the documentation on [Project F](http://project-f.github.io/F.LF/docs/project.html)
