@@ -1661,14 +1661,18 @@ function Manager(package, buildinfo)
 					use:true,
 					name:'Player1',
 					type:'human',
-					selected:3,
+					selected:3, // Henry
+					// selected: 9, // Davis
+					// selected: 6, // Freeze
+					// selected: 5, // Firen
 					team:1
 				},
 				{
 					use:true,
 					name:'Player2',
 					type:'human',
-					selected:3,
+					// selected:3,
+					selected: 9, // Davis
 					team:2
 				}
 			],

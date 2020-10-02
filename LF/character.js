@@ -133,6 +133,8 @@ function(livingobject, Global, Fcombodec, Futil, util)
 				default:
 					//here is where D>A, D>J... etc handled
 					var tag = Global.combo_tag[K];
+					// console.log(tag)
+					// console.log($.frame.D[tag])
 					if( tag && $.frame.D[tag])
 					{
 						if( !$.id_update('generic_combo',K,tag))
@@ -1466,6 +1468,14 @@ function(livingobject, Global, Fcombodec, Futil, util)
 			$.effect_create( effectnum, vanish, ef_dvx, ef_dvy);
 			posteffect(effectnum);
 		}
+		else if (ITR.kind===10)
+		{
+			// console.log(rect)
+			inj = ITR.injury;
+			accepthit=true
+			$.trans.frame(182, 38);
+			$.flute_force(rect);
+		}
 		else if( ITR.kind===15)
 		{
 			$.whirlwind_force(rect);
@@ -1611,7 +1621,6 @@ function(livingobject, Global, Fcombodec, Futil, util)
 	{
 		var $=this;
 		var ITR_LIST=Futil.make_array($.trans.next_frame_D().itr);
-
 		for( var i in ITR_LIST)
 		{
 			var ITR=ITR_LIST[i]; //the itr tag in data
@@ -1619,6 +1628,8 @@ function(livingobject, Global, Fcombodec, Futil, util)
 			var vol=$.mech.volume(ITR);
 			vol.zwidth = 0;
 			var hit= $.scene.query(vol, $, {tag:'body'});
+			// console.log(vol)
+			// console.log(hit)
 
 			switch (ITR.kind)
 			{
@@ -1687,6 +1698,7 @@ function(livingobject, Global, Fcombodec, Futil, util)
 			攻擊時，會隨機指定其中一個itr的效果。
 			（在範圍有部份重複或是完全重複的部份才有隨機效果。）*/
 
+		// console.log("post_interaction", ITR_LIST)
 		for( var i in ITR_LIST)
 		{
 			var ITR=ITR_LIST[i]; //the itr tag in data
@@ -1695,6 +1707,8 @@ function(livingobject, Global, Fcombodec, Futil, util)
 			vol.zwidth = 0;
 			var hit= $.scene.query(vol, $, {tag:'body'});
 
+			// console.log("ITR: ", ITR)
+			// console.log("hit: ", hit)
 			switch (ITR.kind)
 			{
 			case 0: //normal attack
@@ -1720,6 +1734,7 @@ function(livingobject, Global, Fcombodec, Futil, util)
 							canhit = false;
 					break;
 					}
+
 					if( ITR.kind===4)
 					{
 						if( $.itr.attacker.uid === hit[t].uid || //does not hit who blown you away
@@ -1727,10 +1742,15 @@ function(livingobject, Global, Fcombodec, Futil, util)
 							($.itr.attacker.hold && $.itr.attacker.hold.pre && $.itr.attacker.hold.pre.uid === hit[t].uid)) //weapon
 							canhit = false;
 					}
+					// console.log(canhit)
+					// console.log(!$.itr.arest)
+					// console.log(hit[t].hit(ITR,$,{x:$.ps.x,y:$.ps.y,z:$.ps.z},vol))
+					// console.log($.attacked(hit[t].hit(ITR,$,{x:$.ps.x,y:$.ps.y,z:$.ps.z},vol)))
 					if( canhit)
 					if( !$.itr.arest)
 					if( $.attacked(hit[t].hit(ITR,$,{x:$.ps.x,y:$.ps.y,z:$.ps.z},vol)))
-					{	//hit you!
+					{
+						//hit you!
 						$.itr_arest_update(ITR);
 						//stalls
 						if( $.state_update('hit_stop'))
@@ -1748,6 +1768,24 @@ function(livingobject, Global, Fcombodec, Futil, util)
 
 						//attack one enemy only
 						if( ITR.arest) break;
+					}
+				}
+			break;
+			case 10:
+				for( var k in hit)
+				{
+					// console.log($.attacked(hit[k].hit(ITR,$,{x:$.ps.x,y:$.ps.y,z:$.ps.z},vol)))
+					if( !(hit[k].type==='character' && hit[k].team===$.team)) //cannot attack characters of same team
+					if( !$.itr.arest)
+					if( $.attacked(hit[k].hit(ITR,$,{x:$.ps.x,y:$.ps.y,z:$.ps.z},vol)))
+					{	//hit you!
+						// $.itr_arest_update(ITR_LIST);
+						// $.state_update('hit_others', ITR, hit[k]);
+						// if( ITR.arest)
+						// 	break; //attack one enemy only
+						// if( hit[k].type==='character' && ITR.kind===9)
+						// 	//hitting a character will cause shield to disintegrate immediately
+						// 	$.health.hp = 0;
 					}
 				}
 			break;

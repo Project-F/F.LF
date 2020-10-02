@@ -173,6 +173,25 @@ function ( Global, Sprite, Mech, AI, util, Fsprite, Futil)
 		}
 	}
 
+
+	livingobject.prototype.flute_force = function(rect)
+	{
+		var $=this;
+		//lift
+		// $.ps.y -= 5
+		var cy = rect.y;
+		$.ps.vy -= sign($.ps.y -cy)*2.4/$.mech.mass;
+
+		// var cx = rect.x+rect.vx+rect.w*0.5; //center
+		// $.ps.vx -= sign($.ps.x-cx)*2/$.mech.mass;
+		// $.ps.vz -= sign($.ps.z-cz)*0.5/$.mech.mass;
+
+		function sign(x)
+		{
+			return x>0?1:-1;
+		}
+	}
+
 	//update done at every TU (30fps)
 	livingobject.prototype.TU_update = function()
 	{
@@ -273,6 +292,10 @@ function ( Global, Sprite, Mech, AI, util, Fsprite, Futil)
 		var tar2=$.states[$.frame.D.state];
 		if( tar2) var res2=tar2.apply($,arguments);
 		//
+		// if (arguments[0] == "setup") {
+		// 	console.log("tar1: ", tar1)
+		// 	console.log("tar2: ", tar2)
+		// }
 		return res1 || res2;
 	}
 
@@ -533,7 +556,7 @@ function ( Global, Sprite, Mech, AI, util, Fsprite, Futil)
 
 		this.frame=function(F,au)
 		{
-			//console.log('frame', F, au, arguments.callee.caller.toString()) //trace caller
+			// console.log('frame', F, au, arguments.callee.caller.toString()) //trace caller
 			this.set_next(F,au);
 			this.set_wait(0,au);
 		}

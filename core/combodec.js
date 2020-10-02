@@ -152,6 +152,7 @@ combodec.prototype.key=function(K, down)
 			}
 			if( detected)
 			{
+				// console.log(C[i])
 				this.config.callback(C[i]);
 				if( C[i].clear_on_combo || (C[i].clear_on_combo!==false && this.config.clear_on_combo))
 					this.clear_seq();

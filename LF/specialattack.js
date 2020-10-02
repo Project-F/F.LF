@@ -15,6 +15,7 @@ var GC=Global.gameplay;
 	{
 		'generic':function(event,K)
 		{	var $=this;
+			// console.log("generic: ", event, K)
 			switch (event) {
 
 			case 'TU':
@@ -279,6 +280,7 @@ var GC=Global.gameplay;
 
 	specialattack.prototype.interaction=function()
 	{
+		// console.log("specialattack interaction")
 		var $=this;
 		var ITR=Futil.make_array($.frame.D.itr);
 

@@ -31,6 +31,7 @@ Global)
 		$.sound = config.manager.sound;
 		$.spec = $.data.properties.data;
 		$.time;
+		$.F6_mode = true // For debug
 	}
 
 	match.prototype.create=function(setting)
@@ -190,6 +191,7 @@ Global)
 			{
 				$.character[i].con.fetch();
 				$.character[i].combodec.frame();
+				// console.log($.character[i].combodec)
 			}
 			if( $.destroyed)
 				return;
@@ -415,6 +417,7 @@ Global)
 			$.panel[i].mp.set_w_h( $.data.UI.data.panel.mpw, $.data.UI.data.panel.mph);
 			$.panel[i].mp.set_bgcolor( $.data.UI.data.panel.mp_bright);
 		}
+		$.F7() // For debug
 	}
 
 	match.prototype.show_hp=function()
