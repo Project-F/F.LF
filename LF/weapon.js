@@ -119,7 +119,14 @@ function weapon(type)
 				if( $.frame.N === 20) //on_ground
 					$.team=0;
 			break;
-		}}
+		}},
+
+		'9998': function(event, K)
+		{
+			var $=this;
+			$.trans.frame(1000)
+		}
+
 	};
 
 	//inherit livingobject
@@ -153,6 +160,38 @@ function weapon(type)
 	typeweapon.prototype.init=function(T)
 	{
 		var $=this;
+		if( T.opoint.kind===1)
+		{
+			var pos = T.pos,
+				z = T.z,
+				parent_dir = T.dir,
+				opoint = T.opoint,
+				dvz = T.dvz;
+			var $=this;
+			$.parent = T.parent;
+			$.mech.set_pos(0,0,z);
+			$.mech.coincideXY(pos,$.mech.make_point($.frame.D,'center'));
+			var dir;
+			var face = opoint.facing;
+			if( face>=20)
+				face = face%10;
+			if( face===0)
+				dir=parent_dir;
+			else if( face===1)
+				dir=(parent_dir==='right'?'left':'right');
+			else if( 2<=face && face<=10)
+				dir='right';
+			else if(11<=face && face<=19) //adapted standard
+				dir='left';
+			$.switch_dir(dir);
+
+			$.trans.frame(T.opoint.action);
+			$.trans.trans();
+			$.ps.vx = $.dirh() * T.opoint.dvx;
+			$.ps.vy = T.opoint.dvy;
+			$.ps.vz = dvz;
+		}
+
 		if( T.opoint.kind===2)
 		{
 			T.parent.hold_weapon($);
@@ -221,6 +260,12 @@ function weapon(type)
 			return false;
 		if( $.itr.vrest[att.uid])
 			return false;
+
+		if( ITR.kind===10)
+		{
+			$.flute_force(rect);
+			return true;
+		}
 
 		if( ITR.kind===15)
 		{

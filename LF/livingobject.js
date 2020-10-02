@@ -173,7 +173,6 @@ function ( Global, Sprite, Mech, AI, util, Fsprite, Futil)
 		}
 	}
 
-
 	livingobject.prototype.flute_force = function(rect)
 	{
 		var $=this;
