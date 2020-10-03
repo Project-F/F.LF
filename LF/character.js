@@ -934,6 +934,14 @@ function(livingobject, Global, Fcombodec, Futil, util, AI)
 				$.effect.blink=true;
 				$.effect.super=true;
 			break;
+			case 'TU':
+				if ($.health.hp <= 0 && $.cloned) {
+					$.effect.timein=0;
+					$.effect.timeout=30;
+					$.effect.blink=true;
+					$.trans.frame(1000)
+				}
+			break;
 		}},
 
 		'15':function(event,K) //stop_running, crouch, crouch2, dash_attack, light_weapon_thw, heavy_weapon_thw, heavy_stop_run, sky_lgt_wp_thw
@@ -1091,7 +1099,24 @@ function(livingobject, Global, Fcombodec, Futil, util, AI)
 		'x':function(event,K)
 		{	var $=this;
 			switch (event) {
-		}}
+		}},
+
+		'1280': function(event, K) // Rudolf disappear
+		{
+			var $=this;
+			$.trans.set_next(999);
+
+			$.effect.timein=0;
+			$.effect.timeout=99;
+			$.effect.disappear = true
+
+			// Make clones disappear
+			for (i in $.clones) {
+				$.clones[i].effect.timein=0;
+				$.clones[i].effect.timeout=99;
+				$.clones[i].effect.disappear = true
+			}
+		}
 	};
 
 	var idupdates = //nasty fix (es)
@@ -1284,6 +1309,7 @@ function(livingobject, Global, Fcombodec, Futil, util, AI)
 		{
 			obj: null, //holding weapon
 		};
+		$.clones={} // only for Rudolf's clones
 		$.health.bdefend=0;
 		$.health.fall=0;
 		$.health.hp=$.health.hp_full=$.health.hp_bound= $.proper('hp') || GC.default.health.hp_full;
@@ -1299,7 +1325,7 @@ function(livingobject, Global, Fcombodec, Futil, util, AI)
 		};
 		$.trans.frame=function(next,au)
 		{
-			if( next===0 || next===999)
+			if( next===0 || next===999 || next===1000)
 			{
 				this.set_next(next,au);
 				this.set_wait(0,au);
@@ -1325,14 +1351,11 @@ function(livingobject, Global, Fcombodec, Futil, util, AI)
 	character.prototype.states = states;
 	character.prototype.states_switch_dir = states_switch_dir;
 
-	// character.prototype.init = function (T)
-	// {
-	// 	var $=this;
-	// 	// var pos=$.background.get_pos($.random(),$.random());
-	// 	this.set_pos( T.pos.x, T.pos.y, T.pos.z);
-	// 	// var uid = $.scene.add(char);
-	// 	// $.character[uid] = char;
-	// }
+	character.prototype.init = function (T)
+	{
+		var $=this;
+		this.set_pos( T.pos.x, T.pos.y, T.pos.z-50);
+	}
 
 	character.prototype.destroy = function()
 	{

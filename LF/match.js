@@ -64,7 +64,7 @@ Global)
 		}
 		$.overlay_message('loading');
 		$.tasks = []; //pending tasks
-		$.AIscript = [];
+		$.AIscript = {};
 		if( $.manager.summary)
 			$.manager.summary.hide();
 		$.manager.canvas.render();
@@ -238,7 +238,7 @@ Global)
 		$.check_gameover();
 		var AI_frameskip = 3; //AI script runs at a lower framerate, and is still very reactive
 		if( $.time.t%AI_frameskip===0)
-			for( var i=0; i<$.AIscript.length; i++)
+			for( var i in $.AIscript)
 				$.AIscript[i].TU();
 	}
 
@@ -290,21 +290,27 @@ Global)
 					team: T.team
 				};
 
-				obj = new factory[OBJ.type](config, OBJ.data, T.opoint.oid);
-				// var obj
-				// if (OBJ.type == "character") { // Rudolf replication
-				// 	config.controller = new AI.controller();
-				// 	var AIcontroller = util.select_from($.data.AI,{id: 3}).data; // dumbass
-				// 	// Need to fix lazy load
-				// 	obj = new factory[OBJ.type](config, OBJ.data, T.opoint.oid);
-				// 	$.AIscript.push(new AIcontroller(obj,$, config.controller));
-				// } else {
-				// 	obj = new factory[OBJ.type](config, OBJ.data, T.opoint.oid);
-				// }
-
-				obj.init(T);
-				var uid = $.scene.add(obj);
-				$[obj.type][uid] = obj;
+				if (OBJ.type == "character") { // Rudolf clone
+					var num_of_clone = 2
+					for (i=0; i<num_of_clone; i++) {
+						config.controller = new AI.controller();
+						var AIcontroller = util.select_from($.data.AI,{id: 2}).data; // challenger
+						var obj = new factory[OBJ.type](config, OBJ.data, T.opoint.oid);
+						obj.health.hp = 10
+						obj.cloned = true // Only for cloned character
+						obj.effect = Object.assign({}, T.parent.effect) // Use deep clone
+						obj.init(T);
+						var uid = $.scene.add(obj);
+						$[obj.type][uid] = obj;
+						$.AIscript[uid] = new AIcontroller(obj,$, config.controller);
+						T.parent.clones[uid] = obj
+					}
+				} else {
+					var obj = new factory[OBJ.type](config, OBJ.data, T.opoint.oid);
+					obj.init(T);
+					var uid = $.scene.add(obj);
+					$[obj.type][uid] = obj;
+				}
 			}
 		break;
 		case 'destroy_object':
@@ -312,6 +318,8 @@ Global)
 			obj.destroy();
 			var uid = $.scene.remove(obj);
 			delete $[obj.type][uid];
+			if (obj.type == "character") // Rudolf clone
+				delete $.AIscript[uid];
 		break;
 		}
 	}
@@ -347,16 +355,17 @@ Global)
 			var controller = setup_controller(player);
 			//create character
 			var char = new factory.character(char_config, pdata, player.id);
-			if( controller.type==='AIcontroller')
-			{
-				var AIcontroller = util.select_from($.data.AI,{id:player.controller.id}).data;
-				$.AIscript.push(new AIcontroller(char,$,controller));
-			}
 			//positioning
 			var pos=$.background.get_pos($.random(),$.random());
 			char.set_pos( pos.x, pos.y, pos.z);
 			var uid = $.scene.add(char);
 			$.character[uid] = char;
+			// Set AI
+			if( controller.type==='AIcontroller')
+			{
+				var AIcontroller = util.select_from($.data.AI,{id:player.controller.id}).data;
+				$.AIscript[uid] = new AIcontroller(char,$,controller);
+			}
 			//pane
 			if( $.panel)
 				create_pane(i);

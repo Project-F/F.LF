@@ -85,7 +85,8 @@ function ( Global, Sprite, Mech, AI, util, Fsprite, Futil)
 			super: false, //when an object is in state 'super', it does not return body volume, such that it cannot be hit
 			timein: 0, //time to take effect
 			timeout: 0, //time to lose effect
-			heal: undefined
+			heal: undefined,
+			disappear: false
 		};
 		$.catching= 0; //state 9: the object being caught by me now
 					//OR state 10: the object catching me now
@@ -225,6 +226,15 @@ function ( Global, Sprite, Mech, AI, util, Fsprite, Futil)
 				}
 				$.effect.bi++;
 			}
+			else if( $.effect.disappear)
+			{
+				$.sp.hide();
+				$.shadow.hide();
+				if ($.effect.timeout == 30) {
+					$.effect.blink = true
+				}
+			}
+
 			if( $.effect.timeout===0)
 			{
 				$.effect.num = -99;
@@ -242,6 +252,12 @@ function ( Global, Sprite, Mech, AI, util, Fsprite, Futil)
 					$.effect.blink = false;
 					$.effect.bi = undefined;
 					$.sp.show();
+				}
+				if( $.effect.disappear)
+				{
+					$.effect.disappear = false;
+					$.sp.show();
+					$.shadow.show();
 				}
 				if( $.effect.super)
 				{
@@ -282,7 +298,7 @@ function ( Global, Sprite, Mech, AI, util, Fsprite, Futil)
 			$.itr.arest--;
 	}
 
-	livingobject.prototype.state_update=function(event)
+	livingobject.prototype.state_update=function(event, next_state)
 	{
 		var $=this;
 		var tar1=$.states['generic'];
@@ -291,11 +307,10 @@ function ( Global, Sprite, Mech, AI, util, Fsprite, Futil)
 		var tar2=$.states[$.frame.D.state];
 		if( tar2) var res2=tar2.apply($,arguments);
 		//
-		// if (arguments[0] == "setup") {
-		// 	console.log("tar1: ", tar1)
-		// 	console.log("tar2: ", tar2)
+		var tar3=$.states[next_state];
+		if( tar3) var res3=tar3.apply($,arguments);
 		// }
-		return res1 || res2;
+		return res1 || res2 || res3;
 	}
 
 	livingobject.prototype.TU=function()
@@ -634,8 +649,10 @@ function ( Global, Sprite, Mech, AI, util, Fsprite, Futil)
 		this.next_frame_D=function()
 		{
 			var anext = next;
-			if( anext===999)
-				anext=0;
+			if( anext === 1280) // Rudolf disapear
+				return { itr: [] }; // Mocked frame
+			if( anext===999 || anext===1000)
+				anext = 0;
 			return $.data.frame[anext];
 		}
 
@@ -668,6 +685,12 @@ function ( Global, Sprite, Mech, AI, util, Fsprite, Futil)
 					$.frame.PN=$.frame.N;
 					$.frame.N=next;
 					$.state_update('frame_exit');
+
+					// frame 1280 for Rudolf disappear
+					if (next == 1280) {
+						$.state_update('frame', '1280');
+						return
+					}
 
 					//state transition
 					var is_trans = $.frame.D.state !== $.data.frame[next].state;

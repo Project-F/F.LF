@@ -17,7 +17,7 @@ define({
 		}
 		else if ( folder==='AI')
 		{
-			return true;
+			return false;
 		}
 		return false;
 	}
