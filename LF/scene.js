@@ -10,7 +10,7 @@
  | }
 \*/
 
-define(['core/util','core/collision'], function (Futil,Fcollision)
+define(['F.LF/core/util','F.LF/core/collision'], function (Futil,Fcollision)
 {
 
 function scene (config)

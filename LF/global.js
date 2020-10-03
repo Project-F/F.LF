@@ -5,7 +5,7 @@
  * 
  * note to data changers: tweak entries in this file very carefully. do not add or delete entries.
 \*/
-define(['LF/util'],function(util)
+define(['F.LF/LF/util'],function(util)
 {
 
 var G={};

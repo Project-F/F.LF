@@ -4,7 +4,7 @@
  * loader is a requirejs plugin that loads content packages
 \*/
 
-define(['LF/loader-config','LF/util','core/util'],function(loader_config,util,Futil){
+define(['F.LF/LF/loader-config','F.LF/LF/util','F.LF/core/util'],function(loader_config,util,Futil){
 
 	return {
 		load: function (name, require, load, config)

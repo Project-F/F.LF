@@ -10,10 +10,10 @@ requirejs.config(
 	}
 });
 
-requirejs(['LF/sprite-select','core/util','core/math','core/resourcemap',
-'LF/sprite','LF/match','LF/soundpack','LF/loader!'+flf_config.package,'LF/global','LF/util',
-'test_cases',
-'core/css!tools/tools.css'],
+requirejs(['F.LF/LF/sprite-select','F.LF/core/util','F.LF/core/math','F.LF/core/resourcemap',
+'F.LF/LF/sprite','F.LF/LF/match','F.LF/LF/soundpack','F.LF/LF/loader!'+flf_config.package,'F.LF/LF/global','F.LF/LF/util',
+'F.LF/test_cases',
+'F.LF/core/css!F.LF/tools/tools.css'],
 function(Fsprite,Futil,Fmath,Fresourcemap,
 Sprite,Match,Soundpack,package,global,util,
 test_cases){

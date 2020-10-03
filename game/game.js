@@ -16,9 +16,9 @@ if( document.getElementById('flf-config'))
 	});
 }
 
-requirejs(['core/support',
-'LF/loader!'+flf_config.package,'LF/manager',
-'LF/util','./buildinfo.js','core/css!LF/application.css'],
+requirejs(['F.LF/core/support',
+'F.LF/LF/loader!'+flf_config.package,'F.LF/LF/manager',
+'F.LF/LF/util','F.LF/game/buildinfo.js','F.LF/core/css!F.LF/LF/application.css'],
 function(Fsupport,
 package,Manager,
 util,buildinfo){

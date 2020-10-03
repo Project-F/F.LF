@@ -3,7 +3,7 @@
  * - DOM implementation: display sprites on page using `<div>` and `<img>` tag
  * - support CSS style left/top and 2d and 3d transform, depending on browser support
 \*/
-define(['core/css!core/style.css','core/support','core/resourcemap','module'],
+define(['F.LF/core/css!F.LF/core/style.css','F.LF/core/support','F.LF/core/resourcemap','module'],
 function(css_loaded,support,resourcemap,module)
 {
 

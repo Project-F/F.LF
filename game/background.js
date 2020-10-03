@@ -18,19 +18,19 @@ requirejs.config({
 });
 
 requirejs([
-'LF/global',
-'LF/sprite-select',
-'LF/background',
-'core/css!LF/application.css',
-'../LF2_19/bg/hkc/bg',
-'../LF2_19/bg/lf/bg',
-'../LF2_19/bg/sp/bg',
-'../LF2_19/bg/gw/bg',
-'../LF2_19/bg/qi/bg',
-'../LF2_19/bg/ft/bg',
-'../LF2_19/bg/cuhk/bg',
-'../LF2_19/bg/thv/bg',
-'../LF2_19/bg/template/bg'
+'F.LF/LF/global',
+'F.LF/LF/sprite-select',
+'F.LF/LF/background',
+'F.LF/core/css!F.LF/LF/application.css',
+'LF2_19/bg/hkc/bg',
+'LF2_19/bg/lf/bg',
+'LF2_19/bg/sp/bg',
+'LF2_19/bg/gw/bg',
+'LF2_19/bg/qi/bg',
+'LF2_19/bg/ft/bg',
+'LF2_19/bg/cuhk/bg',
+'LF2_19/bg/thv/bg',
+'LF2_19/bg/template/bg'
 ],function(global,Fsprite,background)
 {
 	for( var i=4; i<arguments.length; i++)

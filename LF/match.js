@@ -4,9 +4,9 @@
  * a match is a generalization above game modes (e.g. VSmode, stagemode, battlemode)
 \*/
 
-define(['core/util','core/controller','LF/sprite-select',
-'LF/network','LF/factories','LF/scene','LF/background','LF/AI','third_party/random','LF/util',
-'LF/global'],
+define(['F.LF/core/util','F.LF/core/controller','F.LF/LF/sprite-select',
+'F.LF/LF/network','F.LF/LF/factories','F.LF/LF/scene','F.LF/LF/background','F.LF/LF/AI','F.LF/third_party/random','F.LF/LF/util',
+'F.LF/LF/global'],
 function(Futil,Fcontroller,Fsprite,
 network,factory,Scene,Background,AI,Random,util,
 Global)
@@ -289,7 +289,19 @@ Global)
 					match: $,
 					team: T.team
 				};
-				var obj = new factory[OBJ.type](config, OBJ.data, T.opoint.oid);
+
+				obj = new factory[OBJ.type](config, OBJ.data, T.opoint.oid);
+				// var obj
+				// if (OBJ.type == "character") { // Rudolf replication
+				// 	config.controller = new AI.controller();
+				// 	var AIcontroller = util.select_from($.data.AI,{id: 3}).data; // dumbass
+				// 	// Need to fix lazy load
+				// 	obj = new factory[OBJ.type](config, OBJ.data, T.opoint.oid);
+				// 	$.AIscript.push(new AIcontroller(obj,$, config.controller));
+				// } else {
+				// 	obj = new factory[OBJ.type](config, OBJ.data, T.opoint.oid);
+				// }
+
 				obj.init(T);
 				var uid = $.scene.add(obj);
 				$[obj.type][uid] = obj;

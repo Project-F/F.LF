@@ -3,7 +3,7 @@
  * application layer
 \*/
 
-define(['core/network'],function(Fnetwork)
+define(['F.LF/core/network'],function(Fnetwork)
 {
 	//local[i] in peer A will be mapped to remote[i] in peer B
 	var local = [],

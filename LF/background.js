@@ -1,4 +1,4 @@
-define(['core/util','LF/sprite-select','core/support','LF/global'],function(Futil,Fsprite,Fsupport,global)
+define(['F.LF/core/util','F.LF/LF/sprite-select','F.LF/core/support','F.LF/LF/global'],function(Futil,Fsprite,Fsupport,global)
 {
 	var GA = global.application;
 

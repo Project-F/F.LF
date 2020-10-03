@@ -3,7 +3,7 @@
  * sound spriting and effects management
 \*/
 
-define(['core/effects-pool'],function(Feffects)
+define(['F.LF/core/effects-pool'],function(Feffects)
 {
 	var basic_support = !!(document.createElement('audio').canPlayType);
 	

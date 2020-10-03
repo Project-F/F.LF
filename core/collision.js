@@ -7,7 +7,7 @@
  * [example](../sample/collision.html)
 \*/
 
-define(['core/math'], function(Fm)
+define(['F.LF/core/math'], function(Fm)
 {
 
 return {

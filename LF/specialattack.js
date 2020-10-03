@@ -2,7 +2,7 @@
  * special attack
 \*/
 
-define(['LF/livingobject','LF/global','core/util'],
+define(['F.LF/LF/livingobject','F.LF/LF/global','F.LF/core/util'],
 function(livingobject, Global, Futil)
 {
 var GC=Global.gameplay;

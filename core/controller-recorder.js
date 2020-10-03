@@ -1,4 +1,4 @@
-define(['core/util'],function(F) //exports 2 classes `control_recorder` and `control_player` in an object
+define(['F.LF/core/util'],function(F) //exports 2 classes `control_recorder` and `control_player` in an object
 {
 
 /*\

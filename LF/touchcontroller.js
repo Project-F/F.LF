@@ -3,7 +3,7 @@
  * 
  * touch controller for LF2
 \*/
-define(['LF/util'],function(util)
+define(['F.LF/LF/util'],function(util)
 {
 	var controllers=[];
 	var touches=[], eventtype;

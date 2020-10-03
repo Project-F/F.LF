@@ -6,7 +6,7 @@
  *	- objects are being created on every call of `body`
 \*/
 
-define(['LF/global'],
+define(['F.LF/LF/global'],
 function(Global){
 
 var GC=Global.gameplay;

@@ -3,7 +3,7 @@
  * support AI scripting
 \*/
 
-define(['core/util'],
+define(['F.LF/core/util'],
 function(Futil)
 {
 	/*\

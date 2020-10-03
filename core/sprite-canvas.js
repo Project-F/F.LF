@@ -3,7 +3,7 @@
  * - use canvas to render sprites
  * - (mostly) compatible with sprite-dom
 \*/
-define(['core/resourcemap','module'],
+define(['F.LF/core/resourcemap','module'],
 function(resourcemap,module)
 {
 

@@ -3,7 +3,7 @@
  * 
  * a base class for all living objects
 \*/
-define(['LF/global','LF/sprite','LF/mechanics','LF/AI','LF/util','LF/sprite-select','core/util'],
+define(['F.LF/LF/global','F.LF/LF/sprite','F.LF/LF/mechanics','F.LF/LF/AI','F.LF/LF/util','F.LF/LF/sprite-select','F.LF/core/util'],
 function ( Global, Sprite, Mech, AI, util, Fsprite, Futil)
 {
 	var GC=Global.gameplay;

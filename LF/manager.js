@@ -1,5 +1,5 @@
-define(['LF/global','LF/network','LF/soundpack','LF/match','LF/util','LF/touchcontroller','third_party/random',
-'core/util','LF/sprite-select','core/sprite-dom','core/animator','core/controller','core/resourcemap','core/support'],
+define(['F.LF/LF/global','F.LF/LF/network','F.LF/LF/soundpack','F.LF/LF/match','F.LF/LF/util','F.LF/LF/touchcontroller','F.LF/third_party/random',
+'F.LF/core/util','F.LF/LF/sprite-select','F.LF/core/sprite-dom','F.LF/core/animator','F.LF/core/controller','F.LF/core/resourcemap','F.LF/core/support'],
 function(global,network,Soundpack,Match,util,Touchcontroller,Random,
 Futil,Fsprite,Fsprite_dom,Fanimator,Fcontroller,Fresourcemap,Fsupport)
 {
@@ -25,7 +25,7 @@ function Manager(package, buildinfo)
 	
 	this.create=function()
 	{
-		require(['core/css!'+package.path+'UI/UI.css'],function(){});
+		require(['F.LF/core/css!'+package.path+'UI/UI.css'],function(){});
 		
 		//window sizing
 		window_state=
@@ -1662,6 +1662,7 @@ function Manager(package, buildinfo)
 					name:'Player1',
 					type:'human',
 					selected:3, // Henry
+					// selected:3, // Henry
 					// selected: 9, // Davis
 					// selected: 6, // Freeze
 					// selected: 5, // Firen

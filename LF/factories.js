@@ -7,7 +7,7 @@
  * this abstraction is to allow addition of new object types.
 \*/
 
-define(['LF/character','LF/weapon','LF/specialattack','LF/effect'],
+define(['F.LF/LF/character','F.LF/LF/weapon','F.LF/LF/specialattack','F.LF/LF/effect'],
 function(character,weapon,specialattack,effect)
 {
 	/** to manufacture an object a factory receives a config, `id` and `data`

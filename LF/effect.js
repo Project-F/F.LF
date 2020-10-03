@@ -5,7 +5,7 @@
  * like blood, fire, etc
 \*/
 
-define(['LF/global','LF/sprite','core/effects-pool','core/util'],
+define(['F.LF/LF/global','F.LF/LF/sprite','F.LF/core/effects-pool','F.LF/core/util'],
 function ( Global, Sprite, Feffects_pool, Futil)
 {
 

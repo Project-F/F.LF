@@ -3,7 +3,7 @@
  * 
  * sprite-animator for LF2
 \*/
-define(['LF/sprite-select','core/animator'], function (Fsprite, Fanimator)
+define(['F.LF/LF/sprite-select','F.LF/core/animator'], function (Fsprite, Fanimator)
 {
 
 /*\

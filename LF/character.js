@@ -1,8 +1,8 @@
 /**	a LF2 character
  */
 
-define(['LF/livingobject','LF/global','core/combodec','core/util','LF/util'],
-function(livingobject, Global, Fcombodec, Futil, util)
+define(['F.LF/LF/livingobject','F.LF/LF/global','F.LF/core/combodec','F.LF/core/util','F.LF/LF/util', 'F.LF/LF/AI'],
+function(livingobject, Global, Fcombodec, Futil, util, AI)
 {
 	var GC=Global.gameplay;
 
@@ -1324,7 +1324,16 @@ function(livingobject, Global, Fcombodec, Futil, util)
 	character.prototype.type = 'character';
 	character.prototype.states = states;
 	character.prototype.states_switch_dir = states_switch_dir;
-	
+
+	// character.prototype.init = function (T)
+	// {
+	// 	var $=this;
+	// 	// var pos=$.background.get_pos($.random(),$.random());
+	// 	this.set_pos( T.pos.x, T.pos.y, T.pos.z);
+	// 	// var uid = $.scene.add(char);
+	// 	// $.character[uid] = char;
+	// }
+
 	character.prototype.destroy = function()
 	{
 		var $=this;
