@@ -1,8 +1,8 @@
 /**	a LF2 character
  */
 
-define(['F.LF/LF/livingobject','F.LF/LF/global','F.LF/core/combodec','F.LF/core/util','F.LF/LF/util', 'F.LF/LF/AI'],
-function(livingobject, Global, Fcombodec, Futil, util, AI)
+define(['F.LF/LF/livingobject','F.LF/LF/global','F.LF/core/combodec','F.LF/core/util','F.LF/LF/util', 'F.LF/LF/AI', 'F.LF/LF/sprite'],
+function(livingobject, Global, Fcombodec, Futil, util, AI, Sprite)
 {
 	var GC=Global.gameplay;
 
@@ -133,8 +133,6 @@ function(livingobject, Global, Fcombodec, Futil, util, AI)
 				default:
 					//here is where D>A, D>J... etc handled
 					var tag = Global.combo_tag[K];
-					// console.log(tag)
-					// console.log($.frame.D[tag])
 					if( tag && $.frame.D[tag])
 					{
 						if( !$.id_update('generic_combo',K,tag))
@@ -701,6 +699,16 @@ function(livingobject, Global, Fcombodec, Futil, util, AI)
 						return 1;
 					}
 				break;
+				default:
+					var tag = Global.combo_tag[K];
+					if( tag && $.frame.D[tag])
+					{
+						if (!$.id_update("state9_combo", K, tag))
+						{
+							// Do nothing
+						}
+					}
+				break;
 			}
 			break;
 		}},
@@ -1150,6 +1158,34 @@ function(livingobject, Global, Fcombodec, Futil, util, AI)
 						$.switch_dir('left');
 				}
 			break;
+			}
+		},
+		'5': function(event,K,tag) //Rudolf
+		{
+			var $=this;
+			switch (event)
+			{
+				case 'generic_combo':
+					// Do nothing
+					return 1
+				break;
+				case 'state9_combo':
+					if( tag==='hit_ja') //Transform
+					{
+						$.trans.frame($.frame.D[tag]);
+						console.log("transform")
+						var id = 10
+						var OBJ = util.select_from($.match.data.object,{id: id});
+						console.log(OBJ)
+
+						$.data = OBJ.data
+						$.sp = new Sprite(OBJ.data.bmp, $.match.stage);
+						$.sp.width = OBJ.data.bmp.file[0].w;
+
+						$.trans.frame(999)
+						return 1;
+					}
+				break;
 			}
 		},
 		'6': function(event,K,tag) //Louis
