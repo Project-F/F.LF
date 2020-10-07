@@ -1,8 +1,8 @@
 /**	a LF2 character
  */
 
-define(['F.LF/LF/livingobject','F.LF/LF/global','F.LF/core/combodec','F.LF/core/util','F.LF/LF/util', 'F.LF/LF/AI', 'F.LF/LF/sprite'],
-function(livingobject, Global, Fcombodec, Futil, util, AI, Sprite)
+define(['F.LF/LF/livingobject','F.LF/LF/global','F.LF/core/combodec','F.LF/core/util','F.LF/LF/util', 'F.LF/LF/AI'],
+function(livingobject, Global, Fcombodec, Futil, util, AI)
 {
 	var GC=Global.gameplay;
 
@@ -133,13 +133,27 @@ function(livingobject, Global, Fcombodec, Futil, util, AI, Sprite)
 				default:
 					//here is where D>A, D>J... etc handled
 					var tag = Global.combo_tag[K];
+
+					if ($.is_copied && tag==='hit_ja') {
+						// Transform back to Rudolf
+						var uid = $.rudolf_uid;
+						var char = newCharFrom($, 5);
+						$.match.character[uid] = char;
+						char.trans.frame(245);
+						return 1;
+					}
+
 					if( tag && $.frame.D[tag])
 					{
+						// Check if the character is transformed from Rudolf
+						
 						if( !$.id_update('generic_combo',K,tag))
 						{
 							$.trans.frame($.frame.D[tag], 11);
 							return 1;
 						}
+					} else {
+						return 1; // For reset combo.buffer
 					}
 				}
 			break;
@@ -604,6 +618,9 @@ function(livingobject, Global, Fcombodec, Futil, util, AI, Sprite)
 					case 233: case 234:
 					$.trans.inc_wait(-1);
 					break;
+					case 240: case 298: // Rudolf's transform
+						$.id_update("state9_frame");
+					break;
 				}
 				if( $.catching && $.frame.D.cpoint)
 					$.catching.caught_b(
@@ -612,6 +629,7 @@ function(livingobject, Global, Fcombodec, Futil, util, AI, Sprite)
 						$.ps.dir,
 						$.dirv()
 					);
+				
 			break;
 
 			case 'TU':
@@ -706,6 +724,7 @@ function(livingobject, Global, Fcombodec, Futil, util, AI, Sprite)
 						if (!$.id_update("state9_combo", K, tag))
 						{
 							// Do nothing
+							return 1
 						}
 					}
 				break;
@@ -1124,6 +1143,17 @@ function(livingobject, Global, Fcombodec, Futil, util, AI, Sprite)
 				$.clones[i].effect.timeout=99;
 				$.clones[i].effect.disappear = true
 			}
+		},
+
+		'501': function(event, K) //Rudolf transform
+		{
+			var $=this;
+			var ruid = $.rudolf_uid
+			var char = newCharFrom($, $.copied_oid);
+
+			// Assign new char to the same uid
+			$.match.character[ruid] = char;
+			$.trans.frame(999);
 		}
 	};
 
@@ -1166,25 +1196,44 @@ function(livingobject, Global, Fcombodec, Futil, util, AI, Sprite)
 			switch (event)
 			{
 				case 'generic_combo':
-					// Do nothing
-					return 1
+					if( tag==='hit_ja') { //Transform
+						// Check if there is already a copied_oid
+						if ($.copied_oid) {
+							$.trans.frame($.frame.D[tag]);
+						}
+						return 1
+					}
 				break;
 				case 'state9_combo':
 					if( tag==='hit_ja') //Transform
 					{
 						$.trans.frame($.frame.D[tag]);
-						console.log("transform")
-						var id = 10
-						var OBJ = util.select_from($.match.data.object,{id: id});
-						console.log(OBJ)
-
-						$.data = OBJ.data
-						$.sp = new Sprite(OBJ.data.bmp, $.match.stage);
-						$.sp.width = OBJ.data.bmp.file[0].w;
-
-						$.trans.frame(999)
 						return 1;
 					}
+				break;
+				case 'state9_frame':
+					// Get ID of caught character
+					var oid = $.scene.query(null, $, {
+						type:'character',
+						sort:'distance'
+					})[0].id;
+
+					// Store copied oid
+					$.copied_oid = oid
+
+					// Store Rudolf's original uid
+					if (!$.rudolf_uid) {
+						$.rudolf_uid = $.uid
+					}
+
+					var ruid = $.rudolf_uid // scene.remove() in newCharFrom() will change uid, so we need to get the value first
+					var char = newCharFrom($, oid);
+
+					// Assign new char to the same uid
+					$.match.character[ruid] = char;
+					$.trans.frame(999);
+
+					return 1;
 				break;
 			}
 		},
@@ -1251,6 +1300,53 @@ function(livingobject, Global, Fcombodec, Futil, util, AI, Sprite)
 		'15':false,
 		'16':false
 	};
+
+	// Rudolf's Transform Util
+	function newCharFrom(oldChar, oid) {
+		var ps_x = oldChar.ps.x;
+		var ps_y = oldChar.ps.y;
+		var ps_z = oldChar.ps.z;
+		var hp = oldChar.health.hp;
+		var mp = oldChar.health.mp;
+		var clones = oldChar.clones;
+		var copied_oid = oldChar.copied_oid;
+		var ruid = oldChar.rudolf_uid;
+
+		var char_config =
+		{
+			match: oldChar.match,
+			controller: oldChar.con,
+			team: oldChar.team
+		}
+
+		var player_obj = util.select_from(oldChar.match.data.object,{ id: oid });
+		var pdata = player_obj.data;
+
+		// Remove old char sprite
+		oldChar.scene.remove(oldChar);
+		oldChar.sp.sp.remove();
+		oldChar.shadow.remove();
+
+		// Create new char
+		var char = new character(char_config, pdata, oid);
+		char.set_pos( ps_x, ps_y, ps_z);
+		oldChar.scene.add(char);
+		char.health.hp = hp;
+		char.health.mp = mp;
+
+		// Assign clone and copy properties
+		char.clones = clones;
+		char.rudolf_uid = ruid;
+		char.copied_oid = copied_oid;
+
+		if (oid == 5) { // Transform back to Rudolf
+			char.is_copied = false;
+		} else {
+			char.is_copied = true;
+		}
+
+		return char;
+	}
 
 	//inherit livingobject
 	function character(config,data,thisID)
@@ -1346,6 +1442,9 @@ function(livingobject, Global, Fcombodec, Futil, util, AI, Sprite)
 			obj: null, //holding weapon
 		};
 		$.clones={} // only for Rudolf's clones
+		$.is_copied=false // only for Rudulf's transform
+		$.rudolf_uid=null // only for Rudulf's transform
+		$.copied_oid=null // only for Rudulf's transform
 		$.health.bdefend=0;
 		$.health.fall=0;
 		$.health.hp=$.health.hp_full=$.health.hp_bound= $.proper('hp') || GC.default.health.hp_full;
@@ -1430,7 +1529,9 @@ function(livingobject, Global, Fcombodec, Futil, util, AI, Sprite)
 		else
 			if( res1 || res2 || //do not store if returned true
 				K==='left' || K==='right' || K==='up' || K==='down') //dir combos are not persistent
-				$.combo_buffer.combo = null;
+				{
+					$.combo_buffer.combo = null;
+				}
 	}
 
 	/** @protocol caller hits callee
@@ -1688,6 +1789,7 @@ function(livingobject, Global, Fcombodec, Futil, util, AI, Sprite)
 	character.prototype.pre_interaction=function()
 	{
 		var $=this;
+		// console.log($.trans.next_frame_D())
 		var ITR_LIST=Futil.make_array($.trans.next_frame_D().itr);
 		for( var i in ITR_LIST)
 		{
