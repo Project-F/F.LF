@@ -1023,6 +1023,14 @@ function(livingobject, Global, Fcombodec, Futil, util)
 			break;
 		}},
 
+		'19':function(event,K) //firen specific
+		{	var $=this;
+			switch (event) {
+			case 'TU':
+				$.ps.vz=$.dirv()*($.data.bmp.running_speedz);
+			break;
+		}},
+
 		'301':function(event,K) //deep specific
 		{	var $=this;
 			switch (event) {
