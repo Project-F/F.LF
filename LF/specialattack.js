@@ -274,7 +274,7 @@ var GC=Global.gameplay;
 
 		$.ps.vx = $.dirh() * opoint.dvx;
 		$.ps.vy = opoint.dvy;
-		$.ps.vz = dvz;
+		$.ps.vz = $.frame.D.dvx ? dvz : 0;
 	}
 
 	specialattack.prototype.interaction=function()
