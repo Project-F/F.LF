@@ -144,6 +144,12 @@ var GC=Global.gameplay;
 						return true;
 					}
 				}
+				if( att.state()===19) //firerun destroys 3000 projectiles
+				{
+					$.ps.vx = 0;
+					$.trans.frame(20); //hit
+					return true;
+				}
 				if( ITR.kind===0 ||
 					ITR.kind===9) //itr:kind:9 can deflect all balls
 				{

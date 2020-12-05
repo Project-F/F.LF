@@ -1417,6 +1417,10 @@ function(livingobject, Global, Fcombodec, Futil, util)
 		{
 			//lying
 		}
+		else if( $.state()===19 && att.state()===3000)
+		{
+			return false; //firerun
+		}
 		else if( ITR.kind===undefined || //default
 				 ITR.kind===0 || //normal
 				 ITR.kind===4 || //falling
@@ -1432,7 +1436,7 @@ function(livingobject, Global, Fcombodec, Futil, util)
 			if( $.state()===13 && effectnum===30) //frozen characters are immune to effect 30 'weak ice'
 				return false;
 
-			if( $.state()===18 && (effectnum===20 || effectnum===21)) //burning characters are immune to effect 20/21 'weak fire'
+			if( ($.state()===18 || $.state()===19) && (effectnum===20 || effectnum===21)) //burning and firerun characters are immune to effect 20/21 'weak fire'
 				return false;
 
 			if( $.state()===7 && //defend
