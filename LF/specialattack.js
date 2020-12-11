@@ -102,11 +102,12 @@ var GC=Global.gameplay;
 			switch (event) {
 
 			case 'hit_others':
+				//check if att is ice or fire
 				if( ITR.effect===3 && att.type==='specialattack' && att.state()===3000 && att.frame.D.itr.effect!==3 && att.frame.D.itr.effect!==2)
 					//freeze ball hit another non freeze ball
 					return;
 				if( ITR.effect!==3 && ITR.effect!==2 && att.type==='specialattack' && att.frame.D.itr.effect===3)
-				{	//non freeze ball hit another freeze ball
+				{	//non freeze or fire ball hit another freeze ball
 					$.ps.vx = 0;
 					$.trans.frame(1000);
 					$.match.create_object({kind: 1, x: 41, y: 50, action: 0, dvx: 0, dvy: 0, oid: 209, facing: 0}, att);
@@ -125,13 +126,14 @@ var GC=Global.gameplay;
 				if( att.team===$.team && att.ps.dir===$.ps.dir)
 					//can only attack objects of same team if head on collide
 					return false;
+				//check if att is ice or fire
 				if( $.frame.D.itr.effect===3 && att.type==='specialattack' && att.state()===3000 && att.frame.D.itr.effect!==3 && att.frame.D.itr.effect!==2)
 					//freeze ball hit by non freeze ball
 					return true;
 				if( att.type==='specialattack')
 				{
 					if( $.frame.D.itr.effect!==3 && $.frame.D.itr.effect!==2 && ITR.effect===3)
-					{	//non freeze ball hit by freeze ball
+					{	//non freeze or fire ball hit by freeze ball
 						$.ps.vx = 0;
 						$.trans.frame(1000);
 						$.match.create_object({kind: 1, x: 41, y: 50, action: 0, dvx: 0, dvy: 0, oid: 209, facing: 0}, att);
