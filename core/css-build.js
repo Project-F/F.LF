@@ -34,7 +34,7 @@ define(function() {
 
 		write: function (pluginName, moduleName, write, config) {
 
-			if( !writeonce)
+			if (!writeonce)
 			{
 				writeonce=true;
 				write(

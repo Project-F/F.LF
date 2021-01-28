@@ -56,14 +56,14 @@ define(function()
 	 - (string) if supported, style property name with correct prefix
 	 [ property ]
 	 * you can do something like
-	 | if( support.css2dtransform)
+	 | if (support.css2dtransform)
 	 |		element.style[support.css2dtransform]= 'translate('+P.x+'px,'+P.y+'px) ';
 	\*/
 	/*\
 	 * support.css3dtransform
 	 - (string) if supported, style property name with correct prefix
 	 [ property ]
-	 | if( support.css3dtransform)
+	 | if (support.css3dtransform)
 	 | 	this.el.style[support.css3dtransform]= 'translate3d('+P.x+'px,'+P.y+'px, 0px) ';
 	\*/
 	/*\
@@ -127,18 +127,18 @@ define(function()
 
 		for(t in transforms)
 		{
-			if( el.style[t] !== undefined )
+			if (el.style[t] !== undefined )
 			{
 				var str;
 				str = 'matrix(1, 0, 0, 1, 0, 0)';
 				el.style[t] = str;
-				if( str===window.getComputedStyle(el).getPropertyValue( transforms[t] ))
+				if (str===window.getComputedStyle(el).getPropertyValue( transforms[t] ))
 					support.css2dtransform= t;
 
 				str = 'matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1)'
 				el.style[t] = str;
-				//if( str===window.getComputedStyle(el).getPropertyValue( transforms[t] ))
-				if( window.getComputedStyle(el).getPropertyValue( transforms[t] ).indexOf('matrix3d')===0)
+				//if (str===window.getComputedStyle(el).getPropertyValue( transforms[t] ))
+				if (window.getComputedStyle(el).getPropertyValue( transforms[t] ).indexOf('matrix3d')===0)
 					support.css3dtransform= t;
 			}
 		}

@@ -36,10 +36,10 @@ function Manager(package, buildinfo)
 		};
 		function onresize()
 		{
-			if( window.innerWidth<global.application.window.outer_width ||
+			if (window.innerWidth<global.application.window.outer_width ||
 				window.innerHeight<global.application.window.outer_height )
 			{
-				if( !window_state.maximized)
+				if (!window_state.maximized)
 				{
 					util.div('maximize_button').onclick();
 				}
@@ -59,16 +59,16 @@ function Manager(package, buildinfo)
 		}
 		util.div('maximize_button').onclick=function()
 		{
-			if( Fsupport.css2dtransform)
+			if (Fsupport.css2dtransform)
 			{
-				if( window.innerWidth < 400 || window.innerHeight < 400)
+				if (window.innerWidth < 400 || window.innerHeight < 400)
 				{
 					var fullscreen = getFeature(document.body, 'requestFullscreen');
 					var fullscreen_state = getFeature(document, 'fullscreenElement');
 				}
-				if( !window_state.maximized || (fullscreen && !fullscreen_state))
+				if (!window_state.maximized || (fullscreen && !fullscreen_state))
 				{
-					if( fullscreen)
+					if (fullscreen)
 						fullscreen();
 					window_state.maximized=true;
 					document.body.style.background = manager.UI_list[manager.active_UI].bgcolor || '#676767';
@@ -80,7 +80,7 @@ function Manager(package, buildinfo)
 				else
 				{
 					var exit_fullscreen = getFeature(document, 'exitFullscreen');
-					if( exit_fullscreen)
+					if (exit_fullscreen)
 						exit_fullscreen();
 					this.firstChild.innerHTML='&#9723;';
 					util.container.classList.remove('maximized');
@@ -88,11 +88,11 @@ function Manager(package, buildinfo)
 					document.body.style.background='';
 					resizer(1);
 					window_state.maximized=false;
-					if( window_state.wide)
+					if (window_state.wide)
 					{
 						window_state.wide=false;
 						util.container.classList.remove('wideWindow');
-						if( util.div('canvas').width)
+						if (util.div('canvas').width)
 						{
 							var owidth = global.application.window.width;
 							util.div('canvas').width = owidth;
@@ -151,16 +151,16 @@ function Manager(package, buildinfo)
 			},
 			support_sound:false
 		};
-		if( Fsupport.localStorage)
+		if (Fsupport.localStorage)
 		{
-			if( Fsupport.localStorage.getItem('F.LF/settings'))
+			if (Fsupport.localStorage.getItem('F.LF/settings'))
 			{
 				var obj = JSON.parse(Fsupport.localStorage.getItem('F.LF/settings'));
-				if( obj.version===settings_format_version)
+				if (obj.version===settings_format_version)
 					settings = obj;
 			}
 		}
-		for( var i=0; i<settings.player.length; i++)
+		for (var i=0; i<settings.player.length; i++)
 		{
 			session.player[i] = settings.player[i];
 		}
@@ -199,7 +199,7 @@ function Manager(package, buildinfo)
 			length: 2,
 			my_offset: 0
 		};
-		for( var i=0; i<session.control.length; i++)
+		for (var i=0; i<session.control.length; i++)
 		{
 			switch (settings.control[i].type)
 			{
@@ -227,7 +227,7 @@ function Manager(package, buildinfo)
 		document.head.appendChild(icon);
 		
 		//sound
-		if( !settings.support_sound)
+		if (!settings.support_sound)
 		{
 			manager.sound = new Soundpack(null);
 			Soundpack.support(function(features)
@@ -269,21 +269,21 @@ function Manager(package, buildinfo)
 		diff_list = ['Easy','Normal','Difficult'];
 		
 		this.create_UI();
-		if( param.demo)
+		if (param.demo)
 			this.start_demo(true);
-		else if( param.demo_display)
+		else if (param.demo_display)
 		{
 			this.start_demo(false);
 			util.div('maximize_button').onclick();
 		}
-		else if( param.debug)
+		else if (param.debug)
 			this.start_debug();
 		else
 			this.switch_UI('frontpage');
 
-		if( param.debug_a)
+		if (param.debug_a)
 			this.network_debug('active');
-		if( param.debug_b)
+		if (param.debug_b)
 			this.network_debug('passive');
 		//
 		window.addEventListener('resize', onresize, false);
@@ -298,7 +298,7 @@ function Manager(package, buildinfo)
 				{
 					case 'open':
 						var controller_config = { up:'w',down:'x',left:'a',right:'d',def:'z',jump:'q',att:'s' };
-						if( param.role==='active')
+						if (param.role==='active')
 						{
 							session.control[0] = new network.controller('local',session.control[0]);
 							session.control[1] = new network.controller('local',session.control[1]);
@@ -307,7 +307,7 @@ function Manager(package, buildinfo)
 							session.control.length = 4;
 							session.control.f  = new network.controller('dual',session.control.f);
 						}
-						else if( param.role==='passive')
+						else if (param.role==='passive')
 						{
 							var hold0 = session.control[0],
 								hold1 = session.control[1];
@@ -330,16 +330,16 @@ function Manager(package, buildinfo)
 							},
 							function(info)
 							{	//receive
-								if( buildinfo.version!==info.buildversion)
+								if (buildinfo.version!==info.buildversion)
 									manager.alert('Your program version ('+buildinfo.timestamp+') is incompatible with your peer ('+info.buildversion+'). Please reload.');
-								if( param.role==='active')
+								if (param.role==='active')
 								{
 									session.player[0] = settings.player[0];
 									session.player[1] = settings.player[1];
 									session.player[2] = info.player[0];
 									session.player[3] = info.player[1];
 								}
-								else if( param.role==='passive')
+								else if (param.role==='passive')
 								{
 									session.player[0] = info.player[0];
 									session.player[1] = info.player[1];
@@ -389,18 +389,18 @@ function Manager(package, buildinfo)
 					mousehover: true,
 					onclick: function(I)
 					{
-						if( I===0)
+						if (I===0)
 						{
 							manager.start_game();
 						}
-						else if( I===1)
+						else if (I===1)
 						{
-							if( window.location.href.indexOf('http')===0)
+							if (window.location.href.indexOf('http')===0)
 								manager.switch_UI('network_game');
 							else
 								manager.alert('network game must run under http://');
 						}
-						else if( I===2)
+						else if (I===2)
 						{
 							manager.switch_UI('settings');
 						}
@@ -417,7 +417,7 @@ function Manager(package, buildinfo)
 			},
 			demax:function(demax)
 			{
-				if( !demax) //maximize
+				if (!demax) //maximize
 				{
 					var holder = util.div('frontpage');
 					holder.parentNode.removeChild(holder);
@@ -425,7 +425,7 @@ function Manager(package, buildinfo)
 					util.root.insertBefore(holder,util.root.firstChild);
 					hide(util.div('window'));
 					var canx = window.innerWidth/2-parseInt(window.getComputedStyle(util.div('frontpage_content'),null).getPropertyValue('width'))/2;
-					if( canx<0)
+					if (canx<0)
 						util.div('frontpage_content').style.left= canx+'px';
 				}
 				else //demaximize
@@ -463,7 +463,7 @@ function Manager(package, buildinfo)
 			keychanger:function()
 			{
 				var keychanger = util.div('keychanger');
-				if( keychanger)
+				if (keychanger)
 					keychanger.parentNode.removeChild(keychanger);
 				var keychanger = document.createElement('div');
 					keychanger.className = 'keychanger';
@@ -475,14 +475,14 @@ function Manager(package, buildinfo)
 				var column = this.column = [];
 				
 				table.style.display='inline-block';
-				for( var i=0; i<9; i++)
+				for (var i=0; i<9; i++)
 					row[i]=create_at(table, 'tr');
 				var i=0;
 				left_cell(row[i++],'name');
 				left_cell(row[i++],'type');
-				for( var I in settings.control[0].config)
+				for (var I in settings.control[0].config)
 					left_cell(row[i++],I);
-				for( var i=0; i<session.control.length; i++)
+				for (var i=0; i<session.control.length; i++)
 					column[i] = new Control(i);
 				
 				function Control(num)
@@ -492,11 +492,11 @@ function Manager(package, buildinfo)
 					var type = right_cell(row[1],'');
 					var cells = {};
 					var i=2;
-					for( var I in settings.control[0].config)
+					for (var I in settings.control[0].config)
 						cells[I] = add_changer(row[i++],I);
 					this.update = update;
 					update();
-					if( session.control[num].role===undefined)
+					if (session.control[num].role===undefined)
 					{
 						name.onclick=function()
 						{
@@ -504,7 +504,7 @@ function Manager(package, buildinfo)
 						}
 						type.onclick=function()
 						{
-							if( session.control[num].type==='keyboard')
+							if (session.control[num].type==='keyboard')
 							{	//switch to touch
 								settings.control[num].type = 'touch';
 								session.control[num] = controllers.touch.c;
@@ -525,9 +525,9 @@ function Manager(package, buildinfo)
 						var target;
 						cell.onclick=function()
 						{
-							if( session.control[num].type==='keyboard')
+							if (session.control[num].type==='keyboard')
 							{
-								if( !change_active)
+								if (!change_active)
 								{
 									change_active=true;
 									target=this;
@@ -537,7 +537,7 @@ function Manager(package, buildinfo)
 								}
 								else
 								{
-									if( target)
+									if (target)
 									{
 										target.style.color='';
 										target.style.backgroundColor='';
@@ -568,8 +568,8 @@ function Manager(package, buildinfo)
 						var con = session.control[num];
 						name.innerHTML = session.player[num].name;
 						type.innerHTML = con.role==='remote'?'network':con.type;
-						for( var I in cells)
-							if( con.type==='keyboard')
+						for (var I in cells)
+							if (con.type==='keyboard')
 								cells[I].innerHTML = con.config[I];
 							else
 								cells[I].innerHTML = '-';
@@ -580,7 +580,7 @@ function Manager(package, buildinfo)
 				{
 					var E = document.createElement(tag);
 					parent.appendChild(E);
-					if( id)
+					if (id)
 						E.id = id;
 					return E;
 				}
@@ -589,9 +589,9 @@ function Manager(package, buildinfo)
 				{
 					var td = create_at(row, 'td')
 					td.innerHTML= content;
-					if( bg_color)
+					if (bg_color)
 						td.style.backgroundColor = bg_color;
-					if( text_color)
+					if (text_color)
 						td.style.color = text_color;
 					return td;
 				}
@@ -614,7 +614,7 @@ function Manager(package, buildinfo)
 			},
 			onactive:function()
 			{
-				for( var i=0; i<this.column.length; i++)
+				for (var i=0; i<this.column.length; i++)
 				{
 					this.column[i].update();
 				}
@@ -627,7 +627,7 @@ function Manager(package, buildinfo)
 			{
 				var This = this;
 				this.last_value = 'http://myserver.com:8080';
-				for( var S in settings.server)
+				for (var S in settings.server)
 				{
 					var op = document.createElement('option');
 					op.innerHTML = op.value = S;
@@ -640,14 +640,14 @@ function Manager(package, buildinfo)
 				util.div('server_select').appendChild(op);
 				util.div('server_select').onchange=function()
 				{
-					if( this.value==='third_party_server')
+					if (this.value==='third_party_server')
 					{
 						util.div('server_address').value=(prompt('Enter server address: ', This.last_value) || This.last_value);
 						util.div('server_address').readOnly=false;
 					}
 					else
 					{
-						if( last_option==='third_party_server')
+						if (last_option==='third_party_server')
 							This.last_value = util.div('server_address').value;
 						util.div('server_address').value=settings.server[this.value];
 						util.div('server_address').readOnly=true;
@@ -660,7 +660,7 @@ function Manager(package, buildinfo)
 				{
 					manager.switch_UI('frontpage');
 				}
-				if( param.server)
+				if (param.server)
 				{
 					var address = param.server.replace(/\|/g,'/');
 					util.div('server_select').value = 'third_party_server';
@@ -669,18 +669,18 @@ function Manager(package, buildinfo)
 				util.div('server_connect').onclick=function()
 				{
 					var server_address = normalize_address(util.div('server_address').value);
-					if( !This.connecting)
+					if (!This.connecting)
 					{
 						var request = new XMLHttpRequest();
 						request.onreadystatechange = function()
 						{
-							if( this.readyState===4)
+							if (this.readyState===4)
 							{
 								This.connecting=false;
-								if( this.status===200)
+								if (this.status===200)
 								{
 									var server = JSON.parse(this.responseText);
-									if( !settings.server[server.name])
+									if (!settings.server[server.name])
 										settings.server[server.name] = server_address;
 									manager.UI_list.lobby.start(server);
 									manager.switch_UI('lobby');
@@ -698,7 +698,7 @@ function Manager(package, buildinfo)
 				}
 				function normalize_address(str)
 				{
-					if( str.charAt(str.length-1)==='/')
+					if (str.charAt(str.length-1)==='/')
 						return str.slice(0,str.length-1);
 					return str;
 				}
@@ -734,9 +734,9 @@ function Manager(package, buildinfo)
 				window.addEventListener('message', windowMessage, false);
 				function windowMessage(event)
 				{
-					if( event.origin!==server.address)
+					if (event.origin!==server.address)
 						return;
-					if( event.data.event==='start')
+					if (event.data.event==='start')
 					{
 						create_network_controllers(server, event.data);
 						util.div('server_connect').onclick=null;
@@ -751,12 +751,12 @@ function Manager(package, buildinfo)
 			bgcolor:package.data.UI.data.character_selection.bg_color,
 			onactive:function()
 			{
-				if( session.control.f.paused)
+				if (session.control.f.paused)
 					session.control.f.paused(true);
 			},
 			deactive:function()
 			{
-				if( session.control.f.paused)
+				if (session.control.f.paused)
 					session.control.f.paused(false);
 			},
 			create:function()
@@ -775,7 +775,7 @@ function Manager(package, buildinfo)
 				});
 				
 				var players = this.players = [];
-				for( var i=0; i<8; i++)
+				for (var i=0; i<8; i++)
 				{
 					//sprite & animator
 					var sp = new Fsprite_dom({
@@ -796,7 +796,7 @@ function Manager(package, buildinfo)
 					var ani = new Fanimator(ani_config);
 					//text boxes
 					var textbox = [];
-					for( var j=0; j<3; j++)
+					for (var j=0; j<3; j++)
 					{
 						textbox.push(create_textbox({
 							canvas: util.div('character_selection'),
@@ -823,7 +823,7 @@ function Manager(package, buildinfo)
 					data: package.data.UI.data.how_many_computer_players
 				});
 				var TBX = ['background_textbox', 'difficulty_textbox'];
-				for( var i in TBX)
+				for (var i in TBX)
 				{
 					var textarea = package.data.UI.data.vs_mode_dialog.text[i];
 					this.dialog[TBX[i]] = create_textbox({
@@ -850,48 +850,48 @@ function Manager(package, buildinfo)
 								players[i].name=session.player[i]?session.player[i].name:'';
 								players[i].step++;
 								var finished=true;
-								for( var k=0; k<players.length; k++)
+								for (var k=0; k<players.length; k++)
 									finished = finished && (players[k].use? players[k].step===3:true);
-								if( finished)
+								if (finished)
 								{
 									this.set_step(1);
 								}
 								manager.sound.play('1/m_join');
 							break;
 							case 'jump':
-								if( players[i].step>0)
+								if (players[i].step>0)
 								{
 									players[i].step--;
-									if( players[i].step===0)
+									if (players[i].step===0)
 										players[i].use = false;
 								}
 								manager.sound.play('1/m_cancel');
 							break;
 							case 'right':
-								if( players[i].step===1)
+								if (players[i].step===1)
 								{
 									players[i].selected++;
-									if( players[i].selected>=char_list.length)
+									if (players[i].selected>=char_list.length)
 										players[i].selected = -1;
 								}
-								if( players[i].step===2)
+								if (players[i].step===2)
 								{
 									players[i].team++;
-									if( players[i].team>4)
+									if (players[i].team>4)
 										players[i].team = 0;
 								}
 							break;
 							case 'left':
-								if( players[i].step===1)
+								if (players[i].step===1)
 								{
 									players[i].selected--;
-									if( players[i].selected<-1)
+									if (players[i].selected<-1)
 										players[i].selected = char_list.length-1;
 								}
-								if( players[i].step===2)
+								if (players[i].step===2)
 								{
 									players[i].team--;
-									if( players[i].team<0)
+									if (players[i].team<0)
 										players[i].team = 4;
 								}
 							break;
@@ -899,7 +899,7 @@ function Manager(package, buildinfo)
 					},
 					show: function()
 					{
-						for( var i=0; i<players.length; i++)
+						for (var i=0; i<players.length; i++)
 						{
 							switch (players[i].step)
 							{
@@ -929,21 +929,21 @@ function Manager(package, buildinfo)
 					},
 					enter: function()
 					{
-						for( var i=0; i<players.length; i++)
+						for (var i=0; i<players.length; i++)
 						{
 							players[i].sp.show();
-							for( var j=0; j<players[i].textbox.length; j++)
+							for (var j=0; j<players[i].textbox.length; j++)
 								show(players[i].textbox[j]);
 						}
 					},
 					leave: function()
 					{
-						for( var i=0; i<players.length; i++)
+						for (var i=0; i<players.length; i++)
 						{
-							if( !players[i].use)
+							if (!players[i].use)
 							{
 								players[i].sp.hide();
-								for( var j=0; j<players[i].textbox.length; j++)
+								for (var j=0; j<players[i].textbox.length; j++)
 									hide(players[i].textbox[j]);
 							}
 							else
@@ -979,21 +979,21 @@ function Manager(package, buildinfo)
 					{
 						var low=0, high;
 						var used = 0;
-						for( var i=0; i<players.length; i++)
-							if( players[i].use)
+						for (var i=0; i<players.length; i++)
+							if (players[i].use)
 								used++;
 						high = players.length-used;
 						var same_team = true;
 						var last_item;
-						for( var i=0; i<players.length; i++)
-							if( players[i].use)
+						for (var i=0; i<players.length; i++)
+							if (players[i].use)
 							{
-								if( last_item===undefined)
+								if (last_item===undefined)
 									last_item = i;
 								else
 									same_team = same_team && players[i].team===players[last_item].team && players[i].team!==0;
 							}
-						if( same_team)
+						if (same_team)
 							low = 1;
 						this.how_many.init(low,high);
 						this.how_many.show();
@@ -1012,7 +1012,7 @@ function Manager(package, buildinfo)
 							case 'att':
 								i = this.state.setting_computer;
 								players[i].step++;
-								if( players[i].step===3)
+								if (players[i].step===3)
 								{
 									this.state.already_set_computer++;
 									this.steps[this.state.step].next_computer_slot.call(this);
@@ -1021,49 +1021,49 @@ function Manager(package, buildinfo)
 							break;
 							case 'jump':
 								i = this.state.setting_computer;
-								if( players[i].step>0)
+								if (players[i].step>0)
 									players[i].step--;
 								manager.sound.play('1/m_cancel');
 							break;
 							case 'right':
 								i = this.state.setting_computer;
-								if( players[i].step===1)
+								if (players[i].step===1)
 								{
 									players[i].selected++;
-									if( players[i].selected>=char_list.length)
+									if (players[i].selected>=char_list.length)
 										players[i].selected = 0;
 								}
-								if( players[i].step===2)
+								if (players[i].step===2)
 								{
 									players[i].team++;
-									if( players[i].team>4)
+									if (players[i].team>4)
 										players[i].team = 0;
 								}
-								if( players[i].step===0 && players[i].type==='computer')
+								if (players[i].step===0 && players[i].type==='computer')
 								{
 									players[i].selected_AI++;
-									if( players[i].selected_AI>=AI_list.length)
+									if (players[i].selected_AI>=AI_list.length)
 										players[i].selected_AI = -1;
 								}
 							break;
 							case 'left':
 								i = this.state.setting_computer;
-								if( players[i].step===1)
+								if (players[i].step===1)
 								{
 									players[i].selected--;
-									if( players[i].selected<0)
+									if (players[i].selected<0)
 										players[i].selected = char_list.length-1;
 								}
-								if( players[i].step===2)
+								if (players[i].step===2)
 								{
 									players[i].team--;
-									if( players[i].team<0)
+									if (players[i].team<0)
 										players[i].team = 4;
 								}
-								if( players[i].step===0 && players[i].type==='computer')
+								if (players[i].step===0 && players[i].type==='computer')
 								{
 									players[i].selected_AI--;
-									if( players[i].selected_AI<-1)
+									if (players[i].selected_AI<-1)
 										players[i].selected_AI = AI_list.length-1;
 								}
 							break;
@@ -1071,7 +1071,7 @@ function Manager(package, buildinfo)
 					},
 					show: function()
 					{
-						for( var i=0; i<players.length; i++)
+						for (var i=0; i<players.length; i++)
 						{
 							switch (players[i].step)
 							{
@@ -1106,28 +1106,28 @@ function Manager(package, buildinfo)
 					},
 					next_computer_slot: function()
 					{
-						if( this.state.num_of_computers===this.state.already_set_computer)
+						if (this.state.num_of_computers===this.state.already_set_computer)
 						{
 							this.set_step(3);
 							return;
 						}
 						var next;
-						for( var i=0; i<players.length; i++)
+						for (var i=0; i<players.length; i++)
 						{
-							if( !players[i].use)
+							if (!players[i].use)
 							{
 								next = i;
 								break;
 							}
 						}
-						if( next!==undefined)
+						if (next!==undefined)
 						{
 							var i = this.state.setting_computer = next;
 							players[i].use = true;
 							players[i].step = 0;
 							players[i].type = 'computer';
 							players[i].sp.show();
-							for( var j=0; j<players[i].textbox.length; j++)
+							for (var j=0; j<players[i].textbox.length; j++)
 								show(players[i].textbox[j]);
 						}
 					}
@@ -1159,25 +1159,25 @@ function Manager(package, buildinfo)
 										manager.switch_UI('frontpage');
 									break;
 								}
-								if( this.dialog.active_item===3)
+								if (this.dialog.active_item===3)
 									step2_key.call(this,i,'right');
 							break;
 							case 'jump':
 								//cannot go back
 							break;
 							case 'right':
-								if( this.dialog.active_item===3)
+								if (this.dialog.active_item===3)
 								{
 									this.options.background++;
-									if( this.options.background>=bg_list.length)
+									if (this.options.background>=bg_list.length)
 										this.options.background = -1;
 								}
 							break;
 							case 'left':
-								if( this.dialog.active_item===3)
+								if (this.dialog.active_item===3)
 								{
 									this.options.background--;
-									if( this.options.background<-1)
+									if (this.options.background<-1)
 										this.options.background = bg_list.length-1;
 								}
 							break;
@@ -1192,7 +1192,7 @@ function Manager(package, buildinfo)
 					show: function()
 					{
 						this.dialog.show();
-						for( var i=0; i<players.length; i++)
+						for (var i=0; i<players.length; i++)
 						{
 							switch (players[i].step)
 							{
@@ -1208,26 +1208,26 @@ function Manager(package, buildinfo)
 					{
 						this.state.random_slot = {};
 						this.state.random_AI = {};
-						for( var i=0; i<players.length; i++)
+						for (var i=0; i<players.length; i++)
 						{
-							if( players[i].selected===-1)
+							if (players[i].selected===-1)
 								this.state.random_slot[i] = true;
-							if( players[i].selected_AI===-1)
+							if (players[i].selected_AI===-1)
 								this.state.random_AI[i] = true;
 						}
 						this.steps[this.state.step].update_random.call(this);
 					},
 					update_random: function()
 					{
-						for( var i in this.state.random_slot)
+						for (var i in this.state.random_slot)
 						{
 							players[i].selected = Math.floor(randomseed.next()*char_list.length);
 							players[i].textbox[1].innerHTML = char_list[players[i].selected].name;
 							players[i].sp.switch_img(players[i].selected);
 						}
-						for( var i in this.state.random_AI)
+						for (var i in this.state.random_AI)
 						{
-							if( players[i].type==='computer')
+							if (players[i].type==='computer')
 							{
 								players[i].selected_AI = Math.floor(randomseed.next()*AI_list.length);
 								players[i].name = players[i].textbox[0].innerHTML = AI_list[players[i].selected_AI].name;
@@ -1251,7 +1251,7 @@ function Manager(package, buildinfo)
 				this.dialog.hide();
 				this.dialog.activate_item(0);
 				this.how_many.hide();
-				for( var i=0; i<players.length; i++)
+				for (var i=0; i<players.length; i++)
 				{
 					players[i].use = false;
 					players[i].step = 0;
@@ -1269,29 +1269,29 @@ function Manager(package, buildinfo)
 			{
 				var players = this.players;
 				var i = controller_num;
-				if( this.state.step>0 && players[i].type!=='human')
+				if (this.state.step>0 && players[i].type!=='human')
 					return;
 				this.steps[this.state.step].key.call(this,i,key);
 				this.steps[this.state.step].show.call(this);
 			},
 			set_step:function(newstep)
 			{
-				if( this.steps[this.state.step].leave)
+				if (this.steps[this.state.step].leave)
 					this.steps[this.state.step].leave.call(this);
 				this.state.step = newstep;
-				if( this.steps[this.state.step].enter)
+				if (this.steps[this.state.step].enter)
 					this.steps[this.state.step].enter.call(this);
 			},
 			frame:function()
 			{
 				var players = this.players;
 				var t = this.state.t;
-				for( var i in players)
+				for (var i in players)
 				{
 					switch (players[i].step)
 					{
 						case 0:
-							if( this.state.step===0)
+							if (this.state.step===0)
 								players[i].ani.set_frame(t%2);
 							players[i].textbox[0].style.color = sel.text.color[t%2];
 						break;
@@ -1303,7 +1303,7 @@ function Manager(package, buildinfo)
 						break;
 					}
 				}
-				for( var i=0; i<session.control.length; i++)
+				for (var i=0; i<session.control.length; i++)
 					session.control[i].fetch();
 				manager.sound.TU();
 				this.state.t++;
@@ -1314,7 +1314,7 @@ function Manager(package, buildinfo)
 			allow_wide:true,
 			create:function()
 			{
-				if( util.div('pause_message'))
+				if (util.div('pause_message'))
 				{
 					var dat = package.data.UI.data.message_overlay;
 					manager.overlay_mess = new Fsprite_dom({
@@ -1339,13 +1339,13 @@ function Manager(package, buildinfo)
 					data:package.data.UI.data.summary
 				});
 
-				if( Fsprite.renderer==='DOM')
+				if (Fsprite.renderer==='DOM')
 				{
 					manager.panel_layer.el.className = 'panel';
 					manager.background_layer.el.className = 'background';
 				}
 				var panels=[];
-				for( var i=0; i<8; i++)
+				for (var i=0; i<8; i++)
 				{
 					var pane = new Fsprite({
 						canvas: manager.panel_layer,
@@ -1357,14 +1357,14 @@ function Manager(package, buildinfo)
 				}
 				function get_canvas()
 				{
-					if( Fsprite.renderer==='DOM')
+					if (Fsprite.renderer==='DOM')
 					{
 						return new Fsprite({
 							div:util.div('gameplay'),
 							type:'group'
 						});
 					}
-					else if( Fsprite.renderer==='canvas')
+					else if (Fsprite.renderer==='canvas')
 					{
 						var canvas_node = util.div('gameplay').getElementsByClassName('canvas')[0];
 						canvas_node.width = global.application.window.width;
@@ -1383,40 +1383,40 @@ function Manager(package, buildinfo)
 	function resizer(ratio)
 	{
 		var demax = ratio===1;
-		if( window_state.maximized)
+		if (window_state.maximized)
 		{
 			var landscape = false;
-			//if( window.innerWidth < 400 && window.innerWidth < window.innerHeight)
+			//if (window.innerWidth < 400 && window.innerWidth < window.innerHeight)
 				//landscape = true;
 			var last_window_state_wide = window_state.wide;
 			var want_wide;
-			if( !landscape)
+			if (!landscape)
 				want_wide = window.innerWidth/window.innerHeight > 15/9;
 			else
 				want_wide = window.innerHeight/window.innerWidth > 15/9;
-			if( want_wide)
+			if (want_wide)
 			{
-				if( window_state.allow_wide && !window_state.wide)
+				if (window_state.allow_wide && !window_state.wide)
 				{
 					window_state.wide=true;
 					util.container.classList.add('wideWindow');
 					//double arrow symbol '&#8622;&#8596;'
 				}
 			}
-			if( window_state.wide &&
+			if (window_state.wide &&
 				(!window_state.allow_wide || !want_wide))
 			{
 				window_state.wide=false;
 				util.container.classList.remove('wideWindow');
 			}
 			var fratio = ratio;
-			if( typeof ratio!=='number')
+			if (typeof ratio!=='number')
 			{
 				var width = parseInt(window.getComputedStyle(util.container,null).getPropertyValue('width')),
 					height = parseInt(window.getComputedStyle(util.container,null).getPropertyValue('height'));
 				this.width = width;
-				if( height>100) this.height = height;
-				if( !landscape)
+				if (height>100) this.height = height;
+				if (!landscape)
 				{
 					var ratioh = window.innerHeight/this.height;
 					var ratiow = window.innerWidth/this.width;
@@ -1430,18 +1430,18 @@ function Manager(package, buildinfo)
 				fratio = ratio;
 				ratio = Math.floor(ratio*100)/100;
 			}
-			if( manager.active_UI==='frontpage')
+			if (manager.active_UI==='frontpage')
 			{
 				manager.UI_list['frontpage'].demax(demax);
 			}
-			if( !ratio) return;
+			if (!ratio) return;
 			var canx=0, cany=0;
-			if( !landscape)
+			if (!landscape)
 				canx = window.innerWidth/2-parseInt(window.getComputedStyle(util.container,null).getPropertyValue('width'))/2*ratio;
 			else
 				cany = window.innerHeight/2-parseInt(window.getComputedStyle(util.container,null).getPropertyValue('width'))/2*ratio;
-			if( demax) canx=0;
-			if( Fsupport.css3dtransform)
+			if (demax) canx=0;
+			if (Fsupport.css3dtransform)
 			{
 				util.container.style[Fsupport.css3dtransform+'Origin']= '0 0';
 				util.container.style[Fsupport.css3dtransform]=
@@ -1449,16 +1449,16 @@ function Manager(package, buildinfo)
 					'scale3d('+ratio+','+ratio+',1.0) '+
 					(landscape?'translateX('+(window_state.wide?450:580)+'px) rotateZ(90deg) ':'');
 			}
-			else if( Fsupport.css2dtransform)
+			else if (Fsupport.css2dtransform)
 			{
 				util.container.style[Fsupport.css2dtransform+'Origin']= '0 0';
 				util.container.style[Fsupport.css2dtransform]=
 					'translate('+canx+'px,0) '+
 					'scale('+ratio+','+ratio+') ';
 			}
-			if( last_window_state_wide !== window_state.wide)
+			if (last_window_state_wide !== window_state.wide)
 			{	//wide state changed
-				if( window_state.wide)
+				if (window_state.wide)
 				{
 					manager.background_layer.set_x_y(0,-package.data.UI.data.panel.height);
 					manager.panel_layer.set_alpha(0.5);
@@ -1468,11 +1468,11 @@ function Manager(package, buildinfo)
 					manager.background_layer.set_x_y(0,0);
 					manager.panel_layer.set_alpha(1.0);
 				}
-				if( util.div('canvas').width)
+				if (util.div('canvas').width)
 				{	//using canvas rendering backend
 					var owidth = global.application.window.width;
 					var wide_width = global.application.window.wide_width;
-					if( window_state.wide)
+					if (window_state.wide)
 					{	//widen the canvas
 						util.div('canvas').width = wide_width;
 						var offx = Math.floor((wide_width-owidth)/2);
@@ -1503,14 +1503,14 @@ function Manager(package, buildinfo)
 	this.dispatch_event=function(event,args)
 	{
 		var active = this.UI_list[this.active_UI];
-		if( active && active[event])
+		if (active && active[event])
 			active[event].apply(active,args);
 	}
 	this.create_UI=function()
 	{
-		for( var I in this.UI_list)
+		for (var I in this.UI_list)
 		{
-			if( this.UI_list[I].create)
+			if (this.UI_list[I].create)
 				this.UI_list[I].create.call(this.UI_list[I]);
 		}
 	}
@@ -1518,18 +1518,18 @@ function Manager(package, buildinfo)
 	{
 		this.dispatch_event('deactive');
 		this.active_UI = page;
-		for( var P in this.UI_list)
+		for (var P in this.UI_list)
 		{
 			util.div(P).style.display = page===P? '':'none';
 		}
-		if( window_state.allow_wide !== this.UI_list[page].allow_wide)
+		if (window_state.allow_wide !== this.UI_list[page].allow_wide)
 		{
 			window_state.allow_wide = this.UI_list[page].allow_wide;
-			if( window_state.maximized && window_state.wide!==window_state.allow_wide)
+			if (window_state.maximized && window_state.wide!==window_state.allow_wide)
 				resizer();
 		}
 		util.div('window').style.background = this.UI_list[page].bgcolor || '';
-		if( window_state.maximized)
+		if (window_state.maximized)
 		{
 			document.body.style.background = this.UI_list[page].bgcolor || '#676767';
 		}
@@ -1541,38 +1541,38 @@ function Manager(package, buildinfo)
 
 		//create timer
 		var This=this;
-		if( timer) network.clearInterval(timer);
+		if (timer) network.clearInterval(timer);
 		timer = network.setInterval(function(){This.frame();},1000/12);
 		//create controller listener
-		for( var i=0; i<session.control.length; i++)
+		for (var i=0; i<session.control.length; i++)
 			(function(i){
 				session.control[i].child=[{
 					key:function(K,D){if(D)This.key(i,K);}
 				}];
 			}(i));
 		session.control.f.child=[];
-		if( session.control.f.hide)
+		if (session.control.f.hide)
 			session.control.f.hide();
 	}
 	this.start_game=function()
 	{
 		//save settings
-		if( Fsupport.localStorage)
+		if (Fsupport.localStorage)
 			Fsupport.localStorage.setItem('F.LF/settings',JSON.stringify(settings));
 		
 		//controller
-		for( var i=0; i<session.control.length; i++)
+		for (var i=0; i<session.control.length; i++)
 			session.control[i].sync=true;
 		session.control.f.sync=true;
-		for( var i=0; i<session.control.length; i++)
+		for (var i=0; i<session.control.length; i++)
 		{
-			if( session.control[i].type==='touch')
+			if (session.control[i].type==='touch')
 			{
 				session.control[i].show();
 				Touchcontroller.enable(true);
 			}
 		}
-		if( session.control.f.show)
+		if (session.control.f.show)
 			session.control.f.show();
 		
 		//start
@@ -1584,18 +1584,18 @@ function Manager(package, buildinfo)
 	{
 		this.switch_UI('gameplay');
 
-		if( timer)
+		if (timer)
 		{
 			network.clearInterval(timer);
 			timer = null;
 		}
 
-		for( var i=0; i<session.control.length; i++)
+		for (var i=0; i<session.control.length; i++)
 			session.control[i].child=[];
-		if( !config.demo_mode)
+		if (!config.demo_mode)
 		{
 			session.control.f.child=[];
-			if( session.control.f.show)
+			if (session.control.f.show)
 				session.control.f.show();
 		}
 
@@ -1620,9 +1620,9 @@ function Manager(package, buildinfo)
 		{
 			var players = config.players;
 			var arr = [];
-			for( var i=0; i<players.length; i++)
+			for (var i=0; i<players.length; i++)
 			{
-				if( players[i].use)
+				if (players[i].use)
 					arr.push({
 						name: players[i].name,
 						controller: players[i].type==='human'?session.control[i]:{type:'AIscript',id:AI_list[players[i].selected_AI].id},
@@ -1635,7 +1635,7 @@ function Manager(package, buildinfo)
 		function get_background()
 		{
 			var options = config.options;
-			if( options.background===-1)
+			if (options.background===-1)
 				return bg_list[Math.floor(randomseed.next()*bg_list.length)].id;
 			else
 				return bg_list[options.background].id;
@@ -1764,7 +1764,7 @@ function create_textbox(config)
 		xywh: config.xywh
 	});
 	box.el.classList.add('textbox');
-	if( config.color)
+	if (config.color)
 		box.el.style.color = config.color;
 	box.el.style['line-height'] = config.xywh[3]+'px';
 	return box.el;
@@ -1778,11 +1778,11 @@ function vertical_menu_dialog(config)
 	this.menu = new Fsprite_dom({canvas: this.dia, img: data.pic});
 	this.it = new Fsprite_dom({canvas: this.dia, img: data.pic});
 	this.dia.set_x_y(data.x,data.y);
-	for( var I in {bg:0,menu:0})
+	for (var I in {bg:0,menu:0})
 		this[I].set_x_y(0,0);
-	for( var I in {dia:0,bg:0,menu:0})
+	for (var I in {dia:0,bg:0,menu:0})
 		this[I].set_w_h(data.width,data.height);
-	if( config.mousehover)
+	if (config.mousehover)
 	{	//activate items automatically by mouse hovering
 		var trans=function(el,e)
 		{
@@ -1802,7 +1802,7 @@ function vertical_menu_dialog(config)
 			This.mousemove(-10,-10);
 		}
 		this.it.hide();
-		if( config.onclick)
+		if (config.onclick)
 		{
 			this.onclick = config.onclick;
 			this.dia.el.onmousedown=function(e)
@@ -1821,7 +1821,7 @@ function vertical_menu_dialog(config)
 var vmdp = vertical_menu_dialog.prototype;
 vmdp.activate_item = function(num)
 {
-	if( num!==null && num!==undefined)
+	if (num!==null && num!==undefined)
 		this.active_item = num;
 	else
 		num = this.active_item;
@@ -1832,7 +1832,7 @@ vmdp.activate_item = function(num)
 }
 vmdp.nav_up = function()
 {
-	if( this.active_item>0)
+	if (this.active_item>0)
 		this.active_item--;
 	else
 		this.active_item = this.data.item.length-1;
@@ -1840,7 +1840,7 @@ vmdp.nav_up = function()
 }
 vmdp.nav_down = function()
 {
-	if( this.active_item<this.data.item.length-1)
+	if (this.active_item<this.data.item.length-1)
 		this.active_item++;
 	else
 		this.active_item = 0;
@@ -1857,9 +1857,9 @@ vmdp.hide = function()
 vmdp.get_mouse_target = function(x,y)
 {
 	var target;
-	for( var i=0; i<this.data.item.length; i++)
+	for (var i=0; i<this.data.item.length; i++)
 	{
-		if( point_in_rect(x,y,this.data.item[i]))
+		if (point_in_rect(x,y,this.data.item[i]))
 		{
 			target = i;
 			break;
@@ -1870,7 +1870,7 @@ vmdp.get_mouse_target = function(x,y)
 vmdp.mousemove = function(x,y)
 {
 	var target = this.get_mouse_target(x,y);
-	if( defined(target))
+	if (defined(target))
 	{
 		this.activate_item(target);
 		this.it.show();
@@ -1883,7 +1883,7 @@ vmdp.mousemove = function(x,y)
 vmdp.mousedown = function(x,y)
 {
 	var target = this.get_mouse_target(x,y);
-	if( this.onclick && defined(target))
+	if (this.onclick && defined(target))
 		this.onclick(target);
 }
 function horizontal_number_dialog(config)
@@ -1894,11 +1894,11 @@ function horizontal_number_dialog(config)
 	this.dia.set_x_y(data.x,data.y);
 	this.bg = new Fsprite_dom({canvas: this.dia, img: data.bg});
 	this.bg.set_x_y(0,0);
-	for( var I in {dia:0,bg:0})
+	for (var I in {dia:0,bg:0})
 		this[I].set_w_h(data.width,data.height);
 	this.it = [];
 	this.active_item = 0;
-	for( var i=0; i<=7; i++)
+	for (var i=0; i<=7; i++)
 	{
 		var sp = new Fsprite_dom({canvas: this.dia});
 		sp.set_x_y(data.item_x+i*data.item_space, data.item_y);
@@ -1912,9 +1912,9 @@ function horizontal_number_dialog(config)
 var hndp = horizontal_number_dialog.prototype;
 hndp.init = function(lower_bound,upper_bound)
 {
-	for( var i=0; i<this.it.length; i++)
+	for (var i=0; i<this.it.length; i++)
 		this.it[i].el.style.color=this.data.inactive_color;
-	for( var i=lower_bound; i<=upper_bound; i++)
+	for (var i=lower_bound; i<=upper_bound; i++)
 		this.it[i].el.style.color=this.data.active_color;
 	this.activate_item(lower_bound);
 	this.lower_bound = lower_bound;
@@ -1964,7 +1964,7 @@ function summary_dialog(config)
 		wh:{w:data.width, h:100}
 	});
 	this.hide();
-	for( var part in {'head':1,'foot':1})
+	for (var part in {'head':1,'foot':1})
 	{
 		this[part+'_holder'] = new Fsprite_dom({
 			canvas: this.dialog,
@@ -1978,7 +1978,7 @@ function summary_dialog(config)
 		this[part].set_img_x_y(-data[part][0], -data[part][1]);
 	}
 	this.rows=[]
-	for( var i=0; i<8; i++)
+	for (var i=0; i<8; i++)
 	{
 		var gp = new Fsprite_dom({
 			canvas: this.dialog,
@@ -1999,7 +1999,7 @@ function summary_dialog(config)
 			icon:icon,
 			boxes:[]
 		};
-		for( var j=0; j<data.text.length; j++)
+		for (var j=0; j<data.text.length; j++)
 		{
 			var tb = create_textbox({
 				canvas: gp,
@@ -2030,7 +2030,7 @@ summary_dialog.prototype.hide = function()
 summary_dialog.prototype.set_rows=function(num)
 {
 	var y=this.data.head[3];
-	for( var i=0; i<8; i++)
+	for (var i=0; i<8; i++)
 	{
 		this.rows[i].gp.set_x_y(0, y);
 		if (i<num)
@@ -2053,7 +2053,7 @@ summary_dialog.prototype.set_info=function(info)
 	]
 	*/
 	this.set_rows(info.length);
-	for( var i=0; i<info.length; i++)
+	for (var i=0; i<info.length; i++)
 	{
 		this.set_row_data(i, info[i]);
 	}
@@ -2068,11 +2068,11 @@ summary_dialog.prototype.set_row_data=function(i, data)
 	var icon = this.rows[i].icon;
 	icon.remove_img('0');
 	icon.add_img(data[0],'0');
-	for( var i=1; i<data.length; i++)
+	for (var i=1; i<data.length; i++)
 	{
 		row[i-1].innerHTML = data[i];
 	}
-	if( data[7].indexOf('Win')!==-1)
+	if (data[7].indexOf('Win')!==-1)
 		row[6].style.color = this.status_colors[0];
 	else
 		row[6].style.color = this.status_colors[1];

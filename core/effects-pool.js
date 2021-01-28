@@ -53,7 +53,7 @@ define(function()
 \*/
 function effects_pool(config)
 {
-	if( config.circular)
+	if (config.circular)
 		return new crpool(config);
 	else
 		return new lnpool(config);
@@ -69,7 +69,7 @@ function crpool(config)
 	this.config=config;
 	this.livecount=0;
 
-	for( var i=0; i<config.init_size; i++)
+	for (var i=0; i<config.init_size; i++)
 	{
 		this.pool[i] = config.construct();
 		this.pool[i].parent = this;
@@ -90,19 +90,19 @@ function crpool(config)
 \*/
 crpool.prototype.create=function(/*arg*/) //arguments will be passed through
 {
-	if( this.full)
+	if (this.full)
 	{
-		if( this.pool.length + this.config.batch_size <= this.config.max_size)
+		if (this.pool.length + this.config.batch_size <= this.config.max_size)
 		{	//expand the pool
 			//console.log('expanding the pool');
 			var args=[ this.E, 0];
-			for( var i=0; i<this.config.batch_size; i++)
+			for (var i=0; i<this.config.batch_size; i++)
 			{
 				args[i+2] = this.config.construct();
 				args[i+2].parent = this;
 			}
 			this.pool.splice.apply( this.pool, args);
-			if( this.S!==0)
+			if (this.S!==0)
 				this.S += this.config.batch_size;
 			this.full=false;
 		}
@@ -110,17 +110,17 @@ crpool.prototype.create=function(/*arg*/) //arguments will be passed through
 			return false;
 	}
 
-	if( this.E < this.pool.length)
+	if (this.E < this.pool.length)
 		this.E++;
 	else
 		this.E=1;
 
-	if( this.E === this.S || (this.S===0 && this.E===this.pool.length))
+	if (this.E === this.S || (this.S===0 && this.E===this.pool.length))
 	{
 		this.full=true;
 	}
 
-	if( this.pool[this.E-1].born)
+	if (this.pool[this.E-1].born)
 		this.pool[this.E-1].born.apply ( this.pool[this.E-1], arguments);
 
 	this.livecount++;
@@ -138,13 +138,13 @@ crpool.prototype.create=function(/*arg*/) //arguments will be passed through
 \*/
 crpool.prototype.die=function(target /*,arg*/)
 {
-	if( this.livecount > 0)
+	if (this.livecount > 0)
 	{
 		var oldS=this.S;
-		if( this.pool[this.S].die)
+		if (this.pool[this.S].die)
 			this.pool[this.S].die.apply( this.pool[this.S], Array.prototype.slice.call(arguments,1));
 
-		if( this.S < this.pool.length-1)
+		if (this.S < this.pool.length-1)
 			this.S++;
 		else
 			this.S=0;
@@ -171,16 +171,16 @@ crpool.prototype.die=function(target /*,arg*/)
 \*/
 crpool.prototype.for_each=function(fun)
 {
-	if( this.livecount===0)
+	if (this.livecount===0)
 	{
 		//completely empty
 	}
-	else if( this.S < this.E)
+	else if (this.S < this.E)
 	{
 		//  _ _S_ _E_
 		// |_|_|*|*|_|
 		for ( var i=this.S; i<this.E; i++)
-			if( fun( this.pool[i])==='break')
+			if (fun( this.pool[i])==='break')
 				break;
 	}
 	else
@@ -188,10 +188,10 @@ crpool.prototype.for_each=function(fun)
 		//  _ _E_ _S_
 		// |*|*|_|_|*|
 		for ( var j=this.S; j<this.pool.length; j++)
-			if( fun( this.pool[j])==='break')
+			if (fun( this.pool[j])==='break')
 				return ;
 		for ( var i=0; i<this.E; i++)
-			if( fun( this.pool[i])==='break')
+			if (fun( this.pool[i])==='break')
 				return ;
 	}
 }
@@ -207,7 +207,7 @@ crpool.prototype.for_each=function(fun)
 \*/
 crpool.prototype.call_each=function(fun_name /*, arg*/)
 {
-	if( this.pool[0][fun_name])
+	if (this.pool[0][fun_name])
 	{
 		var arg= Array.prototype.slice.call(arguments,1);
 		this.for_each(function(ef)
@@ -225,7 +225,7 @@ function lnpool(config)
 	this.config=config;
 	this.livecount=0;
 	
-	for( var i=0; i<config.init_size; i++)
+	for (var i=0; i<config.init_size; i++)
 	{
 		this.pool[i] = config.construct();
 		this.pool[i].parent = this;
@@ -236,13 +236,13 @@ function lnpool(config)
 lnpool.prototype.create=function(/*arg*/)
 {
 	var freeslot = this.alive.indexOf(false);
-	if( freeslot===-1)
+	if (freeslot===-1)
 	{	//pool is full
-		if( this.pool.length + this.config.batch_size <= this.config.max_size)
+		if (this.pool.length + this.config.batch_size <= this.config.max_size)
 		{	//expand the pool
 			var args1=[ this.pool.length, 0],
 				args2=[ this.pool.length, 0];
-			for( var i=0; i<this.config.batch_size; i++)
+			for (var i=0; i<this.config.batch_size; i++)
 			{
 				args1[i+2] = this.config.construct();
 				args1[i+2].parent = this;
@@ -250,7 +250,7 @@ lnpool.prototype.create=function(/*arg*/)
 			}
 			this.pool.splice.apply( this.pool, args1);
 			this.alive.splice.apply( this.alive, args2);
-			if( this.S!==0)
+			if (this.S!==0)
 				this.S += this.config.batch_size;
 		}
 		else
@@ -268,7 +268,7 @@ lnpool.prototype.create=function(/*arg*/)
 lnpool.prototype.die=function(target /*,arg*/)
 {
 	var e = this.pool.indexOf(target);
-	if( e===-1 || !this.alive[e])
+	if (e===-1 || !this.alive[e])
 	{
 		console.log('wrong target');
 		return false;
@@ -281,16 +281,16 @@ lnpool.prototype.die=function(target /*,arg*/)
 
 lnpool.prototype.for_each=function(fun)
 {
-	if( this.livecount===0)
+	if (this.livecount===0)
 	{
 		//completely empty
 	}
 	else
 	{
-		for( var i=0; i<this.pool.length; i++)
+		for (var i=0; i<this.pool.length; i++)
 		{
-			if( this.alive[i])
-				if( fun( this.pool[i])==='break')
+			if (this.alive[i])
+				if (fun( this.pool[i])==='break')
 					break;
 		}
 	}
@@ -298,16 +298,16 @@ lnpool.prototype.for_each=function(fun)
 
 lnpool.prototype.call_each=function(fun_name /*,arg*/)
 {
-	if( this.livecount===0)
+	if (this.livecount===0)
 	{
 		//completely empty
 	}
 	else
 	{
-		for( var i=0; i<this.pool.length; i++)
+		for (var i=0; i<this.pool.length; i++)
 		{
-			if( this.alive[i])
-				if( this.pool[i][fun_name])
+			if (this.alive[i])
+				if (this.pool[i][fun_name])
 					this.pool[i][fun_name].apply(this.pool[i], Array.prototype.slice.call(arguments,1));
 		}
 	}

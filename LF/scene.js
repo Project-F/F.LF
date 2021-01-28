@@ -60,53 +60,53 @@ scene.prototype.query = function(volume, exclude, where)
 	tag = 'vol_'+tag_split[0];
 	tagvalue = tag_split[1];
 
-	for( var i in this.live)
+	for (var i in this.live)
 	{
 		var excluded=false;
-		if( exclude instanceof Array)
+		if (exclude instanceof Array)
 		{
-			for( var ex=0; ex<exclude.length; ex++)
+			for (var ex=0; ex<exclude.length; ex++)
 			{
-				if( this.live[i] === exclude[ex])
+				if (this.live[i] === exclude[ex])
 				{
 					excluded=true;
 					break;
 				}
 			}
 		}
-		else if( exclude)
+		else if (exclude)
 		{
-			if( this.live[i] === exclude)
+			if (this.live[i] === exclude)
 				excluded=true;
 		}
-		if( excluded)
+		if (excluded)
 			continue;
 
-		if( where.team && this.live[i].team !== where.team)
+		if (where.team && this.live[i].team !== where.team)
 			continue;
 
-		if( where.not_team && this.live[i].team === where.not_team)
+		if (where.not_team && this.live[i].team === where.not_team)
 			continue;
 
-		if( where.type && this.live[i].type !== where.type)
+		if (where.type && this.live[i].type !== where.type)
 			continue;
 
-		if( where.not_type && this.live[i].type === where.not_type)
+		if (where.not_type && this.live[i].type === where.not_type)
 			continue;
 
-		if( where.filter && !where.filter(this.live[i]))
+		if (where.filter && !where.filter(this.live[i]))
 			continue;
 
-		if( volume===null)
+		if (volume===null)
 		{
 			result.push(this.live[i]);
 		}
-		else if( this.live[i][tag])
+		else if (this.live[i][tag])
 		{
 			var vol = this.live[i][tag](tagvalue);
-			for( var j=0; j<vol.length; j++)
+			for (var j=0; j<vol.length; j++)
 			{
-				if( this.intersect(volume, vol[j]))
+				if (this.intersect(volume, vol[j]))
 				{
 					result.push(this.live[i]);
 					break;
@@ -114,9 +114,9 @@ scene.prototype.query = function(volume, exclude, where)
 			}
 		}
 	}
-	if( where.sort)
+	if (where.sort)
 	{
-		if( where.sort==='distance' && !(exclude instanceof Array))
+		if (where.sort==='distance' && !(exclude instanceof Array))
 		{	//sort according to distance from exclude
 			where.sort = function(obj)
 			{

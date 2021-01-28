@@ -6,10 +6,10 @@ define(['core/util','LF/sprite-select','core/support','LF/global'],function(Futi
 	function standalone(child)
 	{
 		global_timer_children.push(child);
-		if( !global_timer)
+		if (!global_timer)
 			global_timer = setInterval(function()
 			{
-				for( var i=0; i<global_timer_children.length; i++)
+				for (var i=0; i<global_timer_children.length; i++)
 				{
 					global_timer_children[i].TU();
 				}
@@ -27,7 +27,7 @@ define(['core/util','LF/sprite-select','core/support','LF/global'],function(Futi
 	function background(config,data,id)
 	{
 		var $=this;
-		if( !config)
+		if (!config)
 		{	//create an empty background
 			$.id = -1;
 			$.name = 'empty background';
@@ -52,7 +52,7 @@ define(['core/util','LF/sprite-select','core/support','LF/global'],function(Futi
 			x:0,y:0, //offset x,y
 			img:data.shadow
 		};
-		if( Fsprite.renderer==='DOM' && !Fsupport.css3dtransform)
+		if (Fsprite.renderer==='DOM' && !Fsupport.css3dtransform)
 			$.dropframe = 1;
 		else
 			$.dropframe = 0;
@@ -68,7 +68,7 @@ define(['core/util','LF/sprite-select','core/support','LF/global'],function(Futi
 			}
 		}());
 
-		if( config.scrollbar)
+		if (config.scrollbar)
 		{
 			var sc = document.createElement('div');
 			$.scrollbar=sc;
@@ -80,11 +80,11 @@ define(['core/util','LF/sprite-select','core/support','LF/global'],function(Futi
 			config.scrollbar.appendChild(sc);
 			sc.onscroll=function()
 			{
-				if( $.camera_locked)
+				if ($.camera_locked)
 				{
 					$.camerax=sc.scrollLeft;
 					$.scroll(sc.scrollLeft);
-					if( config.onscroll)
+					if (config.onscroll)
 						config.onscroll();
 				}
 			}
@@ -105,7 +105,7 @@ define(['core/util','LF/sprite-select','core/support','LF/global'],function(Futi
 			}
 		}
 
-		if( config.camerachase)
+		if (config.camerachase)
 		{
 			$.char = config.camerachase.character;
 			$.camerax = $.width/2;
@@ -123,7 +123,7 @@ define(['core/util','LF/sprite-select','core/support','LF/global'],function(Futi
 		$.layers[0].sp.set_z(3000);
 		$.floor = $.layers[0].sp;
 		var LAY = Futil.group_elements(data.layer,'width');
-		for( var i in LAY)
+		for (var i in LAY)
 		{
 			var lay=
 			{
@@ -132,11 +132,11 @@ define(['core/util','LF/sprite-select','core/support','LF/global'],function(Futi
 			};
 			lay.sp.set_z(-1000+parseInt(i));
 			$.layers.push(lay);
-			for( var j=0; j<LAY[i].length; j++)
+			for (var j=0; j<LAY[i].length; j++)
 			{
 				var dlay = LAY[i][j]; //layer data
 				var sp_config;
-				if( dlay.rect)
+				if (dlay.rect)
 				{
 					//if `rect` is defined, `pic` will only be a dummy
 					sp_config=
@@ -145,7 +145,7 @@ define(['core/util','LF/sprite-select','core/support','LF/global'],function(Futi
 						wh: {w:dlay.width, h:dlay.height}
 					}
 				}
-				else if( dlay.pic)
+				else if (dlay.pic)
 				{
 					sp_config=
 					{
@@ -155,12 +155,12 @@ define(['core/util','LF/sprite-select','core/support','LF/global'],function(Futi
 					}
 				}
 				var sp;
-				if( !dlay.loop && !dlay.tile)
+				if (!dlay.loop && !dlay.tile)
 				{	//single item
 					sp = new Fsprite(sp_config);
 					sp.set_x_y( dlay.x, correct_y(dlay));
 					sp.set_z(data.layer.indexOf(dlay));
-					if( dlay.rect)
+					if (dlay.rect)
 						sp.set_bgcolor(color_conversion(dlay.rect));
 				}
 				else
@@ -170,29 +170,29 @@ define(['core/util','LF/sprite-select','core/support','LF/global'],function(Futi
 					sp.set_x_y(0,0);
 					sp.set_z(data.layer.indexOf(dlay));
 					var left, right, interval;
-					if( dlay.loop)
+					if (dlay.loop)
 					{
 						left = dlay.x;
 						right = dlay.width;
 						interval = dlay.loop;
 					}
-					else if( dlay.tile)
+					else if (dlay.tile)
 					{
 						left = dlay.x-dlay.width*Math.abs(dlay.tile);
 						right = dlay.width+dlay.width*Math.abs(dlay.tile);
 						interval = dlay.width;
 					}
-					for( var k=-1, xx=left; xx<right; xx+=interval, k++)
+					for (var k=-1, xx=left; xx<right; xx+=interval, k++)
 					{
 						var spi = new Fsprite(sp_config);
 						spi.set_x_y( xx, dlay.y);
-						if( dlay.rect)
+						if (dlay.rect)
 							spi.set_bgcolor(color_conversion(dlay.rect));
-						if( dlay.tile<0)
+						if (dlay.tile<0)
 							spi.set_flipx(!(k%2===0));
 					}
 				}
-				if( dlay.cc)
+				if (dlay.cc)
 					$.timed_layers.push({
 						sp:sp,
 						cc:dlay.cc,
@@ -202,7 +202,7 @@ define(['core/util','LF/sprite-select','core/support','LF/global'],function(Futi
 			}
 		}
 
-		if( config.standalone)
+		if (config.standalone)
 		{
 			standalone(this);
 			$.carousel = {
@@ -217,9 +217,9 @@ define(['core/util','LF/sprite-select','core/support','LF/global'],function(Futi
 		//a very strange bug for the scene 'HK Coliseum' must be solved by hard coding
 		function correct_y(dlay)
 		{
-			if( data.name==='HK Coliseum')
+			if (data.name==='HK Coliseum')
 			{
-				if( dlay.pic.indexOf('back1')===-1)
+				if (dlay.pic.indexOf('back1')===-1)
 					return dlay.y-8;
 				else
 					return dlay.y;
@@ -231,9 +231,9 @@ define(['core/util','LF/sprite-select','core/support','LF/global'],function(Futi
 
 	function color_conversion(rect)
 	{
-		if( typeof rect==='string')
+		if (typeof rect==='string')
 			return rect; //extended standard: CSS color format allowed
-		else if( typeof rect==='number')
+		else if (typeof rect==='number')
 		{
 			var lookup, computed;
 			switch (rect)
@@ -257,10 +257,10 @@ define(['core/util','LF/sprite-select','core/support','LF/global'],function(Futi
 				(g+(g>64||g===0?7:0)+((rect>>5&1)&&g>80?4:0))+','+
 				(b+(b>64||b===0?7:0))+
 				')';
-			if( lookup && computed!==lookup)
-				if( 0) //debug info
+			if (lookup && computed!==lookup)
+				if (0) //debug info
 					console.log('computed:'+computed,'correct:'+lookup);
-			if( lookup)
+			if (lookup)
 				return lookup;
 			else
 				return computed;
@@ -270,17 +270,17 @@ define(['core/util','LF/sprite-select','core/support','LF/global'],function(Futi
 	background.prototype.destroy=function()
 	{
 		var $=this;
-		if( $.name==='empty background')
+		if ($.name==='empty background')
 			return;
 		if ( $.layers)
-		for( var i=0; i<$.layers.length; i++)
+		for (var i=0; i<$.layers.length; i++)
 			$.layers[i].sp.remove();
 		if ( $.timed_layers)
-		for( var i=0; i<$.timed_layers.length; i++)
+		for (var i=0; i<$.timed_layers.length; i++)
 			$.timed_layers[i].sp.remove();
-		if( $.scrollbar)
+		if ($.scrollbar)
 			$.scrollbar.parentNode.removeChild($.scrollbar);
-		if( $.sprite_layer)
+		if ($.sprite_layer)
 			$.sprite_layer.remove_all();
 	}
 
@@ -288,7 +288,7 @@ define(['core/util','LF/sprite-select','core/support','LF/global'],function(Futi
 	background.prototype.leaving=function(o, xt)
 	{
 		var $=this;
-		if( !xt)
+		if (!xt)
 			xt = 0;
 		var nx=o.ps.sx+o.ps.vx,
 			ny=o.ps.sy+o.ps.vy;
@@ -305,11 +305,11 @@ define(['core/util','LF/sprite-select','core/support','LF/global'],function(Futi
 	background.prototype.scroll=function(X)
 	{
 		var $=this;
-		for( var i=0; i<$.layers.length; i++)
+		for (var i=0; i<$.layers.length; i++)
 			$.layers[i].sp.set_x_y(round(-(X*$.layers[i].ratio)),0);
 		function round(x)
 		{
-			if( i===0)
+			if (i===0)
 				return x|0;
 			else
 				return x;
@@ -322,62 +322,62 @@ define(['core/util','LF/sprite-select','core/support','LF/global'],function(Futi
 	{
 		var $=this;
 		//camera movement
-		if( !$.camera_locked)
+		if (!$.camera_locked)
 		{
-			if( !$.carousel)
+			if (!$.carousel)
 			{	//camera chase
-				if( $.cami++%($.dropframe+1)!==0)
+				if ($.cami++%($.dropframe+1)!==0)
 					return;
 				/// algorithm by Azriel
 				/// http://www.lf-empire.de/forum/archive/index.php/thread-4597.html
 				var avgX=0,
 					facing=0,
 					numPlayers=0;
-				for( var i in $.char)
+				for (var i in $.char)
 				{
 					avgX+= $.char[i].ps.x;
 					facing+= $.char[i].dirh();
 					numPlayers++;
 				}
-				if( numPlayers>0)
+				if (numPlayers>0)
 					avgX/=numPlayers;
 				//var xLimit= (facing*screenW)/(numPlayers*6) - (halfW + avgX);
 				//  his original equation has one error, it should be 24 regardless of number of players
 				var xLimit= (facing*screenW/24)+(avgX-halfW);
-				if( xLimit < 0) xLimit=0;
-				if( xLimit > $.width-screenW) xLimit = $.width-screenW;
+				if (xLimit < 0) xLimit=0;
+				if (xLimit > $.width-screenW) xLimit = $.width-screenW;
 				var spdX = (xLimit - $.camerax) * GA.camera.speed_factor * ($.dropframe+1);
-				if( spdX!==0)
+				if (spdX!==0)
 				{
-					if( -0.05<spdX && spdX<0.05)
+					if (-0.05<spdX && spdX<0.05)
 						$.camerax = xLimit;
 					else
 						$.camerax = $.camerax + spdX;
 					$.scroll($.camerax);
-					if( $.scrollbar)
+					if ($.scrollbar)
 						$.scrollbar.scrollLeft = Math.round($.camerax);
 				}
 			}
-			else if( $.carousel.type==='linear')
+			else if ($.carousel.type==='linear')
 			{
 				var lastscroll = $.scrollbar.scrollLeft;
 				$.scrollbar.scrollLeft += $.carousel.speed*$.carousel.dir;
-				if( lastscroll === $.scrollbar.scrollLeft)
+				if (lastscroll === $.scrollbar.scrollLeft)
 					$.carousel.dir *= -1;
 				$.scroll($.scrollbar.scrollLeft);
 			}
 		}
 		//layers animation
-		for( var i=0; i<$.timed_layers.length; i++)
+		for (var i=0; i<$.timed_layers.length; i++)
 		{
 			var lay = $.timed_layers[i];
 			var frame = $.timer%lay.cc;
-			if( frame>=lay.c1 && frame<=lay.c2)
+			if (frame>=lay.c1 && frame<=lay.c2)
 				lay.sp.show();
 			else
 				lay.sp.hide();
 		}
-		if( $.standalone)
+		if ($.standalone)
 			$.standalone.canvas.render();
 		$.timer++;
 	}

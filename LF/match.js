@@ -38,33 +38,33 @@ Global)
 		var $=this;
 		var object_ids=[],
 			AI_ids=[];
-		for( var i=0; i<setting.player.length; i++)
+		for (var i=0; i<setting.player.length; i++)
 		{
 			//(lazy) now load all characters and associated data files
 			object_ids.push(setting.player[i].id);
 			object_ids = object_ids.concat(Futil.extract_array(util.select_from($.data.object,{id:setting.player[i].id}).pack,'id').id);
-			if( setting.player[i].controller.type==='AIscript')
+			if (setting.player[i].controller.type==='AIscript')
 				AI_ids.push(setting.player[i].controller.id);
 		}
-		if( !setting.set) setting.set={};
+		if (!setting.set) setting.set={};
 
 		$.gameover_state = false;
 		$.randomseed = $.new_randomseed();
 		$.create_scenegraph();
 		$.control = $.create_controller(setting.control);
 		$.functionkey_control = setting.control;
-		if( $.functionkey_control &&
+		if ($.functionkey_control &&
 			$.functionkey_control.restart)
 			$.functionkey_control.restart();
-		if( $.manager.panel_layer)
+		if ($.manager.panel_layer)
 		{
 			$.panel=[];
-			for( var i=0; i<8; i++) $.panel[i]={};
+			for (var i=0; i<8; i++) $.panel[i]={};
 		}
 		$.overlay_message('loading');
 		$.tasks = []; //pending tasks
 		$.AIscript = [];
-		if( $.manager.summary)
+		if ($.manager.summary)
 			$.manager.summary.hide();
 		$.manager.canvas.render();
 
@@ -77,9 +77,9 @@ Global)
 		{	//when all necessary data files are loaded
 			$.create_background(setting.background);
 			$.create_effects();
-			if( setting.player)
+			if (setting.player)
 				$.create_characters(setting.player);
-			if( setting.set.weapon)
+			if (setting.set.weapon)
 				$.drop_weapons(setting.set.weapon);
 
 			Fsprite.masterconfig_set('onready',onready);
@@ -87,12 +87,12 @@ Global)
 		});
 		function onready()
 		{
-			if( !already)
+			if (!already)
 			{	//all loading finished
 				already = true;
-				if( $.manager.overlay_mess)
+				if ($.manager.overlay_mess)
 					$.manager.overlay_mess.hide();
-				if( setting.set.demo_mode)
+				if (setting.set.demo_mode)
 				{
 					$.demo_mode=true;
 					$.overlay_message('demo');
@@ -112,10 +112,10 @@ Global)
 		//destroy all objects
 		$.for_all('destroy');
 		$.background.destroy();
-		if( $.panel)
-		for( var i=0; i<$.panel.length; i++)
+		if ($.panel)
+		for (var i=0; i<$.panel.length; i++)
 		{
-			if( $.panel[i].hp)
+			if ($.panel[i].hp)
 			{
 				$.panel[i].hp.remove();
 				$.panel[i].hp_bound.remove();
@@ -161,7 +161,7 @@ Global)
 	{
 		var $=this;
 		$.scene = new Scene();
-		for( var objecttype in factory)
+		for (var objecttype in factory)
 			$[objecttype] = {};
 	}
 
@@ -175,37 +175,37 @@ Global)
 			timer: null,
 			$fps: util.div('fps')
 		};
-		if( !$.time.$fps) $.calculate_fps = function(){};
+		if (!$.time.$fps) $.calculate_fps = function(){};
 		$.time.timer = network.setInterval( function(){return $.frame();}, 1000/Global.gameplay.framerate);
 	}
 
 	match.prototype.frame=function()
 	{
 		var $=this;
-		if( $.control)
+		if ($.control)
 			$.control.fetch();
-		if( !$.time.paused || $.time.paused==='F2')
+		if (!$.time.paused || $.time.paused==='F2')
 		{
-			for( var i in $.character)
+			for (var i in $.character)
 			{
 				$.character[i].con.fetch();
 				$.character[i].combodec.frame();
 			}
-			if( $.destroyed)
+			if ($.destroyed)
 				return;
 			$.TU_trans();
-			if( $.time.t===0)
+			if ($.time.t===0)
 				$.match_event('start');
 			$.time.t++;
 			$.manager.canvas.render();
 			$.calculate_fps();
 			
-			if( $.time.paused==='F2')
+			if ($.time.paused==='F2')
 				$.time.paused=true;
 		}
 		else
 		{
-			if( $.time.$fps)
+			if ($.time.$fps)
 				$.time.$fps.value='paused';
 		}
 		return $.game_state();
@@ -216,7 +216,7 @@ Global)
 		var $=this;
 		var d={};
 		d.time = $.time.t;
-		for( var i in $.character)
+		for (var i in $.character)
 		{
 			var c = $.character[i];
 			d[i] = [c.ps.x,c.ps.y,c.ps.z,c.health.hp,c.health.mp];
@@ -235,15 +235,15 @@ Global)
 		$.show_hp();
 		$.check_gameover();
 		var AI_frameskip = 3; //AI script runs at a lower framerate, and is still very reactive
-		if( $.time.t%AI_frameskip===0)
-			for( var i=0; i<$.AIscript.length; i++)
+		if ($.time.t%AI_frameskip===0)
+			for (var i=0; i<$.AIscript.length; i++)
 				$.AIscript[i].TU();
 	}
 
 	match.prototype.match_event=function(E)
 	{
 		var $=this;
-		if( $.state && $.state.event) $.state.event.call(this, E);
+		if ($.state && $.state.event) $.state.event.call(this, E);
 	}
 
 	match.prototype.emit_event=function(E)
@@ -256,15 +256,15 @@ Global)
 	match.prototype.for_all=function(oper)
 	{
 		var $=this;
-		for( var objecttype in factory)
-			for( var i in $[objecttype])
+		for (var objecttype in factory)
+			for (var i in $[objecttype])
 				$[objecttype][i][oper]();
 	}
 
 	match.prototype.process_tasks=function()
 	{
 		var $=this;
-		for( var i=0; i<$.tasks.length; i++)
+		for (var i=0; i<$.tasks.length; i++)
 			$.process_task($.tasks[i]);
 		$.tasks.length=0;
 	}
@@ -274,7 +274,7 @@ Global)
 		switch (T.task)
 		{
 		case 'create_object':
-			if( T.opoint.oid)
+			if (T.opoint.oid)
 			{
 				var OBJ = util.select_from($.data.object,{id:T.opoint.oid});
 				if(!OBJ)
@@ -306,7 +306,7 @@ Global)
 	{
 		var $=this;
 		var mul = 10;
-		if( $.time.t%mul===0)
+		if ($.time.t%mul===0)
 		{
 			var ot=$.time.time;
 			$.time.time = new Date().getTime();
@@ -324,7 +324,7 @@ Global)
 			controller: null,
 			team: 0
 		};
-		for( var i=0; i<players.length; i++)
+		for (var i=0; i<players.length; i++)
 		{
 			var player = players[i];
 			var player_obj = util.select_from($.data.object,{id:player.id});
@@ -333,7 +333,7 @@ Global)
 			var controller = setup_controller(player);
 			//create character
 			var char = new factory.character(char_config, pdata, player.id);
-			if( controller.type==='AIcontroller')
+			if (controller.type==='AIcontroller')
 			{
 				var AIcontroller = util.select_from($.data.AI,{id:player.controller.id}).data;
 				$.AIscript.push(new AIcontroller(char,$,controller));
@@ -344,22 +344,22 @@ Global)
 			var uid = $.scene.add(char);
 			$.character[uid] = char;
 			//pane
-			if( $.panel)
+			if ($.panel)
 				create_pane(i);
 		}
 		function preload_pack_images(char)
 		{
-			for( var j=0; j<char.pack.length; j++)
+			for (var j=0; j<char.pack.length; j++)
 			{
 				var obj = char.pack[j].data;
-				if( obj.bmp && obj.bmp.file)
+				if (obj.bmp && obj.bmp.file)
 				{
-					for( var k=0; k<obj.bmp.file.length; k++)
+					for (var k=0; k<obj.bmp.file.length; k++)
 					{
 						var file = obj.bmp.file[k];
-						for( var m in file)
+						for (var m in file)
 						{
-							if( typeof file[m]==='string' && m.indexOf('file')===0)
+							if (typeof file[m]==='string' && m.indexOf('file')===0)
 							{
 								Fsprite.preload_image(file[m]);
 							}
@@ -420,20 +420,20 @@ Global)
 	match.prototype.show_hp=function()
 	{
 		var $=this;
-		if( $.panel)
-		for( var i=0; i<$.panel.length; i++)
+		if ($.panel)
+		for (var i=0; i<$.panel.length; i++)
 		{
-			if( $.panel[i].uid!==undefined)
+			if ($.panel[i].uid!==undefined)
 			{
 				var ch = $.character[$.panel[i].uid],
 					hp = Math.floor(ch.health.hp/ch.health.hp_full*$.data.UI.data.panel.hpw);
 					hp_bound = Math.floor(ch.health.hp_bound/ch.health.hp_full*$.data.UI.data.panel.hpw);
-				if( hp<0) hp=0;
-				if( hp_bound<0) hp_bound=0;
+				if (hp<0) hp=0;
+				if (hp_bound<0) hp_bound=0;
 				$.panel[i].hp.set_w(hp);
 				$.panel[i].hp_bound.set_w(hp_bound);
 				$.panel[i].mp.set_w(Math.floor(ch.health.mp/ch.health.mp_full*$.data.UI.data.panel.mpw));
-				if( ch.effect.heal && ch.effect.heal>0 && $.time.t%3==0)
+				if (ch.effect.heal && ch.effect.heal>0 && $.time.t%3==0)
 					$.panel[i].hp.set_bgcolor( $.data.UI.data.panel.hp_light);
 				else
 					$.panel[i].hp.set_bgcolor( $.data.UI.data.panel.hp_bright);
@@ -445,28 +445,28 @@ Global)
 	{
 		var $=this;
 		var teams={};
-		if( !$.panel)
+		if (!$.panel)
 			return;
-		for( var i=0; i<$.panel.length; i++)
+		for (var i=0; i<$.panel.length; i++)
 		{
-			if( $.panel[i].uid!==undefined)
+			if ($.panel[i].uid!==undefined)
 			{
 				var ch = $.character[$.panel[i].uid];
-				if( ch.health.hp>0)
+				if (ch.health.hp>0)
 					teams[ch.team] = true;
 			}
 		}
-		if( Object.keys(teams).length<2)
+		if (Object.keys(teams).length<2)
 		{
-			if( !$.gameover_state)
+			if (!$.gameover_state)
 				$.gameover_state = $.time.t;
 			else
-				if( $.time.t == $.gameover_state + 30)
+				if ($.time.t == $.gameover_state + 30)
 					$.gameover();
 		}
 		else
 		{
-			if( $.gameover_state)
+			if ($.gameover_state)
 			{
 				$.gameover_state = false;
 				$.gameover();
@@ -477,22 +477,22 @@ Global)
 	match.prototype.gameover=function()
 	{
 		var $=this;
-		if( $.gameover_state)
+		if ($.gameover_state)
 		{
 			var info = [];
 			var teams = {};
-			for( var i=0; i<$.panel.length; i++)
+			for (var i=0; i<$.panel.length; i++)
 			{
-				if( $.panel[i].uid!==undefined)
+				if ($.panel[i].uid!==undefined)
 				{
 					var ch = $.character[$.panel[i].uid];
-					if( ch.health.hp>0)
+					if (ch.health.hp>0)
 						teams[ch.team] = true;
 				}
 			}
-			for( var i=0; i<$.panel.length; i++)
+			for (var i=0; i<$.panel.length; i++)
 			{
-				if( $.panel[i].uid!==undefined)
+				if ($.panel[i].uid!==undefined)
 				{
 					var ch = $.character[$.panel[i].uid];
 					var alive = ch.health.hp>0;
@@ -516,11 +516,11 @@ Global)
 	match.prototype.key=function(K,down)
 	{
 		var $=this;
-		if( $.gameover_state)
+		if ($.gameover_state)
 		{
-			if( down)
-			if( $.time.t > $.gameover_state + 60)
-			if( K==='att' || K==='jump')
+			if (down)
+			if ($.time.t > $.gameover_state + 60)
+			if (K==='att' || K==='jump')
 				$.F4();
 		}
 	}
@@ -544,7 +544,7 @@ Global)
 		{
 			return 100 <= o.id && o.id < 200;
 		});
-		for( var i=0; i<num; i++)
+		for (var i=0; i<num; i++)
 		{
 			var O=$.background.get_pos($.random(),$.random());
 			O.y=-800;
@@ -555,9 +555,9 @@ Global)
 	match.prototype.destroy_weapons=function()
 	{
 		var $=this;
-		for( var i in $.lightweapon)
+		for (var i in $.lightweapon)
 			$.lightweapon[i].health.hp = 0;
-		for( var i in $.heavyweapon)
+		for (var i in $.heavyweapon)
 			$.heavyweapon[i].health.hp = 0;
 	}
 
@@ -579,7 +579,7 @@ Global)
 	match.prototype.create_background=function(bg)
 	{
 		var $=this;
-		if( bg)
+		if (bg)
 		{
 			var bgdata = util.select_from($.data.background,{id:bg.id}).data;
 			$.background = new Background({
@@ -607,7 +607,7 @@ Global)
 	match.prototype.F7=function()
 	{
 		var $=this;
-		for( var i in $.character)
+		for (var i in $.character)
 		{
 			var ch = $.character[i];
 			ch.health.hp=ch.health.hp_full=ch.health.hp_bound= ch.proper('hp') || Global.gameplay.default.health.hp_full;
@@ -630,7 +630,7 @@ Global)
 	match.prototype.overlay_message=function(mess)
 	{
 		var $=this;
-		if( $.manager.overlay_mess)
+		if ($.manager.overlay_mess)
 		{
 			$.manager.overlay_mess.show();
 			var item = $.data.UI.data.message_overlay[mess];
@@ -644,23 +644,23 @@ Global)
 		var $=this;
 		function show_pause()
 		{
-			if( !$) return;
-			if( $.time.paused)
+			if (!$) return;
+			if ($.time.paused)
 				$.overlay_message('pause');
 		}
-		if( funcon)
+		if (funcon)
 		{
 			funcon.sync=true;
 			funcon.child.push ({
 				key: function(I,down)
 				{
 					var opaused = $.time.paused; //original pause state
-					if( down)
+					if (down)
 					{
 						switch (I)
 						{
 							case 'F1':
-								if( !$.time.paused)
+								if (!$.time.paused)
 									$.time.paused=true;
 								else
 									$.time.paused=false;
@@ -676,7 +676,7 @@ Global)
 							break;
 
 							case 'F6':
-								if( !$.F6_mode)
+								if (!$.F6_mode)
 									$.F6_mode=true;
 								else
 									$.F6_mode=false;
@@ -694,25 +694,25 @@ Global)
 								$.destroy_weapons();
 							break;
 						}
-						if( (I==='F1' || I==='F2') && $.time.paused)
+						if ((I==='F1' || I==='F2') && $.time.paused)
 						{
 							$.manager.overlay_mess.hide();
 							setTimeout(show_pause,4); //so that the 'pause' message blinks
 						}
-						else if( !$.time.paused)
+						else if (!$.time.paused)
 						{
 							$.manager.overlay_mess.hide();
 						}
-						if( opaused !== $.time.paused)
+						if (opaused !== $.time.paused)
 						{	//state change
-							if( $.time.paused)
+							if ($.time.paused)
 							{
-								if( funcon.paused)
+								if (funcon.paused)
 									funcon.paused(true);
 							}
 							else
 							{
-								if( funcon.paused)
+								if (funcon.paused)
 									funcon.paused(false);
 							}
 						}

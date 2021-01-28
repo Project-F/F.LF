@@ -24,7 +24,7 @@ define(['core/network'],function(Fnetwork)
 	}
 	function frame(time, data, send)
 	{
-		if( data && data.control)
+		if (data && data.control)
 			for (var i=0; i<remote.length; i++)
 				remote[i].supply(data.control[i]);
 		for (var i=0; i<local.length; i++)
@@ -36,18 +36,18 @@ define(['core/network'],function(Fnetwork)
 		verify.last = callback();
 		for (var i=0; i<local.length; i++)
 			local[i].swap_buffer();
-		if( packet)
+		if (packet)
 			packet.control.length = 0;
 	}
 	function compare(A,B)
 	{
-		if( A===undefined || B===undefined)
+		if (A===undefined || B===undefined)
 			return;
-		for( var I in A)
+		for (var I in A)
 		{
-			if( !same(A[I],B[I]))
+			if (!same(A[I],B[I]))
 			{
-				if( !verify.error)
+				if (!verify.error)
 				{
 					handler.on('sync_error');
 					console.log(A,B);
@@ -57,12 +57,12 @@ define(['core/network'],function(Fnetwork)
 		}
 		function same(a,b)
 		{
-			if( typeof a!==typeof b)
+			if (typeof a!==typeof b)
 				return false;
-			if( typeof a==='object')
+			if (typeof a==='object')
 			{
-				for( var i in a)
-					if( a[i]!==b[i])
+				for (var i in a)
+					if (a[i]!==b[i])
 						return false;
 				return true;
 			}
@@ -79,20 +79,20 @@ define(['core/network'],function(Fnetwork)
 		this.pre_buf=[];
 		this.sync=true;
 		this.role=role;
-		if( role==='local' || role==='dual')
+		if (role==='local' || role==='dual')
 		{
 			local.push(this);
 			this.wrap(control);
 			control.child.push(this);
 			control.sync=true;
-			for( var i in control.state)
+			for (var i in control.state)
 				this.state[i] = 0;
 		}
-		if( role==='remote' || role==='dual')
+		if (role==='remote' || role==='dual')
 		{
 			remote.push(this);
-			if( role==='remote')
-				for( var i in control)
+			if (role==='remote')
+				for (var i in control)
 					this.state[i] = 0;
 		}
 	}
@@ -111,10 +111,10 @@ define(['core/network'],function(Fnetwork)
 			'fetch':1,
 			'key':1
 		};
-		for( var I in control)
+		for (var I in control)
 		{	//wrap methods except those in override
-			if( typeof control[I]==='function')
-			if( !override[I])
+			if (typeof control[I]==='function')
+			if (!override[I])
 			{
 				this[I]=(function(I)
 				{
@@ -135,7 +135,7 @@ define(['core/network'],function(Fnetwork)
 	ncon.prototype.pre_fetch=function()
 	{
 		//prepare a controller buffer to be sent to a remote peer
-		if( this.role==='local' || this.role==='dual')
+		if (this.role==='local' || this.role==='dual')
 		{
 			this.control.fetch();
 			return this.pre_buf;
@@ -144,7 +144,7 @@ define(['core/network'],function(Fnetwork)
 	ncon.prototype.swap_buffer=function()
 	{
 		//locally, the controller buffer will be fetched at next frame
-		if( this.role==='local' || this.role==='dual')
+		if (this.role==='local' || this.role==='dual')
 		{
 			var hold = this.pre_buf;
 			this.pre_buf = this.buf;
@@ -155,18 +155,18 @@ define(['core/network'],function(Fnetwork)
 	ncon.prototype.supply=function(buf)
 	{
 		//received a key sequence buffer from remote peer
-		if( this.role==='remote' || this.role==='dual')
+		if (this.role==='remote' || this.role==='dual')
 		{
-			if( buf && buf.length)
+			if (buf && buf.length)
 				this.buf = this.buf.concat(buf);
 		}
 	}
 	ncon.prototype.fetch=function()
 	{
-		for( var i=0; i<this.buf.length; i++)
+		for (var i=0; i<this.buf.length; i++)
 		{
 			var I=this.buf[i], K=I[0], D=I[1];
-			for( var j=0; j<this.child.length; j++)
+			for (var j=0; j<this.child.length; j++)
 				this.child[j].key(K,D);
 			this.state[K]=D;
 		}
@@ -201,7 +201,7 @@ define(['core/network'],function(Fnetwork)
 		controller:ncon,
 		setInterval:function(a,b)
 		{
-			if( network.timer)
+			if (network.timer)
 			{
 				console.error('only one timer can be active at a time. please `clearInterval` before setting a new one.');
 				return;
@@ -211,7 +211,7 @@ define(['core/network'],function(Fnetwork)
 		},
 		clearInterval:function(a)
 		{
-			if( !network.timer || network.timer !== a)
+			if (!network.timer || network.timer !== a)
 			{
 				console.error('wrong timer id '+a);
 				return;

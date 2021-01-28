@@ -14,7 +14,7 @@ sprite.renderer = 'canvas';
 sprite.masterconfig=
 function(c)
 {
-	if( c)
+	if (c)
 	{
 		sprite._masterconfig=c;
 		sprite.masterconfig_update();
@@ -25,7 +25,7 @@ function(c)
 sprite.masterconfig_set=
 function(key,value)
 {
-	if( key && value)
+	if (key && value)
 	{
 		sprite._masterconfig[key] = value;
 		sprite.masterconfig_update();
@@ -33,20 +33,20 @@ function(key,value)
 }
 sprite.masterconfig_update=function()
 {
-	if( sprite._masterconfig.resourcemap)
-		if( !(sprite._masterconfig.resourcemap instanceof resourcemap))
+	if (sprite._masterconfig.resourcemap)
+		if (!(sprite._masterconfig.resourcemap instanceof resourcemap))
 			sprite._masterconfig.resourcemap = new resourcemap(sprite._masterconfig.resourcemap);
 }
 sprite.resolve_resource=function(res,level)
 {
-	if( sprite._masterconfig.resourcemap)
+	if (sprite._masterconfig.resourcemap)
 	{
-		if( !level)
+		if (!level)
 			return sprite._masterconfig.resourcemap.get(res);
 		else
 			return sprite._masterconfig.resourcemap.fallback(res,level);
 	}
-	if( sprite._masterconfig.baseUrl)
+	if (sprite._masterconfig.baseUrl)
 		return sprite._masterconfig.baseUrl + res;
 	return res;
 }
@@ -60,9 +60,9 @@ function sprite (config)
 {
 	sprite._count++;
 	
-	if( config.canvas instanceof HTMLElement && config.canvas.tagName.toLowerCase()==='canvas')
+	if (config.canvas instanceof HTMLElement && config.canvas.tagName.toLowerCase()==='canvas')
 		return new sprite_group(config);
-	if( config.type==='group')
+	if (config.type==='group')
 		return new sprite_group(config);
 	
 	this.img={};
@@ -71,38 +71,38 @@ function sprite (config)
 	this.w=0; this.h=0;
 	this.img_x=0; this.img_y=0;
 	
-	if( config.wh==='fit')
+	if (config.wh==='fit')
 		this.fit_to_img=true;
-	else if( typeof config.wh==='object')
+	else if (typeof config.wh==='object')
 		this.set_wh(config.wh);
-	if( config.xy)
+	if (config.xy)
 		this.set_xy(config.xy);
-	if( config.xywh)
+	if (config.xywh)
 	{
 		this.set_xy(config.xywh);
 		this.set_wh(config.xywh);
 	}
-	if( config.img)
+	if (config.img)
 	{	//add the images in config list
-		if( typeof config.img==='object')
+		if (typeof config.img==='object')
 			for ( var I in config.img)
 				this.add_img(config.img[I], I);
 		else
 			this.add_img(config.img, '0');
 	}
-	if( config.text)
+	if (config.text)
 	{
 		this.text = config.text;
 		this.textcolor = '#000000';
 		this.font = '10px monospace';
 	}
-	if( config.textcolor)
+	if (config.textcolor)
 		this.textcolor = config.textcolor;
-	if( config.font)
+	if (config.font)
 		this.font = config.font;
-	if( config.bgcolor)
+	if (config.bgcolor)
 		this.set_bgcolor(config.bgcolor);
-	if( config.canvas)
+	if (config.canvas)
 	{
 		config.canvas.attach(this);
 		this.parent = config.canvas;
@@ -164,9 +164,9 @@ sprite.prototype.set_alpha=function(a)
 }
 sprite.prototype.set_text=function(text,textcolor,font)
 {
-	if( text) this.text = text;
-	if( textcolor) this.textcolor = textcolor;
-	if( font) this.font = font;
+	if (text) this.text = text;
+	if (textcolor) this.textcolor = textcolor;
+	if (font) this.font = font;
 }
 
 sprite.prototype.add_img=function(imgpath,name)
@@ -177,22 +177,22 @@ sprite.prototype.add_img=function(imgpath,name)
 	sprite._loading++;
 	img.onload = function()
 	{
-		if( This.fit_to_img)
+		if (This.fit_to_img)
 			This.set_w_h(this.naturalWidth,this.naturalHeight);
 		img.onload = null;
 		img.onerror = null;
 		delete This.fit_to_img;
 		sprite._loading--;
-		if( sprite._loading===0)
-			if( sprite._masterconfig.onready)
+		if (sprite._loading===0)
+			if (sprite._masterconfig.onready)
 				sprite._masterconfig.onready();
 	}
-	if( sprite._masterconfig.resourcemap)
+	if (sprite._masterconfig.resourcemap)
 	img.onerror = function()
 	{
 		retry++;
 		var src = sprite.resolve_resource(imgpath, retry); //fallback
-		if( !src)
+		if (!src)
 			img.onerror = null;
 		else
 			img.src = src;
@@ -205,9 +205,9 @@ sprite.prototype.add_img=function(imgpath,name)
 }
 sprite.prototype.remove_img=function(name)
 {
-	if( this.img[name])
+	if (this.img[name])
 		this.img[name]=undefined;
-	if( this.cur_img===name)
+	if (this.cur_img===name)
 		this.cur_img = null;
 }
 sprite.prototype.switch_img=function(name)
@@ -228,31 +228,31 @@ sprite.prototype.set_img_x_y=function(x,y)
 
 sprite.prototype.render=function(ctx)
 {
-	if( this.hidden) return;
-	if( !ctx) return;
-	if( this.bgcolor)
+	if (this.hidden) return;
+	if (!ctx) return;
+	if (this.bgcolor)
 	{
 		ctx.fillStyle = this.bgcolor;
 		ctx.fillRect(this.x,this.y,this.w,this.h);
 	}
-	if( this.opacity!==null && this.opacity!==undefined)
+	if (this.opacity!==null && this.opacity!==undefined)
 	{
 		var globalAlpha = ctx.globalAlpha;
 		ctx.globalAlpha *= this.opacity;
 	}
-	if( this.img[this.cur_img] && this.w && this.h)
+	if (this.img[this.cur_img] && this.w && this.h)
 	{
 		ctx.drawImage(this.img[this.cur_img],
 			/*source*/ -this.img_x, -this.img_y, this.w, this.h,
 			/* dest */ this.x_flipped?-this.x-this.w:this.x, this.y_flipped?-this.y-this.h:this.y, this.w, this.h);
 	}
-	if( this.text)
+	if (this.text)
 	{
 		ctx.font = this.font;
 		ctx.fillStyle = this.textcolor;
 		ctx.fillText(this.text, this.x, this.y);
 	}
-	if( this.opacity!==null && this.opacity!==undefined)
+	if (this.opacity!==null && this.opacity!==undefined)
 		ctx.globalAlpha = globalAlpha;
 }
 sprite.prototype.hide=function()
@@ -265,7 +265,7 @@ sprite.prototype.show=function()
 }
 sprite.prototype.remove=function()
 {
-	if( !this.removed && this.parent)
+	if (!this.removed && this.parent)
 	{
 		this.removed = true;
 		this.parent.remove(this);
@@ -273,7 +273,7 @@ sprite.prototype.remove=function()
 }
 sprite.prototype.attach=function()
 {
-	if( this.removed)
+	if (this.removed)
 	{
 		this.parent.attach(this);
 		this.removed = false;
@@ -283,25 +283,25 @@ sprite.prototype.attach=function()
 function sprite_group(config)
 {
 	var parent = config.canvas;
-	if( parent instanceof HTMLElement && parent.tagName.toLowerCase()==='canvas')
+	if (parent instanceof HTMLElement && parent.tagName.toLowerCase()==='canvas')
 	{
 		this.ctx = parent.getContext('2d');
 		this.width = parent.width;
 		this.height = parent.height;
 	}
-	else if( parent instanceof sprite_group)
+	else if (parent instanceof sprite_group)
 		parent.attach(this);
 	this.children = [];
 	this.x=0; this.y=0; this.z=0;
 	this.w=0; this.h=0;
-	if( config.bgcolor)
+	if (config.bgcolor)
 		this.set_bgcolor(config.bgcolor);
-	if( typeof config.wh==='object')
+	if (typeof config.wh==='object')
 		this.set_wh(config.wh);
-	if( config.xywh)
+	if (config.xywh)
 	{
 		var xywh = config.xywh;
-		if( config.xywh instanceof Array)
+		if (config.xywh instanceof Array)
 		{
 			var A = config.xywh;
 			xywh = {x:A[0],y:A[1],w:A[2],h:A[3]};
@@ -372,7 +372,7 @@ sprite_group.prototype.attach=function(sp)
 sprite_group.prototype.remove=function(sp)
 {
 	var ii = this.children.indexOf(sp);
-	if( ii!==-1)
+	if (ii!==-1)
 		this.children.splice(ii,1);
 }
 sprite_group.prototype.remove_all=function()
@@ -381,20 +381,20 @@ sprite_group.prototype.remove_all=function()
 }
 sprite_group.prototype.render=function(ctx)
 {
-	if( this.ctx)
+	if (this.ctx)
 	{
 		ctx = this.ctx;
 		ctx.clearRect(0,0,this.width,this.height);
 	}
-	if( !ctx && !this.ctx) return;
-	if( this.hidden) return;
+	if (!ctx && !this.ctx) return;
+	if (this.hidden) return;
 	
-	if( this.opacity!==null && this.opacity!==undefined)
+	if (this.opacity!==null && this.opacity!==undefined)
 	{
 		var globalAlpha = ctx.globalAlpha;
 		ctx.globalAlpha *= this.opacity;
 	}
-	if( this.bgcolor)
+	if (this.bgcolor)
 	{
 		ctx.fillStyle = this.bgcolor;
 		ctx.fillRect(this.x,this.y,this.w,this.h);
@@ -403,31 +403,31 @@ sprite_group.prototype.render=function(ctx)
 	this.children.sort(function(A,B){return A.z-B.z}); //z ordering
 	ctx.translate(this.x,this.y);
 	var fx=0,fy=0;
-	for( var i=0; i<this.children.length; i++)
+	for (var i=0; i<this.children.length; i++)
 	{
 		var sp = this.children[i];
-		if( !sp.x_flipped && !sp.y_flipped)
+		if (!sp.x_flipped && !sp.y_flipped)
 			flip_to(0,0);
-		else if( sp.x_flipped && !sp.y_flipped)
+		else if (sp.x_flipped && !sp.y_flipped)
 			flip_to(1,0);
-		else if( !sp.x_flipped && sp.y_flipped)
+		else if (!sp.x_flipped && sp.y_flipped)
 			flip_to(0,1);
-		else if( sp.x_flipped && sp.y_flipped)
+		else if (sp.x_flipped && sp.y_flipped)
 			flip_to(1,1);
 		sp.render(ctx);
 	}
 	flip_to(0,0);
 	ctx.translate(-this.x,-this.y);
-	if( this.opacity!==null && this.opacity!==undefined)
+	if (this.opacity!==null && this.opacity!==undefined)
 		ctx.globalAlpha = globalAlpha;
 	
 	function flip_to(ffx,ffy)
 	{
-		if( fx!==ffx && fy!==ffy)
+		if (fx!==ffx && fy!==ffy)
 			ctx.scale(-1,-1);
-		else if( fx===ffx && fy!==ffy)
+		else if (fx===ffx && fy!==ffy)
 			ctx.scale(1,-1);
-		else if( fx!==ffx && fy===ffy)
+		else if (fx!==ffx && fy===ffy)
 			ctx.scale(-1,1);
 		fx=ffx;
 		fy=ffy;

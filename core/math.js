@@ -64,7 +64,7 @@ curves--------------------
 bezier2: function (A,C,B,steps)
 {
 	var curve = new Array();
-	for( var i=0; i<steps; i++)
+	for (var i=0; i<steps; i++)
 	{
 		curve.push(math.bezier2_step(A,C,B, i,steps));
 	}

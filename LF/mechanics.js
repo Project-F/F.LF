@@ -19,7 +19,7 @@ var GC=Global.gameplay;
 function mech(parent)
 {
 	var spec=parent.match.spec;
-	if( spec[parent.id] && spec[parent.id].mass!==undefined && spec[parent.id].mass!==null)
+	if (spec[parent.id] && spec[parent.id].mass!==undefined && spec[parent.id].mass!==null)
 		this.mass=spec[parent.id].mass;
 	else
 		this.mass=Global.gameplay.default.machanics.mass;
@@ -42,21 +42,21 @@ mech.prototype.body= function(obj,filter,offset)
 	if(!obj)
 		obj=this.frame.D.bdy;
 	//if parent object is in `super` effect, returns no body volume
-	if( obj===this.frame.D.bdy && this.parent.effect.super)
+	if (obj===this.frame.D.bdy && this.parent.effect.super)
 		return this.body_empty();
 	//if meets certain criteria (as in most cases), will use optimized version
-	if( obj===this.frame.D.bdy && !filter && (!(obj instanceof Array) || obj.length<=this.vol_body.max))
+	if (obj===this.frame.D.bdy && !filter && (!(obj instanceof Array) || obj.length<=this.vol_body.max))
 		return this.body_body(offset);
 
-	if( obj instanceof Array)
+	if (obj instanceof Array)
 	{ //many bdy
-		if( !filter && obj.length === 2)
+		if (!filter && obj.length === 2)
 		{ //unroll the loop
 			return ([this.volume(obj[0],off),
 				this.volume(obj[1],off)
 			]);
 		}
-		else if( !filter && obj.length === 3)
+		else if (!filter && obj.length === 3)
 		{ //unroll the loop
 			return ([this.volume(obj[0],off),
 				this.volume(obj[1],off),
@@ -66,9 +66,9 @@ mech.prototype.body= function(obj,filter,offset)
 		else
 		{
 			var B=[];
-			for( var i in obj)
+			for (var i in obj)
 			{
-				if( !filter || filter(obj[i]))
+				if (!filter || filter(obj[i]))
 					B.push( this.volume(obj[i],off) );
 			}
 			return B;
@@ -76,7 +76,7 @@ mech.prototype.body= function(obj,filter,offset)
 	}
 	else
 	{ //1 bdy only
-		if( !filter || filter(obj))
+		if (!filter || filter(obj))
 			return [this.volume(obj,off)];
 		else
 			return [];
@@ -97,7 +97,7 @@ mech.prototype.body_body= function(V)
 	var ps=this.ps;
 	var sp=this.sp;
 
-	if( !O)
+	if (!O)
 	{	//no bdy
 		var B=this.vol_body[0];
 		if(V)
@@ -120,13 +120,13 @@ mech.prototype.body_body= function(V)
 		B.data=this.vol_body.empty_data;
 		this.vol_body.length=1;
 	}
-	else if( O instanceof Array)
+	else if (O instanceof Array)
 	{	//many bdy
-		for( var i=0; i<O.length; i++)
+		for (var i=0; i<O.length; i++)
 		{
 			var B=this.vol_body[i];
 			var vx=O[i].x;
-			if( ps.dir==='left')
+			if (ps.dir==='left')
 				vx=sp.w-O[i].x-O[i].w;
 			if(V)
 			{
@@ -153,7 +153,7 @@ mech.prototype.body_body= function(V)
 	{	//1 bdy only
 		var B=this.vol_body[0];
 		var vx=O.x;
-		if( ps.dir==='left')
+		if (ps.dir==='left')
 			vx=sp.w-O.x-O.w;
 		if(V)
 		{
@@ -187,9 +187,9 @@ mech.prototype.volume= function(O,V)
 	var ps=this.ps;
 	var sp=this.sp;
 
-	if( !O)
+	if (!O)
 	{
-		if( !V)
+		if (!V)
 			return {
 				x:ps.sx, y:ps.sy, z:ps.sz,
 				vx:0, vy:0, w:0, h:0, zwidth:0,
@@ -204,10 +204,10 @@ mech.prototype.volume= function(O,V)
 	}
 
 	var vx=O.x;
-	if( ps.dir==='left')
+	if (ps.dir==='left')
 		vx=sp.w-O.x-O.w;
 
-	if( !V)
+	if (!V)
 		return {
 			x:ps.sx, y:ps.sy, z:ps.sz,
 			vx: vx,
@@ -234,16 +234,16 @@ mech.prototype.make_point= function(a,prefix)
 	var ps=this.ps;
 	var sp=this.sp;
 
-	if( a && !prefix)
+	if (a && !prefix)
 	{
-		if( ps.dir==='right')
+		if (ps.dir==='right')
 			return {x:ps.sx+a.x, y:ps.sy+a.y, z:ps.sz+a.y};
 		else
 			return {x:ps.sx+sp.w-a.x, y:ps.sy+a.y, z:ps.sz+a.y};
 	}
-	else if( a && prefix)
+	else if (a && prefix)
 	{
-		if( ps.dir==='right')
+		if (ps.dir==='right')
 			return {x:ps.sx+a[prefix+'x'], y:ps.sy+a[prefix+'y'], z:ps.sz+a[prefix+'y']};
 		else
 			return {x:ps.sx+sp.w-a[prefix+'x'], y:ps.sy+a[prefix+'y'], z:ps.sz+a[prefix+'y']};
@@ -316,9 +316,9 @@ mech.prototype.set_pos= function(x,y,z)
 	var fD=this.frame.D;
 
 	ps.x=x; ps.y=y; ps.z=z;
-	if( ps.z < this.bg.zboundary[0]) //z bounding
+	if (ps.z < this.bg.zboundary[0]) //z bounding
 		ps.z = this.bg.zboundary[0];
-	if( ps.z > this.bg.zboundary[1])
+	if (ps.z > this.bg.zboundary[1])
 		ps.z = this.bg.zboundary[1];
 
 	ps.sx = ps.dir==='right'? (ps.x-fD.centerx):(ps.x+fD.centerx-sp.w);
@@ -333,7 +333,7 @@ mech.prototype.dynamics= function()
 	var fD=this.frame.D;
 	var GC=Global.gameplay;
 
-	if( !this.blocking_xz())
+	if (!this.blocking_xz())
 	{
 		ps.x += ps.vx;
 		ps.z += ps.vz;
@@ -343,16 +343,16 @@ mech.prototype.dynamics= function()
 		ps.x += ps.vx * 0.1;
 		ps.z += ps.vz * 0.1;
 	}
-	if( this.floor_xbound)
+	if (this.floor_xbound)
 	{
-		if( ps.x<0)
+		if (ps.x<0)
 			ps.x=0;
-		if( ps.x>this.bg.width)
+		if (ps.x>this.bg.width)
 			ps.x=this.bg.width;
 	}
-	if( ps.z < this.bg.zboundary[0]) //z bounding
+	if (ps.z < this.bg.zboundary[0]) //z bounding
 		ps.z = this.bg.zboundary[0];
-	if( ps.z > this.bg.zboundary[1])
+	if (ps.z > this.bg.zboundary[1])
 		ps.z = this.bg.zboundary[1];
 
 	ps.y += ps.vy;
@@ -361,7 +361,7 @@ mech.prototype.dynamics= function()
 	ps.sy = ps.y - fD.centery;
 	ps.sz = ps.z;
 
-	if( ps.y>0)
+	if (ps.y>0)
 	{	//never below the ground
 		ps.y=0;
 		ps.sy = ps.y - fD.centery;
@@ -369,40 +369,40 @@ mech.prototype.dynamics= function()
 
 	sp.set_x_y(Math.floor(ps.sx), Math.floor(ps.sy+ps.sz)); //projection onto screen
 	sp.set_z(Math.floor(ps.sz+ps.zz)); //z ordering
-	if( this.sha)
+	if (this.sha)
 	{
 		this.sha.set_x_y(Math.floor(ps.x-this.bg.shadow.x), Math.floor(ps.z-this.bg.shadow.y));
 		this.sha.set_z(Math.floor(ps.sz-1));
 	}
 
-	if( ps.y===0 && this.mass>0) //only when on the ground
+	if (ps.y===0 && this.mass>0) //only when on the ground
 	{
 		//simple friction
-		if( ps.vx) ps.vx += (ps.vx>0?-1:1)*ps.fric;
-		if( ps.vz) ps.vz += (ps.vz>0?-1:1)*ps.fric;
-		if( ps.vx!==0 && ps.vx>-GC.min_speed && ps.vx<GC.min_speed) ps.vx=0; //defined minimum speed
-		if( ps.vz!==0 && ps.vz>-GC.min_speed && ps.vz<GC.min_speed) ps.vz=0;
+		if (ps.vx) ps.vx += (ps.vx>0?-1:1)*ps.fric;
+		if (ps.vz) ps.vz += (ps.vz>0?-1:1)*ps.fric;
+		if (ps.vx!==0 && ps.vx>-GC.min_speed && ps.vx<GC.min_speed) ps.vx=0; //defined minimum speed
+		if (ps.vz!==0 && ps.vz>-GC.min_speed && ps.vz<GC.min_speed) ps.vz=0;
 	}
 
-	if( ps.y<0)
+	if (ps.y<0)
 		ps.vy+= this.mass * GC.gravity;
 }
 
 mech.prototype.unit_friction=function()
 {
 	var ps=this.ps;
-	if( ps.y===0) //only when on the ground
+	if (ps.y===0) //only when on the ground
 	{
-		if( ps.vx) ps.vx += (ps.vx>0?-1:1);
-		if( ps.vz) ps.vz += (ps.vz>0?-1:1);
+		if (ps.vx) ps.vx += (ps.vx>0?-1:1);
+		if (ps.vz) ps.vz += (ps.vz>0?-1:1);
 	}
 }
 
 mech.prototype.linear_friction=function(x,z)
 {
 	var ps=this.ps;
-	if( x && ps.vx) ps.vx += ps.vx>0 ? -x:x;
-	if( z && ps.vz) ps.vz += ps.vz>0 ? -z:z;
+	if (x && ps.vx) ps.vx += ps.vx>0 ? -x:x;
+	if (z && ps.vz) ps.vz += ps.vz>0 ? -z:z;
 }
 
 //return true if there is a blocking itr:kind:14 ahead
@@ -414,15 +414,15 @@ mech.prototype.blocking_xz=function()
 		z: this.ps.vz
 	}
 
-	if( this.parent.type!=='character')
+	if (this.parent.type!=='character')
 		return false;
 
 	var body = this.body(null,null,offset);
-	for( var i=0; i<body.length; i++)
+	for (var i=0; i<body.length; i++)
 	{
 		body[i].zwidth=0;
 		var result = this.parent.scene.query( body[i], this.parent, {tag:'itr:14'});
-		if( result.length > 0)
+		if (result.length > 0)
 			return true;
 	}
 }

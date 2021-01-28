@@ -17,22 +17,22 @@ var util={};
 util.selectA_from=function(from,where,option)
 {
 	var res=[];
-	for( var i in from)
+	for (var i in from)
 	{
 		var O=from[i];
 		var match=true;
-		if( typeof where==='function')
+		if (typeof where==='function')
 		{
-			if( !where(O))
+			if (!where(O))
 				match=false;
 		}
 		else
-			for( var j in where)
+			for (var j in where)
 			{
-				if( O[j]!==where[j])
+				if (O[j]!==where[j])
 					match=false;
 			}
-		if( match)
+		if (match)
 			res.push(O);
 	}
 	return res; //always return an array
@@ -41,9 +41,9 @@ util.selectA_from=function(from,where,option)
 util.select_from=function(from,where,option)
 {
 	var res = util.selectA_from(from,where,option);
-	if( res.length===0)
+	if (res.length===0)
 		return ;
-	else if( res.length===1)
+	else if (res.length===1)
 		return res[0]; //return an item
 	else
 		return res;
@@ -51,19 +51,19 @@ util.select_from=function(from,where,option)
 
 util.lookup=function(A,x)
 {
-	for( var i in A)
+	for (var i in A)
 	{
-		if( x<=i)
+		if (x<=i)
 			return A[i];
 	}
 }
 
 util.lookup_abs=function(A,x)
 {
-	if( x<0) x=-x;
-	for( var i in A)
+	if (x<0) x=-x;
+	for (var i in A)
 	{
-		if( x<=i)
+		if (x<=i)
 			return A[i];
 	}
 	return A[i];
@@ -72,14 +72,14 @@ util.lookup_abs=function(A,x)
 util.shallow_copy=function(A)
 {
 	var B={};
-	for( var i in A)
+	for (var i in A)
 		B[i] = A[i];
 	return B;
 }
 
 util.div=function(/*classname, child_classname, ...*/)
 {
-	if( !util.container)
+	if (!util.container)
 	{
 		util.root = document.getElementsByClassName('LFroot')[0];
 		util.container = util.root.getElementsByClassName('container')[0];
@@ -95,9 +95,9 @@ util.div=function(/*classname, child_classname, ...*/)
 
 util.filename=function(file)
 {
-	if( file.lastIndexOf('/')!==-1)
+	if (file.lastIndexOf('/')!==-1)
 		file = file.slice(file.lastIndexOf('/')+1);
-	if( file.lastIndexOf('.js')!==-1)
+	if (file.lastIndexOf('.js')!==-1)
 		file = file.slice(0,file.lastIndexOf('.js'));
 	return file;
 }
@@ -108,11 +108,11 @@ This is considered insecure in F.LF. thus F.LF only allows simple predefined con
 */
 util.setup_resourcemap=function(package)
 {
-	if( package.resourcemap)
-	if( typeof package.resourcemap.condition==='string')
+	if (package.resourcemap)
+	if (typeof package.resourcemap.condition==='string')
 	{
 		var cond = package.resourcemap.condition.split(' ');
-		if( cond[0]==='location' && cond[1]==='contain' &&
+		if (cond[0]==='location' && cond[1]==='contain' &&
 			cond[2] && cond[3]==='at' && cond[4])
 		{
 			cond[4]=parseInt(cond[4]);
@@ -121,7 +121,7 @@ util.setup_resourcemap=function(package)
 				return window.location.href.indexOf(cond[2])===cond[4];
 			}
 		}
-		else if( cond[0]==='location' && cond[1]==='contain' && cond[2])
+		else if (cond[0]==='location' && cond[1]==='contain' && cond[2])
 		{
 			package.resourcemap.condition = function()
 			{
@@ -129,7 +129,7 @@ util.setup_resourcemap=function(package)
 			}
 		}
 
-		if( typeof package.resourcemap.condition==='function')
+		if (typeof package.resourcemap.condition==='function')
 		{
 			var resmap = [
 				package.resourcemap, //package-defined resourcemap
@@ -147,12 +147,12 @@ util.setup_resourcemap=function(package)
 
 util.normalize_path=function(ppp)
 {	//normalize a file path section
-	if( !ppp)
+	if (!ppp)
 		return '';
 	ppp=ppp.replace(/\\/g,'/');
-	if( ppp.charAt(ppp.length-1)!=='/')
+	if (ppp.charAt(ppp.length-1)!=='/')
 		ppp+='/';
-	if( ppp.charAt(0)==='/')
+	if (ppp.charAt(0)==='/')
 		ppp=ppp.slice(1);
 	return ppp;
 }
@@ -162,15 +162,15 @@ util.location_parameters=function()
 {
 	var param = window.location.href.split('/').pop(),
 		query = {};
-	if( param.indexOf('?')!==-1)
+	if (param.indexOf('?')!==-1)
 	{
 		var param = param.split('?').pop().split('&');
-		for( var i=0; i<param.length; i++)
+		for (var i=0; i<param.length; i++)
 		{
 			pp = param[i].split('=');
-			if( pp.length===1)
+			if (pp.length===1)
 				query[pp[0]] = 1;
-			if( pp.length===2)
+			if (pp.length===2)
 				query[pp[0]] = pp[1];
 		}
 	}
@@ -186,16 +186,16 @@ util.location_parameters=function()
  */
 util.organize_package=function(package)
 {
-	for( var i=0; i<package.data.object.length; i++)
+	for (var i=0; i<package.data.object.length; i++)
 	{
-		if( package.data.object[i].type==='character')
+		if (package.data.object[i].type==='character')
 		{
 			//if `deep.js` is of type character, select all objects which `file` contains `deep`
 			var name = util.filename(package.data.object[i].file);
 			var objects = util.selectA_from(package.data.object,function(O){
-				if( !O.file) return false;
+				if (!O.file) return false;
 				var file = util.filename(O.file);
-				if( file===name) return false;
+				if (file===name) return false;
 				return file.indexOf(name)!==-1;
 			});
 			package.data.object[i].pack = objects; //each character has a specialattack pack

@@ -41,28 +41,28 @@ function weapon(type)
 				}
 
 				var ps=$.ps;
-				if( ps.y===0 && ps.vy>0) //fell onto ground
+				if (ps.y===0 && ps.vy>0) //fell onto ground
 				{
-					if( this.mech.speed() > GC.weapon.bounceup.limit)
+					if (this.mech.speed() > GC.weapon.bounceup.limit)
 					{	//bounceup
-						if( $.light)
+						if ($.light)
 						{
 							ps.vy = 0;
 							$.trans.frame(70);
 						}
-						if( $.heavy)
+						if ($.heavy)
 							ps.vy = GC.weapon.bounceup.speed.y;
-						if( ps.vx) ps.vx = (ps.vx>0?1:-1)*GC.weapon.bounceup.speed.x;
-						if( ps.vz) ps.vz = (ps.vz>0?1:-1)*GC.weapon.bounceup.speed.z;
+						if (ps.vx) ps.vx = (ps.vx>0?1:-1)*GC.weapon.bounceup.speed.x;
+						if (ps.vz) ps.vz = (ps.vz>0?1:-1)*GC.weapon.bounceup.speed.z;
 						$.health.hp -= $.data.bmp.weapon_drop_hurt;
 					}
 					else
 					{
 						$.team=0;
 						ps.vy=0; //set to zero
-						if( $.light)
+						if ($.light)
 							$.trans.frame(70); //just_on_ground
-						if( $.heavy)
+						if ($.heavy)
 							$.trans.frame(21); //just_on_ground
 					}
 					ps.zz=0;
@@ -70,7 +70,7 @@ function weapon(type)
 			break;
 			case 'die':
 				$.trans.frame(1000);
-				if( $.data.bmp.weapon_broken_sound)
+				if ($.data.bmp.weapon_broken_sound)
 					$.match.sound.play($.data.bmp.weapon_broken_sound);
 				$.brokeneffect_create($.id);
 			break;
@@ -80,10 +80,10 @@ function weapon(type)
 		{	var $=this;
 			switch (event) {
 			case 'frame':
-				if( $.frame.N===70) //just_on_ground
+				if ($.frame.N===70) //just_on_ground
 				{
-					if( !$.frame.D.sound)
-						if( $.data.bmp.weapon_drop_sound)
+					if (!$.frame.D.sound)
+						if ($.data.bmp.weapon_drop_sound)
 							$.match.sound.play($.data.bmp.weapon_drop_sound);
 				}
 			break;
@@ -93,7 +93,7 @@ function weapon(type)
 		{	var $=this;
 			switch (event) {
 			case 'frame':
-				if( $.frame.N===64) //on ground
+				if ($.frame.N===64) //on ground
 					$.team=0; //loses team
 			break;
 		}},
@@ -102,11 +102,11 @@ function weapon(type)
 		{	var $=this;
 			switch (event) {
 			case 'frame':
-				if( $.frame.N === 21) //just_on_ground
+				if ($.frame.N === 21) //just_on_ground
 				{
 					$.trans.set_next(20);
-					if( !$.frame.D.sound)
-						if( $.data.bmp.weapon_drop_sound)
+					if (!$.frame.D.sound)
+						if ($.data.bmp.weapon_drop_sound)
 							$.match.sound.play($.data.bmp.weapon_drop_sound);
 				}
 			break;
@@ -116,7 +116,7 @@ function weapon(type)
 		{	var $=this;
 			switch (event) {
 			case 'frame':
-				if( $.frame.N === 20) //on_ground
+				if ($.frame.N === 20) //on_ground
 					$.team=0;
 			break;
 		}}
@@ -128,7 +128,7 @@ function weapon(type)
 		var $=this;
 		// chain constructor
 		livingobject.call(this,config,data,thisID);
-		for( var i=0; i<$.sp.ani.length; i++)
+		for (var i=0; i<$.sp.ani.length; i++)
 		{	//fix border issue
 			$.sp.ani[i].config.borderleft=1;
 			$.sp.ani[i].config.bordertop=0;
@@ -153,7 +153,7 @@ function weapon(type)
 	typeweapon.prototype.init=function(T)
 	{
 		var $=this;
-		if( T.opoint.kind===2)
+		if (T.opoint.kind===2)
 		{
 			T.parent.hold_weapon($);
 			$.pick(T.parent);
@@ -164,30 +164,30 @@ function weapon(type)
 		var $=this;
 		var ITR=Futil.make_array($.frame.D.itr);
 
-		if( $.team!==0)
+		if ($.team!==0)
 		if(($.heavy) ||
 		   ($.light && $.state()===1002))
-		for( var j in ITR)
+		for (var j in ITR)
 		{	//for each itr tag
-			if( ITR[j].kind===0) //kind 0
+			if (ITR[j].kind===0) //kind 0
 			{
 				var vol=$.mech.volume(ITR[j]);
 				vol.zwidth = 0;
 				var hit= $.scene.query(vol, $, {tag:'body', not_team:$.team});
-				for( var k in hit)
+				for (var k in hit)
 				{	//for each being hit
 					var itr_rest;
-					if( ITR[j].arest!==undefined || ITR[j].vrest!==undefined)
+					if (ITR[j].arest!==undefined || ITR[j].vrest!==undefined)
 						itr_rest=ITR[j];
 					else
 						itr_rest=GC.default.weapon;
-					//if( itr_rest.arest) itr_rest.arest+=20; //what is this line for?
-					if( !$.itr.arest)
-					if( $.attacked(hit[k].hit(ITR[j],$,{x:$.ps.x,y:$.ps.y,z:$.ps.z},vol)))
+					//if (itr_rest.arest) itr_rest.arest+=20; //what is this line for?
+					if (!$.itr.arest)
+					if ($.attacked(hit[k].hit(ITR[j],$,{x:$.ps.x,y:$.ps.y,z:$.ps.z},vol)))
 					{	//hit you!
 						var ps=$.ps;
 						var vx=(ps.vx===0?0:(ps.vx>0?1:-1));
-						if( $.light)
+						if ($.light)
 						{
 							ps.vx = vx * GC.weapon.hit.vx;
 							ps.vy = GC.weapon.hit.vy;
@@ -195,8 +195,8 @@ function weapon(type)
 						$.itr_arest_update(ITR);
 						//create an effect
 						var timeout;
-						if( $.light) timeout=2;
-						if( $.heavy) timeout=4;
+						if ($.light) timeout=2;
+						if ($.heavy) timeout=4;
 						$.effect.dvx=0;
 						$.effect.dvy=0;
 						$.effect_stuck(0,timeout);
@@ -217,35 +217,35 @@ function weapon(type)
 	typeweapon.prototype.hit=function(ITR, att, attps, rect)
 	{
 		var $=this;
-		if( $.hold.obj)
+		if ($.hold.obj)
 			return false;
-		if( $.itr.vrest[att.uid])
+		if ($.itr.vrest[att.uid])
 			return false;
 
-		if( ITR.kind===15)
+		if (ITR.kind===15)
 		{
 			$.whirlwind_force(rect);
 			return true;
 		}
 
 		var accept=false;
-		if( $.light)
+		if ($.light)
 		{
-			if( $.state()===1002) //throwing
+			if ($.state()===1002) //throwing
 			{
 				accept=true;
-				if( (att.dirh()>0)!==($.ps.vx>0)) //head-on collision
+				if ((att.dirh()>0)!==($.ps.vx>0)) //head-on collision
 					$.ps.vx *= GC.weapon.reverse.factor.vx;
 				$.ps.vy *= GC.weapon.reverse.factor.vy;
 				$.ps.vz *= GC.weapon.reverse.factor.vz;
 				$.team = att.team; //change to the attacker's team
 			}
-			else if( $.state()===1004) //on_ground
+			else if ($.state()===1004) //on_ground
 			{
 				//var asp = att.mech.speed();
 				//$.ps.vx= asp* GC.weapon.gain.factor.x * (att.ps.vx>0?1:-1);
 				//$.ps.vy= asp* GC.weapon.gain.factor.y;
-				if( att.type==='lightweapon' || att.type==='heavyweapon')
+				if (att.type==='lightweapon' || att.type==='heavyweapon')
 				{
 					accept=true;
 					$.ps.vx= (att.ps.vx?(att.ps.vx>0?1:-1):0)*GC.weapon.bounceup.speed.x;
@@ -255,29 +255,29 @@ function weapon(type)
 		}
 
 		var fall= ITR.fall!==undefined? ITR.fall: GC.default.fall.value;
-		if( $.heavy)
+		if ($.heavy)
 		{
-			if( $.state()===2004) //on_ground
+			if ($.state()===2004) //on_ground
 			{
 				accept=true;
-				if( fall<30)
+				if (fall<30)
 					$.effect_create(0, GC.effect.duration);
-				else if( fall<GC.fall.KO)
+				else if (fall<GC.fall.KO)
 					$.ps.vy= GC.weapon.soft_bounceup.speed.y;
 				else
 				{
 					$.ps.vy= GC.weapon.bounceup.speed.y;
-					if( att.ps.vx) $.ps.vx= (att.ps.vx>0?1:-1)*GC.weapon.bounceup.speed.x;
-					if( att.ps.vz) $.ps.vz= (att.ps.vz>0?1:-1)*GC.weapon.bounceup.speed.z;
+					if (att.ps.vx) $.ps.vx= (att.ps.vx>0?1:-1)*GC.weapon.bounceup.speed.x;
+					if (att.ps.vz) $.ps.vz= (att.ps.vz>0?1:-1)*GC.weapon.bounceup.speed.z;
 					$.trans.frame(999);
 				}
 			}
-			else if( $.state()===2000) //in_the_sky
+			else if ($.state()===2000) //in_the_sky
 			{
-				if( fall>=GC.fall.KO)
+				if (fall>=GC.fall.KO)
 				{
 					accept=true;
-					if( (att.dirh()>0)!==($.ps.vx>0)) //head-on collision
+					if ((att.dirh()>0)!==($.ps.vx>0)) //head-on collision
 						$.ps.vx *= GC.weapon.reverse.factor.vx;
 					$.ps.vy *= GC.weapon.reverse.factor.vy;
 					$.ps.vz *= GC.weapon.reverse.factor.vz;
@@ -285,14 +285,14 @@ function weapon(type)
 				}
 			}
 		}
-		if( accept)
+		if (accept)
 		{
 			$.visualeffect_create( 0, rect, (attps.x < $.ps.x), (fall<GC.fall.KO?1:2));
-			if( ITR && ITR.vrest)
+			if (ITR && ITR.vrest)
 				$.itr.vrest[att.uid] = ITR.vrest;
-			if( ITR && ITR.injury)
+			if (ITR && ITR.injury)
 				$.health.hp -= ITR.injury;
-			if( $.data.bmp.weapon_hit_sound)
+			if ($.data.bmp.weapon_hit_sound)
 				$.match.sound.play($.data.bmp.weapon_hit_sound);
 		}
 		return accept;
@@ -310,25 +310,25 @@ function weapon(type)
 		var fD = $.frame.D;
 		var result={};
 
-		if( $.data.frame[wpoint.weaponact]) //if that frame exists
+		if ($.data.frame[wpoint.weaponact]) //if that frame exists
 		{
 			$.trans.frame(wpoint.weaponact);
 			$.trans.trans(); //update immediately
 		}
 
-		if( fD.wpoint && fD.wpoint.kind===2)
+		if (fD.wpoint && fD.wpoint.kind===2)
 		{
-			if( wpoint.dvx) $.ps.vx = att.dirh() * wpoint.dvx;
-			if( wpoint.dvz) $.ps.vz = att.dirv() * wpoint.dvz;
-			if( wpoint.dvy) $.ps.vy = wpoint.dvy;
-			if( $.ps.vx || $.ps.vy || $.ps.vz)
+			if (wpoint.dvx) $.ps.vx = att.dirh() * wpoint.dvx;
+			if (wpoint.dvz) $.ps.vz = att.dirv() * wpoint.dvz;
+			if (wpoint.dvy) $.ps.vy = wpoint.dvy;
+			if ($.ps.vx || $.ps.vy || $.ps.vz)
 			{	//gaining velocity; flying away
 				var imx,imy; //impulse
-				if( $.light)
+				if ($.light)
 				{
 					imx=58; imy=-15;
 				}
-				if( $.heavy)
+				if ($.heavy)
 				{
 					imx=48; imy=-40;
 				}
@@ -337,19 +337,19 @@ function weapon(type)
 					att.ps.y + imy,
 					att.ps.z + $.ps.vz );
 				$.ps.zz=1;
-				if( $.light)
+				if ($.light)
 					$.trans.frame(40);
-				if( $.heavy)
+				if ($.heavy)
 					$.trans.frame(999);
 				$.trans.trans(); //update immediately
 				$.hold.obj=null;
 				result.thrown=true;
 			}
 
-			if( !result.thrown)
+			if (!result.thrown)
 			{
 				var wpoint_cover = wpoint.cover!==undefined?wpoint.cover:GC.default.wpoint.cover;
-				if( wpoint_cover===1)
+				if (wpoint_cover===1)
 					$.ps.zz = -1;
 				else
 					$.ps.zz = 1;
@@ -360,35 +360,35 @@ function weapon(type)
 				$.mech.project();
 			}
 
-			if( $.light) //attackable
+			if ($.light) //attackable
 			{
-				if( wpoint.attacking)
+				if (wpoint.attacking)
 				{
 					var ITR=Futil.make_array(fD.itr);
 
-					for( var j in ITR)
+					for (var j in ITR)
 					{	//for each itr tag
-						if( ITR[j].kind===5) //kind 5 only
+						if (ITR[j].kind===5) //kind 5 only
 						{
 							var vol=$.mech.volume(ITR[j]);
 							vol.zwidth = 0;
 							var hit= $.scene.query(vol, [$,att], {tag:'body', not_team:$.team});
-							for( var k in hit)
+							for (var k in hit)
 							{	//for each being hit
-								if( !att.itr.arest)
+								if (!att.itr.arest)
 								{	//if rest allows
 									var citr;
-									if( $.data.weapon_strength_list &&
+									if ($.data.weapon_strength_list &&
 										$.data.weapon_strength_list[wpoint.attacking])
 										citr = $.data.weapon_strength_list[wpoint.attacking];
 									else
 										citr = ITR[j];
 
-									if( $.attacked(hit[k].hit(citr,att,{x:att.ps.x,y:att.ps.y,z:att.ps.z},vol)))
+									if ($.attacked(hit[k].hit(citr,att,{x:att.ps.x,y:att.ps.y,z:att.ps.z},vol)))
 									{	//hit you!
-										if( citr.vrest)
+										if (citr.vrest)
 											result.vrest = citr.vrest;
-										if( citr.arest)
+										if (citr.arest)
 											result.arest = citr.arest;
 										result.hit = hit[k].uid;
 									}
@@ -399,7 +399,7 @@ function weapon(type)
 				}
 			}
 		}
-		if( result.thrown)
+		if (result.thrown)
 			$.shadow.show();
 		return result;
 	}
@@ -409,8 +409,8 @@ function weapon(type)
 		var $=this;
 		$.team=0;
 		$.hold.obj=null;
-		if( dvx) $.ps.vx=dvx * 0.5; //magic number
-		if( dvy) $.ps.vy=dvy * 0.2;
+		if (dvx) $.ps.vx=dvx * 0.5; //magic number
+		if (dvy) $.ps.vy=dvy * 0.2;
 		$.ps.zz=0;
 		$.trans.frame(999);
 		$.shadow.show();
@@ -419,7 +419,7 @@ function weapon(type)
 	typeweapon.prototype.pick=function(att)
 	{
 		var $=this;
-		if( !$.hold.obj)
+		if (!$.hold.obj)
 		{
 			$.hold.obj=att;
 			$.hold.pre=att;
@@ -434,13 +434,13 @@ function weapon(type)
 	{
 		var $=this;
 		var newrest;
-		if( ITR.arest)
+		if (ITR.arest)
 			newrest = ITR.arest;
-		else if( ITR.vrest)
+		else if (ITR.vrest)
 			newrest = ITR.vrest;
 		else
 			newrest = GC.default.weapon.vrest;
-		if( obj.type==='heavyweapon' || obj.type==='lightweapon')
+		if (obj.type==='heavyweapon' || obj.type==='lightweapon')
 			newrest *= 2; //double the rest time for weapon-weapon hit
 		$.itr.vrest[uid] = newrest;
 	}
@@ -448,7 +448,7 @@ function weapon(type)
 	typeweapon.prototype.attacked=function(inj)
 	{
 		var $=this;
-		if( $.hold.pre)
+		if ($.hold.pre)
 			return $.hold.pre.attacked(inj);
 		else
 			return inj===false?false:true;
@@ -457,7 +457,7 @@ function weapon(type)
 	typeweapon.prototype.killed=function()
 	{
 		var $=this;
-		if( $.hold.pre)
+		if ($.hold.pre)
 			return $.hold.pre.killed();
 	}
 

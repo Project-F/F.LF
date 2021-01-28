@@ -43,13 +43,13 @@ rect_flat: function (rect1_left,rect1_top,rect1_right,rect1_bottom,
 
 normalize_rect: function (rect)
 {
-	if( rect.left > rect.right && rect.top > rect.bottom)
+	if (rect.left > rect.right && rect.top > rect.bottom)
 		return {left:rect.right, right:rect.left,
 			top:rect.bottom, bottom:rect.top}
-	else if( rect.left > rect.right)
+	else if (rect.left > rect.right)
 		return {left:rect.right, right:rect.left,
 			top:rect.top, bottom:rect.bottom}
-	else if( rect.top > rect.bottom)
+	else if (rect.top > rect.bottom)
 		return {left:rect.left, right:rect.right,
 			top:rect.bottom, bottom:rect.top}
 	else

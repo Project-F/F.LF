@@ -26,7 +26,7 @@ function keychanger (config)
 	div.style.textAlign='center';
 
 	controllers = Futil.make_array(controllers);
-	for( var i=0; i<controllers.length; i++)
+	for (var i=0; i<controllers.length; i++)
 	{
 		add_player(controllers[i], i);
 	}
@@ -44,7 +44,7 @@ function keychanger (config)
 
 	function add_player(con, num)
 	{
-		if( num!==0)
+		if (num!==0)
 		{
 			var sep=create_at(div, 'div');
 			sep.style.float='left';
@@ -60,7 +60,7 @@ function keychanger (config)
 		head.colSpan='2';
 
 		var i=1;
-		for( var I in con.config)
+		for (var I in con.config)
 		{
 			row[i]=create_at(table, 'tr');
 			add_pair(row[i],I);
@@ -74,7 +74,7 @@ function keychanger (config)
 			cell.style.cursor='pointer';
 			cell.onclick=function()
 			{
-				if( !change_active)
+				if (!change_active)
 				{
 					change_active=true;
 					var This=this;
@@ -91,7 +91,7 @@ function keychanger (config)
 						con.keycode[name]=keycode;
 						This.style.backgroundColor= "#EEE";
 						change_active=false;
-						if( config.onchange)
+						if (config.onchange)
 						{
 							config.onchange(con,name,keyname,keycode);
 						}
@@ -105,7 +105,7 @@ function keychanger (config)
 	{
 		var E = document.createElement(tag);
 		parent.appendChild(E);
-		if( id)
+		if (id)
 			E.id = id;
 		return E;
 	}

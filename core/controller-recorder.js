@@ -50,9 +50,9 @@ control_recorder.prototype.export_str= function()
 {
 	var str="";
 	str+= '[\n';
-	for( var i=0; i<this.rec.length; i++)
+	for (var i=0; i<this.rec.length; i++)
 	{
-		if( i!==0)
+		if (i!==0)
 			str+= ',';
 		str+= JSON.stringify(this.rec[i]);
 	}
@@ -105,7 +105,7 @@ function control_player(control_config, record)
 control_player.prototype.frame=function()
 {
 	this.time++;
-	if( this.sync===false)
+	if (this.sync===false)
 		this.fetch();
 }
 /*\
@@ -118,11 +118,11 @@ control_player.prototype.fetch=function()
 		rec=this.rec;
 	for (; rec[I].t<=this.time; I++)
 	{
-		for( var i in this.child)
+		for (var i in this.child)
 			this.child[i].key(rec[I].k, rec[I].d);
 		this.state[rec[I].k] = rec[I].d;
 
-		if( I===rec.length-1) //loop
+		if (I===rec.length-1) //loop
 			I=0;
 	}
 	this.I=I;

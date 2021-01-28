@@ -9,7 +9,7 @@ define(['core/effects-pool'],function(Feffects)
 	
 	function soundmanager(config)
 	{
-		if( !config || !basic_support)
+		if (!config || !basic_support)
 			return { //dummy object
 				play:function(){},
 				TU:function(){},
@@ -19,7 +19,7 @@ define(['core/effects-pool'],function(Feffects)
 		this.buffer = {};
 		this.time = 0;
 		var This = this;
-		for( var i=0; i<config.packs.length; i++)
+		for (var i=0; i<config.packs.length; i++)
 			(function(i){
 				This.packs[config.packs[i].id] = new Feffects({
 					circular: false,
@@ -35,11 +35,11 @@ define(['core/effects-pool'],function(Feffects)
 	}
 	soundmanager.prototype.play=function(path)
 	{
-		if( this.buffer[path])
+		if (this.buffer[path])
 			return; //play each sound once only in one TU
 		this.buffer[path] = true;
 		var I, id;
-		if( path.charAt(1)==='/')
+		if (path.charAt(1)==='/')
 		{
 			I = path.charAt(0);
 			id = path.slice(2);
@@ -50,19 +50,19 @@ define(['core/effects-pool'],function(Feffects)
 			I = str[0];
 			id = str[1];
 		}
-		if( this.packs[I])
+		if (this.packs[I])
 			this.packs[I].create(id);
 	}
 	soundmanager.prototype.TU=function()
 	{
 		this.time++;
-		if( this.time%5===0)
-			for( var I in this.buffer) //clear buffer
+		if (this.time%5===0)
+			for (var I in this.buffer) //clear buffer
 				this.buffer[I] = null;
 	}
 	soundmanager.support=function(callback)
 	{
-		if( !basic_support)
+		if (!basic_support)
 			return;
 		var src = {
 			mp3:'data:audio/mpeg;base64,/+MYxAAAAANIAUAAAASEEB/jwOFM/0MM/90b/+RhST//w4NFwOjf///PZu////9lns5GFDv//l9GlUIEEIAAAgIg8Ir/JGq3/+MYxDsLIj5QMYcoAP0dv9HIjUcH//yYSg+CIbkGP//8w0bLVjUP///3Z0x5QCAv/yLjwtGKTEFNRTMuOTeqqqqqqqqqqqqq/+MYxEkNmdJkUYc4AKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq',
@@ -70,7 +70,7 @@ define(['core/effects-pool'],function(Feffects)
 		};
 		try {
 			var audio = document.createElement('audio');
-			for( var I in src)
+			for (var I in src)
 			{
 				var source = document.createElement('source');
 				source.src = src[I];
@@ -100,14 +100,14 @@ define(['core/effects-pool'],function(Feffects)
 		var audio = this.audio = document.createElement('audio');
 		this.frame = data.sound;
 		audio.preload='auto';
-		for( var i=0; i<data.ext.length; i++)
+		for (var i=0; i<data.ext.length; i++)
 		{
 			var source = document.createElement('source');
 			var src = data.file+'.'+data.ext[i];
-			if( resourcemap)
+			if (resourcemap)
 				src = resourcemap.get(src);
 			source.src = src;
-			if( types[data.ext[i]])
+			if (types[data.ext[i]])
 				source.type = types[data.ext[i]];
 			audio.appendChild(source);
 		}
@@ -116,13 +116,13 @@ define(['core/effects-pool'],function(Feffects)
 	}
 	soundsprite.prototype.born=function(id)
 	{
-		if( id && this.frame[id])
+		if (id && this.frame[id])
 		{
 			this.current = this.frame[id];
-			if( this.audio.readyState>=4)
+			if (this.audio.readyState>=4)
 			{
 				this.audio.currentTime = this.current.start;
-				if( this.audio.currentTime===this.current.start)
+				if (this.audio.currentTime===this.current.start)
 				{
 					this.audio.play();
 					this.dead = false;
@@ -138,12 +138,12 @@ define(['core/effects-pool'],function(Feffects)
 	}
 	soundsprite.prototype.timeupdate=function()
 	{
-		if( this.current)
-		if( this.audio.currentTime < this.current.start ||
+		if (this.current)
+		if (this.audio.currentTime < this.current.start ||
 			this.audio.currentTime > this.current.end)
 		{
 			this.audio.pause();
-			if( !this.dead)
+			if (!this.dead)
 				this.parent.die(this);
 		}
 	}

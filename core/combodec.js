@@ -113,24 +113,24 @@ combodec.prototype.key=function(K, down)
 	var seq=this.seq;
 
 	var push=true;
-	if( this.config.rp)
+	if (this.config.rp)
 	{	//detect repeated keys
 		for (var i=seq.length-1, cc=1; i>=0 && seq[i]==K; i--,cc++)
-			if( cc>=this.config.rp[K])
+			if (cc>=this.config.rp[K])
 				push=false;
 	}
 
 	//eliminate repeated key strokes by browser; discard keys that are already pressed down
-	if( this.con.state[K])
+	if (this.con.state[K])
 		push=false;
 	//  remarks: opera linux has a strange behavior that repeating keys **do** fire keyup events
 
-	if( this.config.timeout)
+	if (this.config.timeout)
 		this.timeout=this.time+this.config.timeout;
-	if( this.config.comboout)
+	if (this.config.comboout)
 		this.comboout=this.time+this.config.comboout;
 
-	if( push)
+	if (push)
 		seq.push({k:K,t:this.time});
 
 	if ( this.combo && push)
@@ -140,20 +140,20 @@ combodec.prototype.key=function(K, down)
 		{
 			var detected=true;
 			var j=seq.length-C[i].seq.length;
-			if( j<0) detected=false;
+			if (j<0) detected=false;
 			else for (var k=0; j<seq.length; j++,k++)
 			{
-				if( C[i].seq[k] !== seq[j].k ||
+				if (C[i].seq[k] !== seq[j].k ||
 					(C[i].maxtime!==null && C[i].maxtime!==undefined && seq[seq.length-1].t-seq[j].t>C[i].maxtime))
 				{
 					detected=false;
 					break;
 				}
 			}
-			if( detected)
+			if (detected)
 			{
 				this.config.callback(C[i]);
-				if( C[i].clear_on_combo || (C[i].clear_on_combo!==false && this.config.clear_on_combo))
+				if (C[i].clear_on_combo || (C[i].clear_on_combo!==false && this.config.clear_on_combo))
 					this.clear_seq();
 			}
 		}
@@ -180,9 +180,9 @@ combodec.prototype.clear_seq=function()
 \*/
 combodec.prototype.frame=function()
 {
-	if( this.time===this.timeout)
+	if (this.time===this.timeout)
 		this.clear_seq();
-	if( this.time===this.comboout)
+	if (this.time===this.comboout)
 		this.seq.push({k:'_',t:this.time});
 	this.time++;
 }

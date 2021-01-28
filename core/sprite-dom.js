@@ -14,7 +14,7 @@ sprite.renderer = 'DOM';
 sprite.masterconfig=
 function(c)
 {
-	if( c)
+	if (c)
 	{
 		sprite._masterconfig=c;
 		sprite.masterconfig_update();
@@ -25,7 +25,7 @@ function(c)
 sprite.masterconfig_set=
 function(key,value)
 {
-	if( key && value)
+	if (key && value)
 	{
 		sprite._masterconfig[key] = value;
 		sprite.masterconfig_update();
@@ -33,20 +33,20 @@ function(key,value)
 }
 sprite.masterconfig_update=function()
 {
-	if( sprite._masterconfig.resourcemap)
-		if( !(sprite._masterconfig.resourcemap instanceof resourcemap))
+	if (sprite._masterconfig.resourcemap)
+		if (!(sprite._masterconfig.resourcemap instanceof resourcemap))
 			sprite._masterconfig.resourcemap = new resourcemap(sprite._masterconfig.resourcemap);
 }
 sprite.resolve_resource=function(res,level)
 {
-	if( sprite._masterconfig.resourcemap)
+	if (sprite._masterconfig.resourcemap)
 	{
-		if( !level)
+		if (!level)
 			return sprite._masterconfig.resourcemap.get(res);
 		else
 			return sprite._masterconfig.resourcemap.fallback(res,level);
 	}
-	if( sprite._masterconfig.baseUrl)
+	if (sprite._masterconfig.baseUrl)
 		return sprite._masterconfig.baseUrl + res;
 	return res;
 }
@@ -65,25 +65,25 @@ function sprite (config)
 	 * sprite.type
 	 */
 	var classname = 'F_sprite';
-	if( config.type==='group') {
+	if (config.type==='group') {
 		classname = 'F_sprite_group';
 		this.type = 'group';
-	} else if( config.div)
+	} else if (config.div)
 		classname = 'F_sprite_inline';
-	if( config.div)
+	if (config.div)
 	{
 		this.el = config.div;
 		this.el.classList.add(classname);
-		if( window.getComputedStyle(this.el).getPropertyValue('position')==='static')
+		if (window.getComputedStyle(this.el).getPropertyValue('position')==='static')
 			this.el.style.position='relative';
 	}
 	else
 	{
 		this.el = document.createElement('div');
 		this.el.className = classname;
-		if( config.canvas)
+		if (config.canvas)
 		{
-			if( config.canvas instanceof sprite && config.canvas.type==='group')
+			if (config.canvas instanceof sprite && config.canvas.type==='group')
 				config.canvas.attach(this);
 			else
 				config.canvas.appendChild(this.el);
@@ -93,16 +93,16 @@ function sprite (config)
 	this.img={};
 	this.cur_img=null;
 
-	if( config.wh==='fit')
+	if (config.wh==='fit')
 		this.fit_to_img=true;
-	else if( typeof config.wh==='object')
+	else if (typeof config.wh==='object')
 		this.set_wh(config.wh);
-	if( config.xy)
+	if (config.xy)
 		this.set_xy(config.xy);
-	if( config.xywh)
+	if (config.xywh)
 	{
 		var xywh = config.xywh;
-		if( config.xywh instanceof Array)
+		if (config.xywh instanceof Array)
 		{
 			var A = config.xywh;
 			xywh = {x:A[0],y:A[1],w:A[2],h:A[3]};
@@ -110,31 +110,31 @@ function sprite (config)
 		this.set_xy(xywh);
 		this.set_wh(xywh);
 	}
-	if( config.img)
+	if (config.img)
 	{	//add the images in config list
-		if( typeof config.img==='object')
+		if (typeof config.img==='object')
 			for ( var I in config.img)
 				this.add_img(config.img[I], I);
 		else
 			this.add_img(config.img, '0');
 	}
-	if( config.div && config.type!=='group')
+	if (config.div && config.type!=='group')
 	{	//adopt images in `div`
 		var img = config.div.getElementsByTagName('img');
-		for( var i=0; i<img.length; i++)
+		for (var i=0; i<img.length; i++)
 		{
 			var Name=img[i].getAttribute('name');
-			if( Name)
+			if (Name)
 				this.adopt_img(img[i]);
 		}
 	}
-	if( config.bgcolor)
+	if (config.bgcolor)
 		this.set_bgcolor(config.bgcolor);
 
-	if( (support.css3dtransform && !sprite._masterconfig.disable_css3dtransform) ||
+	if ((support.css3dtransform && !sprite._masterconfig.disable_css3dtransform) ||
 		(support.css2dtransform && !sprite._masterconfig.disable_css2dtransform))
 	{
-		if( !config.div)
+		if (!config.div)
 		{
 			this.el.style.left=0+'px';
 			this.el.style.top=0+'px';
@@ -145,7 +145,7 @@ function sprite (config)
 
 sprite.prototype.set_wh=function(P)
 {
-	if( defined(P.w) && defined(P.h))
+	if (defined(P.w) && defined(P.h))
 		this.set_w_h(P.w,P.h);
 	else
 		console.log('sprite:wrong set_wh parameters');
@@ -165,7 +165,7 @@ sprite.prototype.set_h=function(h)
 	this.el.style.height=h+'px';
 }
 
-if( support.css3dtransform && !sprite._masterconfig.disable_css3dtransform)
+if (support.css3dtransform && !sprite._masterconfig.disable_css3dtransform)
 {
 	sprite.prototype.set_xy=function(P)
 	{
@@ -188,7 +188,7 @@ if( support.css3dtransform && !sprite._masterconfig.disable_css3dtransform)
 		this.set_x_y(this.x,this.y);
 	}
 }
-else if( support.css2dtransform && !sprite._masterconfig.disable_css2dtransform)
+else if (support.css2dtransform && !sprite._masterconfig.disable_css2dtransform)
 {
 	sprite.prototype.set_xy=function(P)
 	{
@@ -266,24 +266,24 @@ sprite.prototype.add_img=function(imgpath,name)
 	img.className = 'F_sprite_img'; //**DOM
 	img.onload = function()
 	{
-		if( !this.naturalWidth) this.naturalWidth=this.width;
-		if( !this.naturalHeight) this.naturalHeight=this.height;
-		if( This.fit_to_img)
+		if (!this.naturalWidth) this.naturalWidth=this.width;
+		if (!this.naturalHeight) this.naturalHeight=this.height;
+		if (This.fit_to_img)
 			This.set_w_h(this.naturalWidth,this.naturalHeight);
 		img.onload = null;
 		img.onerror = null;
 		delete This.fit_to_img;
 		sprite._loading--;
-		if( sprite._loading===0)
-			if( sprite._masterconfig.onready)
+		if (sprite._loading===0)
+			if (sprite._masterconfig.onready)
 				sprite._masterconfig.onready();
 	}
-	if( sprite._masterconfig.resourcemap)
+	if (sprite._masterconfig.resourcemap)
 	img.onerror = function()
 	{
 		retry++;
 		var src = sprite.resolve_resource(imgpath, retry); //fallback
-		if( !src)
+		if (!src)
 			img.onerror = null;
 		else
 			img.src = src;
@@ -297,12 +297,12 @@ sprite.prototype.add_img=function(imgpath,name)
 }
 sprite.prototype.remove_img=function(name)
 {
-	if( this.img[name])
+	if (this.img[name])
 	{
 		this.img[name].parentNode.removeChild(this.img[name]);
 		this.img[name]=undefined;
 	}
-	if( this.cur_img===name)
+	if (this.cur_img===name)
 		this.cur_img = null;
 }
 /*private
@@ -315,14 +315,14 @@ sprite.prototype.adopt_img=function(im)
 {
 	var Name=im.getAttribute('name');
 	im.classList.add('F_sprite_img');
-	if( !im.naturalWidth) im.naturalWidth=im.width;
-	if( !im.naturalHeight) im.naturalHeight=im.height;
-	if( !im.naturalWidth && !im.naturalHeight)
+	if (!im.naturalWidth) im.naturalWidth=im.width;
+	if (!im.naturalHeight) im.naturalHeight=im.height;
+	if (!im.naturalWidth && !im.naturalHeight)
 		im.addEventListener('load', onload, true);
 	function onload()
 	{
-		if( !this.naturalWidth) this.naturalWidth=this.width;
-		if( !this.naturalHeight) this.naturalHeight=this.height;
+		if (!this.naturalWidth) this.naturalWidth=this.width;
+		if (!this.naturalHeight) this.naturalHeight=this.height;
 		im.removeEventListener('load', onload, true);
 	}
 	this.img[Name]=im;
@@ -333,7 +333,7 @@ sprite.prototype.switch_img=function(name)
 	var left,top; //store the left, top of the current displayed image
 	for ( var I in this.img)
 	{
-		if( this.img[I].style.display=='')
+		if (this.img[I].style.display=='')
 		{
 			left=this.img[I].style.left;
 			top =this.img[I].style.top;
@@ -342,7 +342,7 @@ sprite.prototype.switch_img=function(name)
 	}
 	for ( var I in this.img)
 	{
-		if( I==name)
+		if (I==name)
 		{
 			this.img[I].style.left=left;
 			this.img[I].style.top=top;
@@ -355,7 +355,7 @@ sprite.prototype.switch_img=function(name)
 	}
 	this.cur_img=name;
 }
-if( support.css3dtransform && !sprite._masterconfig.disable_css3dtransform)
+if (support.css3dtransform && !sprite._masterconfig.disable_css3dtransform)
 {
 	sprite.prototype.set_img_xy=function(P)
 	{
@@ -368,7 +368,7 @@ if( support.css3dtransform && !sprite._masterconfig.disable_css3dtransform)
 		this.img[this.cur_img].style[support.css3dtransform]= 'translate3d('+x+'px,'+y+'px, 0px) ';
 	}
 }
-else if( support.css2dtransform && !sprite._masterconfig.disable_css2dtransform)
+else if (support.css2dtransform && !sprite._masterconfig.disable_css2dtransform)
 {
 	sprite.prototype.set_img_xy=function(P)
 	{
@@ -409,13 +409,13 @@ sprite.prototype.show=function()
 }
 sprite.prototype.remove=function(sp)
 {
-	if( this.type==='group' && sp)
+	if (this.type==='group' && sp)
 	{
 		this.el.removeChild(sp.el);
 	}
 	else
 	{
-		if( !this.removed && this.el.parentNode)
+		if (!this.removed && this.el.parentNode)
 		{
 			this.removed = this.el.parentNode;
 			this.el.parentNode.removeChild(this.el);
@@ -424,13 +424,13 @@ sprite.prototype.remove=function(sp)
 }
 sprite.prototype.attach=function(sp)
 {
-	if( this.type==='group' && sp)
+	if (this.type==='group' && sp)
 	{
 		this.el.appendChild(sp.el);
 	}
 	else
 	{
-		if( this.removed)
+		if (this.removed)
 		{
 			this.removed.appendChild(this.el);
 			this.removed = null;
@@ -439,7 +439,7 @@ sprite.prototype.attach=function(sp)
 }
 sprite.prototype.remove_all=function()
 {
-	if( this.type==='group')
+	if (this.type==='group')
 	{
 		var e = this.el;
 		while (e.lastChild)

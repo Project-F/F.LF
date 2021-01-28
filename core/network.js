@@ -44,7 +44,7 @@
  * example:
 | function frame(time, data, send)
 | {
-| 	if( time===0) {
+| 	if (time===0) {
 | 		// start
 | 	} else {
 | 		// do something with data
@@ -115,7 +115,7 @@ define(function()
 
 	function set_interval(a,b)
 	{
-		if( This.timer_callback)
+		if (This.timer_callback)
 		{
 			console.error('only one timer can be active at a time. please `clearInterval` before setting a new one.');
 			return;
@@ -127,7 +127,7 @@ define(function()
 	}
 	function clear_interval(a)
 	{
-		if( !This.timer || This.timer !== a)
+		if (!This.timer || This.timer !== a)
 		{
 			console.error('wrong timer id '+a);
 			return;
@@ -138,14 +138,14 @@ define(function()
 	}
 	function frame() //timer frame
 	{
-		if( This.timer_callback)
-		if( This.frame.buffer[0])
+		if (This.timer_callback)
+		if (This.frame.buffer[0])
 		{
 			var newtime = new Date().getTime(),
 				diff = newtime-This.lasttime;
-			if( diff > This.target_interval-5) //too slow
+			if (diff > This.target_interval-5) //too slow
 			{
-				if( This.frame.buffer[0].time !== This.time)
+				if (This.frame.buffer[0].time !== This.time)
 					This.monitor.on('sync_error');
 				This.time++;
 				var result = This.timer_callback(This.frame.buffer[0].time,This.frame.buffer[0].data,channels.frame.send);
@@ -177,7 +177,7 @@ define(function()
 			send: sender('messenger'),
 			receive: function(mess)
 			{
-				if( This.messenger.receiver)
+				if (This.messenger.receiver)
 					This.messenger.receiver.onmessage(mess);
 				else
 					console.warn('dropping message! '+mess);
@@ -203,7 +203,7 @@ define(function()
 	};
 	function transfer(name, send, receive)
 	{
-		if( This.transfer.obj[name])
+		if (This.transfer.obj[name])
 		{
 			console.error('name '+name+' used already');
 			return;
@@ -213,7 +213,7 @@ define(function()
 	}
 	function teardown()
 	{
-		if( !This.already)
+		if (!This.already)
 		{
 			console.error('not yet setup');
 			return;
@@ -233,7 +233,7 @@ define(function()
 	}
 	function setup(config, monitor)
 	{
-		if( This.already)
+		if (This.already)
 		{
 			console.error('setup already');
 			return;
@@ -276,10 +276,10 @@ define(function()
 						monitor.on('error', data);
 					break;
 					case 'data':
-						for( var ch in channels)
+						for (var ch in channels)
 						{
 							var c = ch.charAt(0);
-							if( data[c])
+							if (data[c])
 								channels[ch].receive(data[c]);
 						}
 					break;
@@ -289,7 +289,7 @@ define(function()
 	}
 	function get_host(ppp)
 	{
-		if( ppp.charAt(ppp.length-1)!=='/')
+		if (ppp.charAt(ppp.length-1)!=='/')
 			ppp+='/';
 		return ppp;
 	}

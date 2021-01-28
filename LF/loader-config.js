@@ -1,7 +1,7 @@
 define({
 	lazyload: function(folder,O)
 	{	//return true to delay loading of data files
-		if( folder==='object')
+		if (folder==='object')
 		{
 			switch (O.type)
 			{
@@ -11,7 +11,7 @@ define({
 					return true;
 			}
 		}
-		else if( folder==='background')
+		else if (folder==='background')
 		{
 			return true;
 		}

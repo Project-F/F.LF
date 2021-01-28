@@ -47,9 +47,9 @@ css: function (filename)
 \*/
 make_array: function (target)
 {
-	if( target)
+	if (target)
 	{
-		if( target instanceof Array)
+		if (target instanceof Array)
 			return target;
 		else
 			return [target];
@@ -178,10 +178,10 @@ to_text: function (
 	TTL
 )
 {
-	if( TTL===0) return '';
-	if( !TTL) TTL=30;
-	if( !sep) sep='\n';
-	if( !pretext) pretext='';
+	if (TTL===0) return '';
+	if (!TTL) TTL=30;
+	if (!sep) sep='\n';
+	if (!pretext) pretext='';
 
 	var str = pretext+ name +':'+sep;
 	str+= pretext+ '{';
@@ -189,26 +189,26 @@ to_text: function (
 	for (var p in obj2)
 	{
 		var fil = filter && filter(p,obj2[p]);
-		if( fil==1)
+		if (fil==1)
 		{
 			//do nothing
 		}
-		else if( typeof fil=='string')
+		else if (typeof fil=='string')
 		{
 			str += (cc?',':'')+sep+pretext+'\t'+"'"+p+"'"+': '+fil;
 		}
 		else
 		{
-			if( obj2[p].constructor==Object )
+			if (obj2[p].constructor==Object )
 			{
 				str += (cc?',':'')+sep+arguments.callee(obj2[p],p,sep,pretext+'\t',filter,TTL-1);
 			} else
 			{
 				str += (cc?',':'')+sep+pretext+'\t'+"'"+p+"'"+': ';
-				if( typeof obj2[p]=='string')
+				if (typeof obj2[p]=='string')
 					str += "'";
 				str += obj2[p];
-				if( typeof obj2[p]=='string')
+				if (typeof obj2[p]=='string')
 					str += "'";
 			}
 		}
@@ -242,12 +242,12 @@ extract_array: function(array, prop)
 	var out={};
 	prop = F.make_array(prop);
 
-	for( var j in prop)
+	for (var j in prop)
 		out[prop[j]] = [];
 
-	for( var i=0; i<array.length; i++)
+	for (var i=0; i<array.length; i++)
 	{
-		for( var k=0; k<prop.length; k++)
+		for (var k=0; k<prop.length; k++)
 		{
 			var P=prop[k];
 			out[P].push(array[i][P]);
@@ -268,12 +268,12 @@ returns
 group_elements: function(arr,key)
 {
 	var group={};
-	for( var i=0; i<arr.length; i++)
+	for (var i=0; i<arr.length; i++)
 	{
-		if( arr[i][key])
+		if (arr[i][key])
 		{
 			var gp=arr[i][key];
-			if( !group[gp])
+			if (!group[gp])
 				group[gp]=[];
 			group[gp].push(arr[i]);
 		}
@@ -284,14 +284,14 @@ group_elements: function(arr,key)
 /** proposed method*/
 for_each: function(arr,callback)
 {
-	if( arr instanceof Array)
+	if (arr instanceof Array)
 	{
-		for( var i=0; i<arr.length; i++)
+		for (var i=0; i<arr.length; i++)
 			callback(arr[i],i);
 	}
-	else if( arr)
+	else if (arr)
 	{
-		for( var I in arr)
+		for (var I in arr)
 			callback(arr[I]);
 	}
 },
@@ -300,16 +300,16 @@ for_each: function(arr,callback)
 call_each: function(arr,method /*,arg*/)
 {
 	var arg = Array.prototype.slice.call(arguments,2);
-	if( arr instanceof Array)
+	if (arr instanceof Array)
 	{
-		for( var i=0; i<arr.length; i++)
-			if( typeof arr[i][method]==='function')
+		for (var i=0; i<arr.length; i++)
+			if (typeof arr[i][method]==='function')
 				arr[i][method].apply(null, arg);
 	}
-	else if( arr)
+	else if (arr)
 	{
-		for( var i in arr)
-			if( typeof arr[i][method]==='function')
+		for (var i in arr)
+			if (typeof arr[i][method]==='function')
 				arr[i][method].apply(null, arg);
 	}
 }

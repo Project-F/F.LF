@@ -24,7 +24,7 @@ define(['core/util'],function(Futil){
 	 | {
 	 |	condition: function()
 	 |	{
-	 |		if( window.location.href.indexOf('http://')===0)
+	 |		if (window.location.href.indexOf('http://')===0)
 	 |			return true;
 	 |	},
 	 |	resource:
@@ -41,7 +41,7 @@ define(['core/util'],function(Futil){
 	function mapper(map)
 	{
 		this.map = Futil.make_array(map);
-		for( var i=0; i<this.map.length; i++)
+		for (var i=0; i<this.map.length; i++)
 			this.map[i] = new submap(this.map[i]);
 	}
 	/*\
@@ -70,10 +70,10 @@ define(['core/util'],function(Futil){
 	mapper.prototype.get=function(res)
 	{
 		var url;
-		for( var i=0; i<this.map.length; i++)
+		for (var i=0; i<this.map.length; i++)
 		{
 			url = this.map[i].get(res);
-			if( url)
+			if (url)
 				break;
 		}
 		return url || res;
@@ -92,13 +92,13 @@ define(['core/util'],function(Futil){
 	{
 		level+=1;
 		var rr, ll=0;
-		for( var i=0; i<this.map.length; i++)
+		for (var i=0; i<this.map.length; i++)
 		{
 			rr = this.map[i].fallback(res,level-ll);
-			if( rr)
+			if (rr)
 			{
 				ll += rr.l;
-				if( ll===level)
+				if (ll===level)
 					return rr.url;
 			}
 		}
@@ -114,41 +114,41 @@ define(['core/util'],function(Futil){
 	}
 	submap.prototype.update_condition=function()
 	{
-		if( this.map.condition)
+		if (this.map.condition)
 			this.enable = this.map.condition() || false;
 		else
 			this.enable = true;
-		if( typeof this.map.resource !== 'object' &&
+		if (typeof this.map.resource !== 'object' &&
 			typeof this.map.get      !== 'function')
 			this.enable = false;
 	}
 	submap.prototype.get=function(res)
 	{
-		if( this.enable)
+		if (this.enable)
 		{
-			if( this.map.resource && this.map.resource[res])
+			if (this.map.resource && this.map.resource[res])
 				return this.map.resource[res];
 			else
 			{
 				var url = this.map.get && this.map.get(res);
-				if( url) return url;
+				if (url) return url;
 			}
 		}
 		return null;
 	}
 	submap.prototype.fallback=function(res,level)
 	{
-		if( this.enable)
+		if (this.enable)
 		{
-			if( this.map.resource && this.map.resource[res] && level===1)
+			if (this.map.resource && this.map.resource[res] && level===1)
 				return {
 					l: 1,
 					url: this.map.resource[res]
 				}
-			else if( level===2)
+			else if (level===2)
 			{
 				var url = this.map.get && this.map.get(res);
-				if( url) return {
+				if (url) return {
 					l: 2,
 					url: url
 				}

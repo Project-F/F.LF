@@ -23,7 +23,7 @@ function effect_set(config,DATA,ID) //DATA and ID are arrays
 	DATA=Futil.make_array(DATA);
 	ID=Futil.make_array(ID);
 	var efs = this.efs = {};
-	for( var i=0; i<DATA.length; i++)
+	for (var i=0; i<DATA.length; i++)
 	{
 		(function(i){
 			efs[ID[i]] = new Feffects_pool({
@@ -42,9 +42,9 @@ function effect_set(config,DATA,ID) //DATA and ID are arrays
 
 effect_set.prototype.destroy=function()
 {
-	for( var i in this.efs)
+	for (var i in this.efs)
 	{
-		for( var j=0; j<this.efs[i].pool.length; j++)
+		for (var j=0; j<this.efs[i].pool.length; j++)
 		{
 			this.efs[i].pool[j].destroy();
 		}
@@ -60,7 +60,7 @@ effect_set.prototype.destroy=function()
 \*/
 effect_set.prototype.create=function(id,A,B,C,D)
 {
-	if( this.efs[id])
+	if (this.efs[id])
 		this.efs[id].create(A,B,C,D);
 	else
 		console.error('no such effect id '+id);
@@ -68,7 +68,7 @@ effect_set.prototype.create=function(id,A,B,C,D)
 
 effect_set.prototype.TU=function()
 {
-	for( var i in this.efs)
+	for (var i in this.efs)
 		this.efs[i].call_each('TU');
 }
 
@@ -101,9 +101,9 @@ function effect(config,data,id)
 		x:0, y:0, z:0,
 		vx:0,vy:0,vz:0
 	}
-	if( data.effect_list)
+	if (data.effect_list)
 		this.effect_list=data.effect_list;
-	if( config.broken_list)
+	if (config.broken_list)
 		this.broken_list=config.broken_list;
 	this.width = data.bmp.file[0].w;
 }
@@ -126,26 +126,26 @@ effect.prototype.TU=function()
 		$.ps.sz = $.ps.z;
 		$.sp.set_x_y($.ps.sx, $.ps.sy+$.ps.sz);
 		$.sp.set_z($.ps.sz+1);
-		if( $.ps.y<0)
+		if ($.ps.y<0)
 			$.ps.vy += $.mass * GC.gravity;
-		if( $.ps.y>0)
+		if ($.ps.y>0)
 			$.parent.die(this);
 	}
-	if( $.frame_update)
+	if ($.frame_update)
 	{
 		$.frame_update=false;
 		$.sp.show_pic($.frameD.pic);
 		$.wait=$.frameD.wait;
 		$.next=$.frameD.next;
-		if( $.with_sound)
-			if( $.frameD.sound)
+		if ($.with_sound)
+			if ($.frameD.sound)
 				$.match.sound.play($.frameD.sound);
 	}
-	if( $.wait===0 || $.state===9998)
+	if ($.wait===0 || $.state===9998)
 	{
-		if( $.next===999)
+		if ($.next===999)
 			$.next=0;
-		else if( $.next===1000 || $.state===9998)
+		else if ($.next===1000 || $.state===9998)
 		{
 			$.parent.die($);
 			return ;
@@ -171,17 +171,17 @@ effect.prototype.born=function(P,N,S,R)
 {
 	var $=this;
 	var sf=0;
-	if( $.effect_list)
+	if ($.effect_list)
 	{
-		if( !N) N=0;
-		if( $.effect_list[N])
+		if (!N) N=0;
+		if ($.effect_list[N])
 			sf = $.effect_list[N].frame;
 		$.with_sound=S;
 		$.mass=0;
 	}
-	else if( $.broken_list)
+	else if ($.broken_list)
 	{
-		if( $.broken_list[N])
+		if ($.broken_list[N])
 		{
 			var slot = S%$.broken_list[N].length;
 			sf = $.broken_list[N][slot].frame;
@@ -191,7 +191,7 @@ effect.prototype.born=function(P,N,S,R)
 			$.mass=0;
 		else
 			$.mass=1;
-		if( !R) R = {w:50,h:50};
+		if (!R) R = {w:50,h:50};
 		P.x += $.match.random()*R.w*1.2-$.width;
 		P.y -= $.match.random()*R.h;
 		$.ps.vx = ($.match.random()-0.5)*R.w*0.5;

@@ -63,16 +63,16 @@ function sprite (bmp, parent)
 	\*/
 	var sp = this.sp = new Fsprite(sp_con);
 
-	for( var i=0; i<bmp.file.length; i++)
+	for (var i=0; i<bmp.file.length; i++)
 	{
 		var imgpath='';
-		for( var j in bmp.file[i])
+		for (var j in bmp.file[i])
 		{
-			if( typeof bmp.file[i][j] === 'string' &&
+			if (typeof bmp.file[i][j] === 'string' &&
 			    j.indexOf('file')===0 )
 				imgpath = bmp.file[i][j];
 		}
-		if( imgpath==='')
+		if (imgpath==='')
 			console.log( 'cannot find img path in data:\n'+JSON.stringify(bmp.file[i]) );
 		sp.add_img( imgpath, i);
 
@@ -112,10 +112,10 @@ sprite.prototype.destroy = function()
 sprite.prototype.show_pic = function(I)
 {
 	var slot=0;
-	for( var k=0; k<this.ani.length; k++)
+	for (var k=0; k<this.ani.length; k++)
 	{
 		var i = I - this.ani[k].config.gx * this.ani[k].config.gy;
-		if( i >= 0)
+		if (i >= 0)
 		{
 			I = i;
 			slot++;
@@ -123,7 +123,7 @@ sprite.prototype.show_pic = function(I)
 		else
 			break;
 	}
-	if( slot >= this.ani.length)
+	if (slot >= this.ani.length)
 	{
 		slot = this.ani.length-1;
 		I=999;
@@ -142,7 +142,7 @@ sprite.prototype.show_pic = function(I)
 \*/
 sprite.prototype.switch_lr = function(dir) //switch to `dir`
 {
-	if( dir!==this.dir)
+	if (dir!==this.dir)
 	{
 		this.dir=dir;
 		this.sp.set_flipx(dir==='left');

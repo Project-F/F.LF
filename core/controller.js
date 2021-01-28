@@ -2,7 +2,7 @@ define(function()
 {
 
 //block F1 key in IE
-if( 'onhelp' in window)
+if ('onhelp' in window)
 {
 	window.onhelp = function(){
 		return false;
@@ -25,7 +25,7 @@ master_controller.key = function(e,down)
 		if ( this.child[I].key(e.keyCode,down))
 			break;//if one controller catches a key, the next controller will never receive an event
 	}
-	if( master_controller.block)
+	if (master_controller.block)
 	{
 		//block browser-native key events, including ctrl+f and F1~F12
 		e.preventDefault();
@@ -142,7 +142,7 @@ controller.block = function(bool)
 controller.prototype.destroy = function()
 {
 	var ii = master_controller.child.indexOf(this);
-	if( ii!==-1)
+	if (ii!==-1)
 		master_controller.child.splice(ii,1);
 }
 
@@ -170,9 +170,9 @@ controller.prototype.key=function(e,down) //interface to master_controller
 	{
 		if ( this.keycode[I]==e)
 		{
-			if( this.sync===false)
+			if (this.sync===false)
 			{
-				if( this.child)
+				if (this.child)
 					for(var J in this.child)
 						this.child[J].key(I,down);
 				this.state[I]=down;
@@ -205,11 +205,11 @@ controller.prototype.clear_states=function()
 \*/
 controller.prototype.fetch=function()
 {
-	for( var i=0; i<this.buf.length; i++)
+	for (var i=0; i<this.buf.length; i++)
 	{
 		var I=this.buf[i][0];
 		var down=this.buf[i][1];
-		if( this.child)
+		if (this.child)
 			for(var j=0; j<this.child.length; j++)
 				this.child[j].key(I,down);
 		this.state[I]=down;
@@ -239,10 +239,10 @@ controller.keyname_to_keycode=
 controller.prototype.keyname_to_keycode=
 function(A)
 {
-	if( typeof A==='number')
+	if (typeof A==='number')
 		return A;
 	var code;
-	if( A.length==1)
+	if (A.length==1)
 	{
 		var a=A.charCodeAt(0);
 		if ( (a>='a'.charCodeAt(0) && a<='z'.charCodeAt(0)) || (a>='A'.charCodeAt(0) && a<='Z'.charCodeAt(0)) )
@@ -286,9 +286,9 @@ function(A)
 			case 'esc': code=27; break;
 		}
 	}
-	if( A.length==2)
+	if (A.length==2)
 	{
-		if( A.charAt(0)==='F')
+		if (A.charAt(0)==='F')
 		{
 			code=111+parseInt(A.slice(1));
 		}
@@ -307,12 +307,12 @@ controller.keycode_to_keyname=
 controller.prototype.keycode_to_keyname=
 function(code)
 {
-	if( (code>='A'.charCodeAt(0) && code<='Z'.charCodeAt(0)) ||
+	if ((code>='A'.charCodeAt(0) && code<='Z'.charCodeAt(0)) ||
 	    (code>='0'.charCodeAt(0) && code<='9'.charCodeAt(0)) )
 	{
 		return String.fromCharCode(code).toLowerCase();
 	}
-	else if( code>=112 && code<=123)
+	else if (code>=112 && code<=123)
 	{
 		return 'F'+(code-111);
 	}

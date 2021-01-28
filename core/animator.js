@@ -42,10 +42,10 @@ function animator (config)
 	 * usually a sprite character is drawn to face right and mirrored to face left. hmirror mode works with sprites that is flipped horizontally __as a whole image__.
 	\*/
 	this.flip_x=false; //horizontal mirror
-	if( !config.borderright)  config.borderright=0;
-	if( !config.borderbottom) config.borderbottom=0;
-	if( !config.borderleft)  config.borderleft=0;
-	if( !config.bordertop)   config.bordertop=0;
+	if (!config.borderright)  config.borderright=0;
+	if (!config.borderbottom) config.borderbottom=0;
+	if (!config.borderleft)  config.borderleft=0;
+	if (!config.bordertop)   config.bordertop=0;
 }
 /*\
  * animator.next_frame
@@ -89,8 +89,8 @@ animator.prototype.next_frame=function()
 animator.prototype.seek=function(I)
 {
 	var c=this.config;
-	if( c.ani)
-	if( I>=0 && I<c.ani.length)
+	if (c.ani)
+	if (I>=0 && I<c.ani.length)
 	{
 		this.I=I;
 		var fi=c.ani[this.I];
@@ -125,7 +125,7 @@ animator.prototype.show_frame=function(i)
 	var left,top;
 	left= -((i%c.gx)*c.w+c.x+c.borderleft);
 	top = -((Math.floor(i/c.gx))*c.h+c.y+c.bordertop);
-	if( this.flip_x)
+	if (this.flip_x)
 		left= -this.target.img[this.target.cur_img].naturalWidth-left+c.w-c.borderleft-c.borderright;
 	this.target.set_w_h(
 		c.w-c.borderleft-c.borderright,
@@ -136,7 +136,7 @@ animator.prototype.show_frame=function(i)
 }
 animator.prototype.get_at=function(i) //get the content of the graph at frame i
 {	//by default at the current frame
-	if( !i) i=this.I;
+	if (!i) i=this.I;
 	var c=this.config;
 	return c.graph[(i%c.gx)][(Math.floor(i/c.gx))];
 }
@@ -177,14 +177,14 @@ animator.set=function(set_config, base)
 		base = 'base';
 	var A=new Object();
 
-	for( var I in set_config)
+	for (var I in set_config)
 	{
-		if( base) if( I==base)
+		if (base) if (I==base)
 			continue;
 
-		if( base) if( set_config[base])
+		if (base) if (set_config[base])
 		{
-			for( var J in set_config[base])
+			for (var J in set_config[base])
 				set_config[I][J] = set_config[base][J];
 		}
 

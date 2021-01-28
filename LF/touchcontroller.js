@@ -9,22 +9,22 @@ define(['LF/util'],function(util)
 	var touches=[], eventtype;
 	function touch_fun(event)
 	{
-		if( !TC.enabled) return;
+		if (!TC.enabled) return;
 		eventtype = event.type;
 		touches = event.touches;
-		for( var i in controllers)
-			if( !controllers[i].sync)
+		for (var i in controllers)
+			if (!controllers[i].sync)
 				controllers[i].fetch();
-		if( TC.preventDefault)
+		if (TC.preventDefault)
 			event.preventDefault();
 	}
-	for( var event in {'touchstart':0,'touchmove':0,'touchenter':0,'touchend':0,'touchleave':0,'touchcancel':0})
+	for (var event in {'touchstart':0,'touchmove':0,'touchenter':0,'touchend':0,'touchleave':0,'touchcancel':0})
 	{
 		document.addEventListener(event, touch_fun, false);
 	}
 	window.addEventListener('resize', function()
 	{
-		for( var i=0; i<controllers.length; i++)
+		for (var i=0; i<controllers.length; i++)
 			controllers[i].resize();
 	}, false);
 
@@ -32,7 +32,7 @@ define(['LF/util'],function(util)
 	{
 		var $=this;
 		$.config=config;
-		if( $.config.layout==='gamepad')
+		if ($.config.layout==='gamepad')
 		{
 			$.state={ up:0,down:0,left:0,right:0,def:0,jump:0,att:0 };
 			$.button={
@@ -40,7 +40,7 @@ define(['LF/util'],function(util)
 				def:{label:'D'},jump:{label:'J'},att:{label:'A'}
 			};
 		}
-		else if( $.config.layout==='functionkey')
+		else if ($.config.layout==='functionkey')
 		{
 			$.state={ F1:0,F2:0,F4:0,F7:0};
 			$.button={
@@ -51,7 +51,7 @@ define(['LF/util'],function(util)
 		$.sync=true;
 		$.pause_state=false;
 		controllers.push(this);
-		for( var key in $.button)
+		for (var key in $.button)
 		{
 			var el = document.createElement('div');
 			util.div('touch_control_holder').appendChild(el);
@@ -73,7 +73,7 @@ define(['LF/util'],function(util)
 		var $=this;
 		var w = window.innerWidth,
 			h = window.innerHeight;
-		if( $.config.layout==='gamepad')
+		if ($.config.layout==='gamepad')
 		{
 			var sizeA = 0.20,
 				sizeB = 0.20,
@@ -82,7 +82,7 @@ define(['LF/util'],function(util)
 				padR = 0.2,
 				offy = 0,
 				R = 0.65;
-			if( h>w)
+			if (h>w)
 			{
 				offy = h/2;
 				h = w/16*9*1.5;
@@ -105,7 +105,7 @@ define(['LF/util'],function(util)
 				'att':  [ w-sizeC*(1+padR), h/2-sizeC+offy, sizeC, sizeC]
 			});
 		}
-		else if( $.config.layout==='functionkey')
+		else if ($.config.layout==='functionkey')
 		{
 			$.paused($.pause_state);
 		}
@@ -113,7 +113,7 @@ define(['LF/util'],function(util)
 	TC.prototype.set_button_pos=function(sett)
 	{
 		var $=this;
-		for( var I in sett)
+		for (var I in sett)
 		{
 			var B = $.button[I];
 			B.left = sett[I][0];
@@ -133,17 +133,17 @@ define(['LF/util'],function(util)
 			h = window.innerHeight;
 		this.pause_state=pause;
 		TC.preventDefault=!pause;
-		if( $.config.layout==='functionkey')
+		if ($.config.layout==='functionkey')
 		{
 			var size = 0.08*(h<w?h:w),
 				offy = 0,
 				offx = 0;
-			if( h>w)
+			if (h>w)
 			{
 				offx = -w/10;
 				offy = h/2.5;
 			}
-			if( pause)
+			if (pause)
 			{	//expand the collection
 				var Fleft = h/10-size/2+offx,
 					Ftop = h/10-size/2+offy;
@@ -153,9 +153,9 @@ define(['LF/util'],function(util)
 					'F4':[ Fleft+size*1.5*3, Ftop, size, size],
 					'F7':[ Fleft+size*1.5*6, Ftop, size, size]
 				});
-				for( var i in {F1:0,F2:0,F4:0,F7:0})
+				for (var i in {F1:0,F2:0,F4:0,F7:0})
 				{
-					if( !$.hidden)
+					if (!$.hidden)
 						show($.button[i]);
 					$.button[i].disabled=10; //disable for 10 frames
 				}
@@ -168,10 +168,10 @@ define(['LF/util'],function(util)
 					'F4': [ h/10-size/2, h/10-size/2+offy, size, size],
 					'F7': [ h/10-size/2, h/10-size/2+offy, size, size]
 				});
-				if( !$.hidden)
+				if (!$.hidden)
 					show($.button['F1']);
 				$.button['F1'].disabled=false;
-				for( var i in {F2:0,F4:0,F7:0})
+				for (var i in {F2:0,F4:0,F7:0})
 				{
 					hide($.button[i]);
 					$.button[i].disabled=true;
@@ -182,7 +182,7 @@ define(['LF/util'],function(util)
 	TC.prototype.hide=function()
 	{
 		var $=this;
-		for( var i in $.button)
+		for (var i in $.button)
 		{
 			hide($.button[i]);
 			$.button[i].disabled=true;
@@ -193,7 +193,7 @@ define(['LF/util'],function(util)
 	{
 		var $=this;
 		$.hidden=false;
-		for( var i in $.button)
+		for (var i in $.button)
 		{
 			show($.button[i]);
 			$.button[i].disabled=false;
@@ -202,7 +202,7 @@ define(['LF/util'],function(util)
 	TC.prototype.restart=function()
 	{
 		var $=this;
-		if( $.config.layout==='functionkey')
+		if ($.config.layout==='functionkey')
 		{
 			this.paused(false);
 		}
@@ -215,11 +215,11 @@ define(['LF/util'],function(util)
 	TC.prototype.fetch=function()
 	{
 		var $=this;
-		for( var key in $.button)
+		for (var key in $.button)
 		{
-			if( $.button[key].disabled)
+			if ($.button[key].disabled)
 			{
-				if( typeof $.button[key].disabled==='number')
+				if (typeof $.button[key].disabled==='number')
 					$.button[key].disabled--;
 				continue;
 			}
@@ -227,7 +227,7 @@ define(['LF/util'],function(util)
 			for (var i=0; i<touches.length; i++)
 			{
 				var T=touches[i];
-				if( point_in_rect(T.clientX,T.clientY,$.button[key]))
+				if (point_in_rect(T.clientX,T.clientY,$.button[key]))
 				{
 					down=true;
 					break;
@@ -235,10 +235,10 @@ define(['LF/util'],function(util)
 			}
 			if ((down && !$.state[key]) || (!down && $.state[key]))
 			{
-				for( var i=0; i<$.child.length; i++)
+				for (var i=0; i<$.child.length; i++)
 					$.child[i].key(key,down);
 				$.state[key]=down;
-				if( down)
+				if (down)
 					$.button[key].el.style.border = '2px solid rgb(255, 170, 170)';
 				else
 					$.button[key].el.style.border = '2px solid rgb(170, 255, 255)';
