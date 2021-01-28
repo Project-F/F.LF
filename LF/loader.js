@@ -41,10 +41,12 @@ define(['LF/loader-config','LF/util','core/util'],function(loader_config,util,Fu
 			}
 			function filepath(ppp)
 			{
-				if (!ppp)
+				if (!ppp) {
 					return '';
-				if (ppp.lastIndexOf('.js')===ppp.length-3)
+				}
+				if (ppp.lastIndexOf('.js')===ppp.length-3) {
 					ppp = ppp.slice(0,ppp.length-3);
+				}
 				var suf = path.indexOf('http')===0?'.js':'';
 				return path+ppp+suf;
 			}
@@ -54,11 +56,13 @@ define(['LF/loader-config','LF/util','core/util'],function(loader_config,util,Fu
 				{
 					if (typeof loader_config.lazyload==='function')
 					{
-						if (!loader_config.lazyload(folder,obj))
+						if (!loader_config.lazyload(folder,obj)) {
 							return true;
+						}
 					}
-					else
+					else {
 						return true;
+					}
 				}
 
 				var datafile_depend=[];
@@ -67,16 +71,19 @@ define(['LF/loader-config','LF/util','core/util'],function(loader_config,util,Fu
 				{
 					if (datalist[i] instanceof Array)
 					{
-						for (var j=0; j<datalist[i].length; j++)
+						for (var j=0; j<datalist[i].length; j++) {
 							if (datalist[i][j].file)
-							if (allow_load(i,datalist[i][j]))
+							if (allow_load(i,datalist[i][j])) {
 								datafile_depend.push(filepath(datalist[i][j].file));
+							}
+						}
 					}
 					else if (typeof datalist[i]==='object')
 					{
 						if (datalist[i].file)
-						if (allow_load(i,datalist[i]))
+						if (allow_load(i,datalist[i])) {
 							datafile_depend.push(filepath(datalist[i].file));
+						}
 					}
 				}
 
@@ -139,8 +146,9 @@ define(['LF/loader-config','LF/util','core/util'],function(loader_config,util,Fu
 					data:'object',
 					resourcemap:'object!optional'
 				}
-				if (validate(content_schema,content))
+				if (validate(content_schema,content)) {
 					load(content); //make the require loader return
+				}
 			}
 			function module_lazyload()
 			{	//embed the lazyload module
@@ -157,12 +165,13 @@ define(['LF/loader-config','LF/util','core/util'],function(loader_config,util,Fu
 							for (var i=0; i<ID.length; i++)
 							{
 								var O; //search for the object
-								for (var j=0; j<objects.length; j++)
+								for (var j=0; j<objects.length; j++) {
 									if (objects[j].id===ID[i])
 									{
 										O=objects[j];
 										break;
 									}
+								}
 								if (O && O.file && O.data==='lazy')
 								{
 									load_list.push(O);
@@ -170,15 +179,17 @@ define(['LF/loader-config','LF/util','core/util'],function(loader_config,util,Fu
 								}
 							}
 						}
-						if (res_list.length===0)
+						if (res_list.length===0) {
 							setTimeout(ready,1);
-						else
+						} else {
 							requirejs(res_list,function()
 							{
-								for (var i=0; i<arguments.length; i++)
+								for (var i=0; i<arguments.length; i++) {
 									load_list[i].data = arguments[i];
+								}
 								ready();
 							});
+						}
 					}
 				}
 			}
@@ -199,7 +210,7 @@ define(['LF/loader-config','LF/util','core/util'],function(loader_config,util,Fu
 							//good
 						}
 						else if (typeof object[I]==='undefined' && 
-									option && option==='optional') {
+							option && option==='optional') {
 							//still good
 						}
 						else {

@@ -19,10 +19,11 @@ var GC=Global.gameplay;
 function mech(parent)
 {
 	var spec=parent.match.spec;
-	if (spec[parent.id] && spec[parent.id].mass!==undefined && spec[parent.id].mass!==null)
+	if (spec[parent.id] && spec[parent.id].mass!==undefined && spec[parent.id].mass!==null) {
 		this.mass=spec[parent.id].mass;
-	else
+	} else {
 		this.mass=Global.gameplay.default.machanics.mass;
+	}
 
 	this.ps;
 	this.sp=parent.sp;
@@ -39,14 +40,17 @@ mech.prototype.body= function(obj,filter,offset)
 	var ps=this.ps;
 	var sp=this.sp;
 	var off=offset;
-	if(!obj)
+	if(!obj) {
 		obj=this.frame.D.bdy;
+	}
 	//if parent object is in `super` effect, returns no body volume
-	if (obj===this.frame.D.bdy && this.parent.effect.super)
+	if (obj===this.frame.D.bdy && this.parent.effect.super) {
 		return this.body_empty();
+	}
 	//if meets certain criteria (as in most cases), will use optimized version
-	if (obj===this.frame.D.bdy && !filter && (!(obj instanceof Array) || obj.length<=this.vol_body.max))
+	if (obj===this.frame.D.bdy && !filter && (!(obj instanceof Array) || obj.length<=this.vol_body.max)) {
 		return this.body_body(offset);
+	}
 
 	if (obj instanceof Array)
 	{ //many bdy
@@ -76,10 +80,11 @@ mech.prototype.body= function(obj,filter,offset)
 	}
 	else
 	{ //1 bdy only
-		if (!filter || filter(obj))
+		if (!filter || filter(obj)) {
 			return [this.volume(obj,off)];
-		else
+		} else {
 			return [];
+		}
 	}
 }
 
@@ -126,9 +131,10 @@ mech.prototype.body_body= function(V)
 		{
 			var B=this.vol_body[i];
 			var vx=O[i].x;
-			if (ps.dir==='left')
+			if (ps.dir==='left') {
 				vx=sp.w-O[i].x-O[i].w;
-			if(V)
+			}
+			if (V)
 			{
 				B.x=ps.sx+V.x;
 				B.y=ps.sy+V.y;
@@ -155,7 +161,7 @@ mech.prototype.body_body= function(V)
 		var vx=O.x;
 		if (ps.dir==='left')
 			vx=sp.w-O.x-O.w;
-		if(V)
+		if (V)
 		{
 			B.x=ps.sx+V.x;
 			B.y=ps.sy+V.y;
@@ -189,25 +195,27 @@ mech.prototype.volume= function(O,V)
 
 	if (!O)
 	{
-		if (!V)
+		if (!V) {
 			return {
 				x:ps.sx, y:ps.sy, z:ps.sz,
 				vx:0, vy:0, w:0, h:0, zwidth:0,
 				data: {}
 			}
-		else
+		} else {
 			return {
 				x:V.x, y:V.y, z:V.z,
 				vx:0, vy:0, w:0, h:0, zwidth:0,
 				data: {}
 			}
+		}
 	}
 
 	var vx=O.x;
-	if (ps.dir==='left')
+	if (ps.dir==='left') {
 		vx=sp.w-O.x-O.w;
+	}
 
-	if (!V)
+	if (!V) {
 		return {
 			x:ps.sx, y:ps.sy, z:ps.sz,
 			vx: vx,
@@ -217,7 +225,7 @@ mech.prototype.volume= function(O,V)
 			zwidth: O.zwidth? O.zwidth : GC.default.itr.zwidth,
 			data: O
 		}
-	else
+	} else {
 		return {
 			x:ps.sx+V.x, y:ps.sy+V.y, z:ps.sz+V.z,
 			vx: vx,
@@ -227,6 +235,7 @@ mech.prototype.volume= function(O,V)
 			zwidth: O.zwidth? O.zwidth : GC.default.itr.zwidth,
 			data: O
 		}
+	}
 }
 
 mech.prototype.make_point= function(a,prefix)
@@ -236,17 +245,19 @@ mech.prototype.make_point= function(a,prefix)
 
 	if (a && !prefix)
 	{
-		if (ps.dir==='right')
+		if (ps.dir==='right') {
 			return {x:ps.sx+a.x, y:ps.sy+a.y, z:ps.sz+a.y};
-		else
+		} else {
 			return {x:ps.sx+sp.w-a.x, y:ps.sy+a.y, z:ps.sz+a.y};
+		}
 	}
 	else if (a && prefix)
 	{
-		if (ps.dir==='right')
+		if (ps.dir==='right') {
 			return {x:ps.sx+a[prefix+'x'], y:ps.sy+a[prefix+'y'], z:ps.sz+a[prefix+'y']};
-		else
+		} else {
 			return {x:ps.sx+sp.w-a[prefix+'x'], y:ps.sy+a[prefix+'y'], z:ps.sz+a[prefix+'y']};
+		}
 	}
 	else
 	{
@@ -316,10 +327,12 @@ mech.prototype.set_pos= function(x,y,z)
 	var fD=this.frame.D;
 
 	ps.x=x; ps.y=y; ps.z=z;
-	if (ps.z < this.bg.zboundary[0]) //z bounding
+	if (ps.z < this.bg.zboundary[0]) { //z bounding
 		ps.z = this.bg.zboundary[0];
-	if (ps.z > this.bg.zboundary[1])
+	}
+	if (ps.z > this.bg.zboundary[1]) {
 		ps.z = this.bg.zboundary[1];
+	}
 
 	ps.sx = ps.dir==='right'? (ps.x-fD.centerx):(ps.x+fD.centerx-sp.w);
 	ps.sy = y - fD.centery;
@@ -345,15 +358,19 @@ mech.prototype.dynamics= function()
 	}
 	if (this.floor_xbound)
 	{
-		if (ps.x<0)
+		if (ps.x<0) {
 			ps.x=0;
-		if (ps.x>this.bg.width)
+		}
+		if (ps.x>this.bg.width) {
 			ps.x=this.bg.width;
+		}
 	}
-	if (ps.z < this.bg.zboundary[0]) //z bounding
+	if (ps.z < this.bg.zboundary[0]) { //z bounding
 		ps.z = this.bg.zboundary[0];
-	if (ps.z > this.bg.zboundary[1])
+	}
+	if (ps.z > this.bg.zboundary[1]) {
 		ps.z = this.bg.zboundary[1];
+	}
 
 	ps.y += ps.vy;
 
@@ -378,14 +395,15 @@ mech.prototype.dynamics= function()
 	if (ps.y===0 && this.mass>0) //only when on the ground
 	{
 		//simple friction
-		if (ps.vx) ps.vx += (ps.vx>0?-1:1)*ps.fric;
-		if (ps.vz) ps.vz += (ps.vz>0?-1:1)*ps.fric;
-		if (ps.vx!==0 && ps.vx>-GC.min_speed && ps.vx<GC.min_speed) ps.vx=0; //defined minimum speed
-		if (ps.vz!==0 && ps.vz>-GC.min_speed && ps.vz<GC.min_speed) ps.vz=0;
+		if (ps.vx) { ps.vx += (ps.vx>0?-1:1)*ps.fric; }
+		if (ps.vz) { ps.vz += (ps.vz>0?-1:1)*ps.fric; }
+		if (ps.vx!==0 && ps.vx>-GC.min_speed && ps.vx<GC.min_speed) { ps.vx=0; } //defined minimum speed
+		if (ps.vz!==0 && ps.vz>-GC.min_speed && ps.vz<GC.min_speed) { ps.vz=0; }
 	}
 
-	if (ps.y<0)
+	if (ps.y<0) {
 		ps.vy+= this.mass * GC.gravity;
+	}
 }
 
 mech.prototype.unit_friction=function()
@@ -393,16 +411,16 @@ mech.prototype.unit_friction=function()
 	var ps=this.ps;
 	if (ps.y===0) //only when on the ground
 	{
-		if (ps.vx) ps.vx += (ps.vx>0?-1:1);
-		if (ps.vz) ps.vz += (ps.vz>0?-1:1);
+		if (ps.vx) { ps.vx += (ps.vx>0?-1:1); }
+		if (ps.vz) { ps.vz += (ps.vz>0?-1:1); }
 	}
 }
 
 mech.prototype.linear_friction=function(x,z)
 {
 	var ps=this.ps;
-	if (x && ps.vx) ps.vx += ps.vx>0 ? -x:x;
-	if (z && ps.vz) ps.vz += ps.vz>0 ? -z:z;
+	if (x && ps.vx) { ps.vx += ps.vx>0 ? -x:x; }
+	if (z && ps.vz) { ps.vz += ps.vz>0 ? -z:z; }
 }
 
 //return true if there is a blocking itr:kind:14 ahead
@@ -414,16 +432,18 @@ mech.prototype.blocking_xz=function()
 		z: this.ps.vz
 	}
 
-	if (this.parent.type!=='character')
+	if (this.parent.type!=='character') {
 		return false;
+	}
 
 	var body = this.body(null,null,offset);
 	for (var i=0; i<body.length; i++)
 	{
 		body[i].zwidth=0;
 		var result = this.parent.scene.query( body[i], this.parent, {tag:'itr:14'});
-		if (result.length > 0)
+		if (result.length > 0) {
 			return true;
+		}
 	}
 }
 

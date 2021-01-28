@@ -76,26 +76,33 @@ scene.prototype.query = function(volume, exclude, where)
 		}
 		else if (exclude)
 		{
-			if (this.live[i] === exclude)
+			if (this.live[i] === exclude) {
 				excluded=true;
+			}
 		}
-		if (excluded)
+		if (excluded) {
 			continue;
+		}
 
-		if (where.team && this.live[i].team !== where.team)
+		if (where.team && this.live[i].team !== where.team) {
 			continue;
+		}
 
-		if (where.not_team && this.live[i].team === where.not_team)
+		if (where.not_team && this.live[i].team === where.not_team) {
 			continue;
+		}
 
-		if (where.type && this.live[i].type !== where.type)
+		if (where.type && this.live[i].type !== where.type) {
 			continue;
+		}
 
-		if (where.not_type && this.live[i].type === where.not_type)
+		if (where.not_type && this.live[i].type === where.not_type) {
 			continue;
+		}
 
-		if (where.filter && !where.filter(this.live[i]))
+		if (where.filter && !where.filter(this.live[i])) {
 			continue;
+		}
 
 		if (volume===null)
 		{

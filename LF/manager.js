@@ -53,8 +53,9 @@ function Manager(package, buildinfo)
 				return a.charAt(0).toUpperCase() + a.substr(1);
 			}
 			var val = from[feature] || from[Fsupport.prefix_js+cap(feature)];
-			if (typeof val==='function')
+			if (typeof val==='function') {
 				return val.bind(from);
+			}
 			return val;
 		}
 		util.div('maximize_button').onclick=function()
@@ -68,8 +69,9 @@ function Manager(package, buildinfo)
 				}
 				if (!window_state.maximized || (fullscreen && !fullscreen_state))
 				{
-					if (fullscreen)
+					if (fullscreen) {
 						fullscreen();
+					}
 					window_state.maximized=true;
 					document.body.style.background = manager.UI_list[manager.active_UI].bgcolor || '#676767';
 					this.firstChild.innerHTML='&#9724;';
@@ -80,8 +82,9 @@ function Manager(package, buildinfo)
 				else
 				{
 					var exit_fullscreen = getFeature(document, 'exitFullscreen');
-					if (exit_fullscreen)
+					if (exit_fullscreen) {
 						exit_fullscreen();
+					}
 					this.firstChild.innerHTML='&#9723;';
 					util.container.classList.remove('maximized');
 					util.div('extra_UI').classList.remove('maximized');
@@ -156,8 +159,9 @@ function Manager(package, buildinfo)
 			if (Fsupport.localStorage.getItem('F.LF/settings'))
 			{
 				var obj = JSON.parse(Fsupport.localStorage.getItem('F.LF/settings'));
-				if (obj.version===settings_format_version)
+				if (obj.version===settings_format_version) {
 					settings = obj;
+				}
 			}
 		}
 		for (var i=0; i<settings.player.length; i++)
@@ -269,22 +273,25 @@ function Manager(package, buildinfo)
 		diff_list = ['Easy','Normal','Difficult'];
 		
 		this.create_UI();
-		if (param.demo)
+		if (param.demo) {
 			this.start_demo(true);
-		else if (param.demo_display)
+		} else if (param.demo_display)
 		{
 			this.start_demo(false);
 			util.div('maximize_button').onclick();
 		}
-		else if (param.debug)
+		else if (param.debug) {
 			this.start_debug();
-		else
+		} else {
 			this.switch_UI('frontpage');
+		}
 
-		if (param.debug_a)
+		if (param.debug_a) {
 			this.network_debug('active');
-		if (param.debug_b)
+		}
+		if (param.debug_b) {
 			this.network_debug('passive');
+		}
 		//
 		window.addEventListener('resize', onresize, false);
 		onresize();
@@ -330,8 +337,9 @@ function Manager(package, buildinfo)
 							},
 							function(info)
 							{	//receive
-								if (buildinfo.version!==info.buildversion)
+								if (buildinfo.version!==info.buildversion) {
 									manager.alert('Your program version ('+buildinfo.timestamp+') is incompatible with your peer ('+info.buildversion+'). Please reload.');
+								}
 								if (param.role==='active')
 								{
 									session.player[0] = settings.player[0];
@@ -395,10 +403,12 @@ function Manager(package, buildinfo)
 						}
 						else if (I===1)
 						{
-							if (window.location.href.indexOf('http')===0)
+							if (window.location.href.indexOf('http')===0) {
 								manager.switch_UI('network_game');
-							else
+							}
+							else {
 								manager.alert('network game must run under http://');
+							}
 						}
 						else if (I===2)
 						{
@@ -425,8 +435,9 @@ function Manager(package, buildinfo)
 					util.root.insertBefore(holder,util.root.firstChild);
 					hide(util.div('window'));
 					var canx = window.innerWidth/2-parseInt(window.getComputedStyle(util.div('frontpage_content'),null).getPropertyValue('width'))/2;
-					if (canx<0)
+					if (canx<0) {
 						util.div('frontpage_content').style.left= canx+'px';
+					}
 				}
 				else //demaximize
 				{
@@ -463,8 +474,9 @@ function Manager(package, buildinfo)
 			keychanger:function()
 			{
 				var keychanger = util.div('keychanger');
-				if (keychanger)
+				if (keychanger) {
 					keychanger.parentNode.removeChild(keychanger);
+				}
 				var keychanger = document.createElement('div');
 					keychanger.className = 'keychanger';
 				util.div('settings').appendChild(keychanger);
@@ -475,15 +487,18 @@ function Manager(package, buildinfo)
 				var column = this.column = [];
 				
 				table.style.display='inline-block';
-				for (var i=0; i<9; i++)
+				for (var i=0; i<9; i++) {
 					row[i]=create_at(table, 'tr');
+				}
 				var i=0;
 				left_cell(row[i++],'name');
 				left_cell(row[i++],'type');
-				for (var I in settings.control[0].config)
+				for (var I in settings.control[0].config) {
 					left_cell(row[i++],I);
-				for (var i=0; i<session.control.length; i++)
+				}
+				for (var i=0; i<session.control.length; i++) {
 					column[i] = new Control(i);
+				}
 				
 				function Control(num)
 				{
@@ -492,8 +507,9 @@ function Manager(package, buildinfo)
 					var type = right_cell(row[1],'');
 					var cells = {};
 					var i=2;
-					for (var I in settings.control[0].config)
+					for (var I in settings.control[0].config) {
 						cells[I] = add_changer(row[i++],I);
+					}
 					this.update = update;
 					update();
 					if (session.control[num].role===undefined)
@@ -551,7 +567,7 @@ function Manager(package, buildinfo)
 						function keydown(e)
 						{
 							var con = session.control[num];
-							if (!e) e = window.event;
+							if (!e) { e = window.event; }
 							var value=e.keyCode;
 							cell.innerHTML=Fcontroller.keycode_to_keyname(value);
 							con.config[name]=Fcontroller.keycode_to_keyname(value);
@@ -568,11 +584,13 @@ function Manager(package, buildinfo)
 						var con = session.control[num];
 						name.innerHTML = session.player[num].name;
 						type.innerHTML = con.role==='remote'?'network':con.type;
-						for (var I in cells)
-							if (con.type==='keyboard')
+						for (var I in cells) {
+							if (con.type==='keyboard') {
 								cells[I].innerHTML = con.config[I];
-							else
+							} else {
 								cells[I].innerHTML = '-';
+							}
+						}
 					}
 				}
 				
@@ -580,8 +598,9 @@ function Manager(package, buildinfo)
 				{
 					var E = document.createElement(tag);
 					parent.appendChild(E);
-					if (id)
+					if (id) {
 						E.id = id;
+					}
 					return E;
 				}
 				
@@ -589,10 +608,12 @@ function Manager(package, buildinfo)
 				{
 					var td = create_at(row, 'td')
 					td.innerHTML= content;
-					if (bg_color)
+					if (bg_color) {
 						td.style.backgroundColor = bg_color;
-					if (text_color)
+					}
+					if (text_color) {
 						td.style.color = text_color;
+					}
 					return td;
 				}
 				function left_cell(A,B)
@@ -647,8 +668,9 @@ function Manager(package, buildinfo)
 					}
 					else
 					{
-						if (last_option==='third_party_server')
+						if (last_option==='third_party_server') {
 							This.last_value = util.div('server_address').value;
+						}
 						util.div('server_address').value=settings.server[this.value];
 						util.div('server_address').readOnly=true;
 					}
@@ -685,8 +707,9 @@ function Manager(package, buildinfo)
 									manager.UI_list.lobby.start(server);
 									manager.switch_UI('lobby');
 								}
-								else
+								else {
 									manager.alert('['+this.status+'] Failed to connect to server');
+								}
 							}
 						}
 						request.open('GET', server_address+'/protocol', true);
@@ -698,8 +721,9 @@ function Manager(package, buildinfo)
 				}
 				function normalize_address(str)
 				{
-					if (str.charAt(str.length-1)==='/')
+					if (str.charAt(str.length-1)==='/') {
 						return str.slice(0,str.length-1);
+					}
 					return str;
 				}
 			},
@@ -734,8 +758,9 @@ function Manager(package, buildinfo)
 				window.addEventListener('message', windowMessage, false);
 				function windowMessage(event)
 				{
-					if (event.origin!==server.address)
+					if (event.origin!==server.address) {
 						return;
+					}
 					if (event.data.event==='start')
 					{
 						create_network_controllers(server, event.data);
@@ -751,13 +776,15 @@ function Manager(package, buildinfo)
 			bgcolor:package.data.UI.data.character_selection.bg_color,
 			onactive:function()
 			{
-				if (session.control.f.paused)
+				if (session.control.f.paused) {
 					session.control.f.paused(true);
+				}
 			},
 			deactive:function()
 			{
-				if (session.control.f.paused)
+				if (session.control.f.paused) {
 					session.control.f.paused(false);
+				}
 			},
 			create:function()
 			{
@@ -850,8 +877,9 @@ function Manager(package, buildinfo)
 								players[i].name=session.player[i]?session.player[i].name:'';
 								players[i].step++;
 								var finished=true;
-								for (var k=0; k<players.length; k++)
+								for (var k=0; k<players.length; k++) {
 									finished = finished && (players[k].use? players[k].step===3:true);
+								}
 								if (finished)
 								{
 									this.set_step(1);
@@ -862,8 +890,9 @@ function Manager(package, buildinfo)
 								if (players[i].step>0)
 								{
 									players[i].step--;
-									if (players[i].step===0)
+									if (players[i].step===0) {
 										players[i].use = false;
+									}
 								}
 								manager.sound.play('1/m_cancel');
 							break;
@@ -871,28 +900,32 @@ function Manager(package, buildinfo)
 								if (players[i].step===1)
 								{
 									players[i].selected++;
-									if (players[i].selected>=char_list.length)
+									if (players[i].selected>=char_list.length) {
 										players[i].selected = -1;
+									}
 								}
 								if (players[i].step===2)
 								{
 									players[i].team++;
-									if (players[i].team>4)
+									if (players[i].team>4) {
 										players[i].team = 0;
+									}
 								}
 							break;
 							case 'left':
 								if (players[i].step===1)
 								{
 									players[i].selected--;
-									if (players[i].selected<-1)
+									if (players[i].selected<-1) {
 										players[i].selected = char_list.length-1;
+									}
 								}
 								if (players[i].step===2)
 								{
 									players[i].team--;
-									if (players[i].team<0)
+									if (players[i].team<0) {
 										players[i].team = 4;
+									}
 								}
 							break;
 						}
@@ -932,8 +965,9 @@ function Manager(package, buildinfo)
 						for (var i=0; i<players.length; i++)
 						{
 							players[i].sp.show();
-							for (var j=0; j<players[i].textbox.length; j++)
+							for (var j=0; j<players[i].textbox.length; j++) {
 								show(players[i].textbox[j]);
+							}
 						}
 					},
 					leave: function()
@@ -943,8 +977,9 @@ function Manager(package, buildinfo)
 							if (!players[i].use)
 							{
 								players[i].sp.hide();
-								for (var j=0; j<players[i].textbox.length; j++)
+								for (var j=0; j<players[i].textbox.length; j++) {
 									hide(players[i].textbox[j]);
+								}
 							}
 							else
 							{
@@ -979,22 +1014,27 @@ function Manager(package, buildinfo)
 					{
 						var low=0, high;
 						var used = 0;
-						for (var i=0; i<players.length; i++)
-							if (players[i].use)
+						for (var i=0; i<players.length; i++) {
+							if (players[i].use) {
 								used++;
+							}
+						}
 						high = players.length-used;
 						var same_team = true;
 						var last_item;
-						for (var i=0; i<players.length; i++)
+						for (var i=0; i<players.length; i++) {
 							if (players[i].use)
 							{
-								if (last_item===undefined)
+								if (last_item===undefined) {
 									last_item = i;
-								else
+								} else {
 									same_team = same_team && players[i].team===players[last_item].team && players[i].team!==0;
+								}
 							}
-						if (same_team)
+						}
+						if (same_team) {
 							low = 1;
+						}
 						this.how_many.init(low,high);
 						this.how_many.show();
 					},
@@ -1021,8 +1061,9 @@ function Manager(package, buildinfo)
 							break;
 							case 'jump':
 								i = this.state.setting_computer;
-								if (players[i].step>0)
+								if (players[i].step>0) {
 									players[i].step--;
+								}
 								manager.sound.play('1/m_cancel');
 							break;
 							case 'right':
@@ -1030,20 +1071,23 @@ function Manager(package, buildinfo)
 								if (players[i].step===1)
 								{
 									players[i].selected++;
-									if (players[i].selected>=char_list.length)
+									if (players[i].selected>=char_list.length) {
 										players[i].selected = 0;
+									}
 								}
 								if (players[i].step===2)
 								{
 									players[i].team++;
-									if (players[i].team>4)
+									if (players[i].team>4) {
 										players[i].team = 0;
+									}
 								}
 								if (players[i].step===0 && players[i].type==='computer')
 								{
 									players[i].selected_AI++;
-									if (players[i].selected_AI>=AI_list.length)
+									if (players[i].selected_AI>=AI_list.length) {
 										players[i].selected_AI = -1;
+									}
 								}
 							break;
 							case 'left':
@@ -1051,20 +1095,23 @@ function Manager(package, buildinfo)
 								if (players[i].step===1)
 								{
 									players[i].selected--;
-									if (players[i].selected<0)
+									if (players[i].selected<0) {
 										players[i].selected = char_list.length-1;
+									}
 								}
 								if (players[i].step===2)
 								{
 									players[i].team--;
-									if (players[i].team<0)
+									if (players[i].team<0) {
 										players[i].team = 4;
+									}
 								}
 								if (players[i].step===0 && players[i].type==='computer')
 								{
 									players[i].selected_AI--;
-									if (players[i].selected_AI<-1)
+									if (players[i].selected_AI<-1) {
 										players[i].selected_AI = AI_list.length-1;
+									}
 								}
 							break;
 						}
@@ -1127,8 +1174,9 @@ function Manager(package, buildinfo)
 							players[i].step = 0;
 							players[i].type = 'computer';
 							players[i].sp.show();
-							for (var j=0; j<players[i].textbox.length; j++)
+							for (var j=0; j<players[i].textbox.length; j++) {
 								show(players[i].textbox[j]);
+							}
 						}
 					}
 				},
@@ -1159,8 +1207,9 @@ function Manager(package, buildinfo)
 										manager.switch_UI('frontpage');
 									break;
 								}
-								if (this.dialog.active_item===3)
+								if (this.dialog.active_item===3) {
 									step2_key.call(this,i,'right');
+								}
 							break;
 							case 'jump':
 								//cannot go back
@@ -1169,16 +1218,18 @@ function Manager(package, buildinfo)
 								if (this.dialog.active_item===3)
 								{
 									this.options.background++;
-									if (this.options.background>=bg_list.length)
+									if (this.options.background>=bg_list.length) {
 										this.options.background = -1;
+									}
 								}
 							break;
 							case 'left':
 								if (this.dialog.active_item===3)
 								{
 									this.options.background--;
-									if (this.options.background<-1)
+									if (this.options.background<-1) {
 										this.options.background = bg_list.length-1;
+									}
 								}
 							break;
 							case 'up':
@@ -1210,10 +1261,12 @@ function Manager(package, buildinfo)
 						this.state.random_AI = {};
 						for (var i=0; i<players.length; i++)
 						{
-							if (players[i].selected===-1)
+							if (players[i].selected===-1) {
 								this.state.random_slot[i] = true;
-							if (players[i].selected_AI===-1)
+							}
+							if (players[i].selected_AI===-1) {
 								this.state.random_AI[i] = true;
+							}
 						}
 						this.steps[this.state.step].update_random.call(this);
 					},
@@ -1269,18 +1322,21 @@ function Manager(package, buildinfo)
 			{
 				var players = this.players;
 				var i = controller_num;
-				if (this.state.step>0 && players[i].type!=='human')
+				if (this.state.step>0 && players[i].type!=='human') {
 					return;
+				}
 				this.steps[this.state.step].key.call(this,i,key);
 				this.steps[this.state.step].show.call(this);
 			},
 			set_step:function(newstep)
 			{
-				if (this.steps[this.state.step].leave)
+				if (this.steps[this.state.step].leave) {
 					this.steps[this.state.step].leave.call(this);
+				}
 				this.state.step = newstep;
-				if (this.steps[this.state.step].enter)
+				if (this.steps[this.state.step].enter) {
 					this.steps[this.state.step].enter.call(this);
+				}
 			},
 			frame:function()
 			{
@@ -1291,8 +1347,9 @@ function Manager(package, buildinfo)
 					switch (players[i].step)
 					{
 						case 0:
-							if (this.state.step===0)
+							if (this.state.step===0) {
 								players[i].ani.set_frame(t%2);
+							}
 							players[i].textbox[0].style.color = sel.text.color[t%2];
 						break;
 						case 1:
@@ -1303,8 +1360,9 @@ function Manager(package, buildinfo)
 						break;
 					}
 				}
-				for (var i=0; i<session.control.length; i++)
+				for (var i=0; i<session.control.length; i++) {
 					session.control[i].fetch();
+				}
 				manager.sound.TU();
 				this.state.t++;
 			}
@@ -1390,10 +1448,11 @@ function Manager(package, buildinfo)
 				//landscape = true;
 			var last_window_state_wide = window_state.wide;
 			var want_wide;
-			if (!landscape)
+			if (!landscape) {
 				want_wide = window.innerWidth/window.innerHeight > 15/9;
-			else
+			} else {
 				want_wide = window.innerHeight/window.innerWidth > 15/9;
+			}
 			if (want_wide)
 			{
 				if (window_state.allow_wide && !window_state.wide)
@@ -1415,7 +1474,7 @@ function Manager(package, buildinfo)
 				var width = parseInt(window.getComputedStyle(util.container,null).getPropertyValue('width')),
 					height = parseInt(window.getComputedStyle(util.container,null).getPropertyValue('height'));
 				this.width = width;
-				if (height>100) this.height = height;
+				if (height>100) { this.height = height; }
 				if (!landscape)
 				{
 					var ratioh = window.innerHeight/this.height;
@@ -1434,13 +1493,14 @@ function Manager(package, buildinfo)
 			{
 				manager.UI_list['frontpage'].demax(demax);
 			}
-			if (!ratio) return;
+			if (!ratio) { return; }
 			var canx=0, cany=0;
-			if (!landscape)
+			if (!landscape) {
 				canx = window.innerWidth/2-parseInt(window.getComputedStyle(util.container,null).getPropertyValue('width'))/2*ratio;
-			else
+			} else {
 				cany = window.innerHeight/2-parseInt(window.getComputedStyle(util.container,null).getPropertyValue('width'))/2*ratio;
-			if (demax) canx=0;
+			}
+			if (demax) { canx=0; }
 			if (Fsupport.css3dtransform)
 			{
 				util.container.style[Fsupport.css3dtransform+'Origin']= '0 0';
@@ -1503,15 +1563,17 @@ function Manager(package, buildinfo)
 	this.dispatch_event=function(event,args)
 	{
 		var active = this.UI_list[this.active_UI];
-		if (active && active[event])
+		if (active && active[event]) {
 			active[event].apply(active,args);
+		}
 	}
 	this.create_UI=function()
 	{
 		for (var I in this.UI_list)
 		{
-			if (this.UI_list[I].create)
+			if (this.UI_list[I].create) {
 				this.UI_list[I].create.call(this.UI_list[I]);
+			}
 		}
 	}
 	this.switch_UI=function(page)
@@ -1525,8 +1587,9 @@ function Manager(package, buildinfo)
 		if (window_state.allow_wide !== this.UI_list[page].allow_wide)
 		{
 			window_state.allow_wide = this.UI_list[page].allow_wide;
-			if (window_state.maximized && window_state.wide!==window_state.allow_wide)
+			if (window_state.maximized && window_state.wide!==window_state.allow_wide) {
 				resizer();
+			}
 		}
 		util.div('window').style.background = this.UI_list[page].bgcolor || '';
 		if (window_state.maximized)
@@ -1544,25 +1607,29 @@ function Manager(package, buildinfo)
 		if (timer) network.clearInterval(timer);
 		timer = network.setInterval(function(){This.frame();},1000/12);
 		//create controller listener
-		for (var i=0; i<session.control.length; i++)
+		for (var i=0; i<session.control.length; i++) {
 			(function(i){
 				session.control[i].child=[{
 					key:function(K,D){if(D)This.key(i,K);}
 				}];
 			}(i));
+		}
 		session.control.f.child=[];
-		if (session.control.f.hide)
+		if (session.control.f.hide) {
 			session.control.f.hide();
+		}
 	}
 	this.start_game=function()
 	{
 		//save settings
-		if (Fsupport.localStorage)
+		if (Fsupport.localStorage) {
 			Fsupport.localStorage.setItem('F.LF/settings',JSON.stringify(settings));
+		}
 		
 		//controller
-		for (var i=0; i<session.control.length; i++)
+		for (var i=0; i<session.control.length; i++) {
 			session.control[i].sync=true;
+		}
 		session.control.f.sync=true;
 		for (var i=0; i<session.control.length; i++)
 		{
@@ -1572,8 +1639,9 @@ function Manager(package, buildinfo)
 				Touchcontroller.enable(true);
 			}
 		}
-		if (session.control.f.show)
+		if (session.control.f.show) {
 			session.control.f.show();
+		}
 		
 		//start
 		manager.sound.play('1/m_ok');
@@ -1590,13 +1658,15 @@ function Manager(package, buildinfo)
 			timer = null;
 		}
 
-		for (var i=0; i<session.control.length; i++)
+		for (var i=0; i<session.control.length; i++) {
 			session.control[i].child=[];
+		}
 		if (!config.demo_mode)
 		{
 			session.control.f.child=[];
-			if (session.control.f.show)
+			if (session.control.f.show) {
 				session.control.f.show();
+			}
 		}
 
 		var match = new Match
@@ -1622,23 +1692,25 @@ function Manager(package, buildinfo)
 			var arr = [];
 			for (var i=0; i<players.length; i++)
 			{
-				if (players[i].use)
+				if (players[i].use) {
 					arr.push({
 						name: players[i].name,
 						controller: players[i].type==='human'?session.control[i]:{type:'AIscript',id:AI_list[players[i].selected_AI].id},
 						id: char_list[players[i].selected].id,
 						team: players[i].team===0? 10+i : players[i].team
 					});
+				}
 			}
 			return arr;
 		}
 		function get_background()
 		{
 			var options = config.options;
-			if (options.background===-1)
+			if (options.background===-1) {
 				return bg_list[Math.floor(randomseed.next()*bg_list.length)].id;
-			else
+			} else {
 				return bg_list[options.background].id;
+			}
 		}
 	}
 	this.network_debug=function(role)
@@ -1764,8 +1836,9 @@ function create_textbox(config)
 		xywh: config.xywh
 	});
 	box.el.classList.add('textbox');
-	if (config.color)
+	if (config.color) {
 		box.el.style.color = config.color;
+	}
 	box.el.style['line-height'] = config.xywh[3]+'px';
 	return box.el;
 }
@@ -1778,10 +1851,12 @@ function vertical_menu_dialog(config)
 	this.menu = new Fsprite_dom({canvas: this.dia, img: data.pic});
 	this.it = new Fsprite_dom({canvas: this.dia, img: data.pic});
 	this.dia.set_x_y(data.x,data.y);
-	for (var I in {bg:0,menu:0})
+	for (var I in {bg:0,menu:0}) {
 		this[I].set_x_y(0,0);
-	for (var I in {dia:0,bg:0,menu:0})
+	}
+	for (var I in {dia:0,bg:0,menu:0}) {
 		this[I].set_w_h(data.width,data.height);
+	}
 	if (config.mousehover)
 	{	//activate items automatically by mouse hovering
 		var trans=function(el,e)
@@ -1821,10 +1896,11 @@ function vertical_menu_dialog(config)
 var vmdp = vertical_menu_dialog.prototype;
 vmdp.activate_item = function(num)
 {
-	if (num!==null && num!==undefined)
+	if (num!==null && num!==undefined) {
 		this.active_item = num;
-	else
+	} else {
 		num = this.active_item;
+	}
 	var item = this.data.item[num];
 	this.it.set_x_y(item[0],item[1]);
 	this.it.set_img_x_y(-this.data.width-item[0],-item[1]);
@@ -1832,18 +1908,20 @@ vmdp.activate_item = function(num)
 }
 vmdp.nav_up = function()
 {
-	if (this.active_item>0)
+	if (this.active_item>0) {
 		this.active_item--;
-	else
+	} else {
 		this.active_item = this.data.item.length-1;
+	}
 	this.activate_item();
 }
 vmdp.nav_down = function()
 {
-	if (this.active_item<this.data.item.length-1)
+	if (this.active_item<this.data.item.length-1) {
 		this.active_item++;
-	else
+	} else {
 		this.active_item = 0;
+	}
 	this.activate_item();
 }
 vmdp.show = function()
@@ -1883,8 +1961,9 @@ vmdp.mousemove = function(x,y)
 vmdp.mousedown = function(x,y)
 {
 	var target = this.get_mouse_target(x,y);
-	if (this.onclick && defined(target))
+	if (this.onclick && defined(target)) {
 		this.onclick(target);
+	}
 }
 function horizontal_number_dialog(config)
 {
@@ -1894,8 +1973,9 @@ function horizontal_number_dialog(config)
 	this.dia.set_x_y(data.x,data.y);
 	this.bg = new Fsprite_dom({canvas: this.dia, img: data.bg});
 	this.bg.set_x_y(0,0);
-	for (var I in {dia:0,bg:0})
+	for (var I in {dia:0,bg:0}) {
 		this[I].set_w_h(data.width,data.height);
+	}
 	this.it = [];
 	this.active_item = 0;
 	for (var i=0; i<=7; i++)
@@ -1912,10 +1992,12 @@ function horizontal_number_dialog(config)
 var hndp = horizontal_number_dialog.prototype;
 hndp.init = function(lower_bound,upper_bound)
 {
-	for (var i=0; i<this.it.length; i++)
+	for (var i=0; i<this.it.length; i++) {
 		this.it[i].el.style.color=this.data.inactive_color;
-	for (var i=lower_bound; i<=upper_bound; i++)
+	}
+	for (var i=lower_bound; i<=upper_bound; i++) {
 		this.it[i].el.style.color=this.data.active_color;
+	}
 	this.activate_item(lower_bound);
 	this.lower_bound = lower_bound;
 	this.upper_bound = upper_bound;
@@ -2038,8 +2120,9 @@ summary_dialog.prototype.set_rows=function(num)
 			y += this.data.body[3];
 			this.rows[i].gp.show();
 		}
-		else
+		else {
 			this.rows[i].gp.hide();
+		}
 	}
 	this.foot_holder.set_x_y(0, y);
 	y += this.data.foot[3];
@@ -2072,10 +2155,11 @@ summary_dialog.prototype.set_row_data=function(i, data)
 	{
 		row[i-1].innerHTML = data[i];
 	}
-	if (data[7].indexOf('Win')!==-1)
+	if (data[7].indexOf('Win')!==-1) {
 		row[6].style.color = this.status_colors[0];
-	else
+	} else {
 		row[6].style.color = this.status_colors[1];
+	}
 }
 
 return Manager;

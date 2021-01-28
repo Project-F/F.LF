@@ -9,14 +9,17 @@ define(['LF/util'],function(util)
 	var touches=[], eventtype;
 	function touch_fun(event)
 	{
-		if (!TC.enabled) return;
+		if (!TC.enabled) { return; }
 		eventtype = event.type;
 		touches = event.touches;
-		for (var i in controllers)
-			if (!controllers[i].sync)
+		for (var i in controllers) {
+			if (!controllers[i].sync) {
 				controllers[i].fetch();
-		if (TC.preventDefault)
+			}
+		}
+		if (TC.preventDefault) {
 			event.preventDefault();
+		}
 	}
 	for (var event in {'touchstart':0,'touchmove':0,'touchenter':0,'touchend':0,'touchleave':0,'touchcancel':0})
 	{
@@ -24,8 +27,9 @@ define(['LF/util'],function(util)
 	}
 	window.addEventListener('resize', function()
 	{
-		for (var i=0; i<controllers.length; i++)
+		for (var i=0; i<controllers.length; i++) {
 			controllers[i].resize();
+		}
 	}, false);
 
 	function TC(config)
@@ -168,8 +172,9 @@ define(['LF/util'],function(util)
 					'F4': [ h/10-size/2, h/10-size/2+offy, size, size],
 					'F7': [ h/10-size/2, h/10-size/2+offy, size, size]
 				});
-				if (!$.hidden)
+				if (!$.hidden) {
 					show($.button['F1']);
+				}
 				$.button['F1'].disabled=false;
 				for (var i in {F2:0,F4:0,F7:0})
 				{
@@ -209,8 +214,9 @@ define(['LF/util'],function(util)
 	}
 	TC.prototype.clear_states=function()
 	{
-		for(var I in this.state)
+		for(var I in this.state) {
 			this.state[I]=0;
+		}
 	}
 	TC.prototype.fetch=function()
 	{
@@ -219,8 +225,9 @@ define(['LF/util'],function(util)
 		{
 			if ($.button[key].disabled)
 			{
-				if (typeof $.button[key].disabled==='number')
+				if (typeof $.button[key].disabled==='number') {
 					$.button[key].disabled--;
+				}
 				continue;
 			}
 			var down=false;
@@ -235,13 +242,15 @@ define(['LF/util'],function(util)
 			}
 			if ((down && !$.state[key]) || (!down && $.state[key]))
 			{
-				for (var i=0; i<$.child.length; i++)
+				for (var i=0; i<$.child.length; i++) {
 					$.child[i].key(key,down);
+				}
 				$.state[key]=down;
-				if (down)
+				if (down) {
 					$.button[key].el.style.border = '2px solid rgb(255, 170, 170)';
-				else
+				} else {
 					$.button[key].el.style.border = '2px solid rgb(170, 255, 255)';
+				}
 			}
 		}
 	}

@@ -69,11 +69,13 @@ function sprite (bmp, parent)
 		for (var j in bmp.file[i])
 		{
 			if (typeof bmp.file[i][j] === 'string' &&
-			    j.indexOf('file')===0 )
+			    j.indexOf('file')===0) {
 				imgpath = bmp.file[i][j];
+			}
 		}
-		if (imgpath==='')
+		if (imgpath==='') {
 			console.log( 'cannot find img path in data:\n'+JSON.stringify(bmp.file[i]) );
+		}
 		sp.add_img( imgpath, i);
 
 		var ani_con=
@@ -120,8 +122,9 @@ sprite.prototype.show_pic = function(I)
 			I = i;
 			slot++;
 		}
-		else
+		else {
 			break;
+		}
 	}
 	if (slot >= this.ani.length)
 	{

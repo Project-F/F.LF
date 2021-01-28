@@ -23,17 +23,21 @@ util.selectA_from=function(from,where,option)
 		var match=true;
 		if (typeof where==='function')
 		{
-			if (!where(O))
+			if (!where(O)) {
 				match=false;
+			}
 		}
-		else
+		else {
 			for (var j in where)
 			{
-				if (O[j]!==where[j])
+				if (O[j]!==where[j]) {
 					match=false;
+				}
 			}
-		if (match)
+		}
+		if (match) {
 			res.push(O);
+		}
 	}
 	return res; //always return an array
 }
@@ -41,20 +45,23 @@ util.selectA_from=function(from,where,option)
 util.select_from=function(from,where,option)
 {
 	var res = util.selectA_from(from,where,option);
-	if (res.length===0)
+	if (res.length===0) {
 		return ;
-	else if (res.length===1)
+	}
+	else if (res.length===1) {
 		return res[0]; //return an item
-	else
+	} else {
 		return res;
+	}
 }
 
 util.lookup=function(A,x)
 {
 	for (var i in A)
 	{
-		if (x<=i)
+		if (x<=i) {
 			return A[i];
+		}
 	}
 }
 
@@ -63,8 +70,9 @@ util.lookup_abs=function(A,x)
 	if (x<0) x=-x;
 	for (var i in A)
 	{
-		if (x<=i)
+		if (x<=i) {
 			return A[i];
+		}
 	}
 	return A[i];
 }
@@ -72,8 +80,9 @@ util.lookup_abs=function(A,x)
 util.shallow_copy=function(A)
 {
 	var B={};
-	for (var i in A)
+	for (var i in A) {
 		B[i] = A[i];
+	}
 	return B;
 }
 
@@ -95,10 +104,12 @@ util.div=function(/*classname, child_classname, ...*/)
 
 util.filename=function(file)
 {
-	if (file.lastIndexOf('/')!==-1)
+	if (file.lastIndexOf('/')!==-1) {
 		file = file.slice(file.lastIndexOf('/')+1);
-	if (file.lastIndexOf('.js')!==-1)
+	}
+	if (file.lastIndexOf('.js')!==-1) {
 		file = file.slice(0,file.lastIndexOf('.js'));
+	}
 	return file;
 }
 
@@ -168,10 +179,12 @@ util.location_parameters=function()
 		for (var i=0; i<param.length; i++)
 		{
 			pp = param[i].split('=');
-			if (pp.length===1)
+			if (pp.length===1) {
 				query[pp[0]] = 1;
-			if (pp.length===2)
+			}
+			if (pp.length===2) {
 				query[pp[0]] = pp[1];
+			}
 		}
 	}
 	return query;
@@ -193,9 +206,9 @@ util.organize_package=function(package)
 			//if `deep.js` is of type character, select all objects which `file` contains `deep`
 			var name = util.filename(package.data.object[i].file);
 			var objects = util.selectA_from(package.data.object,function(O){
-				if (!O.file) return false;
+				if (!O.file) { return false; }
 				var file = util.filename(O.file);
-				if (file===name) return false;
+				if (file===name) { return false; }
 				return file.indexOf(name)!==-1;
 			});
 			package.data.object[i].pack = objects; //each character has a specialattack pack

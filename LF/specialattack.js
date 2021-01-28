@@ -21,15 +21,18 @@ var GC=Global.gameplay;
 				$.interaction();
 				$.mech.dynamics();
 				//	<YinYin> hit_a is the amount of hp that will be taken from a type 3 object they start with 500hp like characters it can only be reset with F7 or negative hits - once the hp reaches 0 the type 3 object will go to frame noted in hit_d - also kind 9 itrs (john shield) deplete hp instantly.
-				if ($.frame.D.hit_a)
+				if ($.frame.D.hit_a) {
 					$.health.hp -= $.frame.D.hit_a;
+				}
 			break;
 
 			case 'frame':
-				if ($.frame.D.opoint)
+				if ($.frame.D.opoint) {
 					$.match.create_object($.frame.D.opoint, $);
-				if ($.frame.D.sound)
+				}
+				if ($.frame.D.sound) {
 					$.match.sound.play($.frame.D.sound);
+				}
 			break;
 
 			case 'frame_force':
@@ -42,8 +45,9 @@ var GC=Global.gameplay;
 			break;
 
 			case 'leaving':
-				if ($.bg.leaving($, 200)) //only when leaving far
+				if ($.bg.leaving($, 200)) { //only when leaving far
 					$.trans.frame(1000); //destroy
+				}
 			break;
 			
 			case 'hit':
@@ -78,10 +82,12 @@ var GC=Global.gameplay;
 					var dx = T.ps.x - $.ps.x,
 						dy = T.ps.y - $.ps.y,
 						dz = T.ps.z - $.ps.z;
-					if ($.ps.vx*(dx>=0?1:-1) < 14)
+					if ($.ps.vx*(dx>=0?1:-1) < 14) {
 						$.ps.vx += (dx>=0?1:-1) * 0.7;
-					if ($.ps.vz*(dz>=0?1:-1) < 2.2)
+					}
+					if ($.ps.vz*(dz>=0?1:-1) < 2.2) {
 						$.ps.vz += (dz>=0?1:-1) * 0.4;
+					}
 					//$.ps.vy = (dy>=0?1:-1) * 1.0;
 					$.switch_dir($.ps.vx>=0?'right':'left');
 				}
@@ -103,9 +109,10 @@ var GC=Global.gameplay;
 
 			case 'hit_others':
 				//check if att is ice or fire
-				if (ITR.effect===3 && att.type==='specialattack' && att.state()===3000 && att.frame.D.itr.effect!==3 && att.frame.D.itr.effect!==2)
+				if (ITR.effect===3 && att.type==='specialattack' && att.state()===3000 && att.frame.D.itr.effect!==3 && att.frame.D.itr.effect!==2) {
 					//freeze ball hit another non freeze ball
 					return;
+				}
 				if (ITR.effect!==3 && ITR.effect!==2 && att.type==='specialattack' && att.frame.D.itr.effect===3)
 				{	//non freeze or fire ball hit another freeze ball
 					$.ps.vx = 0;
@@ -123,13 +130,15 @@ var GC=Global.gameplay;
 					$.trans.set_wait(0,20); //go to break frame
 					return true;
 				}
-				if (att.team===$.team && att.ps.dir===$.ps.dir)
+				if (att.team===$.team && att.ps.dir===$.ps.dir) {
 					//can only attack objects of same team if head on collide
 					return false;
+				}
 				//check if att is ice or fire
-				if ($.frame.D.itr.effect===3 && att.type==='specialattack' && att.state()===3000 && att.frame.D.itr.effect!==3 && att.frame.D.itr.effect!==2)
+				if ($.frame.D.itr.effect===3 && att.type==='specialattack' && att.state()===3000 && att.frame.D.itr.effect!==3 && att.frame.D.itr.effect!==2) {
 					//freeze ball hit by non freeze ball
 					return true;
+				}
 				if (att.type==='specialattack')
 				{
 					if ($.frame.D.itr.effect!==3 && $.frame.D.itr.effect!==2 && ITR.effect===3)
@@ -165,8 +174,9 @@ var GC=Global.gameplay;
 
 			case 'state_exit':
 				//ice column broke
-				if ($.match.broken_list[$.id])
+				if ($.match.broken_list[$.id]) {
 					$.brokeneffect_create($.id);
+				}
 			break;
 		}},
 
@@ -213,8 +223,9 @@ var GC=Global.gameplay;
 				if (ITR.kind===0)
 				{
 					$.ps.vx = ($.ps.vx>0?-1:1) * 1; //deflect a little bit
-					if (ITR.bdefend && ITR.bdefend > GC.defend.break_limit)
+					if (ITR.bdefend && ITR.bdefend > GC.defend.break_limit) {
 						$.health.hp = 0;
+					}
 					return true;
 				}
 			break;
@@ -265,16 +276,18 @@ var GC=Global.gameplay;
 		$.mech.coincideXY(pos,$.mech.make_point($.frame.D,'center'));
 		var dir;
 		var face = opoint.facing;
-		if (face>=20)
+		if (face>=20) {
 			face = face%10;
-		if (face===0)
+		}
+		if (face===0) {
 			dir=parent_dir;
-		else if (face===1)
+		} else if (face===1) {
 			dir=(parent_dir==='right'?'left':'right');
-		else if (2<=face && face<=10)
+		} else if (2<=face && face<=10) {
 			dir='right';
-		else if(11<=face && face<=19) //adapted standard
+		} else if(11<=face && face<=19) { //adapted standard
 			dir='left';
+		}
 		$.switch_dir(dir);
 
 		$.trans.frame(opoint.action===0?999:opoint.action);
@@ -294,8 +307,9 @@ var GC=Global.gameplay;
 		for (var j in ITR)
 		{	//for each itr tag
 			var vol=$.mech.volume(ITR[j]);
-			if (!vol.zwidth)
+			if (!vol.zwidth) {
 				vol.zwidth = 0;
+			}
 			var hit= $.scene.query(vol, $, {tag:'body'});
 			for (var k in hit)
 			{	//for each being hit
@@ -311,11 +325,13 @@ var GC=Global.gameplay;
 					{	//hit you!
 						$.itr_arest_update(ITR);
 						$.state_update('hit_others', ITR[j], hit[k]);
-						if (ITR[j].arest)
+						if (ITR[j].arest) {
 							break; //attack one enemy only
-						if (hit[k].type==='character' && ITR[j].kind===9)
+						}
+						if (hit[k].type==='character' && ITR[j].kind===9) {
 							//hitting a character will cause shield to disintegrate immediately
 							$.health.hp = 0;
+						}
 					}
 				}
 				else if (ITR[j].kind===8) //heal
@@ -333,11 +349,13 @@ var GC=Global.gameplay;
 	specialattack.prototype.hit=function(ITR, att, attps, rect)
 	{
 		var $=this;
-		if ($.itr.vrest[att.uid])
+		if ($.itr.vrest[att.uid]) {
 			return false;
+		}
 
-		if (ITR && ITR.vrest)
+		if (ITR && ITR.vrest) {
 			$.itr.vrest[att.uid] = ITR.vrest;
+		}
 		return $.state_update('hit', ITR, att, attps, rect);
 	}
 
@@ -368,8 +386,9 @@ var GC=Global.gameplay;
 						var dx = obj.ps.x-$.ps.x;
 						var dz = obj.ps.z-$.ps.z;
 						var score = Math.sqrt(dx*dx+dz*dz);
-						if ($.chasing.chased[obj.uid])
+						if ($.chasing.chased[obj.uid]) {
 							score += 500 * $.chasing.chased[obj.uid]; //prefer targets that are chased less number of times
+						}
 						return score;
 					}
 				}
@@ -380,10 +399,11 @@ var GC=Global.gameplay;
 		var target = targets[0];
 		$.chasing.target = target;
 
-		if ($.chasing.chased[target.uid]===undefined)
+		if ($.chasing.chased[target.uid]===undefined) {
 			$.chasing.chased[target.uid] = 1;
-		else
+		} else {
 			$.chasing.chased[target.uid]++;
+		}
 	}
 
 	return specialattack;

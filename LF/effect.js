@@ -60,16 +60,18 @@ effect_set.prototype.destroy=function()
 \*/
 effect_set.prototype.create=function(id,A,B,C,D)
 {
-	if (this.efs[id])
+	if (this.efs[id]) {
 		this.efs[id].create(A,B,C,D);
-	else
+	} else {
 		console.error('no such effect id '+id);
+	}
 }
 
 effect_set.prototype.TU=function()
 {
-	for (var i in this.efs)
+	for (var i in this.efs) {
 		this.efs[i].call_each('TU');
+	}
 }
 
 effect_set.prototype.transit=function()
@@ -101,10 +103,12 @@ function effect(config,data,id)
 		x:0, y:0, z:0,
 		vx:0,vy:0,vz:0
 	}
-	if (data.effect_list)
+	if (data.effect_list) {
 		this.effect_list=data.effect_list;
-	if (config.broken_list)
+	}
+	if (config.broken_list) {
 		this.broken_list=config.broken_list;
+	}
 	this.width = data.bmp.file[0].w;
 }
 
@@ -126,10 +130,12 @@ effect.prototype.TU=function()
 		$.ps.sz = $.ps.z;
 		$.sp.set_x_y($.ps.sx, $.ps.sy+$.ps.sz);
 		$.sp.set_z($.ps.sz+1);
-		if ($.ps.y<0)
+		if ($.ps.y<0) {
 			$.ps.vy += $.mass * GC.gravity;
-		if ($.ps.y>0)
+		}
+		if ($.ps.y>0) {
 			$.parent.die(this);
+		}
 	}
 	if ($.frame_update)
 	{
@@ -137,26 +143,30 @@ effect.prototype.TU=function()
 		$.sp.show_pic($.frameD.pic);
 		$.wait=$.frameD.wait;
 		$.next=$.frameD.next;
-		if ($.with_sound)
-			if ($.frameD.sound)
+		if ($.with_sound) {
+			if ($.frameD.sound) {
 				$.match.sound.play($.frameD.sound);
+			}
+		}
 	}
 	if ($.wait===0 || $.state===9998)
 	{
-		if ($.next===999)
+		if ($.next===999) {
 			$.next=0;
+		}
 		else if ($.next===1000 || $.state===9998)
 		{
 			$.parent.die($);
-			return ;
+			return;
 		}
 		$.frame=$.next;
 		$.frameD=$.dat.frame[$.frame];
 		$.state=$.frameD.state;
 		$.frame_update=true;
 	}
-	else
+	else {
 		$.wait--;
+	}
 }
 
 effect.prototype.transit=function()
@@ -173,9 +183,10 @@ effect.prototype.born=function(P,N,S,R)
 	var sf=0;
 	if ($.effect_list)
 	{
-		if (!N) N=0;
-		if ($.effect_list[N])
+		if (!N) { N=0; }
+		if ($.effect_list[N]) {
 			sf = $.effect_list[N].frame;
+		}
 		$.with_sound=S;
 		$.mass=0;
 	}
@@ -187,11 +198,12 @@ effect.prototype.born=function(P,N,S,R)
 			sf = $.broken_list[N][slot].frame;
 		}
 		$.with_sound=true;
-		if (N===302) //flame
+		if (N===302) { //flame
 			$.mass=0;
-		else
+		} else {
 			$.mass=1;
-		if (!R) R = {w:50,h:50};
+		}
+		if (!R) { R = {w:50,h:50}; }
 		P.x += $.match.random()*R.w*1.2-$.width;
 		P.y -= $.match.random()*R.h;
 		$.ps.vx = ($.match.random()-0.5)*R.w*0.5;

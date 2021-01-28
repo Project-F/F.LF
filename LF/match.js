@@ -43,10 +43,11 @@ Global)
 			//(lazy) now load all characters and associated data files
 			object_ids.push(setting.player[i].id);
 			object_ids = object_ids.concat(Futil.extract_array(util.select_from($.data.object,{id:setting.player[i].id}).pack,'id').id);
-			if (setting.player[i].controller.type==='AIscript')
+			if (setting.player[i].controller.type==='AIscript') {
 				AI_ids.push(setting.player[i].controller.id);
+			}
 		}
-		if (!setting.set) setting.set={};
+		if (!setting.set) { setting.set={}; }
 
 		$.gameover_state = false;
 		$.randomseed = $.new_randomseed();
@@ -54,8 +55,9 @@ Global)
 		$.control = $.create_controller(setting.control);
 		$.functionkey_control = setting.control;
 		if ($.functionkey_control &&
-			$.functionkey_control.restart)
+			$.functionkey_control.restart) {
 			$.functionkey_control.restart();
+		}
 		if ($.manager.panel_layer)
 		{
 			$.panel=[];
@@ -64,8 +66,9 @@ Global)
 		$.overlay_message('loading');
 		$.tasks = []; //pending tasks
 		$.AIscript = [];
-		if ($.manager.summary)
+		if ($.manager.summary) {
 			$.manager.summary.hide();
+		}
 		$.manager.canvas.render();
 
 		var already = false;
@@ -77,10 +80,12 @@ Global)
 		{	//when all necessary data files are loaded
 			$.create_background(setting.background);
 			$.create_effects();
-			if (setting.player)
+			if (setting.player) {
 				$.create_characters(setting.player);
-			if (setting.set.weapon)
+			}
+			if (setting.set.weapon) {
 				$.drop_weapons(setting.set.weapon);
+			}
 
 			Fsprite.masterconfig_set('onready',onready);
 			setTimeout(function(){onready()},8000); //assume it is ready after 8 seconds
@@ -90,8 +95,9 @@ Global)
 			if (!already)
 			{	//all loading finished
 				already = true;
-				if ($.manager.overlay_mess)
+				if ($.manager.overlay_mess) {
 					$.manager.overlay_mess.hide();
+				}
 				if (setting.set.demo_mode)
 				{
 					$.demo_mode=true;
@@ -161,8 +167,9 @@ Global)
 	{
 		var $=this;
 		$.scene = new Scene();
-		for (var objecttype in factory)
+		for (var objecttype in factory) {
 			$[objecttype] = {};
+		}
 	}
 
 	match.prototype.create_timer=function()
@@ -191,22 +198,26 @@ Global)
 				$.character[i].con.fetch();
 				$.character[i].combodec.frame();
 			}
-			if ($.destroyed)
+			if ($.destroyed) {
 				return;
+			}
 			$.TU_trans();
-			if ($.time.t===0)
+			if ($.time.t===0) {
 				$.match_event('start');
+			}
 			$.time.t++;
 			$.manager.canvas.render();
 			$.calculate_fps();
 			
-			if ($.time.paused==='F2')
+			if ($.time.paused==='F2') {
 				$.time.paused=true;
+			}
 		}
 		else
 		{
-			if ($.time.$fps)
+			if ($.time.$fps) {
 				$.time.$fps.value='paused';
+			}
 		}
 		return $.game_state();
 	}
@@ -235,9 +246,11 @@ Global)
 		$.show_hp();
 		$.check_gameover();
 		var AI_frameskip = 3; //AI script runs at a lower framerate, and is still very reactive
-		if ($.time.t%AI_frameskip===0)
-			for (var i=0; i<$.AIscript.length; i++)
+		if ($.time.t%AI_frameskip===0) {
+			for (var i=0; i<$.AIscript.length; i++) {
 				$.AIscript[i].TU();
+			}
+		}
 	}
 
 	match.prototype.match_event=function(E)
@@ -256,16 +269,19 @@ Global)
 	match.prototype.for_all=function(oper)
 	{
 		var $=this;
-		for (var objecttype in factory)
-			for (var i in $[objecttype])
+		for (var objecttype in factory) {
+			for (var i in $[objecttype]) {
 				$[objecttype][i][oper]();
+			}
+		}
 	}
 
 	match.prototype.process_tasks=function()
 	{
 		var $=this;
-		for (var i=0; i<$.tasks.length; i++)
+		for (var i=0; i<$.tasks.length; i++) {
 			$.process_task($.tasks[i]);
+		}
 		$.tasks.length=0;
 	}
 	match.prototype.process_task=function(T)
@@ -344,8 +360,9 @@ Global)
 			var uid = $.scene.add(char);
 			$.character[uid] = char;
 			//pane
-			if ($.panel)
+			if ($.panel) {
 				create_pane(i);
+			}
 		}
 		function preload_pack_images(char)
 		{
@@ -428,15 +445,16 @@ Global)
 				var ch = $.character[$.panel[i].uid],
 					hp = Math.floor(ch.health.hp/ch.health.hp_full*$.data.UI.data.panel.hpw);
 					hp_bound = Math.floor(ch.health.hp_bound/ch.health.hp_full*$.data.UI.data.panel.hpw);
-				if (hp<0) hp=0;
-				if (hp_bound<0) hp_bound=0;
+				if (hp<0) { hp=0; }
+				if (hp_bound<0) { hp_bound=0; }
 				$.panel[i].hp.set_w(hp);
 				$.panel[i].hp_bound.set_w(hp_bound);
 				$.panel[i].mp.set_w(Math.floor(ch.health.mp/ch.health.mp_full*$.data.UI.data.panel.mpw));
-				if (ch.effect.heal && ch.effect.heal>0 && $.time.t%3==0)
+				if (ch.effect.heal && ch.effect.heal>0 && $.time.t%3==0) {
 					$.panel[i].hp.set_bgcolor( $.data.UI.data.panel.hp_light);
-				else
+				} else {
 					$.panel[i].hp.set_bgcolor( $.data.UI.data.panel.hp_bright);
+				}
 			}
 		}
 	}
@@ -445,24 +463,28 @@ Global)
 	{
 		var $=this;
 		var teams={};
-		if (!$.panel)
+		if (!$.panel) {
 			return;
+		}
 		for (var i=0; i<$.panel.length; i++)
 		{
 			if ($.panel[i].uid!==undefined)
 			{
 				var ch = $.character[$.panel[i].uid];
-				if (ch.health.hp>0)
+				if (ch.health.hp>0) {
 					teams[ch.team] = true;
+				}
 			}
 		}
 		if (Object.keys(teams).length<2)
 		{
-			if (!$.gameover_state)
+			if (!$.gameover_state) {
 				$.gameover_state = $.time.t;
-			else
-				if ($.time.t == $.gameover_state + 30)
+			} else {
+				if ($.time.t == $.gameover_state + 30) {
 					$.gameover();
+				}
+			}
 		}
 		else
 		{
@@ -486,8 +508,9 @@ Global)
 				if ($.panel[i].uid!==undefined)
 				{
 					var ch = $.character[$.panel[i].uid];
-					if (ch.health.hp>0)
+					if (ch.health.hp>0) {
 						teams[ch.team] = true;
+					}
 				}
 			}
 			for (var i=0; i<$.panel.length; i++)
@@ -520,8 +543,9 @@ Global)
 		{
 			if (down)
 			if ($.time.t > $.gameover_state + 60)
-			if (K==='att' || K==='jump')
+			if (K==='att' || K==='jump') {
 				$.F4();
+			}
 		}
 	}
 
@@ -555,10 +579,12 @@ Global)
 	match.prototype.destroy_weapons=function()
 	{
 		var $=this;
-		for (var i in $.lightweapon)
+		for (var i in $.lightweapon) {
 			$.lightweapon[i].health.hp = 0;
-		for (var i in $.heavyweapon)
+		}
+		for (var i in $.heavyweapon) {
 			$.heavyweapon[i].health.hp = 0;
+		}
 	}
 
 	match.prototype.create_weapon=function(id,pos)
@@ -645,8 +671,9 @@ Global)
 		function show_pause()
 		{
 			if (!$) return;
-			if ($.time.paused)
+			if ($.time.paused) {
 				$.overlay_message('pause');
+			}
 		}
 		if (funcon)
 		{
@@ -707,13 +734,15 @@ Global)
 						{	//state change
 							if ($.time.paused)
 							{
-								if (funcon.paused)
+								if (funcon.paused) {
 									funcon.paused(true);
+								}
 							}
 							else
 							{
-								if (funcon.paused)
+								if (funcon.paused) {
 									funcon.paused(false);
+								}
 							}
 						}
 					}

@@ -9,17 +9,18 @@ define(['core/effects-pool'],function(Feffects)
 	
 	function soundmanager(config)
 	{
-		if (!config || !basic_support)
+		if (!config || !basic_support) {
 			return { //dummy object
 				play:function(){},
 				TU:function(){},
 				dummy:true
 			}
+		}
 		this.packs = {};
 		this.buffer = {};
 		this.time = 0;
 		var This = this;
-		for (var i=0; i<config.packs.length; i++)
+		for (var i=0; i<config.packs.length; i++) {
 			(function(i){
 				This.packs[config.packs[i].id] = new Feffects({
 					circular: false,
@@ -32,11 +33,13 @@ define(['core/effects-pool'],function(Feffects)
 					}
 				});
 			}(i));
+		}
 	}
 	soundmanager.prototype.play=function(path)
 	{
-		if (this.buffer[path])
+		if (this.buffer[path]) {
 			return; //play each sound once only in one TU
+		}
 		this.buffer[path] = true;
 		var I, id;
 		if (path.charAt(1)==='/')
@@ -50,15 +53,18 @@ define(['core/effects-pool'],function(Feffects)
 			I = str[0];
 			id = str[1];
 		}
-		if (this.packs[I])
+		if (this.packs[I]) {
 			this.packs[I].create(id);
+		}
 	}
 	soundmanager.prototype.TU=function()
 	{
 		this.time++;
-		if (this.time%5===0)
-			for (var I in this.buffer) //clear buffer
+		if (this.time%5===0) {
+			for (var I in this.buffer) { //clear buffer
 				this.buffer[I] = null;
+			}
+		}
 	}
 	soundmanager.support=function(callback)
 	{
@@ -104,11 +110,13 @@ define(['core/effects-pool'],function(Feffects)
 		{
 			var source = document.createElement('source');
 			var src = data.file+'.'+data.ext[i];
-			if (resourcemap)
+			if (resourcemap) {
 				src = resourcemap.get(src);
+			}
 			source.src = src;
-			if (types[data.ext[i]])
+			if (types[data.ext[i]]) {
 				source.type = types[data.ext[i]];
+			}
 			audio.appendChild(source);
 		}
 		audio.addEventListener('timeupdate',function(){This.timeupdate();},true);
@@ -143,8 +151,9 @@ define(['core/effects-pool'],function(Feffects)
 			this.audio.currentTime > this.current.end)
 		{
 			this.audio.pause();
-			if (!this.dead)
+			if (!this.dead) {
 				this.parent.die(this);
+			}
 		}
 	}
 	

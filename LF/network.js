@@ -24,25 +24,31 @@ define(['core/network'],function(Fnetwork)
 	}
 	function frame(time, data, send)
 	{
-		if (data && data.control)
-			for (var i=0; i<remote.length; i++)
+		if (data && data.control) {
+			for (var i=0; i<remote.length; i++) {
 				remote[i].supply(data.control[i]);
-		for (var i=0; i<local.length; i++)
+			}
+		}
+		for (var i=0; i<local.length; i++) {
 			packet.control[i] = local[i].pre_fetch();
+		}
 		packet.verify = verify.last;
 		send(packet);
 		compare(verify.last_last,data && data.verify);
 		verify.last_last = verify.last;
 		verify.last = callback();
-		for (var i=0; i<local.length; i++)
+		for (var i=0; i<local.length; i++) {
 			local[i].swap_buffer();
-		if (packet)
+		}
+		if (packet) {
 			packet.control.length = 0;
+		}
 	}
 	function compare(A,B)
 	{
-		if (A===undefined || B===undefined)
+		if (A===undefined || B===undefined) {
 			return;
+		}
 		for (var I in A)
 		{
 			if (!same(A[I],B[I]))
@@ -57,17 +63,21 @@ define(['core/network'],function(Fnetwork)
 		}
 		function same(a,b)
 		{
-			if (typeof a!==typeof b)
+			if (typeof a!==typeof b) {
 				return false;
+			}
 			if (typeof a==='object')
 			{
-				for (var i in a)
-					if (a[i]!==b[i])
+				for (var i in a) {
+					if (a[i]!==b[i]) {
 						return false;
+					}
+				}
 				return true;
 			}
-			else
+			else {
 				return a===b;
+			}
 		}
 	}
 	
@@ -85,15 +95,18 @@ define(['core/network'],function(Fnetwork)
 			this.wrap(control);
 			control.child.push(this);
 			control.sync=true;
-			for (var i in control.state)
+			for (var i in control.state) {
 				this.state[i] = 0;
+			}
 		}
 		if (role==='remote' || role==='dual')
 		{
 			remote.push(this);
-			if (role==='remote')
-				for (var i in control)
+			if (role==='remote') {
+				for (var i in control) {
 					this.state[i] = 0;
+				}
+			}
 		}
 	}
 	ncon.prototype.wrap=function(control)
@@ -157,8 +170,9 @@ define(['core/network'],function(Fnetwork)
 		//received a key sequence buffer from remote peer
 		if (this.role==='remote' || this.role==='dual')
 		{
-			if (buf && buf.length)
+			if (buf && buf.length) {
 				this.buf = this.buf.concat(buf);
+			}
 		}
 	}
 	ncon.prototype.fetch=function()
@@ -166,8 +180,9 @@ define(['core/network'],function(Fnetwork)
 		for (var i=0; i<this.buf.length; i++)
 		{
 			var I=this.buf[i], K=I[0], D=I[1];
-			for (var j=0; j<this.child.length; j++)
+			for (var j=0; j<this.child.length; j++) {
 				this.child[j].key(K,D);
+			}
 			this.state[K]=D;
 		}
 		this.buf.length=0;
