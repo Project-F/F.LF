@@ -211,6 +211,7 @@ GC.combo={};
 GC.combo.timeout=10; //how many TUs a combo will still be effective after being fired
 
 GC.unspecified= -842150451; //0xCDCDCDCD, one kind of HEX label
+GC.specialattack_projectiles= [201, 202] //Special attacks that shoot projectiles. Used to apply physics
 
 return G;
 });

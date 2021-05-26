@@ -33,6 +33,9 @@ var GC=Global.gameplay;
 				if ($.frame.D.sound) {
 					$.match.sound.play($.frame.D.sound);
 				}
+				if ($.frame.N===43) { //on ground
+					$.trans.frame(1000);
+				}
 			break;
 
 			case 'frame_force':
@@ -255,7 +258,9 @@ var GC=Global.gameplay;
 		$.team = config.team;
 		$.match = config.match;
 		$.health.hp = $.proper('hp') || GC.default.health.hp_full;
-		$.mech.mass = 0;
+		if(!GC.specialattack_projectiles.includes(thisID)){
+			$.mech.mass = 0;
+		}
 		$.setup();
 	}
 	specialattack.prototype = new livingobject();
