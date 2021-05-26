@@ -269,7 +269,7 @@ var GC=Global.gameplay;
 		$.team = config.team;
 		$.match = config.match;
 		$.health.hp = $.proper('hp') || GC.default.health.hp_full;
-		if(!GC.specialattack_projectiles.includes(thisID)){
+		if(GC.specialattack_projectiles.indexOf(thisID) === -1){
 			$.mech.mass = 0;
 		}
 		$.setup();
