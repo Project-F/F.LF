@@ -33,7 +33,7 @@ var GC=Global.gameplay;
 				if ($.frame.D.sound) {
 					$.match.sound.play($.frame.D.sound);
 				}
-				if ($.frame.N===43) { //on ground
+				if ($.frame.N===43 || $.frame.N===15) { //on ground
 					$.trans.frame(1000);
 				}
 			break;
@@ -102,10 +102,21 @@ var GC=Global.gameplay;
 			break;
 		}},
 
+		//Special Attack Projectiles
+		'1002':function(event, ITR, att, attps, rect)
+		{	var $=this;
+			switch (event) {
+
+			case 'hit_others':
+				$.ps.vx = 0;
+				$.trans.frame(10);
+			break;
+
+		}},
+
 		/*	<zort> you know that when you shoot a ball between john shields it eventually goes out the bottom? that's because when a projectile is spawned it's .3 pixels or whatever below its creator and whenever it bounces off a shield it respawns.
 		*/
-
-		//	State 3000 - Ball Flying is the standard state for attacks.  If the ball hits other attacks with this state, it'll go to the hitting frame (10). If it is hit by another ball or a character, it'll go to the the hit frame (20) or rebounding frame (30).
+		//	State 	 - Ball Flying is the standard state for attacks.  If the ball hits other attacks with this state, it'll go to the hitting frame (10). If it is hit by another ball or a character, it'll go to the the hit frame (20) or rebounding frame (30).
 		'3000':function(event, ITR, att, attps, rect)
 		{	var $=this;
 			switch (event) {
