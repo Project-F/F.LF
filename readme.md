@@ -1,4 +1,23 @@
-# F.LF v0.9.7
+<div align="center">
+
+  <img src="docs/Project F badge.png" width="240"/>
+
+  <h1>Project F</h1>
+
+  <p>
+    <strong>Open Source LF2 Implementation</strong>
+  </p>
+
+</div>
+
+Project F has three ultimate goals:
+1. Continuation of LF2
+2. A codebase for more creativity
+3. Promote the fighter game genre and open source movement
+
+Start playing on [Project F](https://project-f.github.io/F.LF/game/game.html) and reading the [documentation](https://project-f.github.io/F.LF/).
+
+## F.LF v0.9.7
 
 F.LF is an open source implementation of [LF2](http://lf2.net) engineered from the ground up (aka clean room implementation) for the modern web.
 
@@ -23,14 +42,6 @@ The two repositories [F.LF](https://github.com/Project-F/F.LF) and [LF2_19](http
  F
  |--F.LF
  |--LF2_19
- ```
+```
 
-## About
-![projectFlogo](https://lh3.googleusercontent.com/s-mgvVhKBx_3LSiyo-O5NMc642XSPXu6WAvK-7awdp8=w150)
-
-Project F has three ultimate goals:
-1. Continuation of LF2
-2. A codebase for more creativity
-3. Promote the fighter game genre and open source movement
-
-### Start reading the documentation on [Project F](http://project-f.github.io/F.LF/docs/project.html)
+Then simply open `game/game.html` in your favourite browser.
