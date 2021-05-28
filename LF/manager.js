@@ -875,7 +875,7 @@ function Manager(package, buildinfo)
 								players[i].use=true;
 								players[i].type='human';
 								players[i].name=session.player[i]?session.player[i].name:'';
-								players[i].step++;
+								players[i].step < 3 ? players[i].step++ : null;
 								var finished=true;
 								for (var k=0; k<players.length; k++) {
 									finished = finished && (players[k].use? players[k].step===3:true);
