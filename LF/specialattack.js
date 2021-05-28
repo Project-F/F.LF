@@ -116,7 +116,6 @@ var GC=Global.gameplay;
 			break;
 
 			case 'TU':
-				$.mech.dynamics();
 				var ps=$.ps;
 				if(!ps) break;
 				if (ps.y===0 && ps.vy>0) //fell onto ground
