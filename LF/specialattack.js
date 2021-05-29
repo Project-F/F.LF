@@ -104,12 +104,31 @@ var GC=Global.gameplay;
 
 		//Special Attack Projectiles
 		'1002':function(event, ITR, att, attps, rect)
-		{	var $=this;
+		{	
+			var $=this;
 			switch (event) {
-
+			case 'state_entry':
+				$.nobounce = $.parent.ps.y == 0 ? true : false; //If the parent is on the ground, projections don't bounce
+			break;
 			case 'hit_others':
 				$.ps.vx = 0;
 				$.trans.frame(10);
+			break;
+
+			case 'TU':
+				var ps=$.ps;
+				if(!ps) break;
+				if (ps.y===0 && ps.vy>0) //fell onto ground
+				{
+					if($.nobounce) $.trans.frame(1000); //destroy
+					if (!$.nobounce && this.mech.speed() > GC.weapon.bounceup.limit)
+					{	//bounceup
+						$.trans.frame(10);
+						ps.vy = GC.weapon.bounceup.speed.y;
+						if (ps.vx) { ps.vx = (ps.vx>0?1:-1)*GC.weapon.bounceup.speed.x; }
+						if (ps.vz) { ps.vz = (ps.vz>0?1:-1)*GC.weapon.bounceup.speed.z; }
+					}
+				}
 			break;
 
 		}},
