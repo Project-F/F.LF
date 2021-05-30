@@ -1,70 +1,70 @@
-/* \
+/*\
  * sprite
  *
  * sprite-animator for LF2
-\ */
+\*/
 define(['LF/sprite-select', 'core/animator'], function (Fsprite, Fanimator) {
-/* \
- * sprite
- [ class ]
- - bmp (object) data structure as defined in data files
- - parent (DOM node) where to append the new sprite
-\ */
+  /*\
+   * sprite
+   [ class ]
+   - bmp (object) data structure as defined in data files
+   - parent (DOM node) where to append the new sprite
+  \*/
   function sprite (bmp, parent) {
-    /* \
-	 * sprite.num_of_images
-	 [ property ]
-	\ */
+    /*\
+     * sprite.num_of_images
+     [ property ]
+    \*/
     const num_of_images = this.num_of_images = bmp.file.length
-    /* \
-	 * sprite.w
-	 [ property ]
-	 * width
-	\ */
-    /* \
-	 * sprite.h
-	 [ property ]
-	 * height
-	\ */
+    /*\
+     * sprite.w
+     [ property ]
+     * width
+    \*/
+    /*\
+     * sprite.h
+     [ property ]
+     * height
+    \*/
     const w = this.w = bmp.file[0].w + 1
     const h = this.h = bmp.file[0].h + 1
-    /* \
-	 * sprite.ani
-	 [ property ]
-	 - Fanimator (object)
-	\ */
+    /*\
+     * sprite.ani
+     [ property ]
+     - Fanimator (object)
+    \*/
     const ani = this.ani = []
-    /* \
-	 * sprite.dir
-	 [ property ]
-	 * `'left'` or `'right'`
-	\ */
+    /*\
+     * sprite.dir
+     [ property ]
+     * `'left'` or `'right'`
+    \*/
     this.dir = 'right'
-    /* \
-	 * sprite.cur_img
-	 [ property ]
-	 * current image index
-	\ */
+    /*\
+     * sprite.cur_img
+     [ property ]
+     * current image index
+    \*/
     this.cur_img = 0
 
     const sp_con =
-	{
-	  canvas: parent,
-	  wh: { w: w, h: h },
-	  img: {}
-	}
-	/* \
-	 * sprite.sp
-	 [ property ]
-	 - Fsprite (object)
-	\ */
+    {
+      canvas: parent,
+      wh: { w: w, h: h },
+      img: {}
+    }
+    /*\
+     * sprite.sp
+     [ property ]
+     - Fsprite (object)
+    \*/
     const sp = this.sp = new Fsprite(sp_con)
 
     for (let i = 0; i < bmp.file.length; i++) {
       let imgpath = ''
       for (const j in bmp.file[i]) {
         if (typeof bmp.file[i][j] === 'string' &&
-			    j.indexOf('file') === 0) {
+          j.indexOf('file') === 0) {
           imgpath = bmp.file[i][j]
         }
       }
@@ -74,40 +74,40 @@ define(['LF/sprite-select', 'core/animator'], function (Fsprite, Fanimator) {
       sp.add_img(imgpath, i)
 
       const ani_con =
-		{
-		  x: 0,
-		  y: 0, // top left margin of the frames
-		  w: bmp.file[i].w + 1,
-		  h: bmp.file[i].h + 1, // width, height of a frame
-		  gx: bmp.file[i].row,
-		  gy: bmp.file[i].col, // define a gx*gy grid of frames
-		  tar: sp, // target sprite
-		  borderleft: 0,
-		  bordertop: 0,
-		  borderright: 1,
-		  borderbottom: 1
-		}
+      {
+        x: 0,
+        y: 0, // top left margin of the frames
+        w: bmp.file[i].w + 1,
+        h: bmp.file[i].h + 1, // width, height of a frame
+        gx: bmp.file[i].row,
+        gy: bmp.file[i].col, // define a gx*gy grid of frames
+        tar: sp, // target sprite
+        borderleft: 0,
+        bordertop: 0,
+        borderright: 1,
+        borderbottom: 1
+      }
       ani.length++
       ani[i] = new Fanimator(ani_con)
     }
   }
 
-  /* \
- * sprite.destroy
- [ method ]
- * clear memory so that itself and the DOM nodes can be garbage collected
-\ */
+  /*\
+   * sprite.destroy
+   [ method ]
+   * clear memory so that itself and the DOM nodes can be garbage collected
+  \*/
   sprite.prototype.destroy = function () {
     this.sp.remove()
     this.sp = null
     this.ani.length = 0
   }
 
-  /* \
- * sprite.show_pic
- [ method ]
- - I (number) picture index to show
-\ */
+  /*\
+   * sprite.show_pic
+   [ method ]
+   - I (number) picture index to show
+  \*/
   sprite.prototype.show_pic = function (I) {
     let slot = 0
     for (let k = 0; k < this.ani.length; k++) {
@@ -129,12 +129,12 @@ define(['LF/sprite-select', 'core/animator'], function (Fsprite, Fanimator) {
     this.w = this.ani[this.cur_img].config.w
     this.h = this.ani[this.cur_img].config.h
   }
-  /* \
- * sprite.switch_lr
- [ method ]
- * switch sprite direction
- - dir (string) `'left'` or `'right'`
-\ */
+  /*\
+   * sprite.switch_lr
+   [ method ]
+   * switch sprite direction
+   - dir (string) `'left'` or `'right'`
+  \*/
   sprite.prototype.switch_lr = function (dir) // switch to `dir`
   {
     if (dir !== this.dir) {
@@ -142,34 +142,34 @@ define(['LF/sprite-select', 'core/animator'], function (Fsprite, Fanimator) {
       this.sp.set_flipx(dir === 'left')
     }
   }
-  /* \
- * sprite.set_xy
- [ method ]
- - x (number)
- - y (number)
-\ */
+  /*\
+   * sprite.set_xy
+   [ method ]
+   - x (number)
+   - y (number)
+  \*/
   sprite.prototype.set_x_y = function (x, y) {
     this.sp.set_x_y(x, y)
   }
-  /* \
- * sprite.set_z
- [ method ]
- - Z (number)
-\ */
+  /*\
+   * sprite.set_z
+   [ method ]
+   - Z (number)
+  \*/
   sprite.prototype.set_z = function (Z) {
     this.sp.set_z(Z)
   }
-  /* \
- * sprite.show
- [ method ]
-\ */
+  /*\
+   * sprite.show
+   [ method ]
+  \*/
   sprite.prototype.show = function () {
     this.sp.show()
   }
-  /* \
- * sprite.hide
- [ method ]
-\ */
+  /*\
+   * sprite.hide
+   [ method ]
+  \*/
   sprite.prototype.hide = function () {
     this.sp.hide()
   }

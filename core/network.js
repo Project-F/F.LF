@@ -1,9 +1,9 @@
-/* \
+/*\
  * network
  * PvP networking library, to be used on top of F.Lobby
-\ */
+\*/
 
-/* \
+/*\
  * network.setup
  [ method ]
  - config (object) `{server, param}` (accquired from F.Lobby)
@@ -20,15 +20,15 @@
  * connection error
  > sync_error
  * network.js sync error
-\ */
+\*/
 
-/* \
+/*\
  * network.teardown
  [ method ]
  * teardown
-\ */
+\*/
 
-/* \
+/*\
  * network.setInterval
  [ method ]
  - frame (function)
@@ -42,40 +42,40 @@
  - data (object) data sent from the other side
  - send (function) send data to the other side
  * example:
-| function frame(time, data, send)
-| {
-| 	if (time===0) {
-| 		// start
-| 	} else {
-| 		// do something with data
-| 	}
-| 	//send synchronization data
-| 	send({..});
-| }
-\ */
+ | function frame(time, data, send)
+ | {
+ | 	if (time===0) {
+ | 		// start
+ | 	} else {
+ | 		// do something with data
+ | 	}
+ | 	//send synchronization data
+ | 	send({..});
+ | }
+\*/
 
-/* \
+/*\
  * network.clearInterval
  [ method ]
  - timer_id (number)
  *
-\ */
+\*/
 
-/* \
+/*\
  * network.messenger
  [ property ]
  * in-game messenging
  *
  * this property is like:
  - send (function)
- | network.messenger.send('hello');
+  | network.messenger.send('hello');
  - receiver (object) you provide this object
  |	network.messenger.receiver = {
  |		onmessage: function(mess) {}
  |	};
-\ */
+\*/
 
-/* \
+/*\
  * network.transfer
  [ method ]
  * named data exchange. both sides have to call with same name.
@@ -83,11 +83,11 @@
  - sender (function) should return the data to be sent
  - receiver (function) callback when data is received
  * example:
-| network.transfer(
-| 'game_config',
-| function() { return {..} },
-| function(data) { apply(data) });
-\ */
+ | network.transfer(
+ | 'game_config',
+ | function() { return {..} },
+ | function(data) { apply(data) });
+\*/
 
 define(function () {
   let This;

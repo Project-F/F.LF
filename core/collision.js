@@ -1,38 +1,38 @@
-/* \
+/*\
  * collision
  * collision detection function set
  *
  * all functions return `true` if intersect
  *
  * [example](../sample/collision.html)
-\ */
+\*/
 
 define(['core/math'], function (Fm) {
   return {
 
-    /* \
- * collision.rect
- * rectangle-rectangle intersect test
- [ method ]
- - rect1 (object)
- - rect2 (object) in form of `{left,top,right,bottom}`
-\ */
+    /*\
+     * collision.rect
+     * rectangle-rectangle intersect test
+     [ method ]
+     - rect1 (object)
+     - rect2 (object) in form of `{left,top,right,bottom}`
+    \*/
     rect: function (rect1, rect2) {
-      if (rect1.bottom < rect2.top)	return false
-      if (rect1.top > rect2.bottom)	return false
-      if (rect1.right < rect2.left)	return false
-      if (rect1.left > rect2.right)	return false
+      if (rect1.bottom < rect2.top) return false
+      if (rect1.top > rect2.bottom) return false
+      if (rect1.right < rect2.left) return false
+      if (rect1.left > rect2.right) return false
 
       return true
     },
 
     // produces less garbage
     rect_flat: function (rect1_left, rect1_top, rect1_right, rect1_bottom,
-					 rect2_left, rect2_top, rect2_right, rect2_bottom) {
-      if (rect1_bottom < rect2_top)	return false
-      if (rect1_top > rect2_bottom)	return false
-      if (rect1_right < rect2_left)	return false
-      if (rect1_left > rect2_right)	return false
+           rect2_left, rect2_top, rect2_right, rect2_bottom) {
+      if (rect1_bottom < rect2_top) return false
+      if (rect1_top > rect2_bottom) return false
+      if (rect1_right < rect2_left) return false
+      if (rect1_left > rect2_right) return false
 
       return true
     },
@@ -62,17 +62,17 @@ define(['core/math'], function (Fm) {
       } else { return rect }
     },
 
-    /* \
- * collision.tri
- * triangle-triangle intersect test
- [ method ]
- - A,B (array) array of points in form `{x,y}`
-\ */
+    /*\
+     * collision.tri
+     * triangle-triangle intersect test
+     [ method ]
+     - A,B (array) array of points in form `{x,y}`
+    \*/
     tri: function (A, B) {
       /* I assume this a fast enough implementation
-	  it performs a max. of 18 cross products when the triangles do not intersect.
-	    if they do, there may be fewer calculations
-	*/
+        it performs a max. of 18 cross products when the triangles do not intersect.
+          if they do, there may be fewer calculations
+      */
       const aa = Fm.signed_area
       const I = []
       // line line intersect tests
@@ -112,12 +112,12 @@ define(['core/math'], function (Fm) {
 
       // point inside triangle test
       const AinB = [I[2] == I[6] && I[6] == !I[10], // true if A[0] is inside triangle B
-		   I[3] == I[7] && I[7] == !I[11], //  A[1]
-		   I[15] == I[19] && I[19] == !I[23]]//  A[2]
+       I[3] == I[7] && I[7] == !I[11], //  A[1]
+       I[15] == I[19] && I[19] == !I[23]]//  A[2]
 
       const BinA = [I[0] == I[12] && I[12] == !I[24], // true if B[0] is inside triangle A
-		   I[1] == I[13] && I[13] == !I[25], //  B[1]
-		   I[9] == I[21] && I[21] == !I[33]]//  B[2]
+       I[1] == I[13] && I[13] == !I[25], //  B[1]
+       I[9] == I[21] && I[21] == !I[33]]//  B[2]
 
       if (AinB[0] && AinB[1] && AinB[2]) return true
       if (BinA[0] && BinA[1] && BinA[2]) return true
@@ -126,36 +126,36 @@ define(['core/math'], function (Fm) {
       // another possible implementation http://jgt.akpeters.com/papers/Moller97/tritri.html
     },
 
-    /* \
- * collision.circle
- * circle-circle intersect test
- [ method ]
- - A,B (object) in form `{center,radius}`
- * where center is in form `{x,y}`, radius is a `number`
-\ */
+    /*\
+     * collision.circle
+     * circle-circle intersect test
+     [ method ]
+     - A,B (object) in form `{center,radius}`
+     * where center is in form `{x,y}`, radius is a `number`
+    \*/
     circle: function (A, B) {
       return (Fm.distance(A.center, B.center) <= A.radius + B.radius)
     },
 
-    /* \
- * collision.line
- * line-line intersect test, true if line AB intersects CD
- [ method ]
- - A,B,C,D (object) in form `{x,y}`
-\ */
+    /*\
+     * collision.line
+     * line-line intersect test, true if line AB intersects CD
+     [ method ]
+     - A,B,C,D (object) in form `{x,y}`
+    \*/
     line: function (A, B, C, D) {
       const res = (Fm.signed_area(A, B, C) > 0 != Fm.signed_area(A, B, D) > 0) &&
-		  (Fm.signed_area(C, D, A) > 0 != Fm.signed_area(C, D, B) > 0)
+      (Fm.signed_area(C, D, A) > 0 != Fm.signed_area(C, D, B) > 0)
       return res
     },
 
-    /* \
- * collision.point_in_rect
- * point in rectangle test
- [ method ]
- - P (object) in form `{x,y}`
- - R (object) in form `{left,top,right,bottom}`
-\ */
+    /*\
+     * collision.point_in_rect
+     * point in rectangle test
+     [ method ]
+     - P (object) in form `{x,y}`
+     - R (object) in form `{left,top,right,bottom}`
+    \*/
     point_in_rect: function (P, R) {
       return (Fm.inbetween(P.x, R.left, R.right) && Fm.inbetween(P.y, R.top, R.bottom))
     }

@@ -1,4 +1,4 @@
-/* \
+/*\
  * effects_pool
  * an effects pool manages a pool of effect instances, which is particularly useful in creating game effects.
  * say, you have an explosion visual effect that would be created 30 times per second
@@ -21,35 +21,35 @@
  * - each `effect` instance has different life span
  * - must specify target when `die` is called
  * - less efficient object management
-\ */
+\*/
 
 define(function () {
-/* \
- * effects_pool
- [ class ]
- - config (object)
- * {
- -  circular (bool)
- -  init_size (number)
- -  batch_size (number)
- -  max_size (number)
- -  construct (function) should return newly created instances of effect
- * }
- | var ef_config=
- | {
- |  circular: true,
- | 	init_size: 5,
- | 	batch_size: 5,
- | 	max_size: 100,
- | 	construct: function()
- | 	{
- | 		return new box_effect(1);
- | 	}
- | };
- | var effects = new Effects_pool(ef_config);
- * [example](../sample/effects-pool.html)
- # <iframe src="../sample/effects-pool.html" width="800" height="100"></iframe>
-\ */
+  /*\
+   * effects_pool
+   [ class ]
+   - config (object)
+   * {
+   -  circular (bool)
+   -  init_size (number)
+   -  batch_size (number)
+   -  max_size (number)
+   -  construct (function) should return newly created instances of effect
+   * }
+   | var ef_config=
+   | {
+   |  circular: true,
+   |  init_size: 5,
+   |  batch_size: 5,
+   |  max_size: 100,
+   |  construct: function()
+   |  {
+   |    return new box_effect(1);
+   |  }
+   | };
+   | var effects = new Effects_pool(ef_config);
+   * [example](../sample/effects-pool.html)
+   # <iframe src="../sample/effects-pool.html" width="800" height="100"></iframe>
+  \*/
   function effects_pool (config) {
     if (config.circular) { return new crpool(config) } else { return new lnpool(config) }
   }
@@ -69,22 +69,22 @@ define(function () {
     }
   }
 
-  /* \
- * effects_pool.create
- [ method ]
- * activate an effect by calling `born`
- - arg (any) args will be passed through to `born`
- = (boolean) false if not okay
- = (object) reference to the new born effect if okay
- > Details
- * if the pool is full (all instances of effects are active) and __after__ expanding the size is still smaller than or equal to `config.max_size`, will expand the pool by size `config.batch_size`
- *
- * if the pool is full and not allowed to expand, return false immediately
-\ */
+  /*\
+   * effects_pool.create
+   [ method ]
+   * activate an effect by calling `born`
+   - arg (any) args will be passed through to `born`
+   = (boolean) false if not okay
+   = (object) reference to the new born effect if okay
+   > Details
+   * if the pool is full (all instances of effects are active) and __after__ expanding the size is still smaller than or equal to `config.max_size`, will expand the pool by size `config.batch_size`
+   *
+   * if the pool is full and not allowed to expand, return false immediately
+  \*/
   crpool.prototype.create = function (/* arg */) // arguments will be passed through
   {
     if (this.full) {
-      if (this.pool.length + this.config.batch_size <= this.config.max_size) {	// expand the pool
+      if (this.pool.length + this.config.batch_size <= this.config.max_size) {  // expand the pool
         // console.log('expanding the pool');
         const args = [this.E, 0]
         for (let i = 0; i < this.config.batch_size; i++) {
@@ -109,15 +109,15 @@ define(function () {
     return this.pool[this.E - 1]
   }
 
-  /* \
- * effects_pool.die
- [ method ]
- * killing an effect instance
- - target (object) if pool is circular, this parameter is ignored, and the oldest effect instance will be killed
- - arg (any) extra args will be passed through to `die`
- = (object) a reference to the instance that died
- = (undefined) if there is actually no active effect
-\ */
+  /*\
+   * effects_pool.die
+   [ method ]
+   * killing an effect instance
+   - target (object) if pool is circular, this parameter is ignored, and the oldest effect instance will be killed
+   - arg (any) extra args will be passed through to `die`
+   = (object) a reference to the instance that died
+   = (undefined) if there is actually no active effect
+  \*/
   crpool.prototype.die = function (target /*, arg */) {
     if (this.livecount > 0) {
       const oldS = this.S
@@ -131,18 +131,18 @@ define(function () {
     } else { console.log('die too much!') }
   }
 
-  /* \
- * effects_pool.for_each
- [ method ]
- * iterate through all active instances.
- *
- * (if the pool is circular, in the order of oldest to youngest)
- - fun (function) iterator function, if return value is 'break', will break the loop
-| crpool.for_each(function(e)
-| {
-|		e.hi();
-| })
-\ */
+  /*\
+   * effects_pool.for_each
+   [ method ]
+   * iterate through all active instances.
+   *
+   * (if the pool is circular, in the order of oldest to youngest)
+   - fun (function) iterator function, if return value is 'break', will break the loop
+   | crpool.for_each(function(e)
+   | {
+   |   e.hi();
+   | })
+  \*/
   crpool.prototype.for_each = function (fun) {
     if (this.livecount === 0) {
       // completely empty
@@ -164,15 +164,15 @@ define(function () {
     }
   }
 
-  /* \
- * effects_pool.call_each
- [ method ]
- * call a method of each active instance
- *
- * (if the pool is circular, in the order of oldest to youngest)
- - fun_name (string) method name
- - arg (any) extra args will be passed through
-\ */
+  /*\
+   * effects_pool.call_each
+   [ method ]
+   * call a method of each active instance
+   *
+   * (if the pool is circular, in the order of oldest to youngest)
+   - fun_name (string) method name
+   - arg (any) extra args will be passed through
+  \*/
   crpool.prototype.call_each = function (fun_name /*, arg */) {
     if (this.pool[0][fun_name]) {
       const arg = Array.prototype.slice.call(arguments, 1)
@@ -198,8 +198,8 @@ define(function () {
 
   lnpool.prototype.create = function (/* arg */) {
     let freeslot = this.alive.indexOf(false)
-    if (freeslot === -1) {	// pool is full
-      if (this.pool.length + this.config.batch_size <= this.config.max_size) {	// expand the pool
+    if (freeslot === -1) {  // pool is full
+      if (this.pool.length + this.config.batch_size <= this.config.max_size) {  // expand the pool
         const args1 = [this.pool.length, 0]
         const args2 = [this.pool.length, 0]
         for (let i = 0; i < this.config.batch_size; i++) {

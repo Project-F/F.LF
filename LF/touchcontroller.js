@@ -1,8 +1,8 @@
-/* \
+/*\
  * touchcontroller
  *
  * touch controller for LF2
-\ */
+\*/
 define(['LF/util'], function (util) {
   const controllers = []
   let touches = []; let eventtype

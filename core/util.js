@@ -1,30 +1,30 @@
-/* \
+/*\
  * util
  * javascript utilities
-\ */
+\*/
 define(function () {
   var F = {
 
     // javascript-----------------
 
-    /**	inject a .js file
-	deprecated in favour of the use of head.js, now requirejs
-*/
+    /** inject a .js file
+      deprecated in favour of the use of head.js, now requirejs
+    */
     /* js: function (filename)
-{
-	var head = document.getElementsByTagName('head')[0];
-	var script = document.createElement('script');
-	script.src = filename;
-	script.type = 'text/javascript';
-	head.appendChild(script);
-}, */
+    {
+      var head = document.getElementsByTagName('head')[0];
+      var script = document.createElement('script');
+      script.src = filename;
+      script.type = 'text/javascript';
+      head.appendChild(script);
+    }, */
 
-    /* \
- * util.css
- * attach a stylesheet to page
- [ method ]
- - filename (string)
-\ */
+    /*\
+     * util.css
+     * attach a stylesheet to page
+     [ method ]
+     - filename (string)
+    \*/
     css: function (filename) {
       const head = document.getElementsByTagName('head')[0]
       const link = document.createElement('link')
@@ -34,15 +34,15 @@ define(function () {
       head.appendChild(link)
     },
 
-    /* \
- * util.make_array
- [ method ]
- - target (any)
- * if target is:
- - (array) returns target as is.
- - (object) returns object encapsulated in an array.
- - (falsy) (null, undefined or zero), returns an empty array.
-\ */
+    /*\
+     * util.make_array
+     [ method ]
+     - target (any)
+     * if target is:
+     - (array) returns target as is.
+     - (object) returns object encapsulated in an array.
+     - (falsy) (null, undefined or zero), returns an empty array.
+    \*/
     make_array: function (target) {
       if (target) {
         if (target instanceof Array) { return target } else { return [target] }
@@ -51,16 +51,16 @@ define(function () {
 
     // data structure------------
 
-    /* \
- * util.search_array
- [ method ]
- - arr (array) target to be searched
- - fc_criteria (function) return true when an accepted element is passed in
- - [fc_replace] (function) to return a replacement value when original value is passed in
- - [search_all] (boolean) if true, will search through entire array before returning the list of indices, otherwise, will return immediately at the first accepted element
- = (number) index of the found element if `search_all` if false
- = (array) of (number) if `search_all` is true
-\ */
+    /*\
+     * util.search_array
+     [ method ]
+     - arr (array) target to be searched
+     - fc_criteria (function) return true when an accepted element is passed in
+     - [fc_replace] (function) to return a replacement value when original value is passed in
+     - [search_all] (boolean) if true, will search through entire array before returning the list of indices, otherwise, will return immediately at the first accepted element
+     = (number) index of the found element if `search_all` if false
+     = (array) of (number) if `search_all` is true
+    \*/
     search_array: function (arr, fc_criteria, fc_replace, search_all) {
       const found_list = new Array()
       // for ( var i=0; i<arr.length; i++)
@@ -86,14 +86,14 @@ define(function () {
       return F.search_array(A, B, C, D)
     },
 
-    /* \
- * util.push_unique
- * push only if not existed in array
- [ method ]
- - array (array)
- - element (object)
- = (boolean) true if added
-\ */
+    /*\
+     * util.push_unique
+     * push only if not existed in array
+     [ method ]
+     - array (array)
+     - element (object)
+     = (boolean) true if added
+    \*/
     push_unique: function (array, element) {
       const res = F.arr_search(array, function (E) { return E == element })
       if (res == -1) {
@@ -102,13 +102,13 @@ define(function () {
       }
     },
 
-    /* \
- * util.extend_object
- * extend obj1 with all members of obj2
- [ method ]
- - obj1, obj2 (object)
- = (object) a modified obj1
-\ */
+    /*\
+     * util.extend_object
+     * extend obj1 with all members of obj2
+     [ method ]
+     - obj1, obj2 (object)
+     = (object) a modified obj1
+    \*/
     extend_object: function (obj1, obj2) {
       for (const p in obj2) {
         if (typeof obj2[p] === 'object') {
@@ -120,37 +120,37 @@ define(function () {
       return obj1
     },
 
-    /* \
- * util.to_text
- * convert an object into JSON text
- *
- * most of the time you should use built-in `JSON.stringify` instead
- [ method ]
- - obj (object)
- - name (string) the object's name
- - [sep] (string) separator, default as `\n`
- - [pretext] (string) used in recursion only, set it to null
- - [filter] (function) a filter `function(p,P)` passing in name p and object P, return 1 to hide the attribute, OR return a string to be shown
- - [TTL] (number) time-to-live to prevent infinite looping
-|	var obj={};
-|	obj.a={};
-|	obj.a.x=1;
-|	obj.a.y=1;
-|	obj.b='hello';
-|	obj.c=12;
-|	console.log(util.to_text(obj,'obj'));
-|	//outputs:
-|	obj:
-|	{
-|		a:
-|		{
-|			'x': 1,
-|			'y': 1
-|		},
-|		'b': 'hello',
-|		'c': 12
-|	}
-\ */
+    /*\
+     * util.to_text
+     * convert an object into JSON text
+     *
+     * most of the time you should use built-in `JSON.stringify` instead
+     [ method ]
+     - obj (object)
+     - name (string) the object's name
+     - [sep] (string) separator, default as `\n`
+     - [pretext] (string) used in recursion only, set it to null
+     - [filter] (function) a filter `function(p,P)` passing in name p and object P, return 1 to hide the attribute, OR return a string to be shown
+     - [TTL] (number) time-to-live to prevent infinite looping
+     | var obj={};
+     | obj.a={};
+     | obj.a.x=1;
+     | obj.a.y=1;
+     | obj.b='hello';
+     | obj.c=12;
+     | console.log(util.to_text(obj,'obj'));
+     | //outputs:
+     | obj:
+     | {
+     |   a:
+     |   {
+     |     'x': 1,
+     |     'y': 1
+     |   },
+     |   'b': 'hello',
+     |   'c': 12
+     | }
+    \*/
     to_text: function (
       obj2, name,
       sep,
@@ -188,25 +188,25 @@ define(function () {
       return str
     },
 
-    /* \
- * util.extract_array
- [ method ]
- * extract properties from an array of objects
-|	//say we have
-|	[ {x:x1,y:y1}, {x:x2,y:y2}, {x:x3,y:y3},,,]
-|	//we want to extract it into
-|	{
-|	  x:
-|		[ x1, x2, x3,,, ],
-|	  y:
-|		[ y1, y2, y3,,, ]
-|	}
- - array (array)
- - prop (string) property name
- * or
- - prop (array) array of property name
- = (array) extracted array
-\ */
+    /*\
+     * util.extract_array
+     [ method ]
+     * extract properties from an array of objects
+     | //say we have
+     | [ {x:x1,y:y1}, {x:x2,y:y2}, {x:x3,y:y3},,,]
+     | //we want to extract it into
+     | {
+     |   x:
+     |   [ x1, x2, x3,,, ],
+     |   y:
+     |   [ y1, y2, y3,,, ]
+     | }
+     - array (array)
+     - prop (string) property name
+     * or
+     - prop (array) array of property name
+     = (array) extracted array
+    \*/
     extract_array: function (array, prop) {
       const out = {}
       prop = F.make_array(prop)
@@ -223,14 +223,14 @@ define(function () {
     },
 
     /** proposed method
-group an array of objects using a key
-group_elements( [{name:'alice',gender:'F'},{name:'bob',gender:'M'},{name:'cathy',gender:'F'}], 'gender')
-returns
-{
-	'F':[{name:'alice',gender:'F'},{name:'cathy',gender:'F'}],
-	'M':[{name:'bob',gender:'M'}]
-}
-*/
+    group an array of objects using a key
+    group_elements( [{name:'alice',gender:'F'},{name:'bob',gender:'M'},{name:'cathy',gender:'F'}], 'gender')
+    returns
+    {
+      'F':[{name:'alice',gender:'F'},{name:'cathy',gender:'F'}],
+      'M':[{name:'bob',gender:'M'}]
+    }
+    */
     group_elements: function (arr, key) {
       const group = {}
       for (let i = 0; i < arr.length; i++) {

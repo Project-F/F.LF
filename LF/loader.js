@@ -1,8 +1,8 @@
-/* \
+/*\
  * loader.js
  *
  * loader is a requirejs plugin that loads content packages
-\ */
+\*/
 
 define(['LF/loader-config', 'LF/util', 'core/util'], function (loader_config, util, Futil) {
   return {

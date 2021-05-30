@@ -1,10 +1,10 @@
-/* \
+/*\
  * global.js
  *
  * global constants of a game
  *
  * note to data changers: tweak entries in this file very carefully. do not add or delete entries.
-\ */
+\*/
 define(['LF/util'], function (util) {
   const G = {}
 
@@ -21,12 +21,12 @@ define(['LF/util'], function (util) {
   GA.camera = {}
   GA.camera.speed_factor = 1 / 18
 
-  /* \
- * global.combo_list
- [ property ]
- * list of combos
- | { name:'DvA', seq:['def','down','att']} //example
-\ */
+  /*\
+   * global.combo_list
+   [ property ]
+   * list of combos
+   | { name:'DvA', seq:['def','down','att']} //example
+  \*/
   G.combo_list = [
     { name: 'D<A', seq: ['def', 'left', 'att'], clear_on_combo: false },
     { name: 'D>A', seq: ['def', 'right', 'att'], clear_on_combo: false },
@@ -41,57 +41,57 @@ define(['LF/util'], function (util) {
     { name: 'DJA', seq: ['def', 'jump', 'att'] }
   ]
   G.combo_tag =
-{	// look up from combo name to tag name
-  def: 'hit_d',
-  jump: 'hit_j',
-  att: 'hit_a',
-  'D<A': 'hit_Fa',
-  'D>A': 'hit_Fa',
-  DvA: 'hit_Da',
-  'D^A': 'hit_Ua',
-  'D<J': 'hit_Fj',
-  'D>J': 'hit_Fj',
-  DvJ: 'hit_Dj',
-  'D^J': 'hit_Uj',
-  'D<AJ': 'hit_Fj',
-  'D>AJ': 'hit_Fj',
-  DJA: 'hit_ja'
-}
+  { // look up from combo name to tag name
+    def: 'hit_d',
+    jump: 'hit_j',
+    att: 'hit_a',
+    'D<A': 'hit_Fa',
+    'D>A': 'hit_Fa',
+    DvA: 'hit_Da',
+    'D^A': 'hit_Ua',
+    'D<J': 'hit_Fj',
+    'D>J': 'hit_Fj',
+    DvJ: 'hit_Dj',
+    'D^J': 'hit_Uj',
+    'D<AJ': 'hit_Fj',
+    'D>AJ': 'hit_Fj',
+    DJA: 'hit_ja'
+  }
   G.combo_priority =
-{	// larger number is higher priority
-  up: 0,
-  down: 0,
-  left: 0,
-  right: 0,
-  def: 0,
-  jump: 0,
-  att: 0,
-  run: 0,
-  'D>A': 1,
-  'D<A': 1,
-  DvA: 1,
-  'D^A': 1,
-  DvJ: 1,
-  'D^J': 1,
-  'D>J': 1,
-  'D<J': 1,
-  'D<AJ': 1,
-  'D>AJ': 1,
-  DJA: 1
-}
+  { // larger number is higher priority
+    up: 0,
+    down: 0,
+    left: 0,
+    right: 0,
+    def: 0,
+    jump: 0,
+    att: 0,
+    run: 0,
+    'D>A': 1,
+    'D<A': 1,
+    DvA: 1,
+    'D^A': 1,
+    DvJ: 1,
+    'D^J': 1,
+    'D>J': 1,
+    'D<J': 1,
+    'D<AJ': 1,
+    'D>AJ': 1,
+    DJA: 1
+  }
 
   G.gameplay = {}
   const GC = G.gameplay
   GC.framerate = 30
 
-  /* \
- * global.gameplay.default
- [ property ]
- * What are the defaults?
- *
- * default means `otherwise specified`. all defaults get overridden, and (mostly) you can set the specific property in data files. so it might not be meaningful to change default values.
- * if any of them cannot be overridden, please move them out of default.
-\ */
+  /*\
+   * global.gameplay.default
+   [ property ]
+   * What are the defaults?
+   *
+   * default means `otherwise specified`. all defaults get overridden, and (mostly) you can set the specific property in data files. so it might not be meaningful to change default values.
+   * if any of them cannot be overridden, please move them out of default.
+  \*/
   GC.default = {}
   GC.default.health = {}
   GC.default.health.hp_full = 500
@@ -127,13 +127,13 @@ define(['LF/util'], function (util) {
   GC.default.machanics = {}
   GC.default.machanics.mass = 1 // default mass; weight = mass * gravity
 
-  /* \
- * global.gameplay
- [ property ]
- * gameplay constants
- *
- * these are defined constants over the game, tweak them carefully otherwise it might introduce bugs
-\ */
+  /*\
+   * global.gameplay
+   [ property ]
+   * gameplay constants
+   *
+   * these are defined constants over the game, tweak them carefully otherwise it might introduce bugs
+  \*/
 
   GC.recover = {}
   GC.recover.fall = -0.45 // fall recover constant
@@ -151,50 +151,50 @@ define(['LF/util'], function (util) {
   GC.character.bounceup.limit.y = 11 // y threshold; will bounce if any one of xy,y is overed
   GC.character.bounceup.y = 4.25 // defined bounce up speed
   GC.character.bounceup.absorb = // how much dvx to absorb when bounce up
-{
-  9: 1,
-  14: 4,
-  20: 10,
-  40: 20,
-  60: 30
-}
+  {
+    9: 1,
+    14: 4,
+    20: 10,
+    40: 20,
+    60: 30
+  }
 
   GC.defend = {}
   GC.defend.injury = {}
   GC.defend.injury.factor = 0.1 // defined defend injury factor; meaning only that portion of injury will be done for an effective defence
   GC.defend.break_limit = 40 // defined defend break
   GC.defend.absorb = // how much dvx to absorb when defence is broken
-{	// look up table
-  5: 0,
-  15: 5
-}
+  { // look up table
+    5: 0,
+    15: 5
+  }
 
   GC.fall = {}
   GC.fall.KO = 60 // defined KO
   GC.fall.wait180 = // the wait of 180 depends on effect.dvy
-// meaing the stronger the dvy, the longer it waits
-{	// lookup
-  // dvy:wait
-  7: 1,
-  9: 2,
-  11: 3,
-  13: 4,
-  15: 5,
-  17: 6
-}
+  // meaing the stronger the dvy, the longer it waits
+  { // lookup
+    // dvy:wait
+    7: 1,
+    9: 2,
+    11: 3,
+    13: 4,
+    15: 5,
+    17: 6
+  }
 
   GC.friction = {}
   GC.friction.fell = // defined friction at the moment of fell onto ground
-{	// a lookup table
-  // speed:friction
-  2: 0,
-  3: 1,
-  5: 2,
-  6: 4, // smaller or equal to 6, value is 4
-  9: 5,
-  13: 7,
-  25: 9 // guess entry
-}
+  { // a lookup table
+    // speed:friction
+    2: 0,
+    3: 1,
+    5: 2,
+    6: 4, // smaller or equal to 6, value is 4
+    9: 5,
+    13: 7,
+    25: 9 // guess entry
+  }
 
   // physics
   GC.min_speed = 1 // defined minimum speed
