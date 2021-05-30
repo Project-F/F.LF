@@ -1,86 +1,86 @@
 define(function () {
   const support = {};
-  /* \
-	 * support
-	 * test for browser support of certain technologies, most code is adapted from other places.
-	 * including
-	 * - [http://davidwalsh.name/vendor-prefix](http://davidwalsh.name/vendor-prefix)
-	 * - [https://gist.github.com/3626934](https://gist.github.com/3626934)
-	 * - [https://gist.github.com/1579671](https://gist.github.com/3626934)
-	 * [example](../sample/support.html)
-	 # <iframe src="../sample/support.html" width="800" height="200"></iframe>
-	\ */
-  /* \
-	 * support.browser
-	 - (number) browser name
-	 [ property ]
-	\ */
-  /* \
-	 * support.browser_name
-	 - (number) browser name
-	 [ property ]
-	\ */
-  /* \
-	 * support.browser_version
-	 - (number) browser version string
-	 [ property ]
-	\ */
-  /* \
-	 * support.mobile
-	 - (string) mobile device name, undefined if not on a mobile device
-	 [ property ]
-	\ */
-  /* \
-	 * support.prefix
-	 - (string) browser prefix
-	 [ property ]
-	\ */
-  /* \
-	 * support.prefix_dom
-	 - (string) browser prefix for DOM
-	 [ property ]
-	\ */
-  /* \
-	 * support.prefix_css
-	 - (string) browser prefix for css
-	 [ property ]
-	\ */
-  /* \
-	 * support.prefix_js
-	 - (string) browser prefix for js
-	 [ property ]
-	\ */
-  /* \
-	 * support.css2dtransform
-	 - (string) if supported, style property name with correct prefix
-	 [ property ]
-	 * you can do something like
-	 | if (support.css2dtransform)
-	 |		element.style[support.css2dtransform]= 'translate('+P.x+'px,'+P.y+'px) ';
-	\ */
-  /* \
-	 * support.css3dtransform
-	 - (string) if supported, style property name with correct prefix
-	 [ property ]
-	 | if (support.css3dtransform)
-	 | 	this.el.style[support.css3dtransform]= 'translate3d('+P.x+'px,'+P.y+'px, 0px) ';
-	\ */
-  /* \
-	 * support.localStorage
-	 - (object) similar functionality as `window.localStorage`
-	 * if `window.localStorage` is not supported, will create a shim that emulates `window.localStorage` using cookie. the methods `clear`, `getItem`, `key`, `removeItem`, `setItem` and property `length` are available, but the dot or array notation does not work. for example, the following does **not** work
-	 | window.localStorage.someProperty = 2;
-	 | window.localStorage['someProperty'] = 2;
-	 * instead, use the following:
-	 | support.localStorage.setItem('someProperty', 2);
-	 * Ideally, all HTML5 browsers should support localStorage. The only problem is localStorage does not work in IE10 in protected mode for offline files.
-	 [ property ]
-	\ */
-  /* \
-	 * support.sessionStorage
-	 - (object) similar functionality as `window.sessionStorage`
-	 [ property ]
-	\ */
+  /*\
+   * support
+   * test for browser support of certain technologies, most code is adapted from other places.
+   * including
+   * - [http://davidwalsh.name/vendor-prefix](http://davidwalsh.name/vendor-prefix)
+   * - [https://gist.github.com/3626934](https://gist.github.com/3626934)
+   * - [https://gist.github.com/1579671](https://gist.github.com/3626934)
+   * [example](../sample/support.html)
+   # <iframe src="../sample/support.html" width="800" height="200"></iframe>
+  \*/
+  /*\
+   * support.browser
+   - (number) browser name
+   [ property ]
+  \*/
+  /*\
+   * support.browser_name
+   - (number) browser name
+   [ property ]
+  \*/
+  /*\
+   * support.browser_version
+   - (number) browser version string
+   [ property ]
+  \*/
+  /*\
+   * support.mobile
+   - (string) mobile device name, undefined if not on a mobile device
+   [ property ]
+  \*/
+  /*\
+   * support.prefix
+   - (string) browser prefix
+   [ property ]
+  \*/
+  /*\
+   * support.prefix_dom
+   - (string) browser prefix for DOM
+   [ property ]
+  \*/
+  /*\
+   * support.prefix_css
+   - (string) browser prefix for css
+   [ property ]
+  \*/
+  /*\
+   * support.prefix_js
+   - (string) browser prefix for js
+   [ property ]
+  \*/
+  /*\
+   * support.css2dtransform
+   - (string) if supported, style property name with correct prefix
+   [ property ]
+   * you can do something like
+   | if (support.css2dtransform)
+   |    element.style[support.css2dtransform]= 'translate('+P.x+'px,'+P.y+'px) ';
+  \*/
+  /*\
+   * support.css3dtransform
+   - (string) if supported, style property name with correct prefix
+   [ property ]
+   | if (support.css3dtransform)
+   |  this.el.style[support.css3dtransform]= 'translate3d('+P.x+'px,'+P.y+'px, 0px) ';
+  \*/
+  /*\
+   * support.localStorage
+   - (object) similar functionality as `window.localStorage`
+   * if `window.localStorage` is not supported, will create a shim that emulates `window.localStorage` using cookie. the methods `clear`, `getItem`, `key`, `removeItem`, `setItem` and property `length` are available, but the dot or array notation does not work. for example, the following does **not** work
+   | window.localStorage.someProperty = 2;
+   | window.localStorage['someProperty'] = 2;
+   * instead, use the following:
+   | support.localStorage.setItem('someProperty', 2);
+   * Ideally, all HTML5 browsers should support localStorage. The only problem is localStorage does not work in IE10 in protected mode for offline files.
+   [ property ]
+  \*/
+  /*\
+   * support.sessionStorage
+   - (object) similar functionality as `window.sessionStorage`
+   [ property ]
+  \*/
 
   // test for browser and device
   (function () {

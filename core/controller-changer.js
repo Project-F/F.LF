@@ -1,20 +1,19 @@
 // a key changer utility
 
 define(['core/controller', 'core/util'], function (Fcontroller, Futil) {
-/* \
- * controller_changer
- [ class ]
- * a simplistic key changer for @controller
- - config (object)
-| config=
-| {
-|	div, //DOM node
-|	controller, //can be a single F.controller or an array of F.controllers
-|		//if it is an array, will create player1, player2 etc
-|	onchange //function be called on change key
-| }
-\ */
-
+  /*\
+   * controller_changer
+   [ class ]
+   * a simplistic key changer for @controller
+   - config (object)
+   | config=
+   | {
+   | div, //DOM node
+   | controller, //can be a single F.controller or an array of F.controllers
+   |   //if it is an array, will create player1, player2 etc
+   | onchange //function be called on change key
+   | }
+  \*/
   function keychanger (config) {
     let change_active = false
     const div = config.div
@@ -31,12 +30,12 @@ define(['core/controller', 'core/util'], function (Fcontroller, Futil) {
     const rule = create_at(div, 'div')
     rule.style.clear = 'both'
     /* var ok = create_at(div,'button');
-	ok.innerHTML='close';
-	ok.style.width='120px';
-	ok.onclick= function()
-	{
-		div.style.display='none';
-	} */
+    ok.innerHTML='close';
+    ok.style.width='120px';
+    ok.onclick= function()
+    {
+      div.style.display='none';
+    } */
 
     function add_player (con, num) {
       if (num !== 0) {

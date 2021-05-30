@@ -1,19 +1,19 @@
-/* \
+/*\
  * math
  * math related functions
-\ */
+\*/
 
 define(function () {
   math = {
     /**
-math helper functions-----
-*/
-    /* \
- * math.inbetween
- [ method ]
- - x, L, R (number)
- = (boolean) true if x is in between L and R
-\ */
+      math helper functions-----
+      */
+    /*\
+     * math.inbetween
+     [ method ]
+     - x, L, R (number)
+     = (boolean) true if x is in between L and R
+    \*/
     inbetween: function (x, L, R) {
       let l, r
       if (L <= R) {
@@ -25,37 +25,37 @@ math helper functions-----
       }
       return x >= l && x <= r
     },
-    /* \
- * math.round_d2
- [ method ]
- - I (number)
- = (number) round to decimal 2
-\ */
+    /*\
+     * math.round_d2
+     [ method ]
+     - I (number)
+     = (number) round to decimal 2
+    \*/
     round_d2: function (I) {
       return Math.round(I * 100) / 100
     },
-    /* \
- * math.negligible
- [ method ]
- - M (number)
- = (boolean) true if M is very very small, with absolute value smaller than ~0.00000001
-\ */
+    /*\
+     * math.negligible
+     [ method ]
+     - M (number)
+     = (boolean) true if M is very very small, with absolute value smaller than ~0.00000001
+    \*/
     negligible: function (M) {
       return M > -0.00000001 && M < 0.00000001
     },
 
     /**
-curves--------------------
-*/
+    curves--------------------
+    */
 
-    /* \
- * math.bezier2
- [ method ]
- - A, C, B (object) points in `{x,y}`
- * here `C` means the control point
- - steps (number)
- = (object) array of points on curve
-\ */
+    /*\
+     * math.bezier2
+     [ method ]
+     - A, C, B (object) points in `{x,y}`
+     * here `C` means the control point
+     - steps (number)
+     = (object) array of points on curve
+    \*/
     bezier2: function (A, C, B, steps) {
       const curve = new Array()
       for (let i = 0; i < steps; i++) {
@@ -76,110 +76,110 @@ curves--------------------
     },
 
     /**
-2d vector math--------------
-*/
-    /* \
- * math.add
- [ method ]
- * A+B
- - A, B (object) points in `{x,y}`
- = (object) point in `{x,y}`
-\ */
+    2d vector math--------------
+    */
+    /*\
+     * math.add
+     [ method ]
+     * A+B
+     - A, B (object) points in `{x,y}`
+     = (object) point in `{x,y}`
+    \*/
     add: function (A, B) {
       return { x: A.x + B.x, y: A.y + B.y }
     },
-    /* \
- * math.sub
- * A-B
- [ method ]
- - A, B (object) points in `{x,y}`
- = (object) point in `{x,y}`
-\ */
+    /*\
+     * math.sub
+     * A-B
+     [ method ]
+     - A, B (object) points in `{x,y}`
+     = (object) point in `{x,y}`
+    \*/
     sub: function (A, B) {
       return { x: A.x - B.x, y: A.y - B.y }
     },
-    /* \
- * math.scale
- * A*t
- [ method ]
- - A (object) point
- - t (number)
- = (object) point
-\ */
+    /*\
+     * math.scale
+     * A*t
+     [ method ]
+     - A (object) point
+     - t (number)
+     = (object) point
+    \*/
     sca: function (A, t) {
       return { x: A.x * t, y: A.y * t }
     },
-    /* \
- * math.length
- * |A|
- [ method ]
- - A (object) point
- = (number) length
-\ */
+    /*\
+     * math.length
+     * |A|
+     [ method ]
+     - A (object) point
+     = (number) length
+    \*/
     length: function (A) {
       return Math.sqrt(A.x * A.x + A.y * A.y)
     },
-    /* \
- * math.distance
- * |AB|
- [ method ]
- - A, B (object) points in `{x,y}`
- = (number) length
-\ */
+    /*\
+     * math.distance
+     * |AB|
+     [ method ]
+     - A, B (object) points in `{x,y}`
+     = (number) length
+    \*/
     distance: function (p1, p2) {
       return Math.sqrt((p2.x - p1.x) * (p2.x - p1.x) + (p2.y - p1.y) * (p2.y - p1.y))
     },
-    /* \
- * math.negative
- * -A
- [ method ]
- - A (object) point
- = (object) point
-\ */
+    /*\
+     * math.negative
+     * -A
+     [ method ]
+     - A (object) point
+     = (object) point
+    \*/
     negative: function (A) {
       return { x: -A.x, y: -A.y }
     },
-    /* \
- * math.normalize
- * A/|A|
- [ method ]
- - A (object) point
- = (object) point
-\ */
+    /*\
+     * math.normalize
+     * A/|A|
+     [ method ]
+     - A (object) point
+     = (object) point
+    \*/
     normalize: function (A) {
       return math.sca(A, 1 / math.length(A))
     },
-    /* \
- * math.perpen
- * perpendicular; anti-clockwise 90 degrees, assume origin in lower left
- [ method ]
- - A (object) point
-\ */
+    /*\
+     * math.perpen
+     * perpendicular; anti-clockwise 90 degrees, assume origin in lower left
+     [ method ]
+     - A (object) point
+    \*/
     perpen: function (A) {
       return { x: -A.y, y: A.x }
     },
-    /* \
- * math.signed_area
- [ method ]
- - A, B, C (object) points
- = (number) signed area
- * the sign indicate clockwise/anti-clockwise points order
-\ */
+    /*\
+     * math.signed_area
+     [ method ]
+     - A, B, C (object) points
+     = (number) signed area
+     * the sign indicate clockwise/anti-clockwise points order
+    \*/
     signed_area: function (p1, p2, p3) {
       const D = (p2.x - p1.x) * (p3.y - p1.y) - (p3.x - p1.x) * (p2.y - p1.y)
       return D
     },
-    /* \
- * math.intersect
- * line-line intersection
- [ method ]
- - P1 (object) point on line 1
- - P2 (object) point on line 1
- - P3 (object) point on line 2
- - P4 (object) point on line 2
- = (object) return the intersection point of P1-P2 with P3-P4
- * reference: [http://paulbourke.net/geometry/lineline2d/](http://paulbourke.net/geometry/lineline2d/)
-\ */
+    /*\
+     * math.intersect
+     * line-line intersection
+     [ method ]
+     - P1 (object) point on line 1
+     - P2 (object) point on line 1
+     - P3 (object) point on line 2
+     - P4 (object) point on line 2
+     = (object) return the intersection point of P1-P2 with P3-P4
+     * reference: [http://paulbourke.net/geometry/lineline2d/](http://paulbourke.net/geometry/lineline2d/)
+    \*/
     intersect: function (P1, P2, P3, P4) {
       let mua, mub
       let denom, numera, numerb

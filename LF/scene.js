@@ -1,14 +1,14 @@
-/* \
+/*\
  * scene
  *
  * scene in F.LF; keeps a list a characters and items
  | vol= //the volume format
  | {
- | 	x, y, z, //the reference point
- | 	vx, vy, w, h, //the volume defined with reference to (x,y,z)
- | 	zwidth	//zwidth spans into the +ve and -ve direction
+ |  x, y, z, //the reference point
+ |  vx, vy, w, h, //the volume defined with reference to (x,y,z)
+ |  zwidth  //zwidth spans into the +ve and -ve direction
  | }
-\ */
+\*/
 
 define(['core/util', 'core/collision'], function (Futil, Fcollision) {
   function scene (config) {
@@ -30,21 +30,21 @@ define(['core/util', 'core/collision'], function (Futil, Fcollision) {
     return uid
   }
 
-  /* \
- * scene.query
- [ method ]
- - volume (object)
- - exclude (object) or (array of objects)
- - where (object) what to intersect with
- * examples, can mixin the following properties
- | {tag:'body'} intersect with body
- | {tag:'itr:2'} intersect with itr kind:2
- | {type:'character'} with character only
- | {not_team:1} exclude team
- | {filter:function}
- | {sort:function} sort the result (ascending order) using the specified cost function
- = (array) all the objects whose volume intersect with the specified volume
-\ */
+  /*\
+   * scene.query
+   [ method ]
+   - volume (object)
+   - exclude (object) or (array of objects)
+   - where (object) what to intersect with
+   * examples, can mixin the following properties
+   | {tag:'body'} intersect with body
+   | {tag:'itr:2'} intersect with itr kind:2
+   | {type:'character'} with character only
+   | {not_team:1} exclude team
+   | {filter:function}
+   | {sort:function} sort the result (ascending order) using the specified cost function
+   = (array) all the objects whose volume intersect with the specified volume
+  \*/
   scene.prototype.query = function (volume, exclude, where) {
     const result = []
     let tag = where.tag
@@ -105,7 +105,7 @@ define(['core/util', 'core/collision'], function (Futil, Fcollision) {
       }
     }
     if (where.sort) {
-      if (where.sort === 'distance' && !(exclude instanceof Array)) {	// sort according to distance from exclude
+      if (where.sort === 'distance' && !(exclude instanceof Array)) { // sort according to distance from exclude
         where.sort = function (obj) {
           const dx = obj.ps.x - exclude.ps.x
           const dz = obj.ps.z - exclude.ps.z
@@ -128,9 +128,9 @@ define(['core/util', 'core/collision'], function (Futil, Fcollision) {
     return (Fcollision.rect_flat(
       A_left, A_top, A_right, A_bottom,
       B_left, B_top, B_right, B_bottom) &&
-		Fcollision.rect_flat(
-		  A.z - A.zwidth, 0, A.z + A.zwidth, 1,
-		  B.z - B.zwidth, 0, B.z + B.zwidth, 1)
+    Fcollision.rect_flat(
+      A.z - A.zwidth, 0, A.z + A.zwidth, 1,
+      B.z - B.zwidth, 0, B.z + B.zwidth, 1)
     )
   }
   scene.prototype.intersect_old = function (A, B) {

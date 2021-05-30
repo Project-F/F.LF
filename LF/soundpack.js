@@ -1,7 +1,7 @@
-/* \
+/*\
  * soundpack
  * sound spriting and effects management
-\ */
+\*/
 
 define(['core/effects-pool'], function (Feffects) {
   const basic_support = !!(document.createElement('audio').canPlayType)
@@ -82,13 +82,13 @@ define(['core/effects-pool'], function (Feffects) {
   }
 
   const types =
-	{
-	  mp3: 'audio/mpeg',
-	  ogg: 'audio/ogg',
-	  wav: 'audio/wav',
-	  aac: 'audio/aac',
-	  m4a: 'audio/x-m4a'
-	}
+  {
+    mp3: 'audio/mpeg',
+    ogg: 'audio/ogg',
+    wav: 'audio/wav',
+    aac: 'audio/aac',
+    m4a: 'audio/x-m4a'
+  }
   function soundsprite (data, resourcemap) {
     const This = this
     const audio = this.audio = document.createElement('audio')
@@ -129,7 +129,7 @@ define(['core/effects-pool'], function (Feffects) {
   soundsprite.prototype.timeupdate = function () {
     if (this.current) {
       if (this.audio.currentTime < this.current.start ||
-			this.audio.currentTime > this.current.end) {
+      this.audio.currentTime > this.current.end) {
         this.audio.pause()
         if (!this.dead) {
           this.parent.die(this)

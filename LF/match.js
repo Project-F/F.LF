@@ -1,8 +1,8 @@
-/* \
+/*\
  * match
  * a match hosts a game.
  * a match is a generalization above game modes (e.g. VSmode, stagemode, battlemode)
-\ */
+\*/
 
 define(['core/util', 'core/controller', 'LF/sprite-select',
   'LF/network', 'LF/factories', 'LF/scene', 'LF/background', 'LF/AI', 'third_party/random', 'LF/util',
@@ -11,16 +11,16 @@ function (Futil, Fcontroller, Fsprite,
   network, factory, Scene, Background, AI, Random, util,
   Global) {
   const GA = Global.application
-  /* \
-	 * match
-	 [ class ]
-	 |	config =
-	 |	{
-	 |  manager,//the game manager
-	 |	state,  //the state machine handling various events in a match
-	 |	package	//the content package
-	 |	}
-	\ */
+  /*\
+   * match
+   [ class ]
+   |  config =
+   |  {
+   |  manager,//the game manager
+   |  state,  //the state machine handling various events in a match
+   |  package //the content package
+   |  }
+  \*/
   function match (config) {
     const $ = this
     $.manager = config.manager
@@ -51,7 +51,7 @@ function (Futil, Fcontroller, Fsprite,
     $.control = $.create_controller(setting.control)
     $.functionkey_control = setting.control
     if ($.functionkey_control &&
-			$.functionkey_control.restart) {
+      $.functionkey_control.restart) {
       $.functionkey_control.restart()
     }
     if ($.manager.panel_layer) {
@@ -71,7 +71,7 @@ function (Futil, Fcontroller, Fsprite,
       object: object_ids,
       background: setting.background ? [setting.background.id] : [],
       AI: AI_ids
-    }, function () {	// when all necessary data files are loaded
+    }, function () {  // when all necessary data files are loaded
       $.create_background(setting.background)
       $.create_effects()
       if (setting.player) {
@@ -85,7 +85,7 @@ function (Futil, Fcontroller, Fsprite,
       setTimeout(function () { onready() }, 8000) // assume it is ready after 8 seconds
     })
     function onready () {
-      if (!already) {	// all loading finished
+      if (!already) { // all loading finished
         already = true
         if ($.manager.overlay_mess) {
           $.manager.overlay_mess.hide()
@@ -160,12 +160,12 @@ function (Futil, Fcontroller, Fsprite,
   match.prototype.create_timer = function () {
     const $ = this
     $.time =
-		{
-		  t: 0,
-		  paused: false,
-		  timer: null,
-		  $fps: util.div('fps')
-		}
+    {
+      t: 0,
+      paused: false,
+      timer: null,
+      $fps: util.div('fps')
+    }
     if (!$.time.$fps) $.calculate_fps = function () {}
     $.time.timer = network.setInterval(function () { return $.frame() }, 1000 / Global.gameplay.framerate)
   }
@@ -266,10 +266,10 @@ function (Futil, Fcontroller, Fsprite,
             break
           }
           const config =
-				{
-				  match: $,
-				  team: T.team
-				}
+        {
+          match: $,
+          team: T.team
+        }
           var obj = new factory[OBJ.type](config, OBJ.data, T.opoint.oid)
           obj.init(T)
           var uid = $.scene.add(obj)
@@ -299,11 +299,11 @@ function (Futil, Fcontroller, Fsprite,
   match.prototype.create_characters = function (players) {
     const $ = this
     const char_config =
-		{
-		  match: $,
-		  controller: null,
-		  team: 0
-		}
+    {
+      match: $,
+      controller: null,
+      team: 0
+    }
     for (let i = 0; i < players.length; i++) {
       var player = players[i]
       const player_obj = util.select_from($.data.object, { id: player.id })
@@ -498,9 +498,9 @@ function (Futil, Fcontroller, Fsprite,
     const $ = this
     const num = 5
     const weapon_list =
-		util.selectA_from($.data.object, function (o) {
-		  return o.id >= 100 && o.id < 200
-		})
+    util.selectA_from($.data.object, function (o) {
+      return o.id >= 100 && o.id < 200
+    })
     for (let i = 0; i < num; i++) {
       const O = $.background.get_pos($.random(), $.random())
       O.y = -800
@@ -522,9 +522,9 @@ function (Futil, Fcontroller, Fsprite,
     const $ = this
     const weapon = id < 150 ? 'lightweapon' : 'heavyweapon'
     const wea_config =
-		{
-		  match: $
-		}
+    {
+      match: $
+    }
     const object = util.select_from($.data.object, { id: id })
     const wea = new factory[weapon](wea_config, object.data, object.id)
     wea.set_pos(pos.x, pos.y, pos.z)
@@ -634,7 +634,7 @@ function (Futil, Fcontroller, Fsprite,
             } else if (!$.time.paused) {
               $.manager.overlay_mess.hide()
             }
-            if (opaused !== $.time.paused) {	// state change
+            if (opaused !== $.time.paused) {  // state change
               if ($.time.paused) {
                 if (funcon.paused) {
                   funcon.paused(true)
