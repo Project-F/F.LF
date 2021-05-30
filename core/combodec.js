@@ -1,14 +1,13 @@
-/*\
+/* \
  * combo detector
  * - listen key events and detect combo from a controller
  * - maintains a clean sequence of pressed keys and fire events when combo is detected
  * - LF2, KOF style combos
  * - eliminating auto-repeated keys
-\*/
+\ */
 
-define( function(){
-
-/*\
+define(function () {
+/* \
  * combodec
  [ class ]
  - controller (object) a reference to @controller
@@ -43,149 +42,133 @@ define( function(){
 |	{
 |		alert(combo);
 |	}
- * 
+ *
  * [example](../sample/combo.html)
-\*/
-function combodec (controller, config, combo)
-{
-	/*\
+\ */
+  function combodec (controller, config, combo) {
+    /* \
 	 * combodec.time
 	 - (number) current time
 	 [ property ]
-	\*/
-	this.time=1;
-	/*\
+	\ */
+    this.time = 1
+    /* \
 	 * combodec.timeout
 	 - (number) when to clear the sequence buffer
 	 [ property ]
-	\*/
-	this.timeout=0;
-	/*\
+	\ */
+    this.timeout = 0
+    /* \
 	 * combodec.comboout
 	 - (number) when to interrupt the current combo
 	 [ property ]
-	\*/
-	this.comboout=0;
-	/*\
+	\ */
+    this.comboout = 0
+    /* \
 	 * combodec.con
 	 - (object) parent controller
 	 [ property ]
-	\*/
-	this.con=controller;
-	/*\
+	\ */
+    this.con = controller
+    /* \
 	 * combodec.seq
 	 - (array) the key input sequence. note that combodec logs key names rather than key stroke,
 	 * i.e. `up`,`down` rather than `w`,`s`
 	 - (object) each is `{k:key,t:time}`
-	 * 
+	 *
 	 * will be cleared regularly as defined by `config.timeout` or `config.clear_on_combo`
 	 [ property ]
-	\*/
-	this.seq=new Array();
-	/*\
+	\ */
+    this.seq = new Array()
+    /* \
 	 * combodec.config
 	 - (object)
 	 [ property ]
-	\*/
-	this.config=config;
-	/*\
+	\ */
+    this.config = config
+    /* \
 	 * combodec.combo
 	 - (array) combo list
 	 [ property ]
-	\*/
-	this.combo=combo;
-	this.con.child.push(this);
-}
+	\ */
+    this.combo = combo
+    this.con.child.push(this)
+  }
 
-/*\
+  /* \
  * combodec.key
  * supply keys to combodec
  [ method ]
  - k (string) key name
  - down (boolean)
  * note that it receives key name, i.e. `up`,`down` rather than `w`,`s`
-\*/
-combodec.prototype.key=function(K, down)
-{
-	if(!down)
-		return;
+\ */
+  combodec.prototype.key = function (K, down) {
+    if (!down) { return }
 
-	var seq=this.seq;
+    const seq = this.seq
 
-	var push=true;
-	if (this.config.rp)
-	{	//detect repeated keys
-		for (var i=seq.length-1, cc=1; i>=0 && seq[i]==K; i--,cc++)
-			if (cc>=this.config.rp[K])
-				push=false;
-	}
+    let push = true
+    if (this.config.rp) {	// detect repeated keys
+      for (var i = seq.length - 1, cc = 1; i >= 0 && seq[i] == K; i--, cc++) {
+        if (cc >= this.config.rp[K]) { push = false }
+      }
+    }
 
-	//eliminate repeated key strokes by browser; discard keys that are already pressed down
-	if (this.con.state[K])
-		push=false;
-	//  remarks: opera linux has a strange behavior that repeating keys **do** fire keyup events
+    // eliminate repeated key strokes by browser; discard keys that are already pressed down
+    if (this.con.state[K]) { push = false }
+    //  remarks: opera linux has a strange behavior that repeating keys **do** fire keyup events
 
-	if (this.config.timeout)
-		this.timeout=this.time+this.config.timeout;
-	if (this.config.comboout)
-		this.comboout=this.time+this.config.comboout;
+    if (this.config.timeout) { this.timeout = this.time + this.config.timeout }
+    if (this.config.comboout) { this.comboout = this.time + this.config.comboout }
 
-	if (push)
-		seq.push({k:K,t:this.time});
+    if (push) { seq.push({ k: K, t: this.time }) }
 
-	if ( this.combo && push)
-	{	//detect combo
-		var C = this.combo;
-		for (var i in C)
-		{
-			var detected=true;
-			var j=seq.length-C[i].seq.length;
-			if (j<0) detected=false;
-			else for (var k=0; j<seq.length; j++,k++)
-			{
-				if (C[i].seq[k] !== seq[j].k ||
-					(C[i].maxtime!==null && C[i].maxtime!==undefined && seq[seq.length-1].t-seq[j].t>C[i].maxtime))
-				{
-					detected=false;
-					break;
-				}
-			}
-			if (detected)
-			{
-				this.config.callback(C[i]);
-				if (C[i].clear_on_combo || (C[i].clear_on_combo!==false && this.config.clear_on_combo))
-					this.clear_seq();
-			}
-		}
-	}
-}
+    if (this.combo && push) {	// detect combo
+      const C = this.combo
+      for (var i in C) {
+        let detected = true
+        let j = seq.length - C[i].seq.length
+        if (j < 0) detected = false
+        else {
+          for (let k = 0; j < seq.length; j++, k++) {
+            if (C[i].seq[k] !== seq[j].k ||
+					(C[i].maxtime !== null && C[i].maxtime !== undefined && seq[seq.length - 1].t - seq[j].t > C[i].maxtime)) {
+              detected = false
+              break
+            }
+          }
+        }
+        if (detected) {
+          this.config.callback(C[i])
+          if (C[i].clear_on_combo || (C[i].clear_on_combo !== false && this.config.clear_on_combo)) { this.clear_seq() }
+        }
+      }
+    }
+  }
 
-/*\
+  /* \
  * combodec.clear_seq
  * clear the key sequence
  [ method ]
  * normally you would not need to call this manually
-\*/
-combodec.prototype.clear_seq=function()
-{
-	this.seq.length=0;
-	this.timeout=this.time-1;
-	this.comboout=this.time-1;
-}
+\ */
+  combodec.prototype.clear_seq = function () {
+    this.seq.length = 0
+    this.timeout = this.time - 1
+    this.comboout = this.time - 1
+  }
 
-/*\
+  /* \
  * combodec.frame
  * a tick of time
  [ method ]
-\*/
-combodec.prototype.frame=function()
-{
-	if (this.time===this.timeout)
-		this.clear_seq();
-	if (this.time===this.comboout)
-		this.seq.push({k:'_',t:this.time});
-	this.time++;
-}
+\ */
+  combodec.prototype.frame = function () {
+    if (this.time === this.timeout) { this.clear_seq() }
+    if (this.time === this.comboout) { this.seq.push({ k: '_', t: this.time }) }
+    this.time++
+  }
 
-return combodec;
-});
+  return combodec
+})
