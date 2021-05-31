@@ -1560,7 +1560,7 @@ function (global, network, Soundpack, Match, util, Touchcontroller, Random,
             use: true,
             name: 'CRUSHER',
             type: 'computer',
-            selected: 8,
+            selected: 10,
             selected_AI: 0,
             team: 1
           },
@@ -1568,7 +1568,7 @@ function (global, network, Soundpack, Match, util, Touchcontroller, Random,
             use: true,
             name: 'dumbass',
             type: 'computer',
-            selected: 6,
+            selected: 8,
             selected_AI: 2,
             team: 2
           }
