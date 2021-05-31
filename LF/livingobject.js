@@ -48,42 +48,42 @@ function (Global, Sprite, Mech, AI, util, Fsprite, Futil) {
       $.shadow = new Fsprite(sp_sha)
     }
     $.health =
-  {
-    hp: 100,
-    mp: 100
-  }
-    $.frame =
-  {
-    PN: 0, // previous frame number
-    N: 0, // current frame number
-    D: data.frame[0], // current frame's data object
-    ani: // animation sequence
     {
-      i: 0, up: true
+      hp: 100,
+      mp: 100
     }
-  }
+    $.frame =
+    {
+      PN: 0, // previous frame number
+      N: 0, // current frame number
+      D: data.frame[0], // current frame's data object
+      ani: // animation sequence
+      {
+        i: 0, up: true
+      }
+    }
     $.mech = new Mech($)
     $.AI = new AI.interface($)
     $.ps = $.mech.create_metric() // position, velocity, and other physical properties
     $.trans = new frame_transistor($)
     $.itr =
-  {
-    arest: 0, // attack rest - time until the attacker can do a single hit again
-    vrest: {} // victim rest - time until a character can be hit again
-  }
+    {
+      arest: 0, // attack rest - time until the attacker can do a single hit again
+      vrest: {} // victim rest - time until a character can be hit again
+    }
     $.effect =
-  {
-    num: -99, // effect number
-    dvx: 0,
-    dvy: 0,
-    stuck: false, // when an object is said to be 'stuck', there is not state and frame update
-    oscillate: 0, // if oscillate is non-zero, will oscillate for amplitude equals value of oscillate
-    blink: false, // blink: hide 2 TU, show 2 TU ,,, until effect vanishs
-    super: false, // when an object is in state 'super', it does not return body volume, such that it cannot be hit
-    timein: 0, // time to take effect
-    timeout: 0, // time to lose effect
-    heal: undefined
-  }
+    {
+      num: -99, // effect number
+      dvx: 0,
+      dvy: 0,
+      stuck: false, // when an object is said to be 'stuck', there is not state and frame update
+      oscillate: 0, // if oscillate is non-zero, will oscillate for amplitude equals value of oscillate
+      blink: false, // blink: hide 2 TU, show 2 TU ,,, until effect vanishs
+      super: false, // when an object is in state 'super', it does not return body volume, such that it cannot be hit
+      timein: 0, // time to take effect
+      timeout: 0, // time to lose effect
+      heal: undefined
+    }
     $.catching = 0 // state 9: the object being caught by me now
     // OR state 10: the object catching me now
     $.allow_switch_dir = true // direction switcher
@@ -363,11 +363,11 @@ function (Global, Sprite, Mech, AI, util, Fsprite, Futil) {
     const $ = this
     const efid = num + GC.effect.num_to_id
     const pos =
-  {
-    x: rect.x + rect.vx + (righttip ? rect.w : 0),
-    y: rect.y + rect.vy + rect.h / 2,
-    z: rect.z > $.ps.z ? rect.z : $.ps.z
-  }
+    {
+      x: rect.x + rect.vx + (righttip ? rect.w : 0),
+      y: rect.y + rect.vy + rect.h / 2,
+      z: rect.z > $.ps.z ? rect.z : $.ps.z
+    }
     $.match.visualeffect.create(efid, pos, variant, with_sound)
   }
 
