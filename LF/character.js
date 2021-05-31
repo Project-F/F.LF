@@ -954,6 +954,9 @@ function(livingobject, Global, Fcombodec, Futil, util)
 						if ($.ps.vx) {
 							$.ps.vx = 5*($.ps.vx>0?1:-1); //magic number
 						}
+						if($.ps.vy == 0) {
+							$.ps.vy = 5*($.ps.vy>0?1:-1); //magic number
+						}
 						if ($.ps.vz) {
 							$.ps.vz = 2*($.ps.vz>0?1:-1); //magic number
 						}
