@@ -73,22 +73,22 @@ function (livingobject, Global, Futil) {
           /*  <zort> chasing ball seeks for 72 frames, not counting just after (quantify?) it's launched or deflected. Internally, LF2 keeps a variable keeping track of how long the ball has left to seek, which starts at 500 and decreases by 7 every frame until it reaches 0. while seeking, its maximum x speed is 14, and its x acceleration is 0.7; it can climb or descend, by 1 px/frame; and its maximum z speed is 2.2, with z acceleration .4. when out of seeking juice, its speed is 17. the -7 in the chasing algorithm comes from hit_a: 7.
         */
           if ($.frame.D.hit_Fa === 1 ||
-          $.frame.D.hit_Fa === 2) {
+            $.frame.D.hit_Fa === 2) {
             if ($.health.hp > 0) {
               $.chase_target()
-            const T = $.chasing.target
-            const dx = T.ps.x - $.ps.x
-            const dy = T.ps.y - $.ps.y
-            const dz = T.ps.z - $.ps.z
-            if ($.ps.vx * (dx >= 0 ? 1 : -1) < 14) {
+              const T = $.chasing.target
+              const dx = T.ps.x - $.ps.x
+              const dy = T.ps.y - $.ps.y
+              const dz = T.ps.z - $.ps.z
+              if ($.ps.vx * (dx >= 0 ? 1 : -1) < 14) {
                 $.ps.vx += (dx >= 0 ? 1 : -1) * 0.7
-            }
+              }
               if ($.ps.vz * (dz >= 0 ? 1 : -1) < 2.2) {
                 $.ps.vz += (dz >= 0 ? 1 : -1) * 0.4
-            }
+              }
               // $.ps.vy = (dy>=0?1:-1) * 1.0;
               $.switch_dir($.ps.vx >= 0 ? 'right' : 'left')
-          }
+            }
           }
           if ($.frame.D.hit_Fa === 10) {
             $.ps.vx = ($.ps.vx > 0 ? 1 : -1) * 17
@@ -184,7 +184,7 @@ function (livingobject, Global, Futil) {
             return true
           }
           if (ITR.kind === 0 ||
-          ITR.kind === 9) // itr:kind:9 can deflect all balls
+            ITR.kind === 9) // itr:kind:9 can deflect all balls
           {
             $.ps.vx = 0
             $.team = att.team
@@ -215,7 +215,7 @@ function (livingobject, Global, Futil) {
       switch (event) {
         case 'hit_others':
           if (att.type === 'specialattack' &&
-          (att.state() === 3005 || att.state() === 3006)) // 3006 can only be destroyed by 3005 or 3006
+            (att.state() === 3005 || att.state() === 3006)) // 3006 can only be destroyed by 3005 or 3006
           {
             $.trans.frame(10)
             $.ps.vx = 0
@@ -231,7 +231,7 @@ function (livingobject, Global, Futil) {
             return true
           }
           if (att.type === 'specialattack' &&
-          (att.state() === 3005 || att.state() === 3006)) // 3006 can only be destroyed by 3005 or 3006
+            (att.state() === 3005 || att.state() === 3006)) // 3006 can only be destroyed by 3005 or 3006
           {
             $.trans.frame(20)
             $.ps.vx = 0
@@ -239,7 +239,7 @@ function (livingobject, Global, Futil) {
             return true
           }
           if (att.type === 'specialattack' &&
-          att.state() === 3000) {
+            att.state() === 3000) {
             $.ps.vx = ($.ps.vx > 0 ? -1 : 1) * 7 // deflect
             return true
           }
@@ -272,7 +272,7 @@ function (livingobject, Global, Futil) {
   }
 
   // inherit livingobject
-  function specialattack (config, data, thisID) {
+  function specialattack(config, data, thisID) {
     const $ = this
     // chain constructor
     livingobject.call($, config, data, thisID)
@@ -337,25 +337,27 @@ function (livingobject, Global, Futil) {
         const hit = $.scene.query(vol, $, { tag: 'body' })
         for (const k in hit) {  // for each being hit
           if (ITR[j].kind === 0 ||
-        ITR[j].kind === 9 || // shield
-        ITR[j].kind === 15 || // whirlwind
-        ITR[j].kind === 16) // whirlwind
+            ITR[j].kind === 9 || // shield
+            ITR[j].kind === 15 || // whirlwind
+            ITR[j].kind === 16) // whirlwind
           {
             if (!(hit[k].type === 'character' && hit[k].team === $.team)) // cannot attack characters of same team
             {
               if (!(ITR[j].kind === 0 && hit[k].type !== 'character' && hit[k].team === $.team && hit[k].ps.dir === $.ps.dir)) // kind:0 can only attack objects of same team if head on collide
               {
-                if (!$.itr.arest) { if ($.attacked(hit[k].hit(ITR[j], $, { x: $.ps.x, y: $.ps.y, z: $.ps.z }, vol))) {  // hit you!
-                  $.itr_arest_update(ITR)
-                  $.state_update('hit_others', ITR[j], hit[k])
-                  if (ITR[j].arest) {
-                    break; // attack one enemy only
+                if (!$.itr.arest) {
+                  if ($.attacked(hit[k].hit(ITR[j], $, { x: $.ps.x, y: $.ps.y, z: $.ps.z }, vol))) {  // hit you!
+                    $.itr_arest_update(ITR)
+                    $.state_update('hit_others', ITR[j], hit[k])
+                    if (ITR[j].arest) {
+                      break; // attack one enemy only
+                    }
+                    if (hit[k].type === 'character' && ITR[j].kind === 9) {
+                      // hitting a character will cause shield to disintegrate immediately
+                      $.health.hp = 0
+                    }
                   }
-                  if (hit[k].type === 'character' && ITR[j].kind === 9) {
-                    // hitting a character will cause shield to disintegrate immediately
-                    $.health.hp = 0
-                  }
-                } }
+                }
               }
             }
           } else if (ITR[j].kind === 8) // heal
