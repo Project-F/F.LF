@@ -101,6 +101,11 @@ function (livingobject, Global, Futil) {
     // Special Attack Projectiles
     1002: function (event, ITR, att, attps, rect) {
       const $ = this
+      if ($.parent.name === 'Rudolf' && $.id === 202) { // bug fix for shuriken not laying on ground
+        if ($.trans.next() == 43) {
+          $.trans.set_next(44)
+        }
+      }
       switch (event) {
         case 'state_entry':
           $.nobounce = $.parent.ps.y == 0 // If the parent is on the ground, projections don't bounce

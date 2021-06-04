@@ -1744,10 +1744,37 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
       const $ = this
       if ($.frame.D.opoint) {
         const ops = Futil.make_array($.frame.D.opoint)
-        for (const i in ops) {
-          $.match.create_object(ops[i], $)
+        if (ops.length > 0) {
+          if (include_oid_facing(ops, 201, 0)) {
+            $.match.create_multiple_objects( get_object_properties (201), $, 5, 2)
+          } else if (include_oid_facing(ops, 202, 0)) {
+            $.match.create_multiple_objects( get_object_properties (202), $, 5, 2)
+          } else {
+            for (const i in ops) {
+              $.match.create_object(ops[i], $)
+            }
+          }
         }
       }
+    }
+    function get_object_properties (oid) {
+      if (oid === 201) {
+        return {
+          kind: 1, x: 95, y: 57, action: 141, dvx: 22, dvy: -3, oid: 201, facing: 50
+        }
+      } else if (oid === 202) {
+        return {
+          kind: 1, x: 75, y: 57, action: 40, dvx: 17, dvy: -3, oid: 202, facing: 50
+        }
+      }
+    }
+    function include_oid_facing (ops, oid, facing) {
+      for (temp of ops) {
+        if (temp.oid === oid && temp.facing != facing) {
+          return true
+        }
+      }
+      return false
     }
 
     character.prototype.hold_weapon = function (wea) {
