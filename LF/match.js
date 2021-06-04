@@ -319,6 +319,8 @@ function (Futil, Fcontroller, Fsprite,
       // positioning
       const pos = $.background.get_pos($.random(), $.random())
       char.set_pos(pos.x, pos.y, pos.z)
+      char.special_TU = {TU_count: 0, TU_target: -1, shadow_hidden: false, shadow_blink_times: 0}
+      char.health.mp = char.health.mp_full
       var uid = $.scene.add(char)
       $.character[uid] = char
       // pane
@@ -650,6 +652,20 @@ function (Futil, Fcontroller, Fsprite,
       })
       return funcon
     }
+  }
+
+  match.prototype.get_living_object = function () {
+    const $ = this
+    const char = $.character
+    var temp = {}
+    var count = 1
+    for (index in char) {
+      if (char[index].sp.sp.hidden == false || !char[index].sp.sp.hidden) {
+        temp[count] = char[index]
+        count += 1
+      }
+    }
+    return temp
   }
 
   return match

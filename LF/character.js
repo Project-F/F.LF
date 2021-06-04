@@ -37,6 +37,20 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
           $.opoint()
           break
         case 'TU':
+          $.special_TU.TU_count += 1
+          if ($.special_TU.TU_count === $.special_TU.TU_target) {
+            if ($.special_TU.shadow_blink_times < 8) {
+              console.log($.special_TU.shadow_blink_times)
+              if ($.special_TU.shadow_hidden === true) {
+                $.shadow_blink(true)
+              } else {
+                $.shadow_blink(false)
+              }
+            } else {
+              $.shadow.show()
+              $.special_TU_skill()
+            }
+          }
           if ($.state_update('post_interaction')) {
             ; // do nothing
           } else {
@@ -954,6 +968,13 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
                 $.trans.set_next(212) // back to jump
               }
               break
+            case 257:
+              if ($.frame.D.next === 1280) { // next: 1280
+                $.sp.hide()
+                $.shadow.hide()
+                $.special_TU.shadow_hidden = true
+                $.special_TU.TU_target = $.special_TU.TU_count + 120
+              }
           }
           break
 
@@ -1820,6 +1841,29 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
       $.effect.dvy = -3
       $.effect.timein = -1
       $.effect.timeout = 0
+    }
+    character.prototype.special_TU_skill = function () {
+      const $ = this
+      if ($.id == 5) { //Rudolf
+        $.shadow.show()
+        $.sp.show()
+        $.effect.timein = 0
+        $.effect.timeout = 30
+        $.effect.blink = true
+      }
+      $.special_TU.TU_target = -1
+    }
+    character.prototype.shadow_blink = function (is_hidden) {
+      const $ = this
+      if (is_hidden) {
+        $.shadow.show()
+        $.special_TU.shadow_hidden = false
+      } else {
+        $.shadow.hide()
+        $.special_TU.shadow_hidden = true
+      }
+      $.special_TU.shadow_blink_times += 1  
+      $.special_TU.TU_target += 5
     }
 
     return character
