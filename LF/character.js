@@ -386,7 +386,7 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
           if ($.frame.N === 253) {
             $.trans.set_wait(0) // Woody's fly_crash
           }
-          if ($.frame.N >= 273 && $.frame.N <= 276 && $.name === 'Rudolf') {
+          if ($.frame.N >= 273 && $.frame.N <= 276 && $.id === 5) {
             $.ps.vy = -6.8
           }
           $.id_update('state3_frame')
