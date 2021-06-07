@@ -101,7 +101,7 @@ function (livingobject, Global, Futil) {
     // Special Attack Projectiles
     1002: function (event, ITR, att, attps, rect) {
       const $ = this
-      if ($.parent.name === 'Rudolf' && $.id === 202) { // bug fix for shuriken not laying on ground
+      if ($.parent.id === 5 && $.id === 202) { // bug fix for shuriken not laying on ground
         if ($.trans.next() == 43) {
           $.trans.set_next(44)
         }
