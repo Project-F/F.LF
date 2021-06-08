@@ -1095,7 +1095,7 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
       }
     }
 
-    const idupdates = // nasty fix (es)
+    const id_updates = // nasty fix (es)
     {
       default: function () {
       },
@@ -1215,10 +1215,10 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
       const $ = this
       // chain constructor
       livingobject.call(this, config, data, thisID)
-      if (typeof idupdates[$.id] === 'function') {
-        $.id_update = idupdates[$.id]
+      if (typeof id_updates[$.id] === 'function') {
+        $.id_update = id_updates[$.id]
       } else {
-        $.id_update = idupdates.default
+        $.id_update = id_updates.default
       }
       $.mech.floor_xbound = true
       $.con = config.controller
