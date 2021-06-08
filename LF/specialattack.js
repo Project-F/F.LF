@@ -124,6 +124,8 @@ function (livingobject, Global, Futil) {
             }
           }
           break
+        case 'frame':
+          $.id_update('state1002_frame')
       }
     },
 
@@ -271,11 +273,28 @@ function (livingobject, Global, Futil) {
     }
   }
 
+  const id_updates = {
+    default: function () {
+    },
+    202: function (event) {
+      const $ = this
+      switch (event) {
+        case 'state1002_frame':
+          $.ps.vy -= 0.6
+          break
+      }
+    }
+  }
   // inherit livingobject
   function specialattack(config, data, thisID) {
     const $ = this
     // chain constructor
     livingobject.call($, config, data, thisID)
+    if (typeof id_updates[$.id] === 'function') {
+      $.id_update = id_updates[$.id]
+    } else {
+      $.id_update = id_updates.default
+    }
     // constructor
     $.team = config.team
     $.match = config.match
