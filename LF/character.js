@@ -1126,6 +1126,17 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
             break
         }
       },
+      5: function (event)
+      {
+        const $ = this
+        switch (event) {
+          case 'state3_frame':
+            if ($.frame.N >= 273 && $.frame.N <= 276) {
+              $.ps.vy = -6.8
+            }
+            break
+        }
+      },
       6: function (event, K, tag) // Louis
       {
         const $ = this
