@@ -659,7 +659,6 @@ function (Futil, Fcontroller, Fsprite,
     var temp = {}
     for (a in $.scene.live) {
       if ($.scene.live[a].sp.sp.hidden === false || !$.scene.live[a].sp.sp.hidden) {
-        console.log($.scene.live[a].name)
         temp[a] = $.scene.live[a]
       }
     }
