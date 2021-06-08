@@ -296,7 +296,7 @@ function (Futil, Fcontroller, Fsprite,
     }
   }
 
-  match.prototype.create_man = function (players, parent) {
+  match.prototype.create_man = function (players, pos, hp, mp, create_panel, parent_uid) {
     const $ = this
     const char_config =
     {
@@ -317,13 +317,17 @@ function (Futil, Fcontroller, Fsprite,
         $.AIscript.push(new AIcontroller(char, $, controller))
       }
       // positioning
-      char.set_pos(parent.ps.x - 20, parent.ps.y, parent.ps.z)
-      char.health.hp = 1
+      char.set_pos(pos.x, pos.y, pos.z)
+      char.health.hp = hp
       // temp character properties
       char.blink_after_dead = true
       char.blink_now = false
       var uid = $.scene.add(char)
-      $.character[uid] = char
+      if (parent_uid && parent_uid != 0) {
+        $.character[parent_uid] = char
+      } else {
+        $.character[uid] = char
+      }
     }
     function preload_pack_images (char) {
       for (let j = 0; j < char.pack.length; j++) {
