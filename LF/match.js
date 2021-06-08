@@ -140,6 +140,7 @@ function (Futil, Fcontroller, Fsprite,
       vz: vz
     })
   }
+
   match.prototype.create_object = function (opoint, parent) {
     const $ = this
     $.tasks.push({
