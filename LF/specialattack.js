@@ -31,7 +31,7 @@ function (livingobject, Global, Futil) {
           if ($.frame.D.sound) {
             $.match.sound.play($.frame.D.sound)
           }
-          if ($.frame.N === 43 || $.frame.N === 15) { // on ground
+          if ($.frame.N === 15) { // on ground
             $.trans.frame(1000)
           }
           break
@@ -101,11 +101,6 @@ function (livingobject, Global, Futil) {
     // Special Attack Projectiles
     1002: function (event, ITR, att, attps, rect) {
       const $ = this
-      if ($.parent.id === 5 && $.id === 202) { // bug fix for shuriken not laying on ground
-        if ($.trans.next() == 43) {
-          $.trans.set_next(44)
-        }
-      }
       switch (event) {
         case 'state_entry':
           $.nobounce = $.parent.ps.y == 0 // If the parent is on the ground, projections don't bounce
