@@ -656,13 +656,11 @@ function (Futil, Fcontroller, Fsprite,
 
   match.prototype.get_living_object = function () {
     const $ = this
-    const char = $.character
     var temp = {}
-    var count = 1
-    for (index in char) {
-      if (char[index].sp.sp.hidden == false || !char[index].sp.sp.hidden) {
-        temp[count] = char[index]
-        count += 1
+    for (a in $.scene.live) {
+      if ($.scene.live[a].sp.sp.hidden === false || !$.scene.live[a].sp.sp.hidden) {
+        console.log($.scene.live[a].name)
+        temp[a] = $.scene.live[a]
       }
     }
     return temp

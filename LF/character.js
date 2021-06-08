@@ -40,7 +40,6 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
           $.special_TU.TU_count += 1
           if ($.special_TU.TU_count === $.special_TU.TU_target) {
             if ($.special_TU.shadow_blink_times < 8) {
-              console.log($.special_TU.shadow_blink_times)
               if ($.special_TU.shadow_hidden === true) {
                 $.shadow_blink(true)
               } else {
