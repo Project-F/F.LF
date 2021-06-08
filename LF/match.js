@@ -292,21 +292,21 @@ function (Futil, Fcontroller, Fsprite,
         }
         break
       case 'create_multiple_objects':
-        let vz_Array = []
+        let vz_array = []
         let max_number = 0
+        max_number = Math.floor(T.number / 2)
         if (T.number % 2 == 1) { // calculate array of vz for ajusting ninja star or arrow's z coord
-          max_number = T.number % 2 + Math.floor(T.number / 2) - 1
           for (let temp1 = -1 * max_number; temp1 <= max_number; temp1++) {
-            vz_Array.push(temp1 * T.vz)
+            vz_array.push(temp1 * T.vz)
           }
         } else {
           for (let temp1 = -1 * max_number; temp1 <= max_number; temp1++) {
             if (temp1 != 0) {
-              vz_Array.push(temp1 * T.vz)
+              vz_array.push(temp1 * T.vz)
             }
           }
         }
-        for (vz of vz_Array) {
+        for (vz of vz_array) {
           if (T.opoint.oid) {
             const OBJ = util.select_from($.data.object, { id: T.opoint.oid })
             if (!OBJ) {
@@ -339,6 +339,7 @@ function (Futil, Fcontroller, Fsprite,
         break
     }
   }
+  
   match.prototype.calculate_fps = function () {
     const $ = this
     const mul = 10
