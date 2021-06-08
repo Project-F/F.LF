@@ -386,6 +386,9 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
             if ($.frame.N === 253) {
               $.trans.set_wait(0) // Woody's fly_crash
             }
+            if ($.frame.N >= 273 && $.frame.N <= 276) {
+              $.id_update('state3_height')
+            }
             $.id_update('state3_frame')
             break
           case 'hit_stop':
@@ -1123,6 +1126,15 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
                 $.switch_dir('left')
               }
             }
+            break
+        }
+      },
+      5: function (event)
+      {
+        const $ = this
+        switch (event) {
+          case 'state3_height':
+            $.ps.vy = -6.8
             break
         }
       },
