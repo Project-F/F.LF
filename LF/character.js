@@ -37,6 +37,17 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
           $.opoint()
           break
         case 'TU':
+          if ($.blink_end != -1 && $.blink_now){
+            if ($.blink_count <= $.blink_end) {
+              $.blink_count += 1
+            } else {
+              $.blink_now = false
+              $.blink_end = -1
+              $.sp.hide()
+              $.shadow.hide()
+              $.match.scene.remove($)
+            }
+          }
           if ($.state_update('post_interaction')) {
             ; // do nothing
           } else {
@@ -910,6 +921,14 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
           $.health.bdefend = 0
           if ($.health.hp <= 0) {
             $.die()
+            if ($.blink_after_dead) {
+              $.effect.timein = 0
+              $.effect.timeout = 30
+              $.effect.blink = true
+              $.blink_count = 0
+              $.blink_end = 31
+              $.blink_now = true
+            }
           }
           break
         case 'state_exit':
@@ -1270,9 +1289,9 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
         }
       }
       $.hold =
-    {
-      obj: null // holding weapon
-    }
+      {
+        obj: null // holding weapon
+      }
       $.health.bdefend = 0
       $.health.fall = 0
       $.health.hp = $.health.hp_full = $.health.hp_bound = $.proper('hp') || GC.default.health.hp_full
@@ -1281,11 +1300,11 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
       $.health.mp = GC.default.health.mp_start
       $.health.mp_usage = 0
       $.stat =
-    {
-      attack: 0,
-      picking: 0,
-      kill: 0
-    }
+      {
+        attack: 0,
+        picking: 0,
+        kill: 0
+      }
       $.trans.frame = function (next, au) {
         if (next === 0 || next === 999) {
           this.set_next(next, au)
@@ -1743,6 +1762,23 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
     character.prototype.opoint = function () {
       const $ = this
       if ($.frame.D.opoint) {
+        if ($.frame.D.opoint.oid === 5) { // create characters
+          let players = [];
+          const number_of_character = Math.floor(Math.abs($.frame.D.opoint.facing) / 10);
+          for (let i = 0; i < number_of_character; i++) {
+            players.push({
+              name: '+man',
+              controller: { type: 'AIscript', id: 2 },
+              type: 'computer',
+              id: $.id,
+              team: $.team
+            });
+          }
+          if (players.length > 0) {
+            $.match.create_man(players, $);
+          }
+          return;
+        }
         const ops = Futil.make_array($.frame.D.opoint)
         for (const i in ops) {
           $.match.create_object(ops[i], $)

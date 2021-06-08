@@ -9,8 +9,6 @@ define({
       }
     } else if (folder === 'background') {
       return true
-    } else if (folder === 'AI') {
-      return true
     }
     return false
   }

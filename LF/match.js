@@ -296,6 +296,66 @@ function (Futil, Fcontroller, Fsprite,
     }
   }
 
+  match.prototype.create_man = function (players, parent) {
+    const $ = this
+    const char_config =
+    {
+      match: $,
+      controller: null,
+      team: 0
+    }
+    for (let i = 0; i < players.length; i++) {
+      var player = players[i]
+      const player_obj = util.select_from($.data.object, { id: player.id })
+      var pdata = player_obj.data
+      preload_pack_images(player_obj)
+      const controller = setup_controller(player)
+      // create character
+      const char = new factory.character(char_config, pdata, player.id)
+      if (controller.type === 'AIcontroller') {
+        const AIcontroller = util.select_from($.data.AI, { id: player.controller.id }).data
+        $.AIscript.push(new AIcontroller(char, $, controller))
+      }
+      // positioning
+      char.set_pos(parent.ps.x - 20, parent.ps.y, parent.ps.z)
+      char.health.hp = 1
+      // temp character properties
+      char.blink_after_dead = true
+      char.blink_now = false
+      var uid = $.scene.add(char)
+      $.character[uid] = char
+    }
+    function preload_pack_images (char) {
+      for (let j = 0; j < char.pack.length; j++) {
+        const obj = char.pack[j].data
+        if (obj.bmp && obj.bmp.file) {
+          for (let k = 0; k < obj.bmp.file.length; k++) {
+            const file = obj.bmp.file[k]
+            for (const m in file) {
+              if (typeof file[m] === 'string' && m.indexOf('file') === 0) {
+                Fsprite.preload_image(file[m])
+              }
+            }
+          }
+        }
+      }
+    }
+    function setup_controller (player) {
+      let controller
+      switch (player.controller.type) {
+        case 'AIscript':
+          controller = new AI.controller()
+          break
+        default:
+          controller = player.controller
+          controller.child.push($)
+      }
+      char_config.controller = controller
+      char_config.team = player.team
+      controller.sync = true
+      return controller
+    }
+  }
   match.prototype.create_characters = function (players) {
     const $ = this
     const char_config =
