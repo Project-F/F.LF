@@ -31,7 +31,7 @@ function (livingobject, Global, Futil) {
           if ($.frame.D.sound) {
             $.match.sound.play($.frame.D.sound)
           }
-          if ($.frame.N === 43 || $.frame.N === 15) { // on ground
+          if ($.frame.N === 15) { // on ground
             $.trans.frame(1000)
           }
           break

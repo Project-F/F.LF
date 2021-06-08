@@ -1744,8 +1744,14 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
       const $ = this
       if ($.frame.D.opoint) {
         const ops = Futil.make_array($.frame.D.opoint)
-        for (const i in ops) {
-          $.match.create_object(ops[i], $)
+        if (ops.length > 0) {
+          if (Math.abs($.frame.D.opoint.facing) > 10) {
+            $.match.create_multiple_objects( $.frame.D.opoint, $, Math.floor($.frame.D.opoint.facing/10), $.frame.D.opoint.dvz || 2)
+          } else {
+            for (const i in ops) {
+              $.match.create_object(ops[i], $)
+            }
+          }
         }
       }
     }

@@ -125,6 +125,21 @@ function (Futil, Fcontroller, Fsprite,
     console.log(this.time.t + ': ' + mes)
   }
 
+  match.prototype.create_multiple_objects = function (opoint, parent, number, vz) {
+    const $ = this
+    $.tasks.push({
+      task: 'create_multiple_objects',
+      number: number,
+      parent: parent,
+      opoint: opoint,
+      team: parent.team,
+      pos: parent.mech.make_point(opoint),
+      z: parent.ps.z,
+      dir: parent.ps.dir,
+      dvz: parent.dirv() * 2,
+      vz: vz
+    })
+  }
   match.prototype.create_object = function (opoint, parent) {
     const $ = this
     $.tasks.push({
@@ -266,14 +281,54 @@ function (Futil, Fcontroller, Fsprite,
             break
           }
           const config =
-        {
-          match: $,
-          team: T.team
-        }
+          {
+            match: $,
+            team: T.team
+          }
           var obj = new factory[OBJ.type](config, OBJ.data, T.opoint.oid)
           obj.init(T)
           var uid = $.scene.add(obj)
           $[obj.type][uid] = obj
+        }
+        break
+      case 'create_multiple_objects':
+        let vz_array = []
+        let max_number = 0
+        max_number = Math.floor(T.number / 2)
+        if (T.number % 2 == 1) { // calculate array of vz for ajusting ninja star or arrow's z coord
+          for (let temp1 = -1 * max_number; temp1 <= max_number; temp1++) {
+            vz_array.push(temp1 * T.vz)
+          }
+        } else {
+          for (let temp1 = -1 * max_number; temp1 <= max_number; temp1++) {
+            if (temp1 != 0) {
+              vz_array.push(temp1 * T.vz)
+            }
+          }
+        }
+        for (vz of vz_array) {
+          if (T.opoint.oid) {
+            const OBJ = util.select_from($.data.object, { id: T.opoint.oid })
+            if (!OBJ) {
+              console.error('Object', T.opoint.oid, 'not exists')
+              break
+            }
+            const config =
+            {
+              match: $,
+              team: T.team
+            }
+            var obj = new factory[OBJ.type](config, OBJ.data, T.opoint.oid)
+            obj.init(T)
+            obj.ps.vz = vz
+            if (T.dir === 'left') {
+              obj.ps.vx += Math.abs(vz)
+            } else {
+              obj.ps.vx -= Math.abs(vz)
+            }
+            var uid = $.scene.add(obj)
+            $[obj.type][uid] = obj
+          }
         }
         break
       case 'destroy_object':
@@ -284,7 +339,7 @@ function (Futil, Fcontroller, Fsprite,
         break
     }
   }
-
+  
   match.prototype.calculate_fps = function () {
     const $ = this
     const mul = 10
