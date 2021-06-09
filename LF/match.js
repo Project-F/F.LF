@@ -708,5 +708,16 @@ function (Futil, Fcontroller, Fsprite,
     }
   }
 
+  match.prototype.get_living_object = function () {
+    const $ = this
+    var temp = {}
+    for (a in $.scene.live) {
+      if ($.scene.live[a].sp.sp.hidden === false || !$.scene.live[a].sp.sp.hidden) {
+        temp[a] = $.scene.live[a]
+      }
+    }
+    return temp
+  }
+  
   return match
 })

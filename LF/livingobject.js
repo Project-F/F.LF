@@ -569,6 +569,9 @@ function (Global, Sprite, Mech, AI, util, Fsprite, Futil) {
       if (anext === 999) {
         anext = 0
       }
+      if (anext === 1280) {
+        anext = 0
+      }
       return $.data.frame[anext]
     }
 
@@ -593,6 +596,9 @@ function (Global, Sprite, Mech, AI, util, Fsprite, Futil) {
           }
 
           if (next === 999) {
+            next = 0
+          }
+          if (next === 1280) {
             next = 0
           }
           $.frame.PN = $.frame.N
