@@ -135,7 +135,7 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
                 case 'def': case 'jump': case 'att': case 'left-left': case 'right-right':
                   $.combo_buffer.combo = null
                   break
-                  // other combo is not cleared
+                // other combo is not cleared
               }
             }
             break
@@ -333,7 +333,7 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
               $.frame_ani_oscillate(9, 11)
             }
             $.trans.set_wait($.data.bmp.running_frame_rate)
-            // no break here
+          // no break here
 
           case 'TU':
             // to maintain the velocity against friction
@@ -477,7 +477,7 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
         switch (event) {
           case 'state_entry':
             if (($.frame.PN >= 9 && $.frame.PN <= 11) || // if previous is running
-            ($.frame.PN === 215)) // or crouch
+              ($.frame.PN === 215)) // or crouch
             {
               $.ps.vx = $.dirh() * ($.data.bmp.dash_distance - 1) * ($.frame.N === 213 ? 1 : -1)
               $.ps.vz = $.dirv() * ($.data.bmp.dash_distancez - 1)
@@ -488,7 +488,7 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
           case 'combo':
             if (K === 'att' || $.con.state.att) {
               if ($.proper('dash_backattack') || // back attack
-              $.dirh() === ($.ps.vx > 0 ? 1 : -1)) // if not turning back
+                $.dirh() === ($.ps.vx > 0 ? 1 : -1)) // if not turning back
               {
                 if ($.hold.obj && $.proper($.hold.obj.id, 'attackable')) { // light weapon attack
                   $.trans.frame(40, 10)
@@ -658,7 +658,7 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
             }
             if ($.statemem.counter <= 0) {
               if (!($.frame.N === 122 && $.statemem.attacks === 4)) // let it finish the 5th punch
-                {
+              {
                 if ($.frame.N === 121 || $.frame.N === 122) {
                   $.catching.caught_release()
                   $.trans.frame(999, 15)
@@ -671,8 +671,8 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
             switch (K) {
               case 'att':
                 if ($.frame.D.cpoint &&
-              ($.frame.D.cpoint.taction ||
-              $.frame.D.cpoint.aaction)) {
+                  ($.frame.D.cpoint.taction ||
+                    $.frame.D.cpoint.aaction)) {
                   const dx = $.con.state.left !== $.con.state.right
                   const dy = $.con.state.up !== $.con.state.down
                   if ((dx || dy) && $.frame.D.cpoint.taction) {
@@ -729,7 +729,7 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
             }
 
             if ($.caught_cpointkind() === 2 &&
-          $.catching && $.catching.caught_cpointkind() === 1) { // really being caught
+              $.catching && $.catching.caught_cpointkind() === 1) { // really being caught
               if ($.statemem.frameTU) {
                 $.statemem.frameTU = false // the immediate `TU` after `frame`
 
@@ -813,43 +813,43 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
               switch ($.frame.N) {
                 case 180:
                   $.trans.set_next(181)
-                $.trans.set_wait(util.lookup_abs(GC.fall.wait180, $.effect.dvy))
-                break
+                  $.trans.set_wait(util.lookup_abs(GC.fall.wait180, $.effect.dvy))
+                  break
                 case 181:
                   // console.log('y:'+$.ps.y+', vy:'+$.ps.vy+', vx:'+$.ps.vx);
                   $.trans.set_next(182)
-                var vy = $.ps.vy > 0 ? $.ps.vy : -$.ps.vy
-                     if (vy >= 0 && vy <= 4) {
+                  var vy = $.ps.vy > 0 ? $.ps.vy : -$.ps.vy
+                  if (vy >= 0 && vy <= 4) {
                     $.trans.set_wait(2)
-                } else if (vy > 4 && vy < 7) {
+                  } else if (vy > 4 && vy < 7) {
                     $.trans.set_wait(3)
-                } else if (vy >= 7) {
+                  } else if (vy >= 7) {
                     $.trans.set_wait(4)
-                }
+                  }
                   break
                 case 182:
                   $.trans.set_next(183)
-                break
-                  //
+                  break
+                //
                 case 186:
                   $.trans.set_next(187)
-                break
+                  break
                 case 187:
                   $.trans.set_next(188)
-                break
+                  break
                 case 188:
                   $.trans.set_next(189)
-                break
+                  break
               }
             } else {
               switch ($.frame.N) {
                 case 180:
                   $.trans.set_next(185)
-                $.trans.set_wait(1)
-                break
+                  $.trans.set_wait(1)
+                  break
                 case 186:
                   $.trans.set_next(191)
-                break
+                  break
               }
             }
             break
@@ -1236,7 +1236,7 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
     }
 
     // inherit livingobject
-    function character (config, data, thisID) {
+    function character(config, data, thisID) {
       /* (function ()
       { //a small benchmark for make_array efficiency,
         //for deep and davis,
@@ -1277,7 +1277,7 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
         timeout: 0
       }
       if ($.con) {
-        function combo_event (kobj) {
+        function combo_event(kobj) {
           const K = kobj.name
           switch (K) {
             case 'left': case 'right':
@@ -1286,7 +1286,7 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
               }
           }
           if ($.combo_buffer.timeout === GC.combo.timeout &&
-          priority[K] < priority[$.combo_buffer.combo]) { // combo clash in same frame, higher priority wins
+            priority[K] < priority[$.combo_buffer.combo]) { // combo clash in same frame, higher priority wins
           } else {
             $.combo_buffer.combo = K
             $.combo_buffer.timeout = GC.combo.timeout
@@ -1298,13 +1298,13 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
           callback: combo_event // callback function when combo detected
         }
         let combo_list = [
-          { name: 'left', seq: ['left'],  clear_on_combo: false },
-          { name: 'right',  seq: ['right'], clear_on_combo: false },
-          { name: 'up', seq: ['up'],    clear_on_combo: false },
-          { name: 'down', seq: ['down'],  clear_on_combo: false },
-          { name: 'def',  seq: ['def'], clear_on_combo: false },
-          { name: 'jump', seq: ['jump'],  clear_on_combo: false },
-          { name: 'att',  seq: ['att'], clear_on_combo: false },
+          { name: 'left', seq: ['left'], clear_on_combo: false },
+          { name: 'right', seq: ['right'], clear_on_combo: false },
+          { name: 'up', seq: ['up'], clear_on_combo: false },
+          { name: 'down', seq: ['down'], clear_on_combo: false },
+          { name: 'def', seq: ['def'], clear_on_combo: false },
+          { name: 'jump', seq: ['jump'], clear_on_combo: false },
+          { name: 'att', seq: ['att'], clear_on_combo: false },
           { name: 'left-left', seq: ['left', 'left'], maxtime: 9 },
           { name: 'right-right', seq: ['right', 'right'], maxtime: 9 },
           { name: 'jump-att', seq: ['jump', 'att'], maxtime: 0, clear_on_combo: false }
@@ -1395,7 +1395,7 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
         }
       } else {
         if (res1 || res2 || // do not store if returned true
-        K === 'left' || K === 'right' || K === 'up' || K === 'down') { // dir combos are not persistent
+          K === 'left' || K === 'right' || K === 'up' || K === 'down') { // dir combos are not persistent
           $.combo_buffer.combo = null
         }
       }
@@ -1442,9 +1442,9 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
       } else if ($.state() === 19 && att.state() === 3000) {
         return false // firerun
       } else if (ITR.kind === undefined || // default
-         ITR.kind === 0 || // normal
-         ITR.kind === 4 || // falling
-         ITR.kind === 9) // reflective shield
+        ITR.kind === 0 || // normal
+        ITR.kind === 4 || // falling
+        ITR.kind === 9) // reflective shield
       {
         accepthit = true
         const compen = $.ps.y === 0 ? 1 : 0 // magic compensation
@@ -1502,7 +1502,7 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
         inj = ITR.injury
         accepthit = true
       }
-      function fall () {
+      function fall() {
         if (ITR.fall !== undefined) {
           $.health.fall += ITR.fall
         } else {
@@ -1527,7 +1527,7 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
           falldown()
         }
       }
-      function falldown () {
+      function falldown() {
         if (ITR.dvy === undefined) { ef_dvy = GC.default.fall.dvy }
         $.health.fall = 0
         $.ps.vy = 0
@@ -1540,7 +1540,7 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
           $.trans.frame(186, 21)
         }
       }
-      function posteffect (effectnum) {
+      function posteffect(effectnum) {
         if (defended) {
           switch (effectnum) {
             case 0: // normal hit
@@ -1639,7 +1639,7 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
                 if (hit[t].type === 'character') // only catch characters
                 {
                   if ((ITR.kind === 1 && hit[t].state() === 16) || // you are in dance of pain
-           (ITR.kind === 3)) // super catch
+                    (ITR.kind === 3)) // super catch
                   {
                     if (!$.itr.arest) {
                       const dir = hit[t].caught_a(ITR, $, { x: $.ps.x, y: $.ps.y, z: $.ps.z })

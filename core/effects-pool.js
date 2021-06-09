@@ -50,12 +50,12 @@ define(function () {
    * [example](../sample/effects-pool.html)
    # <iframe src="../sample/effects-pool.html" width="800" height="100"></iframe>
   \*/
-  function effects_pool (config) {
+  function effects_pool(config) {
     if (config.circular) { return new crpool(config) } else { return new lnpool(config) }
   }
 
   // circular effects pool
-  function crpool (config) {
+  function crpool(config) {
     this.pool = [] // let it be a circular pool
     this.S = 0 // start pivot
     this.E = 0 // end pivot
@@ -183,7 +183,7 @@ define(function () {
   }
 
   // linear effects pool
-  function lnpool (config) {
+  function lnpool(config) {
     this.pool = []
     this.alive = []// state array
     this.config = config

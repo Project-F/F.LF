@@ -9,19 +9,19 @@ define(['core/resourcemap', 'module'], function (resourcemap, module) {
   sprite._loading = 0
   sprite.renderer = 'canvas'
   sprite.masterconfig =
-  function (c) {
-    if (c) {
-      sprite._masterconfig = c
-      sprite.masterconfig_update()
-    } else { return sprite._masterconfig }
-  }
-  sprite.masterconfig_set =
-  function (key, value) {
-    if (key && value) {
-      sprite._masterconfig[key] = value
-      sprite.masterconfig_update()
+    function (c) {
+      if (c) {
+        sprite._masterconfig = c
+        sprite.masterconfig_update()
+      } else { return sprite._masterconfig }
     }
-  }
+  sprite.masterconfig_set =
+    function (key, value) {
+      if (key && value) {
+        sprite._masterconfig[key] = value
+        sprite.masterconfig_update()
+      }
+    }
   sprite.masterconfig_update = function () {
     if (sprite._masterconfig.resourcemap) {
       if (!(sprite._masterconfig.resourcemap instanceof resourcemap)) { sprite._masterconfig.resourcemap = new resourcemap(sprite._masterconfig.resourcemap) }
@@ -39,7 +39,7 @@ define(['core/resourcemap', 'module'], function (resourcemap, module) {
     img.src = sprite.resolve_resource(imgname)
   }
 
-  function sprite (config) {
+  function sprite(config) {
     sprite._count++
 
     if (config.canvas instanceof HTMLElement && config.canvas.tagName.toLowerCase() === 'canvas') { return new sprite_group(config) }
@@ -210,7 +210,7 @@ define(['core/resourcemap', 'module'], function (resourcemap, module) {
     }
   }
 
-  function sprite_group (config) {
+  function sprite_group(config) {
     const parent = config.canvas
     if (parent instanceof HTMLElement && parent.tagName.toLowerCase() === 'canvas') {
       this.ctx = parent.getContext('2d')
@@ -313,7 +313,7 @@ define(['core/resourcemap', 'module'], function (resourcemap, module) {
     ctx.translate(-this.x, -this.y)
     if (this.opacity !== null && this.opacity !== undefined) { ctx.globalAlpha = globalAlpha }
 
-    function flip_to (ffx, ffy) {
+    function flip_to(ffx, ffy) {
       if (fx !== ffx && fy !== ffy) { ctx.scale(-1, -1) } else if (fx === ffx && fy !== ffy) { ctx.scale(1, -1) } else if (fx !== ffx && fy === ffy) { ctx.scale(-1, 1) }
       fx = ffx
       fy = ffy

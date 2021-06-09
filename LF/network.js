@@ -9,17 +9,17 @@ define(['core/network'], function (Fnetwork) {
   const remote = []
 
   let verify, packet, callback, handler
-  function set_interval (cb, int) {
+  function set_interval(cb, int) {
     verify = {}
     packet = { control: [] }
     callback = cb
     return Fnetwork.setInterval(frame, int)
   }
-  function clear_interval (t) {
+  function clear_interval(t) {
     Fnetwork.clearInterval(t)
     verify = packet = callback = null
   }
-  function frame (time, data, send) {
+  function frame(time, data, send) {
     if (data && data.control) {
       for (var i = 0; i < remote.length; i++) {
         remote[i].supply(data.control[i])
@@ -40,7 +40,7 @@ define(['core/network'], function (Fnetwork) {
       packet.control.length = 0
     }
   }
-  function compare (A, B) {
+  function compare(A, B) {
     if (A === undefined || B === undefined) {
       return
     }
@@ -53,7 +53,7 @@ define(['core/network'], function (Fnetwork) {
         }
       }
     }
-    function same (a, b) {
+    function same(a, b) {
       if (typeof a !== typeof b) {
         return false
       }
@@ -70,7 +70,7 @@ define(['core/network'], function (Fnetwork) {
     }
   }
 
-  function ncon (role, control) {
+  function ncon(role, control) {
     this.state = {}
     this.child = []
     this.buf = []
@@ -163,7 +163,7 @@ define(['core/network'], function (Fnetwork) {
     this.pre_buf.push([K, down])
   }
 
-  function setup (config, _handler) {
+  function setup(config, _handler) {
     handler = _handler
     network.teardown = teardown
     network.setInterval = set_interval
@@ -172,7 +172,7 @@ define(['core/network'], function (Fnetwork) {
     network.transfer = Fnetwork.transfer
     Fnetwork.setup(config, handler)
   }
-  function teardown () {
+  function teardown() {
     Fnetwork.teardown()
   }
 

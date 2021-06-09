@@ -8,7 +8,7 @@ define(function () {
     // polyfill for IE, this is just for precaution
     // we should not use console.log in production anyway
     console = {}
-    console.log = function () {}
+    console.log = function () { }
   }
 
   const util = {}

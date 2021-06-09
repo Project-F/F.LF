@@ -28,7 +28,7 @@ define(['core/math'], function (Fm) {
 
     // produces less garbage
     rect_flat: function (rect1_left, rect1_top, rect1_right, rect1_bottom,
-           rect2_left, rect2_top, rect2_right, rect2_bottom) {
+      rect2_left, rect2_top, rect2_right, rect2_bottom) {
       if (rect1_bottom < rect2_top) return false
       if (rect1_top > rect2_bottom) return false
       if (rect1_right < rect2_left) return false
@@ -105,19 +105,19 @@ define(['core/math'], function (Fm) {
         I[10], I[23]
       ); if (test()) return true
 
-      function test () {
+      function test() {
         const i = tested; tested += 4
         return (I[i] != I[i + 1] && I[i + 2] != I[i + 3])
       }
 
       // point inside triangle test
       const AinB = [I[2] == I[6] && I[6] == !I[10], // true if A[0] is inside triangle B
-       I[3] == I[7] && I[7] == !I[11], //  A[1]
-       I[15] == I[19] && I[19] == !I[23]]//  A[2]
+      I[3] == I[7] && I[7] == !I[11], //  A[1]
+      I[15] == I[19] && I[19] == !I[23]]//  A[2]
 
       const BinA = [I[0] == I[12] && I[12] == !I[24], // true if B[0] is inside triangle A
-       I[1] == I[13] && I[13] == !I[25], //  B[1]
-       I[9] == I[21] && I[21] == !I[33]]//  B[2]
+      I[1] == I[13] && I[13] == !I[25], //  B[1]
+      I[9] == I[21] && I[21] == !I[33]]//  B[2]
 
       if (AinB[0] && AinB[1] && AinB[2]) return true
       if (BinA[0] && BinA[1] && BinA[2]) return true
@@ -145,7 +145,7 @@ define(['core/math'], function (Fm) {
     \*/
     line: function (A, B, C, D) {
       const res = (Fm.signed_area(A, B, C) > 0 != Fm.signed_area(A, B, D) > 0) &&
-      (Fm.signed_area(C, D, A) > 0 != Fm.signed_area(C, D, B) > 0)
+        (Fm.signed_area(C, D, A) > 0 != Fm.signed_area(C, D, B) > 0)
       return res
     },
 

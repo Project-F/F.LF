@@ -11,7 +11,7 @@ define(['core/util'], function (F) // exports 2 classes `control_recorder` and `
    |      {"t":13,"k":"left","d":1} //,,,
    | ]
   \*/
-  function control_recorder (target_controller) {
+  function control_recorder(target_controller) {
     this.time = 0
     this.rec = []
     target_controller.child.push(this)
@@ -63,7 +63,7 @@ define(['core/util'], function (F) // exports 2 classes `control_recorder` and `
    - record (array)
    * [example](http://tyt2y3.github.com/LFrelease/demo/milestone/2012June-min.html)
   \*/
-  function control_player (control_config, record) {
+  function control_player(control_config, record) {
     this.I = 0
     this.time = 0
     this.rec = record
@@ -117,12 +117,12 @@ define(['core/util'], function (F) // exports 2 classes `control_recorder` and `
    * control_player.clear_states
    [ method ]
   \*/
-  control_player.prototype.clear_states = function () {}
+  control_player.prototype.clear_states = function () { }
   /*\
    * control_player.flush
    [ method ]
   \*/
-  control_player.prototype.flush = function () {}
+  control_player.prototype.flush = function () { }
 
   return {
     control_recorder: control_recorder,

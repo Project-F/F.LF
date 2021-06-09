@@ -17,15 +17,15 @@ define(['LF/loader-config', 'LF/util', 'core/util'], function (loader_config, ut
       }
       load_package(name)
 
-      function load_package (pack) {
+      function load_package(pack) {
         path = util.normalize_path(pack)
         require([filepath('manifest')], function (mani) {
           manifest = mani
           const manifest_schema =
-					{
-					  data: 'string',
-					  resourcemap: 'string!optional'
-					}
+          {
+            data: 'string',
+            resourcemap: 'string!optional'
+          }
           if (!validate(manifest_schema, manifest)) {
             console.log('loader: error: manifest.js of ' + path + ' is not correct.')
           }
@@ -33,7 +33,7 @@ define(['LF/loader-config', 'LF/util', 'core/util'], function (loader_config, ut
           load_something('resourcemap')
         })
       }
-      function filepath (ppp) {
+      function filepath(ppp) {
         if (!ppp) {
           return ''
         }
@@ -43,8 +43,8 @@ define(['LF/loader-config', 'LF/util', 'core/util'], function (loader_config, ut
         const suf = path.indexOf('http') === 0 ? '.js' : ''
         return path + ppp + suf
       }
-      function load_data (datalist) {
-        function allow_load (folder, obj) {
+      function load_data(datalist) {
+        function allow_load(folder, obj) {
           if (typeof loader_config.lazyload === 'function') {
             if (!loader_config.lazyload(folder, obj)) {
               return true
@@ -107,23 +107,23 @@ define(['LF/loader-config', 'LF/util', 'core/util'], function (loader_config, ut
           load_ready()
         })
       }
-      function load_something (thing) {
+      function load_something(thing) {
         require([filepath(manifest[thing])], function (it) {
           content[thing] = it
           load_ready()
         })
       }
-      function load_ready () {
+      function load_ready() {
         const content_schema =
-				{
-				  data: 'object',
-				  resourcemap: 'object!optional'
-				}
+        {
+          data: 'object',
+          resourcemap: 'object!optional'
+        }
         if (validate(content_schema, content)) {
           load(content) // make the require loader return
         }
       }
-      function module_lazyload () {	// embed the lazyload module
+      function module_lazyload() {	// embed the lazyload module
         if (typeof loader_config.lazyload === 'function') {
           content.data.load = function (sets, ready) {
             const load_list = []
@@ -160,7 +160,7 @@ define(['LF/loader-config', 'LF/util', 'core/util'], function (loader_config, ut
       }
 
       /** a simple JSON schema validator */
-      function validate (schema, object) {
+      function validate(schema, object) {
         let good = false
         if (object) {
           good = true
@@ -171,7 +171,7 @@ define(['LF/loader-config', 'LF/util', 'core/util'], function (loader_config, ut
             if (typeof object[I] === type) {
               // good
             } else if (typeof object[I] === 'undefined' &&
-							option && option === 'optional') {
+              option && option === 'optional') {
               // still good
             } else {
               good = false

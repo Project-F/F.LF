@@ -8,8 +8,8 @@ define(function () {
 
   document.addEventListener('keydown', keydown, true)
   document.addEventListener('keyup', keyup, true)
-  function keydown (e) { return master_controller.key(e, 1) }
-  function keyup (e) { return master_controller.key(e, 0) }
+  function keydown(e) { return master_controller.key(e, 1) }
+  function keyup(e) { return master_controller.key(e, 0) }
 
   var master_controller = {}
   master_controller.block = true
@@ -44,7 +44,7 @@ define(function () {
    | }
    | var con = new controller(con_config);
   \*/
-  function controller (config) {
+  function controller(config) {
     /*\
      * controller.state
      [ property ]
@@ -214,51 +214,51 @@ define(function () {
    * for details consult [http://www.quirksmode.org/js/keys.html](http://www.quirksmode.org/js/keys.html)
   \*/
   controller.keyname_to_keycode =
-  controller.prototype.keyname_to_keycode =
-  function (A) {
-    if (typeof A === 'number') { return A }
-    let code
-    if (A.length == 1) {
-      const a = A.charCodeAt(0)
-      if ((a >= 'a'.charCodeAt(0) && a <= 'z'.charCodeAt(0)) || (a >= 'A'.charCodeAt(0) && a <= 'Z'.charCodeAt(0))) {
-        A = A.toUpperCase()
-        code = A.charCodeAt(0)
-      } else if (a >= '0'.charCodeAt(0) && a <= '9'.charCodeAt(0)) {
-        code = A.charCodeAt(0)
-      } else {  // different browsers on different platforms are different for symbols
+    controller.prototype.keyname_to_keycode =
+    function (A) {
+      if (typeof A === 'number') { return A }
+      let code
+      if (A.length == 1) {
+        const a = A.charCodeAt(0)
+        if ((a >= 'a'.charCodeAt(0) && a <= 'z'.charCodeAt(0)) || (a >= 'A'.charCodeAt(0) && a <= 'Z'.charCodeAt(0))) {
+          A = A.toUpperCase()
+          code = A.charCodeAt(0)
+        } else if (a >= '0'.charCodeAt(0) && a <= '9'.charCodeAt(0)) {
+          code = A.charCodeAt(0)
+        } else {  // different browsers on different platforms are different for symbols
+          switch (A) {
+            case '`': code = 192; break
+            case '-': code = 189; break
+            case '=': code = 187; break
+            case '[': code = 219; break
+            case ']': code = 221; break
+            case '\\': code = 220; break
+            case ';': code = 186; break
+            case "'": code = 222; break
+            case ',': code = 188; break
+            case '.': code = 190; break
+            case '/': code = 191; break
+            case ' ': code = 32; break
+          }
+        }
+      } else {
         switch (A) {
-          case '`': code = 192; break
-          case '-': code = 189; break
-          case '=': code = 187; break
-          case '[': code = 219; break
-          case ']': code = 221; break
-          case '\\': code = 220; break
-          case ';': code = 186; break
-          case "'": code = 222; break
-          case ',': code = 188; break
-          case '.': code = 190; break
-          case '/': code = 191; break
-          case ' ': code = 32; break
+          case 'ctrl': code = 17; break
+          case 'up': code = 38; break // arrow keys
+          case 'down': code = 40; break
+          case 'left': code = 37; break
+          case 'right': code = 39; break
+          case 'space': code = 32; break
+          case 'esc': code = 27; break
         }
       }
-    } else {
-      switch (A) {
-        case 'ctrl': code = 17; break
-        case 'up': code = 38; break // arrow keys
-        case 'down': code = 40; break
-        case 'left': code = 37; break
-        case 'right': code = 39; break
-        case 'space': code = 32; break
-        case 'esc': code = 27; break
+      if (A.length == 2) {
+        if (A.charAt(0) === 'F') {
+          code = 111 + parseInt(A.slice(1))
+        }
       }
+      return code
     }
-    if (A.length == 2) {
-      if (A.charAt(0) === 'F') {
-        code = 111 + parseInt(A.slice(1))
-      }
-    }
-    return code
-  }
 
   /*\
    * controller.keycode_to_keyname
@@ -268,26 +268,26 @@ define(function () {
    = (string) keyname
   \*/
   controller.keycode_to_keyname =
-  controller.prototype.keycode_to_keyname =
-  function (code) {
-    if ((code >= 'A'.charCodeAt(0) && code <= 'Z'.charCodeAt(0)) ||
+    controller.prototype.keycode_to_keyname =
+    function (code) {
+      if ((code >= 'A'.charCodeAt(0) && code <= 'Z'.charCodeAt(0)) ||
         (code >= '0'.charCodeAt(0) && code <= '9'.charCodeAt(0))) {
-      return String.fromCharCode(code).toLowerCase()
-    } else if (code >= 112 && code <= 123) {
-      return 'F' + (code - 111)
-    } else {
-      let nam = code
-      switch (code) {
-        case 38: nam = 'up'; break
-        case 40: nam = 'down'; break
-        case 37: nam = 'left'; break
-        case 39: nam = 'right'; break
-        case 32: nam = 'space'; break
-        case 27: nam = 'esc'; break
+        return String.fromCharCode(code).toLowerCase()
+      } else if (code >= 112 && code <= 123) {
+        return 'F' + (code - 111)
+      } else {
+        let nam = code
+        switch (code) {
+          case 38: nam = 'up'; break
+          case 40: nam = 'down'; break
+          case 37: nam = 'left'; break
+          case 39: nam = 'right'; break
+          case 32: nam = 'space'; break
+          case 27: nam = 'esc'; break
+        }
+        return nam
       }
-      return nam
     }
-  }
 
   return controller
 

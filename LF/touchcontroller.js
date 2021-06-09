@@ -6,7 +6,7 @@
 define(['LF/util'], function (util) {
   const controllers = []
   let touches = []; let eventtype
-  function touch_fun (event) {
+  function touch_fun(event) {
     if (!TC.enabled) { return }
     eventtype = event.type
     touches = event.touches
@@ -28,7 +28,7 @@ define(['LF/util'], function (util) {
     }
   }, false)
 
-  function TC (config) {
+  function TC(config) {
     const $ = this
     $.config = config
     if ($.config.layout === 'gamepad') {
@@ -224,13 +224,13 @@ define(['LF/util'], function (util) {
   return TC
 
   // util
-  function show (B) {
+  function show(B) {
     B.el.style.visibility = 'visible'
   }
-  function hide (B) {
+  function hide(B) {
     B.el.style.visibility = 'hidden'
   }
-  function inbetween (x, L, R) {
+  function inbetween(x, L, R) {
     let l, r
     if (L <= R) {
       l = L
@@ -241,7 +241,7 @@ define(['LF/util'], function (util) {
     }
     return x >= l && x <= r
   }
-  function point_in_rect (Px, Py, R) {
+  function point_in_rect(Px, Py, R) {
     return (inbetween(Px, R.left, R.right) && inbetween(Py, R.top, R.bottom))
   }
 })

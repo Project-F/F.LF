@@ -37,7 +37,7 @@ define(['core/util'], function (Futil) {
    |  }
    | }
   \*/
-  function mapper (map) {
+  function mapper(map) {
     this.map = Futil.make_array(map)
     for (let i = 0; i < this.map.length; i++) { this.map[i] = new submap(this.map[i]) }
   }
@@ -96,7 +96,7 @@ define(['core/util'], function (Futil) {
 
   /** individual map instances
    */
-  function submap (map) {
+  function submap(map) {
     this.map = map
     this.update_condition()
   }

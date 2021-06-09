@@ -91,7 +91,7 @@
 
 define(function () {
   let This;
-  (function reset () {
+  (function reset() {
     This = {
       already: 0,
       conn: 0,
@@ -111,7 +111,7 @@ define(function () {
     }
   }())
 
-  function set_interval (a, b) {
+  function set_interval(a, b) {
     if (This.timer_callback) {
       console.error('only one timer can be active at a time. please `clearInterval` before setting a new one.')
       return
@@ -121,7 +121,7 @@ define(function () {
     This.timer = setInterval(frame, This.target_interval * 0.5)
     return This.timer
   }
-  function clear_interval (a) {
+  function clear_interval(a) {
     if (!This.timer || This.timer !== a) {
       console.error('wrong timer id ' + a)
       return
@@ -130,7 +130,7 @@ define(function () {
     This.timer = null
     This.timer_callback = null
   }
-  function frame () // timer frame
+  function frame() // timer frame
   {
     if (This.timer_callback) {
       if (This.frame.buffer[0]) {
@@ -148,45 +148,45 @@ define(function () {
     }
   }
   var channels =
-	{
-	  frame:
-		{
-		  send: function (data) {
-		    This.conn.send({
-		      f: { t: This.time, d: data }
-		    })
-		  },
-		  receive: function (data) {
-		    const time = data.t
-		    var data = data.d
-		    This.frame.buffer.push({ time: time, data: data })
-		    frame()
-		  }
-		},
-	  messenger:
-		{
-		  send: sender('messenger'),
-		  receive: function (mess) {
-		    if (This.messenger.receiver) { This.messenger.receiver.onmessage(mess) } else { console.warn('dropping message! ' + mess) }
-		  }
-		},
-	  transfer:
-		{
-		  send: sender('transfer'),
-		  receive: function (data) {
-		    const name = data.name
-		    var data = data.data
-		    const receive = This.transfer.obj[name]
-		    if (!receive) {
-		      console.error('no such receiver')
-		      return
-		    }
-		    receive(data)
-		    This.transfer.obj[name] = null
-		  }
-		}
-	}
-  function transfer (name, send, receive) {
+  {
+    frame:
+    {
+      send: function (data) {
+        This.conn.send({
+          f: { t: This.time, d: data }
+        })
+      },
+      receive: function (data) {
+        const time = data.t
+        var data = data.d
+        This.frame.buffer.push({ time: time, data: data })
+        frame()
+      }
+    },
+    messenger:
+    {
+      send: sender('messenger'),
+      receive: function (mess) {
+        if (This.messenger.receiver) { This.messenger.receiver.onmessage(mess) } else { console.warn('dropping message! ' + mess) }
+      }
+    },
+    transfer:
+    {
+      send: sender('transfer'),
+      receive: function (data) {
+        const name = data.name
+        var data = data.data
+        const receive = This.transfer.obj[name]
+        if (!receive) {
+          console.error('no such receiver')
+          return
+        }
+        receive(data)
+        This.transfer.obj[name] = null
+      }
+    }
+  }
+  function transfer(name, send, receive) {
     if (This.transfer.obj[name]) {
       console.error('name ' + name + ' used already')
       return
@@ -194,7 +194,7 @@ define(function () {
     This.transfer.obj[name] = receive
     channels.transfer.send({ name: name, data: send() })
   }
-  function teardown () {
+  function teardown() {
     if (!This.already) {
       console.error('not yet setup')
       return
@@ -202,7 +202,7 @@ define(function () {
     clear_interval(This.timer)
     reset()
   }
-  function sender (name) {
+  function sender(name) {
     name = name.charAt(0)
     return function (data) {
       const obj = {}
@@ -210,7 +210,7 @@ define(function () {
       This.conn.send(obj)
     }
   }
-  function setup (config, monitor) {
+  function setup(config, monitor) {
     if (This.already) {
       console.error('setup already')
       return
@@ -227,7 +227,7 @@ define(function () {
 
     const id1 = config.param.id1
     const id2 = config.param.id2
-    if (!monitor) { monitor = { on: function () {} } }
+    if (!monitor) { monitor = { on: function () { } } }
 
     var handler = {
       on: function (event, data) {
@@ -257,7 +257,7 @@ define(function () {
       }
     }
   }
-  function get_host (ppp) {
+  function get_host(ppp) {
     if (ppp.charAt(ppp.length - 1) !== '/') { ppp += '/' }
     return ppp
   }

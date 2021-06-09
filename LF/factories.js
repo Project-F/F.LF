@@ -8,17 +8,17 @@
 \*/
 
 define(['LF/character', 'LF/weapon', 'LF/specialattack', 'LF/effect'],
-function (character, weapon, specialattack, effect) {
-  /** to manufacture an object a factory receives a config, `id` and `data`
-  */
-  return {
-    character: character,
-    lightweapon: weapon('lightweapon'),
-    heavyweapon: weapon('heavyweapon'),
-    specialattack: specialattack,
-    // baseball: baseball,
-    // miscell: miscell,
-    // drinks: drinks,
-    effect: effect
-  }
-})
+  function (character, weapon, specialattack, effect) {
+    /** to manufacture an object a factory receives a config, `id` and `data`
+    */
+    return {
+      character: character,
+      lightweapon: weapon('lightweapon'),
+      heavyweapon: weapon('heavyweapon'),
+      specialattack: specialattack,
+      // baseball: baseball,
+      // miscell: miscell,
+      // drinks: drinks,
+      effect: effect
+    }
+  })

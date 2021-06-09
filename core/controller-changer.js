@@ -14,7 +14,7 @@ define(['core/controller', 'core/util'], function (Fcontroller, Futil) {
    | onchange //function be called on change key
    | }
   \*/
-  function keychanger (config) {
+  function keychanger(config) {
     let change_active = false
     const div = config.div
     let controllers = config.controller
@@ -37,7 +37,7 @@ define(['core/controller', 'core/util'], function (Fcontroller, Futil) {
       div.style.display='none';
     } */
 
-    function add_player (con, num) {
+    function add_player(con, num) {
       if (num !== 0) {
         const sep = create_at(div, 'div')
         sep.style.float = 'left'
@@ -59,7 +59,7 @@ define(['core/controller', 'core/util'], function (Fcontroller, Futil) {
         i++
       }
 
-      function add_pair (R, name) {
+      function add_pair(R, name) {
         add_cell(R, name)
         const cell = add_cell(R, con.config[name])
         cell.style.cursor = 'pointer'
@@ -88,14 +88,14 @@ define(['core/controller', 'core/util'], function (Fcontroller, Futil) {
       }
     }
 
-    function create_at (parent, tag, id) {
+    function create_at(parent, tag, id) {
       const E = document.createElement(tag)
       parent.appendChild(E)
       if (id) { E.id = id }
       return E
     }
 
-    function add_cell (row, content) {
+    function add_cell(row, content) {
       const td = create_at(row, 'td')
       td.innerHTML = content
       td.style.border = '1px solid #AAA'

@@ -11,7 +11,7 @@
 \*/
 
 define(['core/util', 'core/collision'], function (Futil, Fcollision) {
-  function scene (config) {
+  function scene(config) {
     this.live = {} // list of living objects
     this.uid = 0
   }
@@ -128,9 +128,9 @@ define(['core/util', 'core/collision'], function (Futil, Fcollision) {
     return (Fcollision.rect_flat(
       A_left, A_top, A_right, A_bottom,
       B_left, B_top, B_right, B_bottom) &&
-    Fcollision.rect_flat(
-      A.z - A.zwidth, 0, A.z + A.zwidth, 1,
-      B.z - B.zwidth, 0, B.z + B.zwidth, 1)
+      Fcollision.rect_flat(
+        A.z - A.zwidth, 0, A.z + A.zwidth, 1,
+        B.z - B.zwidth, 0, B.z + B.zwidth, 1)
     )
   }
   scene.prototype.intersect_old = function (A, B) {

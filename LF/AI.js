@@ -10,7 +10,7 @@ define(['core/util'], function (Futil) {
    * adaptor interface for old-school AI scripting
    * may be slow and buggy. do not use if you are writing new AI scripts
   \*/
-  function AIin (self) {
+  function AIin(self) {
     this.self = self
   }
   AIin.prototype.facing = function () {
@@ -146,7 +146,7 @@ define(['core/util'], function (Futil) {
     return 0
   }
 
-  function AIcon () {
+  function AIcon() {
     this.state = {}
     this.child = new Array()
     this.sync = true
@@ -166,7 +166,7 @@ define(['core/util'], function (Futil) {
   }
   AIcon.prototype.keypress = function (key, x, y) {
     if ((x === undefined && y === undefined) ||
-    (x === 1 && y === 0)) {
+      (x === 1 && y === 0)) {
       if (this.state[key]) {
         this.key(key, 0)
       }

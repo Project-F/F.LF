@@ -10,7 +10,7 @@ define(['LF/sprite-select', 'core/animator'], function (Fsprite, Fanimator) {
    - bmp (object) data structure as defined in data files
    - parent (DOM node) where to append the new sprite
   \*/
-  function sprite (bmp, parent) {
+  function sprite(bmp, parent) {
     /*\
      * sprite.num_of_images
      [ property ]

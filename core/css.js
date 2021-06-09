@@ -13,7 +13,7 @@
 
 define({
   load: function (name, require, load, config) {
-    function inject (filename) {
+    function inject(filename) {
       const head = document.getElementsByTagName('head')[0]
       const link = document.createElement('link')
       link.href = filename

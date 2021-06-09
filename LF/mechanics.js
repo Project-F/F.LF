@@ -14,7 +14,7 @@ define(['LF/global'], function (Global) {
    [ class ]
    * mech is a state-less helper class that processes most of the mechanics of living objects
   \*/
-  function mech (parent) {
+  function mech(parent) {
     const spec = parent.match.spec
     if (spec[parent.id] && spec[parent.id].mass !== undefined && spec[parent.id].mass !== null) {
       this.mass = spec[parent.id].mass
@@ -51,12 +51,12 @@ define(['LF/global'], function (Global) {
     if (obj instanceof Array) { // many bdy
       if (!filter && obj.length === 2) { // unroll the loop
         return ([this.volume(obj[0], off),
-          this.volume(obj[1], off)
+        this.volume(obj[1], off)
         ])
       } else if (!filter && obj.length === 3) { // unroll the loop
         return ([this.volume(obj[0], off),
-          this.volume(obj[1], off),
-          this.volume(obj[2], off)
+        this.volume(obj[1], off),
+        this.volume(obj[2], off)
         ])
       } else {
         const B = []

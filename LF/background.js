@@ -2,7 +2,7 @@ define(['core/util', 'LF/sprite-select', 'core/support', 'LF/global'], function 
   const GA = global.application
 
   let global_timer; const global_timer_children = []
-  function standalone (child) {
+  function standalone(child) {
     global_timer_children.push(child)
     if (!global_timer) {
       global_timer = setInterval(function () {
@@ -14,14 +14,14 @@ define(['core/util', 'LF/sprite-select', 'core/support', 'LF/global'], function 
   }
 
   /* config=
-	{
-		layers      //layers holder, append bg layers here
-		scrollbar   //if true, append scrollbar here
-		camerachase:{character:} //camera only chase these characters
-		standalone  //no match, background viewer only
-		onscroll    //
-	} */
-  function background (config, data, id) {
+  {
+    layers      //layers holder, append bg layers here
+    scrollbar   //if true, append scrollbar here
+    camerachase:{character:} //camera only chase these characters
+    standalone  //no match, background viewer only
+    onscroll    //
+  } */
+  function background(config, data, id) {
     const $ = this
     if (!config) {	// create an empty background
       $.id = -1
@@ -57,7 +57,7 @@ define(['core/util', 'LF/sprite-select', 'core/support', 'LF/global'], function 
     (function () {
       const sp = new Fsprite({ img: data.shadow })
       sp.img[0].addEventListener('load', onload, true)
-      function onload () {
+      function onload() {
         $.shadow.x = (this.naturalWidth || this.width) / 2
         $.shadow.y = (this.naturalHeight || this.height) / 2
         sp.img[0].removeEventListener('load', onload, true)
@@ -112,10 +112,10 @@ define(['core/util', 'LF/sprite-select', 'core/support', 'LF/global'], function 
     const LAY = Futil.group_elements(data.layer, 'width')
     for (const i in LAY) {
       const lay =
-			{
-			  sp: new Fsprite({ canvas: config.layers, type: 'group' }),
-			  ratio: (parseInt(i) - GA.window.width) / ($.width - GA.window.width)
-			}
+      {
+        sp: new Fsprite({ canvas: config.layers, type: 'group' }),
+        ratio: (parseInt(i) - GA.window.width) / ($.width - GA.window.width)
+      }
       lay.sp.set_z(-1000 + parseInt(i))
       $.layers.push(lay)
       for (let j = 0; j < LAY[i].length; j++) {
@@ -124,17 +124,17 @@ define(['core/util', 'LF/sprite-select', 'core/support', 'LF/global'], function 
         if (dlay.rect) {
           // if `rect` is defined, `pic` will only be a dummy
           sp_config =
-					{
-					  canvas: lay.sp,
-					  wh: { w: dlay.width, h: dlay.height }
-					}
+          {
+            canvas: lay.sp,
+            wh: { w: dlay.width, h: dlay.height }
+          }
         } else if (dlay.pic) {
           sp_config =
-					{
-					  canvas: lay.sp,
-					  wh: 'fit',
-					  img: dlay.pic
-					}
+          {
+            canvas: lay.sp,
+            wh: 'fit',
+            img: dlay.pic
+          }
         }
         var sp
         if (!dlay.loop && !dlay.tile) {	// single item
@@ -187,7 +187,7 @@ define(['core/util', 'LF/sprite-select', 'core/support', 'LF/global'], function 
     }
 
     // a very strange bug for the scene 'HK Coliseum' must be solved by hard coding
-    function correct_y (dlay) {
+    function correct_y(dlay) {
       if (data.name === 'HK Coliseum') {
         if (dlay.pic.indexOf('back1') === -1) {
           return dlay.y - 8
@@ -200,7 +200,7 @@ define(['core/util', 'LF/sprite-select', 'core/support', 'LF/global'], function 
     }
   }
 
-  function color_conversion (rect) {
+  function color_conversion(rect) {
     if (typeof rect === 'string') {
       return rect // extended standard: CSS color format allowed
     } else if (typeof rect === 'number') {
@@ -221,10 +221,10 @@ define(['core/util', 'LF/sprite-select', 'core/support', 'LF/global'], function 
       const g = (rect >> 6 & 31) << 3
       const b = ((rect & 31) << 3)
       computed = 'rgb(' +
-				(r + (r > 64 || r === 0 ? 7 : 0)) + ',' +
-				(g + (g > 64 || g === 0 ? 7 : 0) + ((rect >> 5 & 1) && g > 80 ? 4 : 0)) + ',' +
-				(b + (b > 64 || b === 0 ? 7 : 0)) +
-				')'
+        (r + (r > 64 || r === 0 ? 7 : 0)) + ',' +
+        (g + (g > 64 || g === 0 ? 7 : 0) + ((rect >> 5 & 1) && g > 80 ? 4 : 0)) + ',' +
+        (b + (b > 64 || b === 0 ? 7 : 0)) +
+        ')'
       if (lookup && computed !== lookup) {
         if (0) { // debug info
           console.log('computed:' + computed, 'correct:' + lookup)
@@ -281,7 +281,7 @@ define(['core/util', 'LF/sprite-select', 'core/support', 'LF/global'], function 
     for (var i = 0; i < $.layers.length; i++) {
       $.layers[i].sp.set_x_y(round(-(X * $.layers[i].ratio)), 0)
     }
-    function round (x) {
+    function round(x) {
       if (i === 0) { return x | 0 } else { return x }
     }
   }

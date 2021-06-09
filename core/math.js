@@ -70,7 +70,7 @@ define(function () {
       P.y = getstep(getstep(A.y, C.y, i, steps), getstep(C.y, B.y, i, steps), i, steps)
       return P
 
-      function getstep (x1, x2, stepcount, numofsteps) {
+      function getstep(x1, x2, stepcount, numofsteps) {
         return ((numofsteps - stepcount) * x1 + stepcount * x2) / numofsteps
       }
     },
@@ -209,7 +209,7 @@ define(function () {
         y: P1.y + mua * (P2.y - P1.y)
       }
 
-      function negligible (M) {
+      function negligible(M) {
         return M > -0.00000001 && M < 0.00000001
       }
     }

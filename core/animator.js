@@ -22,7 +22,7 @@ define(function () {
    *
    * [example](../sample/sprite1.html)
   \*/
-  function animator (config) {
+  function animator(config) {
     this.config = config
     this.target = config.tar
     /*\
