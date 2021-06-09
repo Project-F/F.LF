@@ -45,7 +45,7 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
               break
             case ($.disappear_count >= GC.effect.disappear.shadow_blink && $.disappear_count < GC.effect.disappear.body_blink): // shadow blink
               $.disappear_count += 1
-              if ($.disappear_count % 5 == 0) {
+              if (Math.floor($.disappear_count / 2) % 2 == 0) {
                 $.shadow.show()
               } else {
                 $.shadow.hide()
@@ -58,6 +58,7 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
               $.effect.timeout = 30
               $.shadow.show()
               $.sp.show()
+              $.effect.super = false
               break
             case ($.disappear_count > GC.effect.disappear.body_blink): // initialize and dismiss
               $.disappear_count = -1
