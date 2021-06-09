@@ -37,18 +37,31 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
           $.opoint()
           break
         case 'TU':
-          $.special_TU.TU_count += 1
-          if ($.special_TU.TU_count === $.special_TU.TU_target) {
-            if ($.special_TU.shadow_blink_times < 8) {
-              if ($.special_TU.shadow_hidden === true) {
-                $.shadow_blink(true)
+          switch (true) {
+            case ($.disappear_count < 0): // dismiss
+              break
+            case ($.disappear_count >= 0 && $.disappear_count < 120): // body disappear
+              $.disappear_count += 1
+              break
+            case ($.disappear_count >= 120 && $.disappear_count < 150): // shadow blink
+              $.disappear_count += 1
+              if ($.disappear_count % 5 == 0) {
+                $.shadow.show()
               } else {
-                $.shadow_blink(false)
+                $.shadow.hide()
               }
-            } else {
+              break
+            case ($.disappear_count == 150): // body blink
+              $.disappear_count += 1
+              $.effect.blink = true
+              $.effect.timein = 0
+              $.effect.timeout = 30
               $.shadow.show()
-              $.special_TU_skill()
-            }
+              $.sp.show()
+              break
+            case ($.disappear_count > 150): // initialize and dismiss
+              $.disappear_count = -1
+              break
           }
           if ($.state_update('post_interaction')) {
             ; // do nothing
@@ -1150,8 +1163,9 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
           if ($.frame.N === 257) { // next: 1280
             $.sp.hide()
             $.shadow.hide()
-            $.special_TU.shadow_hidden = true
-            $.special_TU.TU_target = $.special_TU.TU_count + 120
+            $.disappear_count = 0
+            // $.special_TU.shadow_hidden = true
+            // $.special_TU.TU_target = $.special_TU.TU_count + 120
           }
       }
     },
@@ -1315,6 +1329,7 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
       picking: 0,
       kill: 0
     }
+      $.disappear_count = -1
       $.trans.frame = function (next, au) {
         if (next === 0 || next === 999) {
           this.set_next(next, au)
@@ -1849,29 +1864,6 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
       $.effect.dvy = -3
       $.effect.timein = -1
       $.effect.timeout = 0
-    }
-    character.prototype.special_TU_skill = function () {
-      const $ = this
-      if ($.id == 5) { //Rudolf
-        $.shadow.show()
-        $.sp.show()
-        $.effect.timein = 0
-        $.effect.timeout = 30
-        $.effect.blink = true
-      }
-      $.special_TU.TU_target = -1
-    }
-    character.prototype.shadow_blink = function (is_hidden) {
-      const $ = this
-      if (is_hidden) {
-        $.shadow.show()
-        $.special_TU.shadow_hidden = false
-      } else {
-        $.shadow.hide()
-        $.special_TU.shadow_hidden = true
-      }
-      $.special_TU.shadow_blink_times += 1  
-      $.special_TU.TU_target += 5
     }
 
     return character
