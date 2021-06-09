@@ -712,7 +712,7 @@ define(['core/util', 'core/controller', 'LF/sprite-select',
       const $ = this
       var temp = {}
       for (a in $.scene.live) {
-        if ($.scene.live[a].sp.sp.hidden === false || !$.scene.live[a].sp.sp.hidden) {
+        if (!$.scene.live[a].sp.sp.hidden) {
           temp[a] = $.scene.live[a]
         }
       }
