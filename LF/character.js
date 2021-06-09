@@ -37,6 +37,33 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
             $.opoint()
             break
           case 'TU':
+            switch (true) {
+              case ($.disappear_count < 0): // dismiss
+                break
+              case ($.disappear_count >= 0 && $.disappear_count < GC.effect.disappear.shadow_blink): // body disappear
+                $.disappear_count += 1
+                break
+              case ($.disappear_count >= GC.effect.disappear.shadow_blink && $.disappear_count < GC.effect.disappear.body_blink): // shadow blink
+                $.disappear_count += 1
+                if (Math.floor($.disappear_count / 2) % 2 == 0) {
+                  $.shadow.show()
+                } else {
+                  $.shadow.hide()
+                }
+                break
+              case ($.disappear_count == GC.effect.disappear.body_blink): // body blink
+                $.disappear_count += 1
+                $.effect.blink = true
+                $.effect.timein = 0
+                $.effect.timeout = 30
+                $.shadow.show()
+                $.sp.show()
+                $.effect.super = false
+                break
+              case ($.disappear_count > GC.effect.disappear.body_blink): // initialize and dismiss
+                $.disappear_count = -1
+                break
+            }
             if ($.state_update('post_interaction')) {
               ; // do nothing
             } else {
@@ -954,6 +981,9 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
                   $.trans.set_next(212) // back to jump
                 }
                 break
+              case 257:
+                $.id_update('state1280_disappear')
+                break
             }
             break
 
@@ -1135,6 +1165,14 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
               $.ps.vy = -6.8
             }
             break
+          case 'state1280_disappear':
+            if ($.frame.N === 257) { // next: 1280
+              $.sp.hide()
+              $.shadow.hide()
+              $.effect.super = true
+              $.disappear_count = 0
+            }
+            break
         }
       },
       6: function (event, K, tag) // Louis
@@ -1297,6 +1335,7 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
         picking: 0,
         kill: 0
       }
+      $.disappear_count = -1
       $.trans.frame = function (next, au) {
         if (next === 0 || next === 999) {
           this.set_next(next, au)
