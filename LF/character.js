@@ -968,12 +968,8 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
               }
               break
             case 257:
-              if ($.frame.D.next === 1280) { // next: 1280
-                $.sp.hide()
-                $.shadow.hide()
-                $.special_TU.shadow_hidden = true
-                $.special_TU.TU_target = $.special_TU.TU_count + 120
-              }
+              $.id_update('state1280_disappear')
+              break
           }
           break
 
@@ -1144,6 +1140,19 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
             }
           }
           break
+      }
+    },
+    5: function (event) // Rudolf
+    {
+      const $ = this
+      switch (event) {
+        case 'state1280_disappear':
+          if ($.frame.N === 257) { // next: 1280
+            $.sp.hide()
+            $.shadow.hide()
+            $.special_TU.shadow_hidden = true
+            $.special_TU.TU_target = $.special_TU.TU_count + 120
+          }
       }
     },
     6: function (event, K, tag) // Louis
