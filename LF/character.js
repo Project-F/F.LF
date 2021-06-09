@@ -578,6 +578,7 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
           break
 
         case 'frame':
+          console.log($.frame)
           switch ($.frame.N) {
             case 123: // a successful attack
               $.statemem.attacks++
@@ -589,28 +590,7 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
               break
             case 235: // it means from frame 121 jump to 235 for Rudolf => performing transform
               if ($.frame.N == 235 && $.frame.PN == 121) {
-                if ($.frame.D.opoint.oid === 204 && $.id === 5) {
-                  console.log('I am', $)
-                  console.log('I will change to', $.catching)
-                  let players = []
-                  const pos = {x: $.ps.x, y: $.ps.y, z: $.ps.z}
-                  players.push({
-                    name: $.name,
-                    controller: $.con,
-                    type: 'human',
-                    id: $.catching.id,
-                    team: $.team
-                  })
-                  if (players.length > 0) {
-                    $.match.create_man(players, pos, $.health.hp, $.health.mp, true, $.uid)
-                  }
-                  return;
-                }
-                // $.data = $.catching.data
-                // $.combodec = $.catching.combodec
-                // console.log('I am', $)
-                // console.log('I will change to', $.catching)
-                
+                $.id_update('state9_transform')
               }
           }
           if ($.catching && $.frame.D.cpoint) {
@@ -1166,6 +1146,28 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
             } else {
               $.switch_dir('left')
             }
+          }
+          break
+      }
+    },
+    5: function (event) 
+    {
+      const $ = this
+      switch (event) {
+        case ('state9_transform'):
+          console.log('I am', $)
+          console.log('I will change to', $.catching)
+          let players = []
+          const pos = {x: $.ps.x, y: $.ps.y, z: $.ps.z}
+          players.push({
+            name: $.name,
+            controller: $.con,
+            type: 'human',
+            id: $.catching.id,
+            team: $.team
+          })
+          if (players.length > 0) {
+            $.match.create_man(players, pos, $.health.hp, $.health.mp, $.uid)
           }
           break
       }
@@ -1793,14 +1795,14 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
           for (let i = 0; i < number_of_character; i++) {
             players.push({
               name: '+man',
-              controller: { type: 'AIscript', id: 2 },
+              controller: { type: 'AIscript', id: 1 },
               type: 'computer',
               id: $.id,
               team: $.team
             });
           }
           if (players.length > 0) {
-            $.match.create_man(players, {x: $.ps.x - 20, y: $.ps.x, z: $.ps.x}, 1, GC.default.health.mp_full, false, 0);
+            $.match.create_man(players, {x: $.ps.x - 20, y: $.ps.y, z: $.ps.z}, 10, GC.default.health.mp_full, 0);
           }
           return;
         }

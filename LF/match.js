@@ -296,7 +296,7 @@ function (Futil, Fcontroller, Fsprite,
     }
   }
 
-  match.prototype.create_man = function (players, pos, hp, mp, create_panel, parent_uid) {
+  match.prototype.create_man = function (players, pos, hp, mp, parent_uid) {
     const $ = this
     const char_config =
     {
@@ -305,12 +305,12 @@ function (Futil, Fcontroller, Fsprite,
       team: 0
     }
     for (let i = 0; i < players.length; i++) {
+      // create character object procedure
       var player = players[i]
       const player_obj = util.select_from($.data.object, { id: player.id })
       var pdata = player_obj.data
       preload_pack_images(player_obj)
       const controller = setup_controller(player)
-      // create character
       const char = new factory.character(char_config, pdata, player.id)
       if (controller.type === 'AIcontroller') {
         const AIcontroller = util.select_from($.data.AI, { id: player.controller.id }).data
@@ -318,7 +318,9 @@ function (Futil, Fcontroller, Fsprite,
       }
       // positioning
       char.set_pos(pos.x, pos.y, pos.z)
+      // setting status
       char.health.hp = hp
+      char.health.mp = mp
       // temp character properties
       char.blink_after_dead = true
       char.blink_now = false
@@ -383,6 +385,7 @@ function (Futil, Fcontroller, Fsprite,
       // positioning
       const pos = $.background.get_pos($.random(), $.random())
       char.set_pos(pos.x, pos.y, pos.z)
+      char.health.mp = char.health.mp_full
       var uid = $.scene.add(char)
       $.character[uid] = char
       // pane
