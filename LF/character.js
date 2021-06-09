@@ -1164,8 +1164,6 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
             $.sp.hide()
             $.shadow.hide()
             $.disappear_count = 0
-            // $.special_TU.shadow_hidden = true
-            // $.special_TU.TU_target = $.special_TU.TU_count + 120
           }
       }
     },

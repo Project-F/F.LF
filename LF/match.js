@@ -319,8 +319,6 @@ function (Futil, Fcontroller, Fsprite,
       // positioning
       const pos = $.background.get_pos($.random(), $.random())
       char.set_pos(pos.x, pos.y, pos.z)
-      char.special_TU = {TU_count: 0, TU_target: -1, shadow_hidden: false, shadow_blink_times: 0}
-      char.health.mp = char.health.mp_full
       var uid = $.scene.add(char)
       $.character[uid] = char
       // pane
