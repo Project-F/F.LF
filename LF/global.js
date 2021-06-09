@@ -144,6 +144,11 @@ define(['LF/util'], function (util) {
   GC.effect.duration = 3 // default effect lasting duration
   GC.effect.heal_max = 100 // the max hp that can be recovered by healing effects
 
+  GC.effect.disappear = {
+    shadow_blink : 120,
+    body_blink : 150,
+  }
+
   GC.character = {}
   GC.character.bounceup = {} // bounce up during fall
   GC.character.bounceup.limit = {}
