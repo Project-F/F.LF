@@ -64,6 +64,24 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
                 $.disappear_count = -1
                 break
             }
+            switch (true) {
+              case ($.dead_blink_count < 0):
+                break
+              case ($.dead_blink_count == 0):
+                $.match.scene.remove($)
+                $.effect.blink = true
+                $.dead_blink_count += 1
+                break
+              case ($.dead_blink_count > 0 && $.dead_blink_count < 30):
+                $.dead_blink_count += 1
+                break
+              case ($.dead_blink_count >= 30):
+                $.effect.blink = false
+                $.sp.hide()
+                $.shadow.hide()
+                $.dead_blink_count = -1
+                break
+            }
             if ($.state_update('post_interaction')) {
               ; // do nothing
             } else {
@@ -937,6 +955,7 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
             $.health.bdefend = 0
             if ($.health.hp <= 0) {
               $.die()
+              $.id_update('state14_die')
             }
             break
           case 'state_exit':
@@ -1165,6 +1184,9 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
               $.ps.vy = -6.8
             }
             break
+          case ('state14_die'):
+            $.dead_blink_count = 0
+            break
           case 'state1280_disappear':
             if ($.frame.N === 257) { // next: 1280
               $.sp.hide()
@@ -1336,6 +1358,7 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
         kill: 0
       }
       $.disappear_count = -1
+      $.dead_blink_count = -1
       $.trans.frame = function (next, au) {
         if (next === 0 || next === 999) {
           this.set_next(next, au)
@@ -1795,6 +1818,23 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
     character.prototype.opoint = function () {
       const $ = this
       if ($.frame.D.opoint) {
+        if ($.frame.D.opoint.oid === 5) { // create characters
+          let players = [];
+          const number_of_character = Math.floor(Math.abs($.frame.D.opoint.facing) / 10);
+          for (let i = 0; i < number_of_character; i++) {
+            players.push({
+              name: '+man',
+              controller: { type: 'AIscript', id: 1 },
+              type: 'computer',
+              id: $.id,
+              team: $.team
+            });
+          }
+          if (players.length > 0) {
+            $.match.create_man(players, {x: $.ps.x - 20, y: $.ps.y, z: $.ps.z}, 20, GC.default.health.mp_full);
+          }
+          return;
+        }
         const ops = Futil.make_array($.frame.D.opoint)
         for (const i in ops) {
           if (Math.abs(ops[i].facing) > 10) {
