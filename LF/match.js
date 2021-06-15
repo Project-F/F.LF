@@ -360,12 +360,12 @@ define(['core/util', 'core/controller', 'LF/sprite-select',
         controller: null,
         team: 0
       }
+      $.data.load({AI: [players[0].controller.id]})
       for (let i = 0; i < players.length; i++) {
         // create character object procedure
         var player = players[i]
         const player_obj = util.select_from($.data.object, { id: player.id })
         var pdata = player_obj.data
-        $.preload_pack_images(player_obj)
         const controller = $.setup_controller(char_config, player)
         const char = new factory.character(char_config, pdata, player.id)
         if (controller.type === 'AIcontroller') {
@@ -395,7 +395,7 @@ define(['core/util', 'core/controller', 'LF/sprite-select',
         var player = players[i]
         const player_obj = util.select_from($.data.object, { id: player.id })
         var pdata = player_obj.data
-        $.preload_pack_images(player_obj)
+        preload_pack_images(player_obj)
         const controller = $.setup_controller(char_config, player)
         // create character
         const char = new factory.character(char_config, pdata, player.id)
@@ -411,6 +411,21 @@ define(['core/util', 'core/controller', 'LF/sprite-select',
         // pane
         if ($.panel) {
           create_pane(i)
+        }
+      }
+      function preload_pack_images(char) {
+        for (let j = 0; j < char.pack.length; j++) {
+          const obj = char.pack[j].data
+          if (obj.bmp && obj.bmp.file) {
+            for (let k = 0; k < obj.bmp.file.length; k++) {
+              const file = obj.bmp.file[k]
+              for (const m in file) {
+                if (typeof file[m] === 'string' && m.indexOf('file') === 0) {
+                  Fsprite.preload_image(file[m])
+                }
+              }
+            }
+          }
         }
       }
       function create_pane(i) {
@@ -441,22 +456,6 @@ define(['core/util', 'core/controller', 'LF/sprite-select',
         $.panel[i].mp.set_x_y(X + $.data.UI.data.panel.mpx, Y + $.data.UI.data.panel.mpy)
         $.panel[i].mp.set_w_h($.data.UI.data.panel.mpw, $.data.UI.data.panel.mph)
         $.panel[i].mp.set_bgcolor($.data.UI.data.panel.mp_bright)
-      }
-    }
-
-    match.prototype.preload_pack_images = function (char) {
-      for (let j = 0; j < char.pack.length; j++) {
-        const obj = char.pack[j].data
-        if (obj.bmp && obj.bmp.file) {
-          for (let k = 0; k < obj.bmp.file.length; k++) {
-            const file = obj.bmp.file[k]
-            for (const m in file) {
-              if (typeof file[m] === 'string' && m.indexOf('file') === 0) {
-                Fsprite.preload_image(file[m])
-              }
-            }
-          }
-        }
       }
     }
   
