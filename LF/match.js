@@ -39,6 +39,11 @@ define(['core/util', 'core/controller', 'LF/sprite-select',
         // (lazy) now load all characters and associated data files
         object_ids.push(setting.player[i].id)
         object_ids = object_ids.concat(Futil.extract_array(util.select_from($.data.object, { id: setting.player[i].id }).pack, 'id').id)
+        for (index in $.data.object) {
+          if ($.data.object[index].id == setting.player[i].id && $.data.object[index].AI) {
+            AI_ids.push($.data.object[index].AI)
+          }
+        }
         if (setting.player[i].controller.type === 'AIscript') {
           AI_ids.push(setting.player[i].controller.id)
         }
@@ -75,7 +80,7 @@ define(['core/util', 'core/controller', 'LF/sprite-select',
         $.create_background(setting.background)
         $.create_effects()
         if (setting.player) {
-          $.create_characters(setting.player)
+          $.create_characters(setting.player, {pane: true})
         }
         if (setting.set.weapon) {
           $.drop_weapons(setting.set.weapon)
@@ -123,6 +128,18 @@ define(['core/util', 'core/controller', 'LF/sprite-select',
 
     match.prototype.log = function (mes) {
       console.log(this.time.t + ': ' + mes)
+    }
+
+    match.prototype.create_npc_clone = function (players, pos, hp, mp) {
+      const $ = this
+      $.tasks.push({
+        task: 'create_npc_clone',
+        players,
+        pos,
+        hp,
+        mp,
+        pane: false,
+      })
     }
 
     match.prototype.create_multiple_objects = function (opoint, parent, number, vz) {
@@ -332,6 +349,15 @@ define(['core/util', 'core/controller', 'LF/sprite-select',
             }
           }
           break
+        case 'create_npc_clone':
+          const option = {
+            pos: T.pos,
+            hp: T.hp,
+            mp: T.mp,
+            pane: T.pane,
+          }
+          $.create_characters(T.players, option)
+          break
         case 'destroy_object':
           var obj = T.obj
           obj.destroy()
@@ -352,38 +378,8 @@ define(['core/util', 'core/controller', 'LF/sprite-select',
       }
     }
 
-    match.prototype.create_man = function (players, pos, hp, mp) {
-      const $ = this
-      const char_config =
-      {
-        match: $,
-        controller: null,
-        team: 0
-      }
-      $.data.load({AI: [players[0].controller.id]})
-      for (let i = 0; i < players.length; i++) {
-        // create character object procedure
-        var player = players[i]
-        const player_obj = util.select_from($.data.object, { id: player.id })
-        var pdata = player_obj.data
-        const controller = $.setup_controller(char_config, player)
-        const char = new factory.character(char_config, pdata, player.id)
-        if (controller.type === 'AIcontroller') {
-          const AIcontroller = util.select_from($.data.AI, { id: player.controller.id }).data
-          $.AIscript.push(new AIcontroller(char, $, controller))
-        }
-        // positioning
-        char.set_pos(pos.x, pos.y, pos.z)
-        // setting status
-        char.health.hp = hp
-        char.health.mp = mp
-        // temp character properties
-        var uid = $.scene.add(char)
-        $.character[uid] = char
-      }
-    }
 
-    match.prototype.create_characters = function (players) {
+    match.prototype.create_characters = function (players, option) {
       const $ = this
       const char_config =
       {
@@ -396,7 +392,7 @@ define(['core/util', 'core/controller', 'LF/sprite-select',
         const player_obj = util.select_from($.data.object, { id: player.id })
         var pdata = player_obj.data
         preload_pack_images(player_obj)
-        const controller = $.setup_controller(char_config, player)
+        const controller = setup_controller(player)
         // create character
         const char = new factory.character(char_config, pdata, player.id)
         if (controller.type === 'AIcontroller') {
@@ -404,12 +400,20 @@ define(['core/util', 'core/controller', 'LF/sprite-select',
           $.AIscript.push(new AIcontroller(char, $, controller))
         }
         // positioning
-        const pos = $.background.get_pos($.random(), $.random())
-        char.set_pos(pos.x, pos.y, pos.z)
+        if (option.pos) {
+          char.set_pos(option.pos.x, option.pos.y, option.pos.z)
+        } else {
+          const pos = $.background.get_pos($.random(), $.random())
+          char.set_pos(pos.x, pos.y, pos.z)
+        }
+        if (option.hp && option.mp) {
+          char.health.hp = option.hp
+          char.health.mp = option.mp
+        }
         var uid = $.scene.add(char)
         $.character[uid] = char
         // pane
-        if ($.panel) {
+        if ($.panel && option.pane) {
           create_pane(i)
         }
       }
@@ -427,6 +431,21 @@ define(['core/util', 'core/controller', 'LF/sprite-select',
             }
           }
         }
+      }
+      function setup_controller(player) {
+        let controller
+        switch (player.controller.type) {
+          case 'AIscript':
+            controller = new AI.controller()
+            break
+          default:
+            controller = player.controller
+            controller.child.push($)
+        }
+        char_config.controller = controller
+        char_config.team = player.team
+        controller.sync = true
+        return controller
       }
       function create_pane(i) {
         const X = $.data.UI.data.panel.pane_width * (i % 4)

@@ -1831,7 +1831,7 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
             });
           }
           if (players.length > 0) {
-            $.match.create_man(players, {x: $.ps.x - 20, y: $.ps.y, z: $.ps.z}, 20, GC.default.health.mp_full);
+            $.match.create_npc_clone(players, {x: $.ps.x - 20, y: $.ps.y, z: $.ps.z}, 20, GC.default.health.mp_full);
           }
           return;
         }
