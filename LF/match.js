@@ -130,10 +130,10 @@ define(['core/util', 'core/controller', 'LF/sprite-select',
       console.log(this.time.t + ': ' + mes)
     }
 
-    match.prototype.create_npc_clone = function (players, pos, hp, mp) {
+    match.prototype.create_npc = function (players, pos, hp, mp) {
       const $ = this
       $.tasks.push({
-        task: 'create_npc_clone',
+        task: 'create_npc',
         players,
         pos,
         hp,
@@ -349,7 +349,7 @@ define(['core/util', 'core/controller', 'LF/sprite-select',
             }
           }
           break
-        case 'create_npc_clone':
+        case 'create_npc':
           const option = {
             pos: T.pos,
             hp: T.hp,

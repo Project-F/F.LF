@@ -68,7 +68,6 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
               case ($.dead_blink_count < 0):
                 break
               case ($.dead_blink_count == 0):
-                $.match.scene.remove($)
                 $.effect.blink = true
                 $.dead_blink_count += 1
                 break
@@ -80,6 +79,7 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
                 $.sp.hide()
                 $.shadow.hide()
                 $.dead_blink_count = -1
+                $.match.destroy_object($)
                 break
             }
             if ($.state_update('post_interaction')) {
@@ -1831,7 +1831,7 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
             });
           }
           if (players.length > 0) {
-            $.match.create_npc_clone(players, {x: $.ps.x - 20, y: $.ps.y, z: $.ps.z}, 20, GC.default.health.mp_full);
+            $.match.create_npc(players, {x: $.ps.x - 20, y: $.ps.y, z: $.ps.z}, 20, GC.default.health.mp_full);
           }
           return;
         }
