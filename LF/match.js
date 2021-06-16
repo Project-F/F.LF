@@ -368,7 +368,6 @@ define(['core/util', 'core/controller', 'LF/sprite-select',
       }
     }
 
-
     match.prototype.create_characters = function (players, option) {
       const $ = this
       const char_config =
@@ -470,7 +469,7 @@ define(['core/util', 'core/controller', 'LF/sprite-select',
         $.panel[i].mp.set_bgcolor($.data.UI.data.panel.mp_bright)
       }
     }
-  
+
     match.prototype.show_hp = function () {
       const $ = this
       if ($.panel) {
