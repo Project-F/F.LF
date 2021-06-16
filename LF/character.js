@@ -955,7 +955,9 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
             $.health.bdefend = 0
             if ($.health.hp <= 0) {
               $.die()
-              $.id_update('state14_die')
+              if ($.is_npc) {
+                $.dead_blink_count = 0
+              }
             }
             break
           case 'state_exit':
@@ -1183,9 +1185,6 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
             if ($.frame.N >= 273 && $.frame.N <= 276) {
               $.ps.vy = -6.8
             }
-            break
-          case ('state14_die'):
-            $.dead_blink_count = 0
             break
           case 'state1280_disappear':
             if ($.frame.N === 257) { // next: 1280
@@ -1826,12 +1825,17 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
               name: '+man',
               controller: { type: 'AIscript', id: 4 },
               type: 'computer',
+              is_npc: true,
               id: $.id,
-              team: $.team
+              team: $.team,
+              pos: {x: $.ps.x + 20*(-1*i), y: $.ps.y, z: $.ps.z},
+              hp: 20,
+              mp: GC.default.health.mp_full,
+              pane: false,
             });
           }
           if (players.length > 0) {
-            $.match.create_npc(players, {x: $.ps.x - 20, y: $.ps.y, z: $.ps.z}, 20, GC.default.health.mp_full);
+            $.match.create_npc(players);
           }
           return;
         }

@@ -130,15 +130,11 @@ define(['core/util', 'core/controller', 'LF/sprite-select',
       console.log(this.time.t + ': ' + mes)
     }
 
-    match.prototype.create_npc = function (players, pos, hp, mp) {
+    match.prototype.create_npc = function (players) {
       const $ = this
       $.tasks.push({
         task: 'create_npc',
         players,
-        pos,
-        hp,
-        mp,
-        pane: false,
       })
     }
 
@@ -350,13 +346,7 @@ define(['core/util', 'core/controller', 'LF/sprite-select',
           }
           break
         case 'create_npc':
-          const option = {
-            pos: T.pos,
-            hp: T.hp,
-            mp: T.mp,
-            pane: T.pane,
-          }
-          $.create_characters(T.players, option)
+          $.create_characters(T.players, {pane: false})
           break
         case 'destroy_object':
           var obj = T.obj
@@ -400,15 +390,18 @@ define(['core/util', 'core/controller', 'LF/sprite-select',
           $.AIscript.push(new AIcontroller(char, $, controller))
         }
         // positioning
-        if (option.pos) {
-          char.set_pos(option.pos.x, option.pos.y, option.pos.z)
+        if (player.pos) {
+          char.set_pos(player.pos.x, player.pos.y, player.pos.z)
         } else {
           const pos = $.background.get_pos($.random(), $.random())
           char.set_pos(pos.x, pos.y, pos.z)
         }
-        if (option.hp && option.mp) {
-          char.health.hp = option.hp
-          char.health.mp = option.mp
+        if (player.hp && player.mp) {
+          char.health.hp = player.hp
+          char.health.mp = player.mp
+        }
+        if (player.is_npc) {
+          char.is_npc = true;
         }
         var uid = $.scene.add(char)
         $.character[uid] = char
@@ -478,22 +471,6 @@ define(['core/util', 'core/controller', 'LF/sprite-select',
       }
     }
   
-    match.prototype.setup_controller = function (char_config, player) {
-      let controller
-      const $ = this
-      switch (player.controller.type) {
-        case 'AIscript':
-          controller = new AI.controller()
-          break
-        default:
-          controller = player.controller
-          controller.child.push($)
-      }
-      char_config.controller = controller
-      char_config.team = player.team
-      controller.sync = true
-      return controller
-    }
     match.prototype.show_hp = function () {
       const $ = this
       if ($.panel) {
