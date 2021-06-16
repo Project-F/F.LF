@@ -1824,7 +1824,7 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
           for (let i = 0; i < number_of_character; i++) {
             players.push({
               name: '+man',
-              controller: { type: 'AIscript', id: 1 },
+              controller: { type: 'AIscript', id: 4 },
               type: 'computer',
               id: $.id,
               team: $.team
