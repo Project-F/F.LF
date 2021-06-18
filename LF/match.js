@@ -130,10 +130,10 @@ define(['core/util', 'core/controller', 'LF/sprite-select',
       console.log(this.time.t + ': ' + mes)
     }
 
-    match.prototype.create_npc = function (players) {
+    match.prototype.create_non_player_characters = function (players) {
       const $ = this
       $.tasks.push({
-        task: 'create_npc',
+        task: 'create_non_player_characters',
         players,
       })
     }
@@ -345,7 +345,7 @@ define(['core/util', 'core/controller', 'LF/sprite-select',
             }
           }
           break
-        case 'create_npc':
+        case 'create_non_player_characters':
           $.create_characters(T.players, {pane: false})
           break
         case 'destroy_object':

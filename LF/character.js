@@ -837,6 +837,10 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
                   // console.log('y:'+$.ps.y+', vy:'+$.ps.vy+', vx:'+$.ps.vx);
                   $.trans.set_next(182)
                   var vy = $.ps.vy > 0 ? $.ps.vy : -$.ps.vy
+                  if($.ps.vy == 0) {
+                    $.ps.vy = 5*($.ps.vy>0?1:-1); //magic number
+                    vy = 5*($.ps.vy>0?1:-1); //magic number
+                  }
                   if (vy >= 0 && vy <= 4) {
                     $.trans.set_wait(2)
                   } else if (vy > 4 && vy < 7) {
@@ -847,9 +851,12 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
                   break
                 case 182:
                   $.trans.set_next(183)
-                  break
-                //
+                  break                
                 case 186:
+                  if($.ps.vy == 0) {
+                    $.ps.vy = 5*($.ps.vy>0?1:-1); //magic number
+                    vy = 5*($.ps.vy>0?1:-1); //magic number
+                  }
                   $.trans.set_next(187)
                   break
                 case 187:
@@ -1830,12 +1837,12 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
               team: $.team,
               pos: {x: $.ps.x + 20*(-1*i), y: $.ps.y, z: $.ps.z},
               hp: 20,
-              mp: GC.default.health.mp_full,
+              mp: GC.default.health.mp_start,
               pane: false,
             });
           }
           if (players.length > 0) {
-            $.match.create_npc(players);
+            $.match.create_non_player_characters(players);
           }
           return;
         }
