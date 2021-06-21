@@ -837,7 +837,7 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
                   // console.log('y:'+$.ps.y+', vy:'+$.ps.vy+', vx:'+$.ps.vx);
                   $.trans.set_next(182)
                   var vy = $.ps.vy > 0 ? $.ps.vy : -$.ps.vy
-                  if($.ps.vy == 0) {
+                  if ($.ps.vy == 0) {
                     $.ps.vy = 5*($.ps.vy>0?1:-1); //magic number
                     vy = 5*($.ps.vy>0?1:-1); //magic number
                   }
@@ -853,7 +853,7 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
                   $.trans.set_next(183)
                   break                
                 case 186:
-                  if($.ps.vy == 0) {
+                  if ($.ps.vy == 0) {
                     $.ps.vy = 5*($.ps.vy>0?1:-1); //magic number
                     vy = 5*($.ps.vy>0?1:-1); //magic number
                   }
