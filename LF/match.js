@@ -402,6 +402,9 @@ define(['core/util', 'core/controller', 'LF/sprite-select',
         if (player.is_npc) {
           char.is_npc = true;
         }
+        if (player.parent) {
+          char.parent = player.parent
+        }
         var uid = $.scene.add(char)
         $.character[uid] = char
         // pane

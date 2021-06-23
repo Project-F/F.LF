@@ -1639,7 +1639,11 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
     }
     character.prototype.attacked = function (inj) {
       if (inj === true) { return true } else if (inj > 0) {
-        this.stat.attack += inj
+        if (this.is_npc && this.parent) {
+          this.parent.stat.attack += inj        
+        } else {
+          this.stat.attack += inj
+        }
         return true
       }
     }
@@ -1847,6 +1851,7 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
               hp: 20,
               mp: GC.default.health.mp_start,
               pane: false,
+              parent: $,
             });
           }
           if (players.length > 0) {
