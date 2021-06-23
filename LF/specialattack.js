@@ -389,8 +389,8 @@ define(['LF/livingobject', 'LF/global', 'core/util'],
     specialattack.prototype.attacked = function (inj) {
       return this.parent.attacked(inj)
     }
-    specialattack.prototype.reset_attack = function (inj) {
-      this.parent.reset_attack(inj)
+    specialattack.prototype.offset_attack = function (inj) {
+      this.parent.offset_attack(inj)
     }
     specialattack.prototype.killed = function () {
       this.parent.killed()

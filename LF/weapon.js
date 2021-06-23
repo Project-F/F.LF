@@ -452,10 +452,10 @@ define(['LF/livingobject', 'LF/global', 'core/util'],
         }
       }
 
-      typeweapon.prototype.reset_attack = function (inj) {
+      typeweapon.prototype.offset_attack = function (inj) {
         const $ = this
         if ($.hold.pre) {
-          $.hold.pre.reset_attack(inj)
+          $.hold.pre.offset_attack(inj)
         }
       }
       
