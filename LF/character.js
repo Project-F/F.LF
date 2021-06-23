@@ -1848,8 +1848,13 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
               id: $.id,
               team: $.team,
               pos: {x: $.ps.x + 20*(-1*i), y: $.ps.y, z: $.ps.z},
-              hp: 20,
-              mp: GC.default.health.mp_start,
+              health: {
+                hp: 20,
+                hp_full: 20,
+                hp_bound: 20,
+                mp: 100,
+                mp_full: 100,
+              },
               pane: false,
               parent: $,
             });

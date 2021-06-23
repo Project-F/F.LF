@@ -395,9 +395,10 @@ define(['core/util', 'core/controller', 'LF/sprite-select',
           const pos = $.background.get_pos($.random(), $.random())
           char.set_pos(pos.x, pos.y, pos.z)
         }
-        if (player.hp && player.mp) {
-          char.health.hp = player.hp
-          char.health.mp = player.mp
+        if (player.health) {
+          for (var I in player.health) {
+            char.health[I] = player.health[I]
+          }
         }
         if (player.is_npc) {
           char.is_npc = true;
