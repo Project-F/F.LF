@@ -1630,7 +1630,7 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
       $.health.hp_lost += inj
       $.health.hp_bound -= Math.ceil(inj * 1 / 3)
       if ($.is_npc && $.itr.attacker) {
-        $.itr.attacker.reset_attack(inj)
+        $.itr.attacker.offset_attack(inj)
       }
     }
     character.prototype.heal = function (amount) {
@@ -1647,7 +1647,7 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
         return true
       }
     }
-    character.prototype.reset_attack = function (inj) {
+    character.prototype.offset_attack = function (inj) {
       this.stat.attack -= inj
     }
     character.prototype.killed = function () {
