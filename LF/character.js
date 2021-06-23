@@ -1617,11 +1617,11 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
         }
       }
 
-      $.injury(inj)
       if (accepthit) {
         $.itr.attacker = att
         $.itr_vrest_update(att.uid, ITR)
       }
+      $.injury(inj)
       if (accepthit) { return inj } else { return false }
     }
     character.prototype.injury = function (inj) {
@@ -1629,6 +1629,9 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
       $.health.hp -= inj
       $.health.hp_lost += inj
       $.health.hp_bound -= Math.ceil(inj * 1 / 3)
+      if ($.is_npc && $.itr.attacker) {
+        $.itr.attacker.reset_attack(inj)
+      }
     }
     character.prototype.heal = function (amount) {
       this.effect.heal = amount
@@ -1640,11 +1643,16 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
         return true
       }
     }
+    character.prototype.reset_attack = function (inj) {
+      this.stat.attack -= inj
+    }
     character.prototype.killed = function () {
       this.stat.kill++
     }
     character.prototype.die = function () {
-      this.itr.attacker.killed()
+      if (!this.is_npc) {
+        this.itr.attacker.killed()
+      }
     }
 
     // pre interaction is based on `itr` of next frame

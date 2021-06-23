@@ -452,6 +452,13 @@ define(['LF/livingobject', 'LF/global', 'core/util'],
         }
       }
 
+      typeweapon.prototype.reset_attack = function (inj) {
+        const $ = this
+        if ($.hold.pre) {
+          $.hold.pre.reset_attack(inj)
+        }
+      }
+      
       typeweapon.prototype.killed = function () {
         const $ = this
         if ($.hold.pre) {
