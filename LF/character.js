@@ -1146,6 +1146,21 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
         }
       },
 
+      501: function (event)
+      {
+        const $ = this
+        switch (event) {
+          case 'frame':
+            switch ($.frame.N) {
+              case 298:
+                if ($.trans.next() === 999) {
+                  $.id_update('state501_transform')
+                }
+                break
+            }
+        }
+      },
+
       1700: function (event, K) // heal
       {
         const $ = this
@@ -1169,7 +1184,7 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
         switch (event) {
           case 'revert_transform':
             const $ = this
-            $.match.transform_b_panel($)
+            $.match.transform_b_panel($.uid)
             $.match.create_transform_character({
               name: 'transform',
               id: 5,
@@ -1184,6 +1199,7 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
               },
               stat: $.stat,
               is_rudolf_transform: !$.is_rudolf_transform,
+              transform_character: $.transform_character,
               replace_from: $,
               dir: $.ps.dir,
             })
@@ -1227,10 +1243,12 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
             }
             break
           case ('state9_transform'):
-            $.match.transform_panel($, $.catching)
+            $.transform_character.id = $.catching.id
+            $.transform_character.uid = $.catching.uid
+            $.match.transform_panel($.uid, $.catching.uid)
             $.match.create_transform_character({
               name: 'transform',
-              id: $.catching.id,
+              id: $.transform_character.id,
               controller: $.con,
               team: $.team,
               pos: { x: $.ps.x, y: $.ps.y, z: $.ps.z },
@@ -1242,9 +1260,33 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
               },
               stat: $.stat,
               is_rudolf_transform: !$.is_rudolf_transform,
+              transform_character: $.transform_character,
               replace_from: $,
               dir: $.ps.dir,
             })
+            break
+          case 'state501_transform':
+            if ($.transform_character.id != -1 && $.transform_character.uid != -1) {
+              $.match.transform_panel($.uid, $.transform_character.uid)
+              $.match.create_transform_character({
+                name: 'transform',
+                id: $.transform_character.id,
+                controller: $.con,
+                team: $.team,
+                pos: { x: $.ps.x, y: $.ps.y, z: $.ps.z },
+                health: {
+                  hp: $.health.hp,
+                  hp_full: $.health.hp_full,
+                  mp: $.health.mp,
+                  mp_full: $.health.mp_full,
+                },
+                stat: $.stat,
+                is_rudolf_transform: !$.is_rudolf_transform,
+                transform_character: $.transform_character,
+                replace_from: $,
+                dir: $.ps.dir,
+              })
+            }
             break
           case 'state1280_disappear':
             if ($.frame.N === 257) { // next: 1280
@@ -1419,6 +1461,10 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
       $.disappear_count = -1
       $.dead_blink_count = -1
       $.is_rudolf_transform = false
+      $.transform_character = {
+        id: -1,
+        uid: -1,
+      }
       $.trans.frame = function (next, au) {
         if (next === 0 || next === 999) {
           this.set_next(next, au)

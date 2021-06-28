@@ -379,15 +379,15 @@ define(['core/util', 'core/controller', 'LF/sprite-select',
       }
     }
     
-    match.prototype.transform_panel = function (from, to) {
+    match.prototype.transform_panel = function (from_uid, to_uid) {
       const $ = this
       // ==========panel==========
       let from_index = -1
       let to_index = -1
       for (index in $.panel) {
-        if ($.panel[index].uid === from.uid) {
+        if ($.panel[index].uid === from_uid) {
           from_index = index
-        } else if ($.panel[index].uid === to.uid) {
+        } else if ($.panel[index].uid === to_uid) {
           to_index = index
         }
       }
@@ -396,11 +396,11 @@ define(['core/util', 'core/controller', 'LF/sprite-select',
       $.panel[from_index].spic.img[0] = $.panel[to_index].spic.img[0]
     }
   
-    match.prototype.transform_b_panel = function (from) {
+    match.prototype.transform_b_panel = function (from_uid) {
       const $ = this
       let from_index = -1
       for (index in $.panel) {
-        if ($.panel[index].uid === from.uid) {
+        if ($.panel[index].uid === from_uid) {
           from_index = index
         }
       }
@@ -461,6 +461,10 @@ define(['core/util', 'core/controller', 'LF/sprite-select',
           player.replace_from.destroy()
         } else {
           uid = $.scene.add(char)
+        }
+        if (player.transform_character) {
+          char.transform_character.id = player.transform_character.id
+          char.transform_character.uid = player.transform_character.uid
         }
         if (player.dir) {
           char.switch_dir(player.dir)
