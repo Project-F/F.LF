@@ -1184,6 +1184,7 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
         switch (event) {
           case 'revert_transform':
             const $ = this
+            $.match.create_object($.transform_character.opoint, $)
             $.match.transform_b_panel($.uid)
             $.match.create_transform_character({
               name: 'transform',
@@ -1243,8 +1244,13 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
             }
             break
           case ('state9_transform'):
-            $.transform_character.id = $.catching.id
-            $.transform_character.uid = $.catching.uid
+            $.transform_character = {
+              id:  $.catching.id,
+              uid: $.catching.uid,
+              opoint: {
+                kind: 1, x: 41, y: 70, action: 70, dvx: 0, dvy: 0, oid: 204, facing: 0
+              },
+            }
             $.match.transform_panel($.uid, $.catching.uid)
             $.match.create_transform_character({
               name: 'transform',
@@ -1464,6 +1470,7 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
       $.transform_character = {
         id: -1,
         uid: -1,
+        opoint: {}
       }
       $.trans.frame = function (next, au) {
         if (next === 0 || next === 999) {

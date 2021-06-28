@@ -463,8 +463,7 @@ define(['core/util', 'core/controller', 'LF/sprite-select',
           uid = $.scene.add(char)
         }
         if (player.transform_character) {
-          char.transform_character.id = player.transform_character.id
-          char.transform_character.uid = player.transform_character.uid
+          char.transform_character = player.transform_character
         }
         if (player.dir) {
           char.switch_dir(player.dir)
