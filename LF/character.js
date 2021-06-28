@@ -9,6 +9,13 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
     {
       generic: function (event, K) {
         const $ = this
+        switch (K) {
+          case 'DJA':
+            if ($.is_rudolf_transform) {
+              $.id_update('revert_transform')
+            }
+            break
+        }
         switch (event) {
           case 'frame':
             // health reduce
@@ -621,6 +628,9 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
               case 233: case 234:
                 $.trans.inc_wait(-1)
                 break
+              case 240: // it means from frame 121 jump to 235 for Rudolf => performing transform
+                $.id_update('state9_transform')
+                break
             }
             if ($.catching && $.frame.D.cpoint) {
               $.catching.caught_b(
@@ -1155,7 +1165,30 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
 
     const id_updates = // nasty fix (es)
     {
-      default: function () {
+      default: function (event, K, tag) {
+        switch (event) {
+          case 'revert_transform':
+            const $ = this
+            $.match.transform_b_panel($)
+            $.match.create_transform_character({
+              name: 'transform',
+              id: 5,
+              controller: $.con,
+              team: $.team,
+              pos: { x: $.ps.x, y: $.ps.y, z: $.ps.z },
+              health: {
+                hp: $.health.hp,
+                hp_full: $.health.hp_full,
+                mp: $.health.mp,
+                mp_full: $.health.mp_full,
+              },
+              stat: $.stat,
+              is_rudolf_transform: !$.is_rudolf_transform,
+              replace_from: $,
+              dir: $.ps.dir,
+            })
+            break
+        }
       },
       1: function (event, K, tag) // deep
       {
@@ -1192,6 +1225,26 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
             if ($.frame.N >= 273 && $.frame.N <= 276) {
               $.ps.vy = -6.8
             }
+            break
+          case ('state9_transform'):
+            $.match.transform_panel($, $.catching)
+            $.match.create_transform_character({
+              name: 'transform',
+              id: $.catching.id,
+              controller: $.con,
+              team: $.team,
+              pos: { x: $.ps.x, y: $.ps.y, z: $.ps.z },
+              health: {
+                hp: $.health.hp,
+                hp_full: $.health.hp_full,
+                mp: $.health.mp,
+                mp_full: $.health.mp_full,
+              },
+              stat: $.stat,
+              is_rudolf_transform: !$.is_rudolf_transform,
+              replace_from: $,
+              dir: $.ps.dir,
+            })
             break
           case 'state1280_disappear':
             if ($.frame.N === 257) { // next: 1280
@@ -1365,6 +1418,7 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
       }
       $.disappear_count = -1
       $.dead_blink_count = -1
+      $.is_rudolf_transform = false
       $.trans.frame = function (next, au) {
         if (next === 0 || next === 999) {
           this.set_next(next, au)
@@ -1651,7 +1705,11 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
       this.stat.attack -= inj
     }
     character.prototype.killed = function () {
-      this.stat.kill++
+      if (this.is_npc) {
+        this.parent.stat.kill++
+      } else {
+        this.stat.kill++
+      }
     }
     character.prototype.die = function () {
       if (!this.is_npc) {

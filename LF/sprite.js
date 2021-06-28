@@ -137,7 +137,7 @@ define(['LF/sprite-select', 'core/animator'], function (Fsprite, Fanimator) {
   \*/
   sprite.prototype.switch_lr = function (dir) // switch to `dir`
   {
-    if (dir !== this.dir) {
+    if (dir !== this.dir && this.sp) {
       this.dir = dir
       this.sp.set_flipx(dir === 'left')
     }

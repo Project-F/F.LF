@@ -138,6 +138,14 @@ define(['core/util', 'core/controller', 'LF/sprite-select',
       })
     }
 
+    match.prototype.create_transform_character = function (player) {
+      const $ = this
+      $.tasks.push({
+        task: 'create_transform_character',
+        player,
+      })
+    }
+    
     match.prototype.create_multiple_objects = function (opoint, parent, number, vz) {
       const $ = this
       $.tasks.push({
@@ -346,7 +354,10 @@ define(['core/util', 'core/controller', 'LF/sprite-select',
           }
           break
         case 'create_non_player_characters':
-          $.create_characters(T.players, {pane: false})
+          $.create_characters(T.players, { pane: false })
+          break
+        case 'create_transform_character':
+          $.create_characters([T.player], { replace: true })
           break
         case 'destroy_object':
           var obj = T.obj
@@ -366,6 +377,34 @@ define(['core/util', 'core/controller', 'LF/sprite-select',
         const diff = $.time.time - ot
         $.time.$fps.value = Math.round(1000 / diff * mul) + 'fps'
       }
+    }
+    
+    match.prototype.transform_panel = function (from, to) {
+      const $ = this
+      // ==========panel==========
+      let from_index = -1
+      let to_index = -1
+      for (index in $.panel) {
+        if ($.panel[index].uid === from.uid) {
+          from_index = index
+        } else if ($.panel[index].uid === to.uid) {
+          to_index = index
+        }
+      }
+      if (from_index == -1 || to_index == -1) { return }
+      $.panel[from_index].spic.temp_img = {0: $.panel[from_index].spic.img[0]}
+      $.panel[from_index].spic.img[0] = $.panel[to_index].spic.img[0]
+    }
+  
+    match.prototype.transform_b_panel = function (from) {
+      const $ = this
+      let from_index = -1
+      for (index in $.panel) {
+        if ($.panel[index].uid === from.uid) {
+          from_index = index
+        }
+      }
+      $.panel[from_index].spic.img = $.panel[from_index].spic.temp_img
     }
 
     match.prototype.create_characters = function (players, option) {
@@ -395,18 +434,37 @@ define(['core/util', 'core/controller', 'LF/sprite-select',
           const pos = $.background.get_pos($.random(), $.random())
           char.set_pos(pos.x, pos.y, pos.z)
         }
-        if (player.health) {
+        if (player.health) { // passed health value
           for (var I in player.health) {
             char.health[I] = player.health[I]
+          }
+        }
+        if (player.stat) { // passed stat value
+          for (var J in player.stat) {
+            char.stat[J] = player.stat[J]
           }
         }
         if (player.is_npc) {
           char.is_npc = true;
         }
+        if (player.is_rudolf_transform) {
+          char.is_rudolf_transform = player.is_rudolf_transform
+        }
         if (player.parent) {
           char.parent = player.parent
         }
-        var uid = $.scene.add(char)
+        var uid
+        if (option.replace) {
+          uid = $.scene.replace(player.replace_from, char)
+          char.uid = uid
+          
+          player.replace_from.destroy()
+        } else {
+          uid = $.scene.add(char)
+        }
+        if (player.dir) {
+          char.switch_dir(player.dir)
+        }
         $.character[uid] = char
         // pane
         if ($.panel && option.pane) {
