@@ -64,6 +64,24 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
                 $.disappear_count = -1
                 break
             }
+            switch (true) {
+              case ($.dead_blink_count < 0):
+                break
+              case ($.dead_blink_count == 0):
+                $.effect.blink = true
+                $.dead_blink_count += 1
+                break
+              case ($.dead_blink_count > 0 && $.dead_blink_count < 30):
+                $.dead_blink_count += 1
+                break
+              case ($.dead_blink_count >= 30):
+                $.effect.blink = false
+                $.sp.hide()
+                $.shadow.hide()
+                $.dead_blink_count = -1
+                $.match.destroy_object($)
+                break
+            }
             if ($.state_update('post_interaction')) {
               ; // do nothing
             } else {
@@ -944,6 +962,9 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
             $.health.bdefend = 0
             if ($.health.hp <= 0) {
               $.die()
+              if ($.is_npc) {
+                $.dead_blink_count = 0
+              }
             }
             break
           case 'state_exit':
@@ -1343,6 +1364,7 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
         kill: 0
       }
       $.disappear_count = -1
+      $.dead_blink_count = -1
       $.trans.frame = function (next, au) {
         if (next === 0 || next === 999) {
           this.set_next(next, au)
@@ -1595,11 +1617,11 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
         }
       }
 
-      $.injury(inj)
       if (accepthit) {
         $.itr.attacker = att
         $.itr_vrest_update(att.uid, ITR)
       }
+      $.injury(inj)
       if (accepthit) { return inj } else { return false }
     }
     character.prototype.injury = function (inj) {
@@ -1607,6 +1629,9 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
       $.health.hp -= inj
       $.health.hp_lost += inj
       $.health.hp_bound -= Math.ceil(inj * 1 / 3)
+      if ($.is_npc && $.itr.attacker) {
+        $.itr.attacker.offset_attack(inj)
+      }
     }
     character.prototype.heal = function (amount) {
       this.effect.heal = amount
@@ -1614,15 +1639,24 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
     }
     character.prototype.attacked = function (inj) {
       if (inj === true) { return true } else if (inj > 0) {
-        this.stat.attack += inj
+        if (this.is_npc && this.parent) {
+          this.parent.stat.attack += inj        
+        } else {
+          this.stat.attack += inj
+        }
         return true
       }
+    }
+    character.prototype.offset_attack = function (inj) {
+      this.stat.attack -= inj
     }
     character.prototype.killed = function () {
       this.stat.kill++
     }
     character.prototype.die = function () {
-      this.itr.attacker.killed()
+      if (!this.is_npc) {
+        this.itr.attacker.killed()
+      }
     }
 
     // pre interaction is based on `itr` of next frame
@@ -1802,6 +1836,34 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
     character.prototype.opoint = function () {
       const $ = this
       if ($.frame.D.opoint) {
+        if ($.frame.D.opoint.oid === 5) { // create characters
+          let players = [];
+          const number_of_character = Math.floor(Math.abs($.frame.D.opoint.facing) / 10);
+          for (let i = 0; i < number_of_character; i++) {
+            players.push({
+              name: '+man',
+              controller: { type: 'AIscript', id: 4 },
+              type: 'computer',
+              is_npc: true,
+              id: $.id,
+              team: $.team,
+              pos: {x: $.ps.x + 20*(-1*i), y: $.ps.y, z: $.ps.z},
+              health: {
+                hp: 20,
+                hp_full: 20,
+                hp_bound: 20,
+                mp: 100,
+                mp_full: 100,
+              },
+              pane: false,
+              parent: $,
+            });
+          }
+          if (players.length > 0) {
+            $.match.create_non_player_characters(players);
+          }
+          return;
+        }
         const ops = Futil.make_array($.frame.D.opoint)
         for (const i in ops) {
           if (Math.abs(ops[i].facing) > 10) {
