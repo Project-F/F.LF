@@ -404,6 +404,7 @@ define(['core/util', 'core/controller', 'LF/sprite-select',
           from_index = index
         }
       }
+      if (from_index == -1) { return }
       $.panel[from_index].spic.img = $.panel[from_index].spic.temp_img
     }
 
@@ -427,6 +428,13 @@ define(['core/util', 'core/controller', 'LF/sprite-select',
           const AIcontroller = util.select_from($.data.AI, { id: player.controller.id }).data
           $.AIscript.push(new AIcontroller(char, $, controller))
         }
+        // spec
+        if (player.spec) {
+          for (let I in player.spec) { // assign each spec into character
+            assign_character_spec(char, player.spec, I)
+          }
+        }
+        // outside spec
         // positioning
         if (player.pos) {
           char.set_pos(player.pos.x, player.pos.y, player.pos.z)
@@ -434,40 +442,16 @@ define(['core/util', 'core/controller', 'LF/sprite-select',
           const pos = $.background.get_pos($.random(), $.random())
           char.set_pos(pos.x, pos.y, pos.z)
         }
-        if (player.health) { // passed health value
-          for (var I in player.health) {
-            char.health[I] = player.health[I]
-          }
-        }
-        if (player.stat) { // passed stat value
-          for (var J in player.stat) {
-            char.stat[J] = player.stat[J]
-          }
-        }
-        if (player.is_npc) {
-          char.is_npc = true;
-        }
-        if (player.is_rudolf_transform) {
-          char.transform_character.is_rudolf_transform = player.is_rudolf_transform
-        }
-        if (player.parent) {
-          char.parent = player.parent
-        }
+        // option
         var uid
         if (option.replace) {
-          uid = $.scene.replace(player.replace_from, char)
+          uid = $.scene.replace(player.spec.replace_from, char)
           char.uid = uid
-          
-          player.replace_from.destroy()
+          player.spec.replace_from.destroy()
         } else {
           uid = $.scene.add(char)
         }
-        if (player.transform_character) {
-          char.transform_character = player.transform_character
-        }
-        if (player.dir) {
-          char.switch_dir(player.dir)
-        }
+
         $.character[uid] = char
         // pane
         if ($.panel && option.pane) {
@@ -532,6 +516,34 @@ define(['core/util', 'core/controller', 'LF/sprite-select',
         $.panel[i].mp.set_x_y(X + $.data.UI.data.panel.mpx, Y + $.data.UI.data.panel.mpy)
         $.panel[i].mp.set_w_h($.data.UI.data.panel.mpw, $.data.UI.data.panel.mph)
         $.panel[i].mp.set_bgcolor($.data.UI.data.panel.mp_bright)
+      }
+      function assign_character_spec(char, spec, index) {
+        switch (index) {
+          case 'is_npc':
+            char.is_npc = spec[index]
+            break
+          case 'health':
+            for (var I in spec[index]) {
+              char.health[I] = spec[index][I]
+            }
+            break
+          case 'dir':
+            char.switch_dir(spec[index])
+            break
+          case 'stat':
+            for (var J in spec[index]) {
+              char.stat[J] = spec[index][J]
+            }
+            break
+          case 'parent':
+            char.parent = spec[index]
+            break
+          case 'transform_character':
+            for (var L in spec[index]) {
+              char.transform_character[L] = spec[index][L]
+            }
+            break
+        }
       }
     }
 

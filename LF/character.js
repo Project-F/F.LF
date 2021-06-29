@@ -9,13 +9,6 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
     {
       generic: function (event, K) {
         const $ = this
-        switch (K) {
-          case 'DJA':
-            if ($.transform_character.is_rudolf_transform) {
-              $.id_update('revert_transform')
-            }
-            break
-        }
         switch (event) {
           case 'frame':
             // health reduce
@@ -176,6 +169,9 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
                 break
               default:
                 // here is where D>A, D>J... etc handled
+                if (K == 'DJA' && $.transform_character.is_rudolf_transform) {
+                  $.id_update('revert_transform')
+                }
                 var tag = Global.combo_tag[K]
                 if (tag && $.frame.D[tag]) {
                   if (!$.id_update('generic_combo', K, tag)) {
@@ -1192,17 +1188,18 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
               controller: $.con,
               team: $.team,
               pos: { x: $.ps.x, y: $.ps.y, z: $.ps.z },
-              health: {
-                hp: $.health.hp,
-                hp_full: $.health.hp_full,
-                mp: $.health.mp,
-                mp_full: $.health.mp_full,
-              },
-              stat: $.stat,
-              is_rudolf_transform: !$.transform_character.is_rudolf_transform,
-              transform_character: $.transform_character,
-              replace_from: $,
-              dir: $.ps.dir,
+              spec: {                
+                dir: $.ps.dir,
+                health: {
+                  hp: $.health.hp,
+                  hp_full: $.health.hp_full,
+                  mp: $.health.mp,
+                  mp_full: $.health.mp_full,
+                },
+                stat: $.stat,
+                transform_character: $.transform_character,
+                replace_from: $,
+              }
             })
             break
         }
@@ -1254,6 +1251,9 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
                 is_rudolf_transform: !$.transform_character.is_rudolf_transform,
               }
             }
+            if ($.transform_character.id == -1) {
+              break
+            }
             $.match.transform_panel($.uid, $.transform_character.uid)
             $.match.create_transform_character({
               name: 'transform',
@@ -1261,16 +1261,18 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
               controller: $.con,
               team: $.team,
               pos: { x: $.ps.x, y: $.ps.y, z: $.ps.z },
-              health: {
-                hp: $.health.hp,
-                hp_full: $.health.hp_full,
-                mp: $.health.mp,
-                mp_full: $.health.mp_full,
-              },
-              stat: $.stat,
-              transform_character: $.transform_character,
-              replace_from: $,
-              dir: $.ps.dir,
+              spec: {
+                dir: $.ps.dir,
+                health: {
+                  hp: $.health.hp,
+                  hp_full: $.health.hp_full,
+                  mp: $.health.mp,
+                  mp_full: $.health.mp_full,
+                },
+                stat: $.stat,
+                transform_character: $.transform_character,
+                replace_from: $,
+              }
             })
             break
           case 'state1280_disappear':
@@ -1726,7 +1728,7 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
     character.prototype.attacked = function (inj) {
       if (inj === true) { return true } else if (inj > 0) {
         if (this.is_npc && this.parent) {
-          this.parent.stat.attack += inj        
+          this.parent.stat.attack += inj
         } else {
           this.stat.attack += inj
         }
@@ -1934,19 +1936,21 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
               name: '+man',
               controller: { type: 'AIscript', id: 4 },
               type: 'computer',
-              is_npc: true,
               id: $.id,
               team: $.team,
               pos: {x: $.ps.x + 20*(-1*i), y: $.ps.y, z: $.ps.z},
-              health: {
-                hp: 20,
-                hp_full: 20,
-                hp_bound: 20,
-                mp: 100,
-                mp_full: 100,
+              spec: {
+                is_npc: true,
+                health: {
+                  hp: 20,
+                  hp_full: 20,
+                  hp_bound: 20,
+                  mp: 100,
+                  mp_full: 100,
+                },
+                parent: $,
               },
-              pane: false,
-              parent: $,
+              
             });
           }
           if (players.length > 0) {
