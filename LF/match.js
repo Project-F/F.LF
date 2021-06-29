@@ -448,7 +448,7 @@ define(['core/util', 'core/controller', 'LF/sprite-select',
           char.is_npc = true;
         }
         if (player.is_rudolf_transform) {
-          char.is_rudolf_transform = player.is_rudolf_transform
+          char.transform_character.is_rudolf_transform = player.is_rudolf_transform
         }
         if (player.parent) {
           char.parent = player.parent
