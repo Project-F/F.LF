@@ -819,8 +819,14 @@ define(['core/util', 'core/controller', 'LF/sprite-select',
       const $ = this
       var temp = {}
       for (a in $.scene.live) {
-        if (!$.scene.live[a].sp.sp.hidden && $.scene.live[a].health.hp > 0) {
-          temp[a] = $.scene.live[a]
+        if ($.scene.live[a].health.hp > 0) {
+          if ($.scene.live[a].type == 'character') {
+            if ($.scene.live[a].counter.disappear_count == -1) {
+              temp[a] = $.scene.live[a]
+            }
+          } else {
+            temp[a] = $.scene.live[a]
+          }
         }
       }
       return temp
