@@ -49,3 +49,7 @@ Then simply open `game/game.html` in your favourite browser.
 ## License
 
 [GNU General Public License v3.0](LICENSE) or https://www.gnu.org/licenses/gpl-3.0.en.html
+
+## Acknowledgement
+
+If you liked LF2, consider supporting the original author [Marti](https://www.patreon.com/martiwong) in remastering LF2.
