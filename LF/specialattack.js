@@ -331,8 +331,8 @@ define(['LF/livingobject', 'LF/global', 'core/util'],
       if ($.team !== 0) {
         for (const j in ITR) {  // for each itr tag
           const vol = $.mech.volume(ITR[j])
-          if ($.proper($.id, 'z_width')) {
-            vol.zwidth = $.proper($.id, 'z_width')
+          if ($.proper($.id, 'zwidth')) {
+            vol.zwidth = $.proper($.id, 'zwidth')
           }
           if (!vol.zwidth) {
             vol.zwidth = 0
