@@ -1180,6 +1180,7 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
         switch (event) {
           case 'revert_transform':
             const $ = this
+            $.transform_character.is_rudolf_transform = false
             $.match.create_object($.transform_character.opoint, $)
             $.match.transform_panel($.uid)
             $.match.create_transform_character({
