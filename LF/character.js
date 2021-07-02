@@ -1190,13 +1190,7 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
               pos: { x: $.ps.x, y: $.ps.y, z: $.ps.z },
               spec: {                
                 dir: $.ps.dir,
-                health: {
-                  hp: $.health.hp,
-                  hp_full: $.health.hp_full,
-                  hp_bound: $.health.hp_bound,
-                  mp: $.health.mp,
-                  mp_full: $.health.mp_full,
-                },
+                health: $.health,
                 stat: $.stat,
                 transform_character: $.transform_character,
                 replace_from: $,
@@ -1264,13 +1258,7 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
               pos: { x: $.ps.x, y: $.ps.y, z: $.ps.z },
               spec: {
                 dir: $.ps.dir,
-                health: {
-                  hp: $.health.hp,
-                  hp_full: $.health.hp_full,
-                  hp_bound: $.health.hp_bound,
-                  mp: $.health.mp,
-                  mp_full: $.health.mp_full,
-                },
+                health: $.health,
                 stat: $.stat,
                 transform_character: $.transform_character,
                 replace_from: $,
