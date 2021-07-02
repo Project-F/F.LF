@@ -1181,7 +1181,7 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
           case 'revert_transform':
             const $ = this
             $.match.create_object($.transform_character.opoint, $)
-            $.match.transform_b_panel($.uid)
+            $.match.transform_panel($.uid)
             $.match.create_transform_character({
               name: 'transform',
               id: 5,
@@ -1193,6 +1193,7 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
                 health: {
                   hp: $.health.hp,
                   hp_full: $.health.hp_full,
+                  hp_bound: $.health.hp_bound,
                   mp: $.health.mp,
                   mp_full: $.health.mp_full,
                 },
@@ -1266,6 +1267,7 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
                 health: {
                   hp: $.health.hp,
                   hp_full: $.health.hp_full,
+                  hp_bound: $.health.hp_bound,
                   mp: $.health.mp,
                   mp_full: $.health.mp_full,
                 },

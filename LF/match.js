@@ -386,27 +386,24 @@ define(['core/util', 'core/controller', 'LF/sprite-select',
       let from_index = -1
       let to_index = -1
       for (index in $.panel) {
-        if ($.panel[index].uid === from_uid) {
-          from_index = index
-        } else if ($.panel[index].uid === to_uid) {
-          to_index = index
+        if (from_uid) {
+          if ($.panel[index].uid === from_uid) {
+            from_index = index
+          }
         }
-      }
-      if (from_index == -1 || to_index == -1) { return }
-      $.panel[from_index].spic.temp_img = {0: $.panel[from_index].spic.img[0]}
-      $.panel[from_index].spic.img[0] = $.panel[to_index].spic.img[0]
-    }
-  
-    match.prototype.transform_b_panel = function (from_uid) {
-      const $ = this
-      let from_index = -1
-      for (index in $.panel) {
-        if ($.panel[index].uid === from_uid) {
-          from_index = index
+        if (to_uid) {
+          if ($.panel[index].uid === to_uid) {
+            to_index = index
+          }
         }
       }
       if (from_index == -1) { return }
-      $.panel[from_index].spic.img = $.panel[from_index].spic.temp_img
+      if (to_index != -1) {
+        $.panel[from_index].spic.temp_img = {0: $.panel[from_index].spic.img[0]}
+        $.panel[from_index].spic.img[0] = $.panel[to_index].spic.img[0]
+      } else {
+        $.panel[from_index].spic.img = $.panel[from_index].spic.temp_img
+      }
     }
 
     match.prototype.create_characters = function (players, option) {
