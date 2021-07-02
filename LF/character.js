@@ -169,6 +169,9 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
                 break
               default:
                 // here is where D>A, D>J... etc handled
+                if (K == 'DJA' && $.transform_character && $.transform_character.is_rudolf_transform) {
+                  $.id_update('revert_transform')
+                }
                 var tag = Global.combo_tag[K]
                 if (tag && $.frame.D[tag]) {
                   if (!$.id_update('generic_combo', K, tag)) {
@@ -620,6 +623,9 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
                 break
               case 233: case 234:
                 $.trans.inc_wait(-1)
+                break
+              case 240: // it means from frame 121 jump to 235 for Rudolf => performing transform
+                $.id_update('rudolf_transform')
                 break
             }
             if ($.catching && $.frame.D.cpoint) {
@@ -1136,6 +1142,21 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
         }
       },
 
+      501: function (event)
+      {
+        const $ = this
+        switch (event) {
+          case 'frame':
+            switch ($.frame.N) {
+              case 298:
+                if ($.trans.next() === 999) {
+                  $.id_update('rudolf_transform')
+                }
+                break
+            }
+        }
+      },
+
       1700: function (event, K) // heal
       {
         const $ = this
@@ -1155,7 +1176,29 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
 
     const id_updates = // nasty fix (es)
     {
-      default: function () {
+      default: function (event, K, tag) {
+        switch (event) {
+          case 'revert_transform':
+            const $ = this
+            $.transform_character.is_rudolf_transform = false
+            $.match.create_object($.transform_character.opoint, $)
+            $.match.transform_panel($.uid)
+            $.match.create_transform_character({
+              name: 'transform',
+              id: 5,
+              controller: $.con,
+              team: $.team,
+              pos: { x: $.ps.x, y: $.ps.y, z: $.ps.z },
+              spec: {                
+                dir: $.ps.dir,
+                health: $.health,
+                stat: $.stat,
+                transform_character: $.transform_character,
+                replace_from: $,
+              }
+            })
+            break
+        }
       },
       1: function (event, K, tag) // deep
       {
@@ -1192,6 +1235,36 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
             if ($.frame.N >= 273 && $.frame.N <= 276) {
               $.ps.vy = -6.8
             }
+            break
+          case ('rudolf_transform'):
+            if ($.catching) {
+              $.transform_character = {
+                id:  $.catching.id, // create_characters
+                uid: $.catching.uid, // panel
+                opoint: { // smoke
+                  kind: 1, x: 41, y: 70, action: 70, dvx: 0, dvy: 0, oid: 204, facing: 0
+                },
+                is_rudolf_transform: true,
+              }
+            }
+            if (!$.transform_character) {
+              break
+            }
+            $.match.transform_panel($.uid, $.transform_character.uid)
+            $.match.create_transform_character({
+              name: 'transform',
+              id: $.transform_character.id,
+              controller: $.con,
+              team: $.team,
+              pos: { x: $.ps.x, y: $.ps.y, z: $.ps.z },
+              spec: {
+                dir: $.ps.dir,
+                health: $.health,
+                stat: $.stat,
+                transform_character: $.transform_character,
+                replace_from: $,
+              }
+            })
             break
           case 'state1280_disappear':
             if ($.frame.N === 257) { // next: 1280
@@ -1365,6 +1438,7 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
       }
       $.disappear_count = -1
       $.dead_blink_count = -1
+      $.transform_character = null
       $.trans.frame = function (next, au) {
         if (next === 0 || next === 999) {
           this.set_next(next, au)
@@ -1640,7 +1714,7 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
     character.prototype.attacked = function (inj) {
       if (inj === true) { return true } else if (inj > 0) {
         if (this.is_npc && this.parent) {
-          this.parent.stat.attack += inj        
+          this.parent.stat.attack += inj
         } else {
           this.stat.attack += inj
         }
@@ -1651,7 +1725,11 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
       this.stat.attack -= inj
     }
     character.prototype.killed = function () {
-      this.stat.kill++
+      if (this.is_npc) {
+        this.parent.stat.kill++
+      } else {
+        this.stat.kill++
+      }
     }
     character.prototype.die = function () {
       if (!this.is_npc) {
@@ -1844,19 +1922,21 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
               name: '+man',
               controller: { type: 'AIscript', id: 4 },
               type: 'computer',
-              is_npc: true,
               id: $.id,
               team: $.team,
               pos: {x: $.ps.x + 20*(-1*i), y: $.ps.y, z: $.ps.z},
-              health: {
-                hp: 20,
-                hp_full: 20,
-                hp_bound: 20,
-                mp: 100,
-                mp_full: 100,
+              spec: {
+                is_npc: true,
+                health: {
+                  hp: 20,
+                  hp_full: 20,
+                  hp_bound: 20,
+                  mp: 100,
+                  mp_full: 100,
+                },
+                parent: $,
               },
-              pane: false,
-              parent: $,
+              
             });
           }
           if (players.length > 0) {
@@ -1867,7 +1947,7 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
         const ops = Futil.make_array($.frame.D.opoint)
         for (const i in ops) {
           if (Math.abs(ops[i].facing) > 10) {
-            $.match.create_multiple_objects(ops[i], $, Math.floor(ops[i].facing / 10), ops[i].dvz || 2)
+            $.match.create_multiple_objects(ops[i], $, Math.floor(ops[i].facing / 10), ops[i].dvz || 3)
           } else {
             $.match.create_object(ops[i], $)
           }

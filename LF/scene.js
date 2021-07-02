@@ -23,6 +23,12 @@ define(['core/util', 'core/collision'], function (Futil, Fcollision) {
     return C.uid
   }
 
+  scene.prototype.replace = function (target, by) {
+    delete this.live[target.uid]
+    this.live[target.uid] = by
+    return target.uid
+  }
+
   scene.prototype.remove = function (C) {
     const uid = C.uid
     delete this.live[C.uid]

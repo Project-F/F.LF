@@ -138,6 +138,14 @@ define(['core/util', 'core/controller', 'LF/sprite-select',
       })
     }
 
+    match.prototype.create_transform_character = function (player) {
+      const $ = this
+      $.tasks.push({
+        task: 'create_transform_character',
+        player,
+      })
+    }
+    
     match.prototype.create_multiple_objects = function (opoint, parent, number, vz) {
       const $ = this
       $.tasks.push({
@@ -346,7 +354,10 @@ define(['core/util', 'core/controller', 'LF/sprite-select',
           }
           break
         case 'create_non_player_characters':
-          $.create_characters(T.players, {pane: false})
+          $.create_characters(T.players, { pane: false })
+          break
+        case 'create_transform_character':
+          $.create_characters([T.player], { replace: true })
           break
         case 'destroy_object':
           var obj = T.obj
@@ -367,6 +378,32 @@ define(['core/util', 'core/controller', 'LF/sprite-select',
         $.time.$fps.value = Math.round(1000 / diff * mul) + 'fps'
       }
     }
+    
+    match.prototype.transform_panel = function (from_uid, to_uid) {
+      const $ = this
+      // ==========panel==========
+      let from_index = -1
+      let to_index = -1
+      for (index in $.panel) {
+        if (from_uid) {
+          if ($.panel[index].uid === from_uid) {
+            from_index = index
+          }
+        }
+        if (to_uid) {
+          if ($.panel[index].uid === to_uid) {
+            to_index = index
+          }
+        }
+      }
+      if (from_index == -1) { return }
+      if (to_index != -1) {
+        $.panel[from_index].spic.temp_img = {0: $.panel[from_index].spic.img[0]}
+        $.panel[from_index].spic.img[0] = $.panel[to_index].spic.img[0]
+      } else {
+        $.panel[from_index].spic.img = $.panel[from_index].spic.temp_img
+      }
+    }
 
     match.prototype.create_characters = function (players, option) {
       const $ = this
@@ -381,6 +418,9 @@ define(['core/util', 'core/controller', 'LF/sprite-select',
         const player_obj = util.select_from($.data.object, { id: player.id })
         var pdata = player_obj.data
         preload_pack_images(player_obj)
+        if (option.replace) {
+          player.controller.child.length = 0
+        }
         const controller = setup_controller(player)
         // create character
         const char = new factory.character(char_config, pdata, player.id)
@@ -388,6 +428,13 @@ define(['core/util', 'core/controller', 'LF/sprite-select',
           const AIcontroller = util.select_from($.data.AI, { id: player.controller.id }).data
           $.AIscript.push(new AIcontroller(char, $, controller))
         }
+        // spec
+        if (player.spec) {
+          for (let I in player.spec) { // assign each spec into character
+            assign_character_spec(char, player.spec, I)
+          }
+        }
+        // outside spec
         // positioning
         if (player.pos) {
           char.set_pos(player.pos.x, player.pos.y, player.pos.z)
@@ -395,18 +442,16 @@ define(['core/util', 'core/controller', 'LF/sprite-select',
           const pos = $.background.get_pos($.random(), $.random())
           char.set_pos(pos.x, pos.y, pos.z)
         }
-        if (player.health) {
-          for (var I in player.health) {
-            char.health[I] = player.health[I]
-          }
+        // option
+        var uid
+        if (option.replace) {
+          uid = $.scene.replace(player.spec.replace_from, char)
+          char.uid = uid
+          player.spec.replace_from.destroy()
+        } else {
+          uid = $.scene.add(char)
         }
-        if (player.is_npc) {
-          char.is_npc = true;
-        }
-        if (player.parent) {
-          char.parent = player.parent
-        }
-        var uid = $.scene.add(char)
+
         $.character[uid] = char
         // pane
         if ($.panel && option.pane) {
@@ -471,6 +516,37 @@ define(['core/util', 'core/controller', 'LF/sprite-select',
         $.panel[i].mp.set_x_y(X + $.data.UI.data.panel.mpx, Y + $.data.UI.data.panel.mpy)
         $.panel[i].mp.set_w_h($.data.UI.data.panel.mpw, $.data.UI.data.panel.mph)
         $.panel[i].mp.set_bgcolor($.data.UI.data.panel.mp_bright)
+      }
+      function assign_character_spec(char, spec, index) {
+        switch (index) {
+          case 'is_npc':
+            char.is_npc = spec[index]
+            break
+          case 'health':
+            for (var I in spec[index]) {
+              char.health[I] = spec[index][I]
+            }
+            break
+          case 'dir':
+            char.switch_dir(spec[index])
+            break
+          case 'stat':
+            for (var J in spec[index]) {
+              char.stat[J] = spec[index][J]
+            }
+            break
+          case 'parent':
+            char.parent = spec[index]
+            break
+          case 'transform_character':
+            if (!char.transform_character) {
+              char.transform_character = {}
+            }
+            for (var L in spec[index]) {
+              char.transform_character[L] = spec[index][L]
+            }
+            break
+        }
       }
     }
 
