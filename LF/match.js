@@ -540,6 +540,9 @@ define(['core/util', 'core/controller', 'LF/sprite-select',
             char.parent = spec[index]
             break
           case 'transform_character':
+            if (!char.transform_character) {
+              char.transform_character = {}
+            }
             for (var L in spec[index]) {
               char.transform_character[L] = spec[index][L]
             }

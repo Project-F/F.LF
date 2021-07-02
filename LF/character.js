@@ -169,7 +169,7 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
                 break
               default:
                 // here is where D>A, D>J... etc handled
-                if (K == 'DJA' && $.transform_character.is_rudolf_transform) {
+                if (K == 'DJA' && $.transform_character && $.transform_character.is_rudolf_transform) {
                   $.id_update('revert_transform')
                 }
                 var tag = Global.combo_tag[K]
@@ -1243,10 +1243,10 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
                 opoint: { // smoke
                   kind: 1, x: 41, y: 70, action: 70, dvx: 0, dvy: 0, oid: 204, facing: 0
                 },
-                is_rudolf_transform: !$.transform_character.is_rudolf_transform,
+                is_rudolf_transform: true,
               }
             }
-            if ($.transform_character.id == -1) {
+            if (!$.transform_character) {
               break
             }
             $.match.transform_panel($.uid, $.transform_character.uid)
@@ -1437,12 +1437,7 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
       }
       $.disappear_count = -1
       $.dead_blink_count = -1
-      $.transform_character = {
-        id: -1,
-        uid: -1,
-        opoint: {},
-        is_rudolf_transform: false,
-      }
+      $.transform_character = null
       $.trans.frame = function (next, au) {
         if (next === 0 || next === 999) {
           this.set_next(next, au)
