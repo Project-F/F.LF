@@ -442,18 +442,36 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
             return $.id_update('state3_frame_force')
           case 'TU':
             if ($.frame.D.itr) {
-              let finish = false
               for (let index in $.frame.D.itr) {
                 if (($.frame.D.itr[index].kind == 10 ||
                   $.frame.D.itr[index].kind == 11) &&
-                  $.counter.flute_count % 2 == 0 &&
-                  finish == false) {
-                  $.id_update('state3_flute')
-                  finish = true
+                  $.match.time.t % 2 === 0) {
+                  for (let I in $.scene.live) {
+                    let target = $.scene.live[I]
+                    let z_diff = Math.abs(target.ps.z - $.ps.z)
+                    let x_diff = Math.abs(target.ps.x - $.ps.x)
+                    if (x_diff * x_diff + 4 * z_diff * z_diff < (150 * 150)) { // Oval equation (obj inside affected area?)
+                      if (target.uid != $.uid) {
+                        if (target.ps.y < 0 || // floating
+                          target.type == 'character' || // target is character
+                          (target.ps.y >= 0 && $.match.random() < 0.15)) // random select living obj
+                        {
+                          if (target.type == 'character' && target.hold) { // drop weapon when being lift
+                            target.drop_weapon(0, 0)
+                          }
+                          const ITR = Futil.make_array($.data.frame[251].itr || $.data.frame[251].itr)[0]
+                          const vol = $.mech.volume(Futil.make_array($.data.frame[251].itr || $.data.frame[251].itr)[0])
+                          if (target.attacked(target.hit(ITR, $, { x: $.ps.x, y: $.ps.y, z: $.ps.z }, vol))) { // hit you!
+                            target.itr_arest_update(ITR)
+                          }
+                        }
+                      }
+                    }
+                  }
+                  break
                 }
               }
             }
-            $.counter.flute_count += 1
             break
         }
       },
@@ -1242,36 +1260,6 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
             break
         }
       },
-      4: function (event)
-      {
-        const $ = this
-        switch (event) {
-          case 'state3_flute':
-            for (let I in $.scene.live) {
-              let target = $.scene.live[I]
-              let z_diff = Math.abs(target.ps.z - $.ps.z)
-              let x_diff = Math.abs(target.ps.x - $.ps.x)
-              if (x_diff * x_diff + 4 * z_diff * z_diff < (150 * 150)) { // Oval equation (obj inside affected area?)
-                if (target.uid != $.uid) {
-                  if (target.ps.y < 0 || // floating
-                    target.type == 'character' || // target is character
-                    (target.ps.y >= 0 && $.match.random() < 0.15)) // random select living obj
-                  {
-                    if (target.type == 'character' && target.hold) { // drop weapon when being lift
-                      target.drop_weapon(0, 0)
-                    }
-                    const ITR = Futil.make_array($.data.frame[251].itr || $.data.frame[251].itr)[0]
-                    const vol = $.mech.volume(Futil.make_array($.data.frame[251].itr || $.data.frame[251].itr)[0])
-                    if (target.attacked(target.hit(ITR, $, { x: $.ps.x, y: $.ps.y, z: $.ps.z }, vol))) { // hit you!
-                      target.itr_arest_update(ITR)
-                    }
-                  }
-                }
-              }
-            }
-            break
-        }
-      },
       5: function (event) // Rudolf
       {
         const $ = this
@@ -1494,7 +1482,6 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
       {
         disappear_count : -1,
         dead_blink_count : -1,
-        flute_count : 0,
       }
       $.transform_character = null
       $.trans.frame = function (next, au) {
