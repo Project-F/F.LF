@@ -422,6 +422,9 @@ define(['core/util', 'core/controller', 'LF/sprite-select',
         const player_obj = util.select_from($.data.object, { id: player.id })
         var pdata = player_obj.data
         preload_pack_images(player_obj)
+        if (option.replace) {
+          player.controller.child.length = 0
+        }
         const controller = setup_controller(player)
         // create character
         const char = new factory.character(char_config, pdata, player.id)
