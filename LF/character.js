@@ -1947,7 +1947,7 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
         const ops = Futil.make_array($.frame.D.opoint)
         for (const i in ops) {
           if (Math.abs(ops[i].facing) > 10) {
-            $.match.create_multiple_objects(ops[i], $, Math.floor(ops[i].facing / 10), ops[i].dvz || 2)
+            $.match.create_multiple_objects(ops[i], $, Math.floor(ops[i].facing / 10), ops[i].dvz || 3)
           } else {
             $.match.create_object(ops[i], $)
           }

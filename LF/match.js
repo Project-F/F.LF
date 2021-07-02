@@ -158,7 +158,7 @@ define(['core/util', 'core/controller', 'LF/sprite-select',
         z: parent.ps.z,
         dir: parent.ps.dir,
         dvz: parent.dirv() * 2,
-        vz: vz * 1.5
+        vz: vz
       })
     }
 
@@ -348,7 +348,6 @@ define(['core/util', 'core/controller', 'LF/sprite-select',
               } else {
                 obj.ps.vx -= Math.abs(vz)
               }
-              obj.ps.z += vz
               var uid = $.scene.add(obj)
               $[obj.type][uid] = obj
             }
