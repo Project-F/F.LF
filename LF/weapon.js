@@ -234,6 +234,11 @@ define(['LF/livingobject', 'LF/global', 'core/util'],
           return true
         }
 
+        if (ITR.kind === 10 || ITR.kind === 11) {
+          $.flute_force()
+          return true
+        }
+
         let accept = false
         if ($.light) {
           if ($.state() === 1002) // throwing

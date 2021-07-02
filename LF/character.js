@@ -38,21 +38,21 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
             break
           case 'TU':
             switch (true) {
-              case ($.disappear_count < 0): // dismiss
+              case ($.counter.disappear_count < 0): // dismiss
                 break
-              case ($.disappear_count >= 0 && $.disappear_count < GC.effect.disappear.shadow_blink): // body disappear
-                $.disappear_count += 1
+              case ($.counter.disappear_count >= 0 && $.counter.disappear_count < GC.effect.disappear.shadow_blink): // body disappear
+                $.counter.disappear_count += 1
                 break
-              case ($.disappear_count >= GC.effect.disappear.shadow_blink && $.disappear_count < GC.effect.disappear.body_blink): // shadow blink
-                $.disappear_count += 1
-                if (Math.floor($.disappear_count / 2) % 2 == 0) {
+              case ($.counter.disappear_count >= GC.effect.disappear.shadow_blink && $.counter.disappear_count < GC.effect.disappear.body_blink): // shadow blink
+                $.counter.disappear_count += 1
+                if (Math.floor($.counter.disappear_count / 2) % 2 == 0) {
                   $.shadow.show()
                 } else {
                   $.shadow.hide()
                 }
                 break
-              case ($.disappear_count == GC.effect.disappear.body_blink): // body blink
-                $.disappear_count += 1
+              case ($.counter.disappear_count == GC.effect.disappear.body_blink): // body blink
+                $.counter.disappear_count += 1
                 $.effect.blink = true
                 $.effect.timein = 0
                 $.effect.timeout = 30
@@ -60,25 +60,25 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
                 $.sp.show()
                 $.effect.super = false
                 break
-              case ($.disappear_count > GC.effect.disappear.body_blink): // initialize and dismiss
-                $.disappear_count = -1
+              case ($.counter.disappear_count > GC.effect.disappear.body_blink): // initialize and dismiss
+                $.counter.disappear_count = -1
                 break
             }
             switch (true) {
-              case ($.dead_blink_count < 0):
+              case ($.counter.dead_blink_count < 0):
                 break
-              case ($.dead_blink_count == 0):
+              case ($.counter.dead_blink_count == 0):
                 $.effect.blink = true
-                $.dead_blink_count += 1
+                $.counter.dead_blink_count += 1
                 break
-              case ($.dead_blink_count > 0 && $.dead_blink_count < 30):
-                $.dead_blink_count += 1
+              case ($.counter.dead_blink_count > 0 && $.counter.dead_blink_count < 30):
+                $.counter.dead_blink_count += 1
                 break
-              case ($.dead_blink_count >= 30):
+              case ($.counter.dead_blink_count >= 30):
                 $.effect.blink = false
                 $.sp.hide()
                 $.shadow.hide()
-                $.dead_blink_count = -1
+                $.counter.dead_blink_count = -1
                 $.match.destroy_object($)
                 break
             }
@@ -432,7 +432,7 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
               $.trans.set_next(212) // back to jump
             }
             if ($.frame.N === 253) {
-              $.trans.set_wait(0) // Woody's fly_crash
+              $.id_update('state3_fly_crash')
             }
             $.id_update('state3_frame')
             break
@@ -440,6 +440,21 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
             return $.id_update('state3_hit_stop')
           case 'frame_force':
             return $.id_update('state3_frame_force')
+          case 'TU':
+            if ($.frame.D.itr) {
+              let finish = false
+              for (let index in $.frame.D.itr) {
+                if (($.frame.D.itr[index].kind == 10 ||
+                  $.frame.D.itr[index].kind == 11) &&
+                  $.counter.flute_count % 2 == 0 &&
+                  finish == false) {
+                  $.id_update('state3_flute')
+                  finish = true
+                }
+              }
+            }
+            $.counter.flute_count += 1
+            break
         }
       },
 
@@ -969,7 +984,7 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
             if ($.health.hp <= 0) {
               $.die()
               if ($.is_npc) {
-                $.dead_blink_count = 0
+                $.counter.dead_blink_count = 0
               }
             }
             break
@@ -1227,6 +1242,36 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
             break
         }
       },
+      4: function (event)
+      {
+        const $ = this
+        switch (event) {
+          case 'state3_flute':
+            for (let I in $.scene.live) {
+              let target = $.scene.live[I]
+              let z_diff = Math.abs(target.ps.z - $.ps.z)
+              let x_diff = Math.abs(target.ps.x - $.ps.x)
+              if (x_diff * x_diff + 4 * z_diff * z_diff < (150 * 150)) { // Oval equation (obj inside affected area?)
+                if (target.uid != $.uid) {
+                  if (target.ps.y < 0 || // floating
+                    target.type == 'character' || // target is character
+                    (target.ps.y >= 0 && $.match.random() < 0.15)) // random select living obj
+                  {
+                    if (target.type == 'character' && target.hold) { // drop weapon when being lift
+                      target.drop_weapon(0, 0)
+                    }
+                    const ITR = Futil.make_array($.data.frame[251].itr || $.data.frame[251].itr)[0]
+                    const vol = $.mech.volume(Futil.make_array($.data.frame[251].itr || $.data.frame[251].itr)[0])
+                    if (target.attacked(target.hit(ITR, $, { x: $.ps.x, y: $.ps.y, z: $.ps.z }, vol))) { // hit you!
+                      target.itr_arest_update(ITR)
+                    }
+                  }
+                }
+              }
+            }
+            break
+        }
+      },
       5: function (event) // Rudolf
       {
         const $ = this
@@ -1271,7 +1316,7 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
               $.sp.hide()
               $.shadow.hide()
               $.effect.super = true
-              $.disappear_count = 0
+              $.counter.disappear_count = 0
             }
             break
         }
@@ -1285,6 +1330,15 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
             {
               return 1
             }
+            break
+        }
+      },
+      10: function (event)
+      {
+        const $ = this
+        switch (event) {
+          case 'state3_fly_crash':
+            $.trans.set_wait(0)
             break
         }
       },
@@ -1436,8 +1490,12 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
         picking: 0,
         kill: 0
       }
-      $.disappear_count = -1
-      $.dead_blink_count = -1
+      $.counter = 
+      {
+        disappear_count : -1,
+        dead_blink_count : -1,
+        flute_count : 0,
+      }
       $.transform_character = null
       $.trans.frame = function (next, au) {
         if (next === 0 || next === 999) {
@@ -1598,6 +1656,12 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
         }
         $.effect_create(effectnum, vanish, ef_dvx, ef_dvy)
         posteffect(effectnum)
+      } else if (ITR.kind === 10 || ITR.kind === 11) {
+        $.flute_force()
+        if ($.state() === 12) {
+          inj = ITR.injury * 2
+          accepthit = true
+        }
       } else if (ITR.kind === 15) {
         $.whirlwind_force(rect)
       } else if (ITR.kind === 16) {

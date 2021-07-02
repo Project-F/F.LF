@@ -167,6 +167,39 @@ define(['LF/global', 'LF/sprite', 'LF/mechanics', 'LF/AI', 'LF/util', 'LF/sprite
       }
     }
 
+    livingobject.prototype.flute_force = function () {
+      const $ = this
+      let low_level = -140
+      let mid_level = -160
+      let high_level = -180
+      $.effect.super = true
+      $.ps.vx = 0
+      $.ps.vz = 0
+      if ($.ps.y > low_level) {
+        $.ps.vy = ($.ps.vy <= 0) ? (-7.5) : (-$.ps.vy / 2)
+      } else if ($.ps.y <= low_level && $.ps.y > mid_level) {
+        $.ps.vy -= ($.ps.vy <= 0) ? ($.mech.mass / 2) : ($.mech.mass / 2)
+      } else if ($.ps.y <= mid_level && $.ps.y > high_level) {
+        $.ps.vy += ($.ps.vy <= 0) ? ($.mech.mass / 2) : ($.mech.mass / 2)
+      }
+      // Floating effect
+      switch ($.type) {
+        case 'lightweapon':
+          if ($.frame.N >= 55) {
+            $.trans.frame(40, 20)
+          }
+          break
+        case 'heavyweapon':
+          if ($.frame.N >= 5) {
+            $.trans.frame(1, 20)
+          }
+          break
+        case 'character':
+          ($.ps.vy > 0)?$.trans.frame(181, 20):$.trans.frame(182, 20)
+          break
+      }
+    }
+
     // update done at every TU (30fps)
     livingobject.prototype.TU_update = function () {
       const $ = this
