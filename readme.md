@@ -17,7 +17,7 @@ Project F has three ultimate goals:
 
 Start playing on [Project F](https://project-f.github.io/F.LF/game/game.html) and reading the [documentation](https://project-f.github.io/F.LF/).
 
-## F.LF v0.9.7
+## F.LF v0.9.9
 
 F.LF is an open source implementation of [LF2](http://lf2.net) engineered from the ground up (aka clean room implementation) for the modern web.
 
@@ -25,10 +25,10 @@ F.LF is an open source implementation of [LF2](http://lf2.net) engineered from t
 
 ## Features
 - Cross platform HTML5: mobile & desktop
-- Supported characters: Bandit, Deep, John, Louis, Firen, Freeze, Dennis, Woody, Davis
+- Supported characters: Bandit, Deep, John, Henry, Rudolf, Louis, Firen, Freeze, Dennis, Woody, Davis
 - Supports all 1.9 backgrounds (except Lee On Road) in 16:9 screen
-- VS mode only
-- PvP networking via WebSocket and WebRTC
+- VS mode
+- PvP networking via WebSocket
   - You can host your own WebSocket server
   - Can even connect between PC and mobile!
 - Scriptable and selectable AI
@@ -45,3 +45,7 @@ The two repositories [F.LF](https://github.com/Project-F/F.LF) and [LF2_19](http
 ```
 
 Then simply open `game/game.html` in your favourite browser.
+
+## License
+
+[GNU General Public License v3.0](LICENSE) or https://www.gnu.org/licenses/gpl-3.0.en.html
