@@ -57,6 +57,15 @@ define(['LF/util'], function (util) {
     'D>AJ': 'hit_Fj',
     DJA: 'hit_ja'
   }
+  G.combo_dir =
+  {
+    'D<A': 'left',
+    'D>A': 'right',
+    'D<J': 'left',
+    'D>J': 'right',
+    'D<AJ': 'left',
+    'D>AJ': 'right'
+  }
   G.combo_priority =
   { // larger number is higher priority
     up: 0,

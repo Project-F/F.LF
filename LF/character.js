@@ -175,6 +175,10 @@ define(['LF/livingobject', 'LF/global', 'core/combodec', 'core/util', 'LF/util']
                 var tag = Global.combo_tag[K]
                 if (tag && $.frame.D[tag]) {
                   if (!$.id_update('generic_combo', K, tag)) {
+                    var dir = Global.combo_dir[K]
+                    if (dir) {
+                      $.switch_dir(dir)
+                    }
                     $.trans.frame($.frame.D[tag], 11)
                     return 1
                   }
